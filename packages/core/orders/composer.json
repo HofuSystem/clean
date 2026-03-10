@@ -1,0 +1,41 @@
+{
+    "name": "core/orders",
+    "description": "core orders",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\Orders\\": "src/",
+            "Core\\Orders\\Database\\": "src/database/"
+        },
+        "files": [
+            
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\Orders\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Orders\\Providers\\OrdersServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abanob",
+            "email": "abanobmagdyhakeem@gmail.com"
+        }
+    ]
+}

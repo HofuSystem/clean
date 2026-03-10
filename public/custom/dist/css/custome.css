@@ -1,0 +1,175 @@
+.required::after {
+    content: " *";
+    color: red;
+    font-weight: bold;
+}
+label{
+    color:#000
+}
+.dark-style label{
+    color:#ffffff
+}
+#toast-container>div{
+	background-repeat: no-repeat !important;
+    background-position-y: center !important;
+    background-position-y: center !important;}
+.toast-error{
+	background:red !important;
+
+}.toast-success{
+	background:green !important;
+}
+.formio-component-ar *{
+	text-align:right !important
+}
+.avatar img{
+    width:40px !important;
+    height:40px !important;
+}
+
+[dir=rtl] table.dataTable thead th{
+    text-align: center;
+}
+
+  
+  .loader-rm-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999999;
+}
+
+.logo {
+    width: 250px;
+    /* Adjust size as needed */
+    height: 100px;
+    /* Replace 'path_to_your_logo.png' with your logo */
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.app-brand-logo img {
+    object-fit: contain;
+    width: 168px;
+    height:70px
+}
+
+.circles {
+    display: flex;
+    margin-top: 20px;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #4b77b4;
+    /* Adjust color as needed */
+    margin: 0 5px;
+    animation: moveUpDown 0.5s infinite alternate;
+    animation-delay: calc(0.2s * var(--index));
+    /* Stagger the animation */
+}
+
+@keyframes moveUpDown {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(10px);
+    }
+}
+
+.hide-loader {
+    animation: godown 1s forwards;
+
+}
+
+@keyframes godown {
+    from {
+        transform: translateY(0%);
+    }
+
+    to {
+        transform: translateY(20%);
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.timeline .timeline-item .timeline-event {
+    min-height: auto;
+    padding: 1.1rem 1.5rem 0.2rem;
+}
+
+.light-style table.dataTable th, .light-style table.dataTable td {
+    border-color: var(--bs-border-color) !important;
+}
+.dataTables_scrollHeadInner, table.table.table-hover.text-nowrap.text-center.ajax-server.dataTable.no-footer {
+    min-width: 100%;
+}
+label{
+    text-transform: capitalize !important;
+}
+.dir-rtl{
+    direction: rtl !important;
+}
+.btn-operation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: rgb(72 118 179) !important;!i;!;
+    border: 2px solid rgb(72 118 179) !important;!i;!;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 50%;
+    margin-left: 5px;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.btn-operation span {
+    display: none;
+    color: rgb(72 118 179);
+    margin-left: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.edit-item.btn-operation:hover,.delete-item.btn-operation:hover,.create-new-items.btn-operation:hover{
+    width:50px
+}
+
+.btn-operation:hover {
+    width: auto; /* Expands based on content */
+    max-width: 200px;
+    padding: 0 5px;
+    border-radius: 10px;
+}
+
+.btn-operation:hover span {
+    display: inline;
+    opacity: 1;
+}
+.btn-operation:hover i {
+    color: rgb(72 118 179); /* Expands based on content */
+}
+.gallary-images img {
+    max-width: 100px;
+}
+table img {
+    max-width: 100px;
+}
+table  th {
+    letter-spacing:0px !important
+}

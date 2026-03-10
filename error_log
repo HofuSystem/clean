@@ -1,0 +1,78 @@
+[16-Jan-2025 03:42:38 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 03:42:40 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 03:48:39 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 04:44:29 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 04:49:40 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:55:31 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:55:40 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:55:50 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:55:51 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:01 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:04 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:14 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:15 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:26 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 11:56:40 UTC] PHP Fatal error:  Uncaught Error: Class "DB" not found in /home/cleanstationksa/c.t/test.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/cleanstationksa/c.t/test.php on line 6
+[16-Jan-2025 12:19:20 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 12:19:20 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 12:20:43 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 12:20:43 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:32:59 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:32:59 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:34:39 UTC] PHP Warning:  Module 'imagick' already loaded in Unknown on line 0
+[16-Jan-2025 14:34:39 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:34:57 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:34:58 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:35:10 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:35:10 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:35:54 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:35:54 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:36:06 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:36:06 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0
+[16-Jan-2025 14:36:27 UTC] PHP Warning:  Module "imagick" is already loaded in Unknown on line 0
+[16-Jan-2025 14:36:27 UTC] PHP Warning:  Version warning: Imagick was compiled against ImageMagick version 1692 but version 1693 is loaded. Imagick will run but may behave surprisingly in Unknown on line 0

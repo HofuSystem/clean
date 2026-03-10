@@ -1,0 +1,103 @@
+<?php
+
+namespace Core\Pages\Exports;
+
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
+use Core\Pages\Models\ContactRequest;
+
+
+class ContactRequestsExport implements FromCollection, WithHeadings, WithMapping, WithCustomCsvSettings
+{
+
+    public function __construct(protected $headersOnly = false,protected $cols = [])
+    {
+    }
+
+    public function collection()
+    {
+        if ($this->headersOnly) {
+            // Return an empty collection if only headers are needed
+            return collect([]);
+        }
+
+        // Fetch coupon data from the database
+        return ContactRequest::get();
+    }
+
+    public function headings(): array
+    {
+        // Define headers based on the provided attributes
+        $headings = [];
+
+        if(empty($this->cols) or in_array('id',$this->cols)){
+            $headings[] = trans('id');
+        }
+        if(empty($this->cols) or in_array('name',$this->cols)){
+            $headings[] = trans('name');
+        }
+        if(empty($this->cols) or in_array('phone',$this->cols)){
+            $headings[] = trans('phone');
+        }
+        if(empty($this->cols) or in_array('email',$this->cols)){
+            $headings[] = trans('email');
+        }
+        if(empty($this->cols) or in_array('service_id',$this->cols)){
+            $headings[] = trans('service');
+        }
+        if(empty($this->cols) or in_array('date',$this->cols)){
+            $headings[] = trans('date');
+        }
+        if(empty($this->cols) or in_array('time',$this->cols)){
+            $headings[] = trans('time');
+        }
+        if(empty($this->cols) or in_array('notes',$this->cols)){
+            $headings[] = trans('notes');
+        }             
+        return $headings;
+    }
+
+    public function map($model): array
+    {
+        // Format the data before exporting
+        $data = [];
+        
+        if(empty($this->cols) or in_array('id',$this->cols)){
+            $data[] = $model->id;
+        }
+        if(empty($this->cols) or in_array('name',$this->cols)){
+            $data[] = $model->name;
+        }
+        if(empty($this->cols) or in_array('phone',$this->cols)){
+            $data[] = $model->phone;
+        }
+        if(empty($this->cols) or in_array('email',$this->cols)){
+            $data[] = $model->email;
+        }
+        if(empty($this->cols) or in_array('service_id',$this->cols)){
+            $data[] = $model->service_id;
+        }
+        if(empty($this->cols) or in_array('date',$this->cols)){
+            $data[] = $model->date;
+        }
+        if(empty($this->cols) or in_array('time',$this->cols)){
+            $data[] = $model->time;
+        }
+        if(empty($this->cols) or in_array('notes',$this->cols)){
+            $data[] = $model->notes;
+        }
+        return $data;
+    }
+
+    public function getCsvSettings(): array
+    {
+        // Optional: Customize CSV settings (e.g., delimiter)
+        return [
+            'delimiter' => ',',
+            'enclosure' => '"',
+            'line_ending' => "\n",
+        ];
+    }
+}

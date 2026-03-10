@@ -1,0 +1,128 @@
+#upload-button {
+  display: none;
+}
+
+label#upload-lable {
+  display: block;
+  position: relative;
+  background-color: #025bee;
+  color: #ffffff;
+  font-size: 1.1em;
+  text-align: center;
+  width: 16em;
+  padding: 1em 0;
+  border-radius: 0.3em;
+  margin: 0 auto 1em auto;
+  cursor: pointer;
+}
+
+#image-display {
+  position: relative;
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-evenly;
+  gap: 1.25em;
+  flex-wrap: wrap;
+}
+
+#image-display figure {
+  width: 45%;
+}
+
+#image-display img {
+  width: 100%;
+}
+
+#image-display figcaption {
+  font-size: 0.8em;
+  text-align: center;
+  color: #5a5861;
+}
+
+.image-container.active {
+  border: 0.2em dashed #025bee;
+}
+
+#error {
+  text-align: center;
+  color: #ff3030;
+}
+
+#image-display img ,.media-center-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  margin: auto;
+}
+.input-gallery img{
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  margin: 3px;
+}
+#image-display figure {
+  background: #dcdbdb;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #025bee;
+  padding: 5px;
+
+}
+.delete-btn{
+  padding:5px;
+  border-radius:10px;
+  transition: transform 0.5s ease;
+
+}
+.delete-btn:hover{
+  transform:translateY(-5px)
+}
+.gallery {
+  width:100%;
+  max-height:600px;
+  overflow:scroll;
+}
+#mediaModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1200; /* Make sure the normal modal has a higher z-index than the full-screen modal */
+}
+.selected-gallery {
+  padding:20px 0px
+}
+
+.media-gallery {
+  padding:20px 0px
+}
+
+.media-gallery .row{
+  overflow-y: scroll;
+  max-height: 300px;
+}
+.selected-gallery .row{
+  overflow-y: scroll;
+  max-height: 300px;
+}
+.card.media-center-card .card-body{
+  padding:2px;
+  margin-bottom:10px;
+  cursor:pointer
+}
+.input-gallery {
+  margin-top:5px;
+}
+.input-gallery .row{
+  background:#8daadf61 ;
+  border:2px dashed #4977b4
+}
+.input-gallery img{
+  background:#ffffffd1;
+  border:2px dashed #fbfbfb;
+  border-radius:15px
+}
+.gallary-images img {
+  max-width: 100px;
+}

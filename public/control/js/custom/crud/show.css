@@ -1,0 +1,81 @@
+    /* Show Page Styling */
+    .show-page {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .show-page .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .show-page label {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .show-page p {
+        margin: 0;
+        padding: 0.5rem;
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 1rem;
+        color: #495057;
+    }
+
+    .show-page .table-responsive {
+        margin-top: 1rem;
+    }
+
+    .show-page .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: #ffffff;
+        border-collapse: collapse;
+    }
+
+
+    .show-page .table tbody td {
+        padding: 0.75rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .show-page .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .show-page .card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .show-page .card-body {
+        padding: 1.5rem;
+    }
+
+    .show-page .card-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        padding: 1rem;
+        text-align: right;
+    }
+
+    .show-page .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #ffffff;
+    }
+
+    .show-page .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+    .gallery-images img {
+        width:100px;
+        height:100px;
+        object-fit:cover
+    }

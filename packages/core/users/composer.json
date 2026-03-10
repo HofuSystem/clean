@@ -1,0 +1,43 @@
+{
+    "name": "core/users",
+    "description": "core users",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\Users\\": "src/",
+            "Core\\Users\\Database\\": "src/database/"
+        },
+        "files": [
+            
+        ]
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\Users\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Users\\Providers\\UsersServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abanob",
+            "email": "abanobmagdyhakeem@gmail.com"
+        }
+    ]
+}
+

@@ -1,0 +1,48 @@
+
+table.view-dataTable img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+
+table#view-datatable img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+
+.select2-selection {
+    max-height: 30px;
+    overflow: hidden
+}
+
+.page-item.active .page-link,
+.pagination li.active > a:not(.page-link) {
+  border-color: #4876b3;
+  background-color: #4876b3;
+  color: #fff;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover{
+    border-color: #4876b3;
+    background: #4977b5 !important; /* Bootstrap primary color */
+    background-color: #4876b3;
+    color: white !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{
+    border-color: #4876b3;
+    background: #4977b5 !important; /* Bootstrap primary color */
+    background-color: #4876b3;
+    color: white !important;
+}
+div.dt-buttons>.dt-button, div.dt-buttons>div.dt-button-split .dt-button{
+    border-color: #4876b3;
+
+    background-color: #4977b5 !important; /* Bootstrap primary color */
+    color: white !important;
+
+}
+th{
+    vertical-align: middle;
+}

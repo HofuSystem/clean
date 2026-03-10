@@ -1,0 +1,42 @@
+{
+    "name": "core/media-center",
+    "description": "core media center package",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\MediaCenter\\": "src/",
+            "Core\\MediaCenter\\Database\\": "src/database/"
+        },
+        "files": [
+            
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\MediaCenter\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\MediaCenter\\Providers\\MediaCenterProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "eslamshafey",
+            "email": "shafey281219965130@gmail.com"
+        }
+    ]
+}
+

@@ -1,0 +1,41 @@
+{
+    "name": "core/info",
+    "description": "core/info",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\Info\\": "src/",
+            "Core\\Info\\Database\\": "src/database/"
+        },
+        "files": [
+            
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\Info\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Info\\Providers\\InfoServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abanob",
+            "email": "abanobmagdyhakeem@gmail.com"
+        }
+    ]
+}

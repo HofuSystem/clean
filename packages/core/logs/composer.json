@@ -1,0 +1,40 @@
+{
+    "name": "rm/logs-system",
+    "description": "rm logs-system",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\Logs\\": "src/",
+            "Core\\Logs\\Database\\": "src/database/"
+        },
+        "files": [
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\Logs\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Logs\\Providers\\LogsServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abanob",
+            "email": "abanobmagdyhakeem@gmail.com"
+        }
+    ]
+}

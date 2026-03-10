@@ -1,0 +1,41 @@
+{
+    "name": "core/notification-system",
+    "description": "core notification-system",
+    "license": "MIT",
+    "version": "1.0.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+            "src/database/migrations"
+        ],
+        "psr-4": {
+            "Core\\Notification\\": "src/",
+            "Core\\Notification\\Database\\": "src/database/"
+        },
+        "files": [
+            
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Core\\Notification\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Notification\\Providers\\NotificationServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "abanob",
+            "email": "abanobmagdyhakeem@gmail.com"
+        }
+    ]
+}

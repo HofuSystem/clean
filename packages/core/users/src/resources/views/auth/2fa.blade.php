@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0,minimal-ui">
+    <meta name="description" content="Vuexy admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Vuexy admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="PIXINVENT">
+    <title>Login Page </title>
+    <link rel="apple-touch-icon" href="{{ asset('control') }}/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ config('backend-settings.admin_style.admin_login_logo') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/vendors/css/vendors.min.css">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/components.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/themes/dark-layout.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/themes/bordered-layout.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/themes/semi-dark-layout.css">
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/plugins/forms/form-validation.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/app-assets/css/pages/page-auth.css">
+    <!-- END: Page CSS-->
+
+    <!-- BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('control') }}/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('settings') }}/settings.css">
+
+    <!-- END: Custom CSS-->
+
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+
+<body class="vertical-layout vertical-menu-modern blank-page navbar-floating footer-static   menu-collapsed interactive-confirm" data-open="click" data-menu="vertical-menu-modern" data-col="blank-page"
+style="background: url('{!! url(config('backend-settings.admin_style.admin_login_bg')) !!}');background-size:cover;">
+        <!-- BEGIN: Content-->
+        <div class="app-content content">
+            <div class="content-overlay"></div>
+            <div class="header-navbar-shadow"></div>
+            <div class="content-wrapper">
+                <div class="content-header row">
+                </div>
+                <div class="content-body">
+                    <div class="auth-wrapper auth-v1 px-2">
+                        <div class="auth-inner py-2">
+                            <div class="card w-100">
+                                <div class="card-body">
+                                    <span id="formMsg">{{ __('your verification code has been sent throught an ') }} <b>{{ __($type) }}</b></span>
+
+                                    <form method="POST" action="{{ route('2fa') }}">
+                                        @csrf
+                                        <input placeholder="Code" width="100%" id="code" type="code" class="form-control @error('code') is-invalid @enderror" name="code" required autocomplete="current-code">
+
+                                        @error('code')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                        <div>
+                                            <button style="width:46%;margin:5px 0;" type="submit" class="btn btn-primary">
+                                                {{ __('Confirm code') }}
+                                            </button>
+
+                                            <button style="width:46%;margin:5px 0;" onclick="document.getElementById('logout').submit()" type="submit" class="btn btn-primary">
+                                                {{ __('Logout') }}
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <a id="resendCode" href="{{ route('2fa.resend') }}">{{ trans("resend code") }}</a>
+                                            <a style="float:right" id="otp" href="{{ route('2fa.otp') }}">{{ trans("send otp code") }}</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- END: Content-->
+
+        <form id="logout" action="{{ route('logout') }}" class="d-none" method="POST">
+            @csrf
+            <input type="submit" value="asdfasdf">
+        </form>
+
+    <!-- BEGIN: Vendor JS-->
+    <script src="{{ asset('control') }}/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{{ asset('control') }}/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="{{ asset('control') }}/app-assets/js/core/app-menu.js"></script>
+    <script src="{{ asset('control') }}/app-assets/js/core/app.js"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="{{ asset('control') }}/app-assets/js/scripts/pages/page-auth-login.js"></script>
+    <script src="{{ asset('settings') }}/settings.js"></script>
+
+    <!-- END: Page JS-->
+
+    <script>
+        $(window).on('load', function() {
+            if (feather) {
+                feather.replace({
+                    width: 14,
+                    height: 14
+                });
+            }
+
+            $("form").on("submit", function(e) {
+                e.preventDefault();
+                xhr = new XMLHttpRequest;
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        try{
+                            let res = JSON.parse(this.response);
+                            if(res["status"]) {
+                                window.location = "{{ url('/') }}";
+                                return toastr.success(res.message)
+                            }
+                            return toastr.error(res.message)
+                        } catch(err) {
+                            toastr.error("{{ trans('Something went wrong') }}")
+                        }
+                    }
+                }
+                xhr.open("POST", this.action, true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr.send("_token="+this._token.value+"&code="+this.code.value);
+            }); // end of confirmCode
+
+            formMsg = $("#formMsg");
+            $("#resendCode").on("click", function(e) {
+                e.preventDefault();
+                $.ajax(this.href, {
+                    method: "post",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    success: function (data, status, xhr) {// success callback function
+                        if(data.status) {
+                            toastr.success(data.message);
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    },
+                    error: function (xhr, text, err) { // error callback
+                        toastr.error(text);
+                    }
+                });
+            }) // end of resendCode
+
+            $("#otp").on("click", function(e) {
+                e.preventDefault();
+                $.ajax(this.href+"?code="+$("input[name='code']").val(), {
+                    method: "post",
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    success: function (data, status, xhr) {// success callback function
+                        if(data.status) {
+                            toastr.success(data.message);
+                            window.location = "{{ url('/') }}";
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    },
+                    error: function (xhr, text, err) { // error callback
+                        toastr.error(text);
+                    }
+                });
+            }) // end of otp app
+
+        })
+    </script>
+</body>
+<!-- END: Body-->
+
+</html>

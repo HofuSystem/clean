@@ -1,0 +1,111 @@
+C.charts-statistics .rounded-pill {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  margin-right: 10px
+}
+
+.charts-statistics .rounded-pill i {
+  width: 30px;
+  height: 20px;
+  font-size: 20px;
+  margin: auto;
+}
+
+.charts-statistics .card-info small {
+  font-size: 15px;
+}
+
+.charts-list h5 {
+  font-size: 20px;
+  text-transform: capitalize;
+
+}
+
+.charts-list h6 {
+  font-size: 15px;
+  text-transform: capitalize;
+  margin: 0 5px;
+
+}
+
+.charts-list small {
+  text-transform: capitalize;
+  margin: 0 5px;
+
+}
+.charts-list  ul {
+  height: 300px; /* Set the desired height */
+  overflow-y: scroll; /* Enable vertical scrolling */
+  list-style-type: none; /* Remove default bullet points */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+}
+
+.charts-list  li {
+  padding: 10px; /* Add padding to list items */
+  border-bottom: 1px solid #ccc; /* Add a border between items */
+}
+.charts-list img {
+  margin: 0px 10px
+}
+
+.charts-list .rec {
+  cursor: pointer;
+  padding: 5px 5px;
+  border-radius: 5px
+}
+
+.charts-list .rec:hover {
+  background: #e6e5e5;
+  transform: translateY(-5px);
+
+}
+
+.charts-table h5 {
+  font-size: 15px;
+  text-transform: capitalize;
+}
+
+.charts-table .card-header {
+  padding-bottom: 0;
+}
+
+.charts-table table {
+  text-align: center;
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #ffffff;
+  border: none
+}
+.dataTables_wrapper table  thead th{
+  border-color:#7367f0 !important
+}
+.dataTables_wrapper table  {
+  border-color:#7367f0 !important
+}
+
+.dataTables_wrapper table tbody tr {
+  cursor: pointer;
+}
+.dataTables_wrapper table thead th {
+  text-align:center
+}
+
+.dataTables_wrapper table tbody tr:hover {
+  /* transform: translateY(-5px); */
+  background: #ffffff;
+  color: #000;
+}
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #4977b4;
+  border-color: #007bff;
+}
+/* end data tables */
+

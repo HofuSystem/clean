@@ -1,0 +1,123 @@
+*{
+  font-family: "Cairo", sans-serif !important;
+}
+.why-us__icon{
+  left:unset !important;
+  top:-3rem !important;
+}
+.why-us__content{
+  text-align: right !important;
+}
+.why-us__subtitle,.why-us__description,.why-us__description{
+  text-align: right !important;
+}
+.why-us__title{
+  text-align: right !important;
+}
+.why-us__content{
+  padding-right: 3rem !important;
+}
+.why-us__visual{
+  padding-right: 2rem !important;
+}
+.vision-mission__dots{
+  text-align: right !important;
+}
+.vision-mission__content{
+  text-align: right !important;
+}
+.footer-contact__row{
+  text-align: right !important;
+}
+.footer,.footer-links__title,.app-downloads__title,.footer-links__grid{
+  text-align: right !important;
+}
+
+.about-section{
+  text-align: right !important;
+}
+.why-us__image-container::before{
+left: unset !important;
+right: -34px !important;
+}
+.b2b-section__content{
+  text-align: right !important;
+}
+.why-us-alt__content,.why-us-alt__heading,.why-us-alt__list,.why-us-alt__quote{
+  text-align: right !important;
+}
+.why-us-alt__list li::before{
+left: unset !important;
+right: -30px !important;
+}
+.service-card{
+  text-align: right !important;
+}
+.contact-form-section__content{
+  text-align: right !important;
+}
+.blog-content{
+  text-align: right !important;
+}
+.content__heading{
+  text-align: right !important;
+}
+.content__description{
+  text-align: right !important;
+}
+.nav-link {
+  text-align: right !important;
+}
+
+.step-card{
+  text-align: right !important;
+}
+.step-card .step-card__icon{
+  left: unset !important;
+  right: 25px !important;
+}
+.step-card .step-card__title{
+  text-align: right !important;
+}
+.step-card .step-card__text{
+  text-align: right !important;
+}
+.footer-links{
+  text-align: right !important;
+}
+/* Responsive Design for Footer Section */
+@media (max-width: 991.98px) {
+  .footer-links,
+  .app-downloads,
+  .footer-links__title,
+  .app-downloads__title {
+    text-align: center !important;
+  }
+
+  .footer-links__title,
+  .app-downloads__title {
+    text-align: center;
+  }
+
+  .footer-links__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .app-downloads__buttons {
+    justify-content: center;
+  }
+}
+.register-with-us .card-form{
+  text-align: right !important;
+}
+
+.register-with-us .step-item{
+  text-align: right !important;
+}
+.register-with-us .title-lg{
+  text-align: right !important;
+}
+.navbar-nav{
+ direction: rtl;
+}

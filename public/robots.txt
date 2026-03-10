@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and control panel areas
+Disallow: /control/
+Disallow: /admin/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /bootstrap/
+Disallow: /config/
+Disallow: /database/
+Disallow: /resources/
+Disallow: /routes/
+Disallow: /tests/
+Disallow: /app/
+Disallow: /packages/
+
+# Disallow temporary and cache files
+Disallow: /temp/
+Disallow: /cache/
+Disallow: /logs/
+Disallow: /*.log$
+Disallow: /*.tmp$
+
+# Sitemap location
+Sitemap: https://cleanstation.app/sitemap.xml
+
+# Crawl delay (optional - be respectful to server)
+Crawl-delay: 1

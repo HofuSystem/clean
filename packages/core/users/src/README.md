@@ -1,0 +1,10 @@
+## hooks
+	-- Add hook before add user ( creating )
+	-- Add hook after add user ( created )
+	-- Add hook before update user (user_id, old_data, new_data) ( updating )
+	-- Add hook after update user (user_id, old_data, new_data) ( updated )
+	-- Add hook before delete user ( deleting )
+	-- Add hook after delete user ( deleted )
+	-- Add Hook if user active changed ( userActivation )
+	-- Add hook after Login (API) ( loggedIn )
+	-- Add hook after Login (API) ( registered )

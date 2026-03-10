@@ -1,0 +1,66 @@
+.myDragClass {
+    background: #00fa1f !important;
+    transform: scale(1.05);
+}
+
+.myDragClass td {
+    background: #00fa1f !important;
+}
+
+.items-container td img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 1px solid;
+    padding: 2px
+}
+
+/* Set a fixed height and enable scrolling for the editor container */
+.editor-container {
+    height: 300px; /* Set your desired height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    margin-bottom: 15px; /* Add some spacing between editors */
+  }
+  
+
+  .map-container {
+    width: 100%;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+.map-container .map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
+.map-container .search-box {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.map-container .suggestions {
+    position: absolute;
+    width: calc(100% - 40px);
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+.map-container .suggestions div {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #000
+}
+.map-container .suggestions div:hover {
+    background-color: #f0f0f0;
+}

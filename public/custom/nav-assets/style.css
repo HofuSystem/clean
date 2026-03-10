@@ -1,0 +1,41 @@
+
+    .delete-nav-item {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      line-height: 30px;
+      cursor: pointer;
+      color: #b30d0d;
+      z-index: 5;
+    }
+
+    .edit-nav-item,
+    .edit-nav-item {
+      position: absolute;
+      right: 25px;
+      top: 0;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      line-height: 30px;
+      cursor: pointer;
+      color: #58a8ff;
+      z-index: 5;
+    }
+
+
+    .add-child-nav {
+      position: absolute;
+      right: 55px;
+      top: 0;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      line-height: 30px;
+      cursor: pointer;
+      color: #28a745;
+      z-index: 5;
+    }
