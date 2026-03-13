@@ -264,14 +264,26 @@ class CategoryDateTimesService
             $times          = $categoryDates->sortBy('from')->filter(function ($item) use ($date) {
                 return $item->date == $date;
             });
-            $dateTimes[]    = [
+            $datetime    = [
                 'day'   =>  strtolower(Carbon::parse($date)->format('l')),
                 'date'  =>  Carbon::parse($date)->format('Y-m-d'),
                 'times' =>  array_values(CategoryTimeResource::collection($times)->toArray(request())),
             ];
+            $times = $datetime['times'] ?? [];
+            $hasAvaliavle = false;
+            foreach ($times as $time) {
+                if($time['isAvailable']){
+                    $hasAvaliavle = true;
+                    break;
+                }
+            }
+            if($hasAvaliavle){
+                $dateTimes[] = $datetime;
+            }
         }
         return $dateTimes;
     }
+
     public function restore(int $id){
         $record = CategoryDateTime::onlyTrashed()->findOrFail($id);
         $record->restore();

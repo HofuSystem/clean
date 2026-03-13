@@ -137,11 +137,11 @@ class OrdersController extends Controller
             }
 
             $dateTimes      = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type),request('category_id'),$address);
-            $dateTimes = CategoryDateTimesService::getDateTimesFormatted('all', $dateTimes);
+            $dateTimes      = CategoryDateTimesService::getDateTimesFormatted('all', $dateTimes);
             $deliveryDates  = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type),request('category_id'),$address);
-            $deliveryDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $deliveryDates);
-            $receiverDates = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type),request('category_id'),$address);
-            $receiverDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $receiverDates);
+            $deliveryDates  = CategoryDateTimesService::getDateTimesFormatted('delivery', $deliveryDates);
+            $receiverDates  = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type),request('category_id'),$address);
+            $receiverDates  = CategoryDateTimesService::getDateTimesFormatted('receiver', $receiverDates);
             $data = [
                 'points'          => $address->user?->points_balance ?? 0,
                 'wallet'          => $address->user?->wallet ?? 0,
