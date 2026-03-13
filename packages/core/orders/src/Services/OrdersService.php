@@ -1055,7 +1055,7 @@ class OrdersService
             $payType = 'wallet';
         }
         $data['pay_type']            = $payType;
-        $data['hide_payment_option'] = true;
+        // $data['hide_payment_option'] = true;
         $order->update($data);
     }
     public function updateStatus($orderId, $data)
