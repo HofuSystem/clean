@@ -180,4 +180,19 @@ class DistrictsController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }
+
+    public function getByCity($city_id){
+        try {
+            $districts = District::where('city_id', $city_id)->get()->map(function($d){
+                return [
+                    'id' => $d->id,
+                    'name' => $d->name
+                ];
+            });
+            return $this->returnData(trans('data founded'), $districts);
+        } catch (\Throwable $e) {
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
+        }
+    }
 }

@@ -16,7 +16,7 @@ use Core\Users\Models\Address;
 class OrderRepresentative extends CoreModel {
     
 	protected $table             = 'order_representatives';
-	protected $fillable          = ['order_id', 'representative_id', 'type', 'date', 'time', 'to_time', 'lat', 'lng', 'location', 'has_problem', 'for_all_items', 'address_id','creator_id', 'updater_id'];
+	protected $fillable          = ['order_id', 'representative_id', 'type', 'date', 'time', 'to_time', 'lat', 'lng', 'location', 'has_problem', 'for_all_items', 'address_id','branch_id','creator_id', 'updater_id'];
     protected $guarded           = [];
     
 

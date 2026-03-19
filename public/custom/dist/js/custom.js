@@ -37,15 +37,7 @@ $('.btn-destroy-trans').click(function(e) {
     $('#delete-trans-form').submit();
 });
 
-$('[name=avatar]').change(function(e) {
-    e.preventDefault();
-    if(this.files[0]){
-    $(this).parent().find('img').attr('src',window.URL.createObjectURL(this.files[0]));
-    }else{
-    $(this).parent().find('img').attr('src','');
 
-    }
-});
 
 const origXHR = window.XMLHttpRequest;
 window.XMLHttpRequest = function() {

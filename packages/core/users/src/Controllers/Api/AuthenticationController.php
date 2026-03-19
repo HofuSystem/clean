@@ -10,7 +10,7 @@ use Core\Settings\Services\SettingsService;
 use Core\Settings\Traits\ApiResponse;
 use Core\Users\DataResources\SimpleUserRecourse;
 use Core\Users\DataResources\UserProfileResource;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use Core\Users\Models\Device;
 use Core\Users\Models\Point;
 use Core\Users\Models\User;

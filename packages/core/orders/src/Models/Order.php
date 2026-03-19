@@ -2,6 +2,7 @@
 
 namespace Core\Orders\Models;
 
+use Core\B2B\Helpers\B2BHelper;
 use Core\Orders\Helpers\OrderHelper;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Core\Users\Models\User;
@@ -26,7 +27,7 @@ class Order extends CoreModel
 {
 
     protected $table             = 'orders';
-    protected $fillable          = ['reference_id', 'type', 'status', 'client_id', 'operator_id', 'city_id', 'district_id', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'online_payment_method', 'coupon_id', 'coupon_data', 'total_coupon', 'order_price', 'delivery_price', 'total_price', 'total_cost', 'total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'cashback', 'wallet_amount_used', 'points_used','points_amount', 'points_amount_used', 'feedback_requested_at', 'creator_id', 'updater_id', 'hide_payment_option','original_products_total','cash_amount_used','card_amount_used','has_been_refunded'];
+    protected $fillable          = ['reference_id', 'type', 'status','b2b_profit', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'operator_id', 'city_id', 'district_id', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'online_payment_method', 'coupon_id', 'coupon_data', 'total_coupon', 'order_price', 'delivery_price', 'total_price', 'total_cost', 'total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'cashback', 'wallet_amount_used', 'points_used','points_amount', 'points_amount_used', 'feedback_requested_at', 'creator_id', 'updater_id', 'hide_payment_option','original_products_total','cash_amount_used','card_amount_used','has_been_refunded'];
     protected $guarded           = [];
 
 
@@ -239,9 +240,7 @@ class Order extends CoreModel
             });
         }
         if(request()->has("forCompany") and request("forCompany") == true){
-            $query->whereHas("client.roles",function($clientQuery){
-                $clientQuery->where("name","company");
-            });
+            $query->whereNotNull("company_id");
         }
         if (request()->has("filters.client_id") && !empty(request("filters.client_id"))) {
             return;
@@ -287,10 +286,11 @@ class Order extends CoreModel
             });
         }
     }
-    function scopeB2b($query){
+    function scopeB2b($query,$b2bType){
        
-        $order = request()->input('order.0.column');
-        $dir   = request()->input('order.0.dir');
+        $context    = B2BHelper::getCreationContext();
+        $companyId  = $context['company_id'];
+     
 
         // Searching
         if (!empty(request()->input('search.value'))) {
@@ -301,8 +301,21 @@ class Order extends CoreModel
                     ->orWhere('total_price', 'LIKE', "%{$search}%");
             });
         }
+
+        if(isset($b2bType) && $b2bType != 'both'){
+            $query->where('b2b_type', $b2bType);
+        }
+        if(isset($companyId)){
+            $query->where('company_id', $companyId);
+        }
+        $branchIds = B2BHelper::getB2BBranchIds('manage-orders');
+        $query->whereIn('orders.branch_id', $branchIds);
+
         // Ordering
-        $columns = [0 => 'id', 1 => 'or_receiver.date', 2 => 'id', 3 => 'total_price', 4 => 'status'];
+        $order      = request()->input('order.0.column');
+        $dir        = request()->input('order.0.dir');
+        if(isset($order) && isset($dir)){
+        $columns = [1 => 'total_price', 2 => 'or_delivery.date', 3 => 'or_receiver.date', 4 => 'reference_id'];
         if (isset($columns[$order])) {
             $query->orderBy($columns[$order], $dir);
         } else {
@@ -310,9 +323,13 @@ class Order extends CoreModel
                 ->orderByDesc('or_receiver.date')
                 ->orderByDesc('orders.id');
         }
-        
+    }
 
     }
+    function scopeValidOrders($query){
+        $query->whereNotIn('status', ['pending_payment','cancel_payment','cancelled']);
+    }
+        
     //end Scopes
 
     //start relations
@@ -324,6 +341,16 @@ class Order extends CoreModel
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id', 'id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(\Core\B2B\Models\Company::class, 'company_id', 'id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(\Core\B2B\Models\CompanyBranch::class, 'branch_id', 'id');
     }
 
     public function client()

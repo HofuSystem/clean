@@ -11,7 +11,8 @@ class ProductCardResource extends JsonResource
 {
   
     public static $cityId = null;
-    public static $user = null;
+    public static $company = null;
+    public static $b2bType = null;
     /**
      * Transform the resource into an array.
      *
@@ -20,9 +21,9 @@ class ProductCardResource extends JsonResource
      */
     public function toArray($request)
     {
-        ProductsService::setCurrentContract(self::$user);
+        ProductsService::setCurrentContract(self::$company);
 
-        $data = ProductsService::getProductData(self::$user,$this->resource);
+        $data = ProductsService::getProductData(self::$company,self::$b2bType,self::$cityId,$this->resource);
         $data = [
             'id'                => $this->id,
             'sku'               => $this->sku,
@@ -40,7 +41,10 @@ class ProductCardResource extends JsonResource
         if(ProductsService::getCurrentContract()){
             $contractPrice = $this->contractsPrices->where('product_id',$this->id)->where('contract_id',ProductsService::getCurrentContract()->id)->first();
             $contractCustomerPrice = $this->contractCustomerPrices->where('product_id',$this->id)->where('contract_id',ProductsService::getCurrentContract()->id)->first();
-            if($contractPrice || $contractCustomerPrice){
+            if($contractPrice and self::$b2bType == 'company'){
+                $data['in_contract'] = 1;
+            }
+            if($contractCustomerPrice and self::$b2bType == 'client'){
                 $data['in_contract'] = 1;
             }
         }

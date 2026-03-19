@@ -19,7 +19,7 @@ class OrderSchedulesService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['client_id','type','receiver_day','receiver_date','receiver_time','receiver_to_time','delivery_day','delivery_date','delivery_time','delivery_to_time','receiver_address_id','delivery_address_id','note','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['client_id','branch_id','company_id','type','receiver_day','receiver_date','receiver_time','receiver_to_time','delivery_day','delivery_date','delivery_time','delivery_to_time','receiver_address_id','delivery_address_id','note','translations']),ARRAY_FILTER_USE_KEY);
         $record     = OrderSchedule::updateOrCreate(['id' => $id],$recordData);
         
         
@@ -44,8 +44,8 @@ class OrderSchedulesService
 
         $recordsTotal       = OrderSchedule::underMyControl()->count();
         $recordsFiltered    = OrderSchedule::underMyControl()->search()->count();
-        $records            = OrderSchedule::underMyControl()->select(['id','client_id','type','receiver_day','receiver_date','receiver_time','receiver_to_time','delivery_day','delivery_date','delivery_time','delivery_to_time'])
-        ->with(['client'])
+        $records            = OrderSchedule::underMyControl()->select(['id','client_id','branch_id','company_id','type','receiver_day','receiver_date','receiver_time','receiver_to_time','delivery_day','delivery_date','delivery_time','delivery_to_time'])
+        ->with(['client','branch','company'])
         ->search()->dataTable()->get();
         
         return [

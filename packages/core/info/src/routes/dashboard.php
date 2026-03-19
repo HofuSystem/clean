@@ -78,6 +78,7 @@ Route::group(
                     Route::delete('{id}/delete', [DistrictsController::class,'delete'])->name('delete');
                     Route::post('{id}/comment', [DistrictsController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [DistrictsController::class,'restore'])->name('restore');
+                    Route::get('city/{city_id}', [DistrictsController::class,'getByCity'])->name('getByCity');
                 });
 
                 Route::group(['prefix' => 'nationalities', 'as' => 'nationalities.' ], function () {
