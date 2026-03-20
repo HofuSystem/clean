@@ -53,9 +53,9 @@
     }
     $isGuest = $order->b2b_type === 'client';
     if($isGuest){
-        $displayName = $order->client->fullname ?? '---';
+        $displayName = $order?->client?->fullname ?? '---';
     }else{
-        $displayName = $order->company->fullname ?? '---';
+        $displayName = $order?->company?->fullname ?? '---';
     }
     if ($isGuest && $order->note && preg_match('/Room: (\w+)/', $order->note, $matches)) {
         $displayName .= ' (' . $matches[1] . ')';
@@ -108,7 +108,7 @@
                             <span class="text-[10px] md:text-xs font-black tracking-tight leading-tight block {{ $isStepActive ? 'text-[#1c75bc]' : 'text-gray-400' }}">
                                 {{ $step['status'] }}
                             </span>
-                            @if($hasTime)
+                            @if($hasTime and isset($step['time']) and is_string($step['time']))
                                 <span class="text-[8px] font-bold text-gray-400 block mt-1">{{ \Carbon\Carbon::parse($step['time'])->format('H:i') }}</span>
                             @elseif($isStepActive && $index < $currentStatusIndex)
                                  <span class="text-[8px] font-bold text-green-400 block mt-1">✓</span>
@@ -145,8 +145,8 @@
                             <span class="text-gray-700 font-black text-sm">{{ trans('client.pickup_date') }}</span>
                         </div>
                         <div class="dir-dependent-text text-left">
-                            <div class="font-black text-gray-900">{{ $receiver->date ?? '---' }}</div>
-                            <div class="text-xs text-gray-500 font-bold mt-0.5" dir="ltr">{{ $receiver->time_12_hours_format ?? '' }} - {{ $receiver->to_time_12_hours_format ?? '' }}</div>
+                            <div class="font-black text-gray-900">{{ $receiver?->date ?? '---' }}</div>
+                            <div class="text-xs text-gray-500 font-bold mt-0.5" dir="ltr">{{ $receiver?->time_12_hours_format ?? '' }} - {{ $receiver?->to_time_12_hours_format ?? '' }}</div>
                         </div>
                     </div>
                     <div class="p-4 rounded-2xl bg-green-50/50 border border-green-100/50 flex justify-between items-center dir-dependent-flex print:border-gray-200 print:bg-white">
@@ -155,8 +155,8 @@
                             <span class="text-gray-700 font-black text-sm">{{ trans('client.delivery_date') }}</span>
                         </div>
                         <div class="dir-dependent-text text-left">
-                            <div class="font-black text-gray-900">{{ $delivery->date ?? '---' }}</div>
-                            <div class="text-xs text-gray-500 font-bold mt-0.5" dir="ltr">{{ $delivery->time_12_hours_format ?? '' }} - {{ $delivery->to_time_12_hours_format ?? '' }}</div>
+                            <div class="font-black text-gray-900">{{ $delivery?->date ?? '---' }}</div>
+                            <div class="text-xs text-gray-500 font-bold mt-0.5" dir="ltr">{{ $delivery?->time_12_hours_format ?? '' }} - {{ $delivery?->to_time_12_hours_format ?? '' }}</div>
                         </div>
                     </div>
                 </div>
