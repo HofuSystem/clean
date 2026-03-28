@@ -9,6 +9,36 @@
     RewriteCond %{HTTP_HOST} ^www\.cleanstation\.app [NC]
     RewriteRule ^(.*)$ https://cleanstation.app/$1 [L,R=301]
 
+    # ============================================================
+    # 301 Redirects – Old URL mapping (preserve SEO equity)
+    # ============================================================
+
+    # Old hash / SPA-style routes → new multi-page URLs (AR)
+    RewriteRule ^#!/$ /ar/ [L,R=301]
+    RewriteRule ^#!/services/?$ /ar/services [L,R=301]
+    RewriteRule ^#!/business/?$ /ar/b2b [L,R=301]
+    RewriteRule ^#!/faq/?$ /ar/faq [L,R=301]
+    RewriteRule ^#!/contact/?$ /ar/contact-us [L,R=301]
+    RewriteRule ^#!/why-us/?$ /ar/why-us [L,R=301]
+
+    # Old flat-path routes (no locale prefix) → AR locale
+    RewriteRule ^services/?$ /ar/services [L,R=301]
+    RewriteRule ^business/?$ /ar/b2b [L,R=301]
+    RewriteRule ^faq/?$ /ar/faq [L,R=301]
+    RewriteRule ^contact/?$ /ar/contact-us [L,R=301]
+    RewriteRule ^contact-us/?$ /ar/contact-us [L,R=301]
+    RewriteRule ^why-us/?$ /ar/why-us [L,R=301]
+    RewriteRule ^app-features/?$ /ar/app-features [L,R=301]
+    RewriteRule ^testimonials/?$ /ar/testimonials [L,R=301]
+    RewriteRule ^blogs/?$ /ar/blogs [L,R=301]
+    RewriteRule ^blog/?$ /ar/blogs [L,R=301]
+
+    # Old terms / privacy paths
+    RewriteRule ^terms-conditions/?$ /ar/terms [L,R=301]
+    RewriteRule ^privacy-policy/?$ /ar/privacy [L,R=301]
+
+    # ============================================================
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

@@ -31,8 +31,26 @@
                 </p>
 
                 <div class="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    @if(setting('app_store_app'))<a href="{{ setting('app_store_app') }}" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_hero' });" class="w-full xs:w-auto"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform"></a>@endif
-                    @if(setting('g_play_app'))<a href="{{ setting('g_play_app') }}" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_hero' });" class="w-full xs:w-auto"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform"></a>@endif
+                    @if(setting('app_store_app'))
+                    <a href="{{ setting('app_store_app') }}" target="_blank" rel="noopener"
+                       id="hero-appstore-btn"
+                       onclick="window.cleanTrack && window.cleanTrack.appDownload('ios', 'hero')"
+                       class="w-full xs:w-auto">
+                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
+                             alt="Download Clean Station on the App Store"
+                             class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
+                    </a>
+                    @endif
+                    @if(setting('g_play_app'))
+                    <a href="{{ setting('g_play_app') }}" target="_blank" rel="noopener"
+                       id="hero-googleplay-btn"
+                       onclick="window.cleanTrack && window.cleanTrack.appDownload('android', 'hero')"
+                       class="w-full xs:w-auto">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                             alt="Download Clean Station on Google Play"
+                             class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
+                    </a>
+                    @endif
                 </div>
 
                 <div class="flex items-center justify-center lg:justify-start gap-4 pt-2">

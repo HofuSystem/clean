@@ -7,3 +7,27 @@
         @endforeach
     </div>
 @endsection
+
+@push('scripts')
+@php
+    $faqsForSchema = \Core\Pages\Models\Faq::all();
+@endphp
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    @foreach($faqsForSchema as $index => $faq)
+    {
+      "@type": "Question",
+      "name": {{ json_encode($faq->translate('ar')->question ?? $faq->question) }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ json_encode($faq->translate('ar')->answer ?? $faq->answer) }}
+      }
+    }{{ !$loop->last ? ',' : '' }}
+    @endforeach
+  ]
+}
+</script>
+@endpush

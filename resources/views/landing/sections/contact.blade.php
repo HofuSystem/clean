@@ -10,12 +10,16 @@
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><i
                                 class="fa-brands fa-whatsapp"></i></div>
-                        <div class="text-xl font-bold" dir="ltr"><a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank">{{ setting('whatsapp') }}</a></div>
+                        <div class="text-xl font-bold" dir="ltr"><a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank"
+                            id="contact-whatsapp-link"
+                            onclick="window.cleanTrack && window.cleanTrack.contact('whatsapp')">{{ setting('whatsapp') }}</a></div>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><i
                                 class="fa-solid fa-envelope"></i></div>
-                        <div class="text-xl font-bold"><a href="mailto:{{ setting('email') }}" target="_blank">{{ setting('email') }}</a></div>
+                        <div class="text-xl font-bold"><a href="mailto:{{ setting('email') }}" target="_blank"
+                            id="contact-email-link"
+                            onclick="window.cleanTrack && window.cleanTrack.contact('email')">{{ setting('email') }}</a></div>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><i
@@ -43,7 +47,8 @@
                         required>
                     <textarea name="notes" rows="4" placeholder="{{ trans('notes') }}"
                         class="w-full p-4 rounded-xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
-                    <button type="submit" class="w-full bg-brand-600 text-white py-4 rounded-xl font-bold hover:bg-brand-700 transition shadow-lg">{{ trans('send') }}</button>
+                    <button type="submit" id="contact-form-submit"
+                        class="w-full bg-brand-600 text-white py-4 rounded-xl font-bold hover:bg-brand-700 transition shadow-lg">{{ trans('send') }}</button>
                 </form>
             </div>
         </div>

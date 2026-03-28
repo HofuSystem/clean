@@ -3,6 +3,15 @@
     class="scroll-smooth">
 
 <head>
+    {{-- ============================================================ --}}
+    {{-- Google Tag Manager - MUST be first script in <head>         --}}
+    {{-- ============================================================ --}}
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WQTQ9CV');</script>
+    {{-- End Google Tag Manager --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -11,6 +20,33 @@
     <title>{{ $metaTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <link rel="canonical" href="{{ $canonicalUrl ?? rtrim(config('app.url'), '/') . request()->getRequestUri() }}">
+
+    {{-- ============================================================ --}}
+    {{-- Hreflang – bilingual site (AR default, EN alternate)        --}}
+    {{-- ============================================================ --}}
+    <link rel="alternate" hreflang="ar" href="https://cleanstation.app/ar{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
+    <link rel="alternate" hreflang="en" href="https://cleanstation.app/en{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
+    <link rel="alternate" hreflang="x-default" href="https://cleanstation.app/ar{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
+
+    {{-- ============================================================ --}}
+    {{-- Open Graph & Twitter Card (Social Sharing Meta)             --}}
+    {{-- ============================================================ --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ rtrim(config('app.url'), '/') . request()->getRequestUri() }}">
+    <meta property="og:site_name" content="Clean Station">
+    <meta property="og:locale" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
+    <meta property="og:locale:alternate" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'en_US' : 'ar_SA' }}">
+    <meta property="og:title" content="{{ $metaTitle ?? 'Clean Station | أفضل تطبيق غسيل ملابس في السعودية' }}">
+    <meta property="og:description" content="{{ $metaDescription ?? 'اطلب غسيل ملابسك وتتبع المندوب لحظياً. غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
+    <meta property="og:image" content="https://cleanstation.app/assets/images/social-share-cover.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@CleanStationSA">
+    <meta name="twitter:title" content="{{ $metaTitle ?? 'Clean Station | تطبيق غسيل الملابس رقم 1' }}">
+    <meta name="twitter:description" content="{{ $metaDescription ?? 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
+    <meta name="twitter:image" content="https://cleanstation.app/assets/images/social-share-cover.jpg">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap"
@@ -274,38 +310,64 @@
     <!--End Google tag (gtag.js) -->
 
 
+    {{-- ============================================================ --}}
+    {{-- Schema Markup / JSON-LD – Rich Snippets                     --}}
+    {{-- ============================================================ --}}
+
+    {{-- 1. DryCleaningOrLaundry – Local Business (Home page) --}}
     <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Clean Station",
-          "url": "https://cleanstation.app",
-          "logo": "https://cleanstation.app/images/logo.png",
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+966-55-909-8685",
-            "contactType": "Customer Service"
-          }
-        }
+    {
+      "@context": "https://schema.org",
+      "@type": "DryCleaningOrLaundry",
+      "name": "Clean Station - كلين ستيشن",
+      "image": "https://cleanstation.app/assets/images/social-share-cover.jpg",
+      "@id": "https://cleanstation.app/",
+      "url": "https://cleanstation.app/",
+      "telephone": "+966559098685",
+      "email": "support@cleanstation.app",
+      "logo": "https://cleanstation.app/images/logo.png",
+      "sameAs": [
+        "https://www.instagram.com/clean.stationn",
+        "https://twitter.com/CleanStationSA",
+        "https://www.snapchat.com/add/clean.stationn"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Riyadh",
+        "addressRegion": "Riyadh Province",
+        "addressCountry": "SA"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
+        ],
+        "opens": "00:00",
+        "closes": "23:59"
+      },
+      "priceRange": "$$"
+    }
     </script>
+
+    {{-- 2. SoftwareApplication – Mobile App (Home page) --}}
     <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Clean Station",
-          "applicationCategory": "LifestyleApplication",
-          "operatingSystem": "iOS, Android",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "SAR"
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "15000"
-          }
-        }
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Clean Station App",
+      "operatingSystem": "iOS, Android",
+      "applicationCategory": "LifestyleApplication",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "12000"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "SAR"
+      }
+    }
     </script>
 
     <script>
@@ -330,8 +392,15 @@
 <body
     class="bg-gray-50 text-gray-900 antialiased selection:bg-brand-200 selection:text-brand-900 flex flex-col min-h-screen">
 
+    {{-- Google Tag Manager (noscript) - immediately after <body> --}}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WQTQ9CV"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {{-- End Google Tag Manager (noscript) --}}
+
     @if (setting('whatsapp'))
-        <a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" class="floating-wa"><i
+        <a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" class="floating-wa"
+           id="floating-whatsapp-btn"
+           onclick="window.cleanTrack && window.cleanTrack.contact('whatsapp')"><i
                 class="fa-brands fa-whatsapp text-3xl"></i></a>
     @endif
 
@@ -353,6 +422,63 @@
             once: true,
             mirror: false
         });
+    </script>
+
+    {{-- ============================================================ --}}
+    {{-- DataLayer Event Helpers – centralised tracking              --}}
+    {{-- ============================================================ --}}
+    <script>
+    window.dataLayer = window.dataLayer || [];
+
+    window.cleanTrack = {
+        /**
+         * Fire an app_download_click event.
+         * @param {string} platform   - 'ios' | 'android'
+         * @param {string} location   - e.g. 'hero', 'navbar', 'footer'
+         */
+        appDownload: function(platform, location) {
+            dataLayer.push({
+                'event': 'app_download_click',
+                'platform': platform,
+                'button_location': location || 'unknown'
+            });
+            // Mirror to TikTok Pixel
+            if (typeof ttq !== 'undefined') {
+                ttq.track('ClickButton', { description: 'app_download_' + platform });
+            }
+            // Mirror to Snap Pixel
+            if (typeof snaptr !== 'undefined') {
+                snaptr('track', 'APP_INSTALL');
+            }
+        },
+
+        /**
+         * Fire a contact_click event.
+         * @param {string} method - 'whatsapp' | 'phone' | 'email'
+         */
+        contact: function(method) {
+            dataLayer.push({
+                'event': 'contact_click',
+                'contact_method': method || 'unknown'
+            });
+            if (typeof ttq !== 'undefined') {
+                ttq.track('Contact', { description: 'contact_' + method });
+            }
+        },
+
+        /**
+         * Push a virtual pageview (for SPA-style navigation if needed).
+         * @param {string} path  - e.g. '/faq'
+         * @param {string} title - e.g. 'FAQ'
+         */
+        virtualPageview: function(path, title) {
+            dataLayer.push({
+                'event': 'virtual_pageview',
+                'page_path': path,
+                'page_title': title
+            });
+        }
+    };
     </script>
     
     {{-- SweetAlert flash messages: success, error, or validation errors --}}

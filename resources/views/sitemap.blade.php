@@ -48,13 +48,13 @@
     <!-- Blogs -->
     @foreach ($blogs as $blog)
         <url>
-            <loc>{{ url('en/blog/' . $blog->slug) }}</loc>
+            <loc>{{ url('en/blogs/' . $blog->slug) }}</loc>
             <lastmod>{{ $blog->updated_at->toISOString() }}</lastmod>
             <changefreq>monthly</changefreq>
             <priority>0.6</priority>
         </url>
         <url>
-            <loc>{{ url('ar/blog/' . $blog->slug) }}</loc>
+            <loc>{{ url('ar/blogs/' . $blog->slug) }}</loc>
             <lastmod>{{ $blog->updated_at->toISOString() }}</lastmod>
             <changefreq>monthly</changefreq>
             <priority>0.6</priority>
