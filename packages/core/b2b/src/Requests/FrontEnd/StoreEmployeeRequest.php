@@ -24,9 +24,11 @@ class StoreEmployeeRequest extends FormRequest
         return [
             'phone' => 'required|string',
             'fullname' => 'required|string|max:255',
+            'password' => 'nullable|string|min:6',
             'permission_ids' => 'required|array',
             'permission_ids.*' => 'exists:company_permissions,id',
-            'branch_id' => 'nullable|exists:company_branches,id',
+            'branch_ids' => 'nullable|array',
+            'branch_ids.*' => 'exists:company_branches,id',
         ];
     }
 
@@ -43,7 +45,7 @@ class StoreEmployeeRequest extends FormRequest
             'permission_ids.required' => trans('validation.required', ['attribute' => trans('client.permissions')]),
             'permission_ids.array' => trans('validation.array', ['attribute' => trans('client.permissions')]),
             'permission_ids.*.exists' => trans('validation.exists', ['attribute' => trans('client.permission')]),
-            'branch_id.exists' => trans('validation.exists', ['attribute' => trans('client.branch')]),
+            'branch_ids.exists' => trans('validation.exists', ['attribute' => trans('client.branch')]),
         ];
     }
 }

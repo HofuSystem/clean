@@ -66,8 +66,7 @@ class EmployeeController extends Controller
                     'phone' => $request->phone,
                     'fullname' => $request->fullname,
                     'is_active' => true,
-                    // Use phone as initial password if none provided, or leave null
-                    'password' => $request->phone,
+                    'password' => $request->password ?: $request->phone,
                 ]);
             }
 
@@ -80,13 +79,16 @@ class EmployeeController extends Controller
                 return back()->withErrors(['error' => trans('client.employee_already_exists')])->withInput();
             }
 
-            foreach ($request->permission_ids as $permissionId) {
-                CompanyEmployee::create([
-                    'user_id' => $user->id,
-                    'company_id' => $companyId,
-                    'permission_id' => $permissionId,
-                    'branch_id' => $request->branch_id,
-                ]);
+            $branchIds = $request->branch_ids ?? [null];
+            foreach ($branchIds as $branchId) {
+                foreach ($request->permission_ids as $permissionId) {
+                    CompanyEmployee::create([
+                        'user_id' => $user->id,
+                        'company_id' => $companyId,
+                        'permission_id' => $permissionId,
+                        'branch_id' => $branchId,
+                    ]);
+                }
             }
 
             return redirect()->route('client.employees.index')->with('success', trans('client.employee_added_success'));
@@ -120,13 +122,16 @@ class EmployeeController extends Controller
                 ->where('user_id', $id)
                 ->delete();
 
-            foreach ($request->permission_ids as $permissionId) {
-                CompanyEmployee::create([
-                    'user_id' => $id,
-                    'company_id' => $companyId,
-                    'permission_id' => $permissionId,
-                    'branch_id' => $request->branch_id,
-                ]);
+            $branchIds = $request->branch_ids ?? [null];
+            foreach ($branchIds as $branchId) {
+                foreach ($request->permission_ids as $permissionId) {
+                    CompanyEmployee::create([
+                        'user_id' => $id,
+                        'company_id' => $companyId,
+                        'permission_id' => $permissionId,
+                        'branch_id' => $branchId,
+                    ]);
+                }
             }
 
             return redirect()->route('client.employees.index')->with('success', trans('client.employee_updated_success'));

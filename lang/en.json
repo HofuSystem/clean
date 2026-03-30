@@ -1855,5 +1855,8 @@
     "client.washing_and_ironing": "Washing and Ironing",
     "client.change_password": "Change Password",
     "client.employee_password_updated_success": "Employee password updated successfully!",
-    "client.employee_password_update_failed": "Failed to update employee password. Please try again."
+    "client.employee_password_update_failed": "Failed to update employee password. Please try again.",
+    "At least one title is required": "At least one title is required",
+    "Please enter a valid number of QR codes": "Please enter a valid number of QR codes",
+    "Please enter at least one title": "Please enter at least one title"
 }

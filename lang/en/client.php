@@ -317,12 +317,14 @@ return [
     'password_confirmation' => 'Confirm Password',
     'image' => 'Image',
     'business_field' => 'Business Field',
+    'assigned_branches' => 'Assigned Branches',
     'other_business_field' => 'Other Business Field',
     'profile_updated_success' => 'Profile updated successfully',
     'profile_update_failed' => 'Failed to update profile',
 
     // Common UI
     'confirm_delete' => 'Are you sure you want to delete?',
+    'yes_delete' => 'Yes, delete',
     'save' => 'Save',
     'cancel' => 'Cancel',
     'loading' => 'Loading...',

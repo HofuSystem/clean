@@ -15,7 +15,9 @@
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('client/css/app.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
     <script src="{{ asset('client/js/main.js') }}" defer></script>
     @stack('styles')
 </head>

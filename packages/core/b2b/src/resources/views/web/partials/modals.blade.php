@@ -210,10 +210,16 @@
                             required placeholder="الاسم الكامل" />
                     </div>
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-700 block mb-1">رقم الجوال <span class="text-red-500">*</span></label>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">{{ trans('client.phone') }} <span class="text-red-500">*</span></label>
                         <input name="phone" id="user-phone-input" type="tel"
                             class="w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all text-left font-bold"
                             dir="ltr" required placeholder="+966 5X XXX XXXX" />
+                    </div>
+                    <div id="password-field-container" class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700 block mb-1">{{ trans('client.password') }} <span class="text-red-500">*</span></label>
+                        <input name="password" id="user-password-input" type="password"
+                            class="w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800"
+                            placeholder="*************" />
                     </div>
                     <div class="space-y-2 md:col-span-2">
                         <label class="text-sm font-bold text-gray-700 block mb-2">صلاحيات النظام (Permissions) <span class="text-red-500">*</span></label>
@@ -233,14 +239,16 @@
                         </div>
                     </div>
                     <div class="space-y-2 md:col-span-2">
-                        <label class="text-sm font-bold text-gray-700 block mb-1">الفرع المسند إليه</label>
-                        <select name="branch_id" id="user-branch-id"
-                            class="select-premium w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800">
-                            <option value="">كافة الفروع</option>
+                        <label class="text-sm font-bold text-gray-700 block mb-2">{{ trans('client.assigned_branches') }}</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                             @foreach($b2bBranches as $branch)
-                                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                <label class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl cursor-pointer hover:bg-blue-50/50 transition-colors shadow-sm">
+                                    <input type="checkbox" name="branch_ids[]" value="{{ $branch->id }}" 
+                                        class="user-branch-checkbox w-4 h-4 text-[#1c75bc] rounded border-gray-300 focus:ring-[#1c75bc]">
+                                    <span class="text-xs font-black text-gray-800">{{ $branch->name }}</span>
+                                </label>
                             @endforeach
-                        </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -412,7 +420,7 @@
                 @if($b2bRole === 'owner' || $b2bRole === 'manager_all_branches')
                     <div class="space-y-2 md:col-span-2">
                         <label class="text-sm font-bold text-gray-700 block mb-1">{{ trans('client.branch') }} *</label>
-                        <select name="branch_id" class="select-premium w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800" required>
+                        <select name="branch_id" id="schedule-weekly-branch-id" class="select-premium w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800" required>
                             <option value="">{{ trans('client.select_branch') }}</option>
                             @foreach($b2bBranches as $branch)
                                 <option value="{{ $branch->id }}" >{{ $branch->name }}</option>
@@ -496,7 +504,7 @@
                 @if($b2bRole === 'owner' || $b2bRole === 'manager_all_branches')
                     <div class="space-y-2 md:col-span-2">
                         <label class="text-sm font-bold text-gray-700 block mb-1">{{ trans('client.branch') }} *</label>
-                        <select name="branch_id" class="select-premium w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800" required>
+                        <select name="branch_id" id="schedule-date-branch-id" class="select-premium w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-bold text-gray-800" required>
                             <option value="">{{ trans('client.select_branch') }}</option>
                             @foreach($b2bBranches as $branch)
                                 <option value="{{ $branch->id }}" >{{ $branch->name }}</option>

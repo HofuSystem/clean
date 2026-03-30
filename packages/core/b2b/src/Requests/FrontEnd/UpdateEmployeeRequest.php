@@ -24,7 +24,8 @@ class UpdateEmployeeRequest extends FormRequest
         return [
             'permission_ids' => 'required|array',
             'permission_ids.*' => 'exists:company_permissions,id',
-            'branch_id' => 'nullable|exists:company_branches,id',
+            'branch_ids' => 'nullable|array',
+            'branch_ids.*' => 'exists:company_branches,id',
         ];
     }
 
@@ -39,7 +40,7 @@ class UpdateEmployeeRequest extends FormRequest
             'permission_ids.required' => trans('validation.required', ['attribute' => trans('client.permissions')]),
             'permission_ids.array' => trans('validation.array', ['attribute' => trans('client.permissions')]),
             'permission_ids.*.exists' => trans('validation.exists', ['attribute' => trans('client.permission')]),
-            'branch_id.exists' => trans('validation.exists', ['attribute' => trans('client.branch')]),
+            'branch_ids.exists' => trans('validation.exists', ['attribute' => trans('client.branch')]),
         ];
     }
 }

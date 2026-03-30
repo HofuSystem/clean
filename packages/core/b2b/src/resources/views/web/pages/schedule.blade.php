@@ -168,39 +168,50 @@ $(document).ready(function() {
         });
     });
 
-    // Handle AJAX Deletions
     $('.delete-schedule-form').on('submit', function(e) {
         e.preventDefault();
-        if (!confirm('{{ trans('client.confirm_delete') }}')) return;
-        
         const $form = $(this);
         const $btn = $form.find('button[type="submit"]');
         const $row = $form.closest('tr');
-        
-        $btn.prop('disabled', true).addClass('opacity-50');
-        
-        $.ajax({
-            url: $form.attr('action'),
-            method: 'POST',
-            data: $form.serialize(),
-            success: function(response) {
-                if (response.success) {
-                    showToast(response.message, 'success');
-                    $row.fadeOut(300, function() {
-                        $(this).remove();
-                        if ($('#schedule-table tr').length === 0) {
-                            window.location.reload();
+
+        Swal.fire({
+            text: '{{ trans('client.confirm_delete') }}',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "{{ trans('client.yes_delete') }}",
+            cancelButtonText: "{{ trans('client.cancel') }}",
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-light"
+            }
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $btn.prop('disabled', true).addClass('opacity-50');
+                
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'POST',
+                    data: $form.serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            showToast(response.message, 'success');
+                            $row.fadeOut(300, function() {
+                                $(this).remove();
+                                if ($('#schedule-table tr').length === 0) {
+                                    window.location.reload();
+                                }
+                            });
                         }
-                    });
-                }
-            },
-            error: function(xhr) {
-                $btn.prop('disabled', false).removeClass('opacity-50');
-                let msg = '{{ trans('client.schedule_deletion_failed') }}';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
-                }
-                showToast(msg, 'error');
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).removeClass('opacity-50');
+                        let msg = '{{ trans('client.schedule_deletion_failed') }}';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        showToast(msg, 'error');
+                    }
+                });
             }
         });
     });

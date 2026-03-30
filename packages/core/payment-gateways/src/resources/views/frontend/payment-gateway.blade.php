@@ -15,44 +15,44 @@
 
     <!-- MyFatoorah Payment SDK -->
     @if (isset($sessionId) && $sessionId)
-        @php
-            $baseUrl = config('services.myfatoorah.base_url');
-            $isTest = strpos($baseUrl, 'demo') !== false || strpos($baseUrl, 'test') !== false;
-            $countryCodeLower = strtolower($countryCode ?? 'SAU');
+    @php
+    $baseUrl = config('services.myfatoorah.base_url');
+    $isTest = strpos($baseUrl, 'demo') !== false || strpos($baseUrl, 'test') !== false;
+    $countryCodeLower = strtolower($countryCode ?? 'SAU');
 
-            // SDK URL based on environment and country
-            // Test Environment
-            if ($isTest) {
-                $sdkJsUrl = 'https://demo.myfatoorah.com/payment/v1/session.js';
-            } else {
-                // Live Environment - based on country
-                switch ($countryCodeLower) {
-                    case 'kwt': // Kuwait
-                    case 'bhr': // Bahrain
-                    case 'jor': // Jordan
-                    case 'omn': // Oman
-                        $sdkJsUrl = 'https://portal.myfatoorah.com/payment/v1/session.js';
-                        break;
-                    case 'are': // UAE
-                        $sdkJsUrl = 'https://ae.myfatoorah.com/payment/v1/session.js';
-                        break;
-                    case 'sau': // Saudi Arabia
-                        $sdkJsUrl = 'https://sa.myfatoorah.com/payment/v1/session.js';
-                        break;
-                    case 'qat': // Qatar
-                        $sdkJsUrl = 'https://qa.myfatoorah.com/payment/v1/session.js';
-                        break;
-                    case 'egy': // Egypt
-                        $sdkJsUrl = 'https://eg.myfatoorah.com/payment/v1/session.js';
-                        break;
-                    default:
-                        // Default to Saudi Arabia
-                        $sdkJsUrl = 'https://sa.myfatoorah.com/payment/v1/session.js';
-                        break;
-                }
-            }
-        @endphp
-        <script src="{{ $sdkJsUrl }}"></script>
+    // SDK URL based on environment and country
+    // Test Environment
+    if ($isTest) {
+    $sdkJsUrl = 'https://demo.myfatoorah.com/payment/v1/session.js';
+    } else {
+    // Live Environment - based on country
+    switch ($countryCodeLower) {
+    case 'kwt': // Kuwait
+    case 'bhr': // Bahrain
+    case 'jor': // Jordan
+    case 'omn': // Oman
+    $sdkJsUrl = 'https://portal.myfatoorah.com/payment/v1/session.js';
+    break;
+    case 'are': // UAE
+    $sdkJsUrl = 'https://ae.myfatoorah.com/payment/v1/session.js';
+    break;
+    case 'sau': // Saudi Arabia
+    $sdkJsUrl = 'https://sa.myfatoorah.com/payment/v1/session.js';
+    break;
+    case 'qat': // Qatar
+    $sdkJsUrl = 'https://qa.myfatoorah.com/payment/v1/session.js';
+    break;
+    case 'egy': // Egypt
+    $sdkJsUrl = 'https://eg.myfatoorah.com/payment/v1/session.js';
+    break;
+    default:
+    // Default to Saudi Arabia
+    $sdkJsUrl = 'https://sa.myfatoorah.com/payment/v1/session.js';
+    break;
+    }
+    }
+    @endphp
+    <script src="{{ $sdkJsUrl }}"></script>
     @endif
 
     <style>
@@ -318,75 +318,75 @@
     <div class="payment-container">
         <div class="payment-body">
             @if (isset($transaction) && $transaction)
-                <div class="payment-info">
-                    @if (isset($transaction->request_data['order_id']))
-                        <div class="payment-info-row">
-                            <span class="payment-info-label">{{ __('Order ID') }}</span>
-                            <span class="payment-info-value">#{{ $transaction->request_data['order_id'] }}</span>
-                        </div>
-                    @endif
-                    <div class="payment-info-row">
-                        <span class="payment-info-label">{{ __('Amount') }}</span>
-                        <span class="payment-info-value amount-highlight">{{ number_format($transaction->amount, 2) }}
-                            {{ __('SAR') }}</span>
-                    </div>
+            <div class="payment-info">
+                @if (isset($transaction->request_data['order_id']))
+                <div class="payment-info-row">
+                    <span class="payment-info-label">{{ __('Order ID') }}</span>
+                    <span class="payment-info-value">#{{ $transaction->request_data['order_id'] }}</span>
                 </div>
+                @endif
+                <div class="payment-info-row">
+                    <span class="payment-info-label">{{ __('Amount') }}</span>
+                    <span class="payment-info-value amount-highlight">{{ number_format($transaction->amount, 2) }}
+                        {{ __('SAR') }}</span>
+                </div>
+            </div>
             @endif
 
             @if (isset($status) && $status)
-                <div class="status-message {{ $status }}">
-                    @if ($status == 'success')
-                        <span class="status-icon">✓</span>
-                        <div>
-                            <strong>{{ __('Payment Successful!') }}</strong>
-                            <p>{{ __('Your payment has been processed successfully.') }}</p>
-                        </div>
-                    @elseif($status == 'cancel')
-                        <span class="status-icon">⚠</span>
-                        <div>
-                            <strong>{{ __('Payment Cancelled') }}</strong>
-                            <p>{{ __('The payment was cancelled.') }}</p>
-                        </div>
-                    @elseif($status == 'failed')
-                        <span class="status-icon">✗</span>
-                        <div>
-                            <strong>{{ __('Payment Failed') }}</strong>
-                            <p>{{ $message ?? __('An error occurred while processing your payment.') }}</p>
-                        </div>
-                    @endif
+            <div class="status-message {{ $status }}">
+                @if ($status == 'success')
+                <span class="status-icon">✓</span>
+                <div>
+                    <strong>{{ __('Payment Successful!') }}</strong>
+                    <p>{{ __('Your payment has been processed successfully.') }}</p>
                 </div>
-            @else
-                @if (isset($configError) && $configError)
-                    <div class="no-methods">
-                        <div class="no-methods-icon">⚙️</div>
-                        <p><strong>{{ __('Configuration Error') }}</strong></p>
-                        <p style="font-size: 14px; margin-top: 10px;">
-                            {{ __('Payment gateway is not properly configured.') }}</p>
-                        <p style="font-size: 12px; margin-top: 10px; color: #dc2626;">
-                            {{ __('Please ensure MYFATOORAH_API_KEY is set in your environment file.') }}
-                        </p>
-                    </div>
-                @elseif(isset($sessionId) && $sessionId)
-                    <div class="payment-form-title">{{ __('Complete Your Payment') }}</div>
-
-                    <!-- Embedded Payment Container (Step 3 from docs) -->
-                    <div id="embedded-payment"></div>
-
-                    <div class="loading" id="payment-loading">
-                        <div class="spinner"></div>
-                        <p>{{ __('Processing payment...') }}</p>
-                    </div>
-                @else
-                    <div class="no-methods">
-                        <div class="no-methods-icon">⚠️</div>
-                        <p><strong>{{ __('Unable to Initialize Payment') }}</strong></p>
-                        @if (isset($apiError) && $apiError)
-                            <p style="font-size: 13px; margin-top: 10px; color: #dc2626;">{{ $apiError }}</p>
-                        @endif
-                        <p style="font-size: 12px; margin-top: 15px;">
-                            {{ __('Please contact support if this problem persists.') }}</p>
-                    </div>
+                @elseif($status == 'cancel')
+                <span class="status-icon">⚠</span>
+                <div>
+                    <strong>{{ __('Payment Cancelled') }}</strong>
+                    <p>{{ __('The payment was cancelled.') }}</p>
+                </div>
+                @elseif($status == 'failed')
+                <span class="status-icon">✗</span>
+                <div>
+                    <strong>{{ __('Payment Failed') }}</strong>
+                    <p>{{ $message ?? __('An error occurred while processing your payment.') }}</p>
+                </div>
                 @endif
+            </div>
+            @else
+            @if (isset($configError) && $configError)
+            <div class="no-methods">
+                <div class="no-methods-icon">⚙️</div>
+                <p><strong>{{ __('Configuration Error') }}</strong></p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    {{ __('Payment gateway is not properly configured.') }}</p>
+                <p style="font-size: 12px; margin-top: 10px; color: #dc2626;">
+                    {{ __('Please ensure MYFATOORAH_API_KEY is set in your environment file.') }}
+                </p>
+            </div>
+            @elseif(isset($sessionId) && $sessionId)
+            <div class="payment-form-title">{{ __('Complete Your Payment') }}</div>
+
+            <!-- Embedded Payment Container (Step 3 from docs) -->
+            <div id="embedded-payment"></div>
+
+            <div class="loading" id="payment-loading">
+                <div class="spinner"></div>
+                <p>{{ __('Processing payment...') }}</p>
+            </div>
+            @else
+            <div class="no-methods">
+                <div class="no-methods-icon">⚠️</div>
+                <p><strong>{{ __('Unable to Initialize Payment') }}</strong></p>
+                @if (isset($apiError) && $apiError)
+                <p style="font-size: 13px; margin-top: 10px; color: #dc2626;">{{ $apiError }}</p>
+                @endif
+                <p style="font-size: 12px; margin-top: 15px;">
+                    {{ __('Please contact support if this problem persists.') }}</p>
+            </div>
+            @endif
             @endif
 
             <div class="secure-badge">
@@ -410,349 +410,349 @@
     </div>
 
     @if (isset($sessionId) && $sessionId)
-        <script>
-            // =====================================================
-            // Step 1: Configuration variables from InitiateSession
-            // =====================================================
-            var sessionId = '{{ $sessionId }}';
-            var countryCode = '{{ $countryCode ?? 'SAU' }}';
-            var currencyCode = 'SAR';
-            var amount = '{{ $transaction->amount }}';
-            var transactionId = '{{ $transaction->transaction_id }}';
-            var callbackUrl =
+    <script>
+        // =====================================================
+        // Step 1: Configuration variables from InitiateSession
+        // =====================================================
+        var sessionId = '{{ $sessionId }}';
+        var countryCode = '{{ $countryCode ?? 'SAU' }}';
+        var currencyCode = 'SAR';
+        var amount = '{{ $transaction->amount }}';
+        var transactionId = '{{ $transaction->transaction_id }}';
+        var callbackUrl =
             '{{ route('payment-gateway.web.callback', ['transaction_id' => $transaction->transaction_id]) }}';
-            var executePaymentUrl =
-                '{{ route('payment-gateway.web.execute-embedded', ['transaction_id' => $transaction->transaction_id]) }}';
-            var csrfToken = '{{ csrf_token() }}';
-            var currentLanguage = '{{ app()->getLocale() }}';
-            var paymentLanguage = (currentLanguage === 'ar') ? 'ar' : 'en';
+        var executePaymentUrl =
+            '{{ route('payment-gateway.web.execute - embedded', ['transaction_id' => $transaction->transaction_id]) }}';
+        var csrfToken = '{{ csrf_token() }}';
+        var currentLanguage = '{{ app()->getLocale() }}';
+        var paymentLanguage = (currentLanguage === 'ar') ? 'ar' : 'en';
 
 
-            // =====================================================
-            // Step 4: Configure the Embedded Payment
-            // =====================================================
-            var config = {
-                sessionId: sessionId, // From InitiateSession
-                countryCode: countryCode, // From InitiateSession
-                currencyCode: currencyCode, // Payment currency
-                amount: amount, // Displayed on ApplePay/GooglePay/STCPay
-                callback: payment, // Callback function (Step 5)
-                containerId: "embedded-payment", // Div ID from Step 3
-                paymentOptions: ["ApplePay", "Card"], // Payment methods to display
-                language: paymentLanguage, // Use app locale (en or ar)
-                settings: {
-                    card: {
-                        style: {
-                            button: {
-                                useCustomButton: false,
-                                textContent: "{{ __('Pay Now') }}",
-                                fontSize: "18px",
-                                fontFamily: "inherit",
-                                color: "white",
-                                backgroundColor: "#203760",
-                                height: "52px",
-                                borderRadius: "12px",
-                                width: "100%",
-                                margin: "0 auto",
-                                cursor: "pointer"
-                            }
+        // =====================================================
+        // Step 4: Configure the Embedded Payment
+        // =====================================================
+        var config = {
+            sessionId: sessionId, // From InitiateSession
+            countryCode: countryCode, // From InitiateSession
+            currencyCode: currencyCode, // Payment currency
+            amount: amount, // Displayed on ApplePay/GooglePay/STCPay
+            callback: payment, // Callback function (Step 5)
+            containerId: "embedded-payment", // Div ID from Step 3
+            paymentOptions: ["ApplePay", "Card"], // Payment methods to display
+            language: paymentLanguage, // Use app locale (en or ar)
+            settings: {
+                card: {
+                    style: {
+                        button: {
+                            useCustomButton: false,
+                            textContent: "{{ __('Pay Now') }}",
+                            fontSize: "18px",
+                            fontFamily: "inherit",
+                            color: "white",
+                            backgroundColor: "#203760",
+                            height: "52px",
+                            borderRadius: "12px",
+                            width: "100%",
+                            margin: "0 auto",
+                            cursor: "pointer"
                         }
-                    },
-                    applePay: {
-                        language: paymentLanguage
                     }
+                },
+                applePay: {
+                    language: paymentLanguage
                 }
+            }
+        };
+
+        // =====================================================
+        // UI Helper Functions
+        // =====================================================
+        var loadingDiv = document.getElementById('payment-loading');
+        var iframeModal = document.getElementById('iframe-modal');
+        var paymentIframe = document.getElementById('payment-iframe');
+
+        function showLoading() {
+            if (loadingDiv) loadingDiv.classList.add('active');
+        }
+
+        function hideLoading() {
+            if (loadingDiv) loadingDiv.classList.remove('active');
+        }
+
+        function showIframeModal(url) {
+            console.log('Opening 3DS/OTP iframe:', url);
+            paymentIframe.src = url;
+            iframeModal.classList.add('active');
+        }
+
+        function closeIframeModal() {
+            console.log('Closing iframe modal');
+            iframeModal.classList.remove('active');
+            paymentIframe.src = 'about:blank';
+            hideLoading();
+        }
+
+        // =====================================================
+        // Step 5: Handle the callback function
+        // =====================================================
+        function payment(response) {
+
+            if (response.isSuccess) {
+                showLoading();
+                var paymentType = response.paymentType || 'Card';
+                console.log(paymentType + ' : ' + JSON.stringify(response));
+                // Step 6: Send SessionId to backend for ExecutePayment
+                executePayment(response, paymentType);
+            } else {
+                console.error('Payment failed:', response);
+                hideLoading();
+                var errorMessage = '{{ __('Payment failed.Please try again.') }}';
+                if (response.error) {
+                    errorMessage = response.error;
+                }
+                alert('❌ ' + errorMessage);
+            }
+        }
+
+        // =====================================================
+        // Step 6: Call ExecutePayment Endpoint via Backend
+        // =====================================================
+        function executePayment(response, paymentType) {
+            // Prepare payload - send SessionId to backend
+            // Backend will call ExecutePayment endpoint
+            var payload = {
+                session_id: response.sessionId,
+                card_brand: response.cardBrand || (response.card ? response.card.brand : null),
+                card_identifier: response.cardIdentifier,
+                payment_type: paymentType
             };
 
-            // =====================================================
-            // UI Helper Functions
-            // =====================================================
-            var loadingDiv = document.getElementById('payment-loading');
-            var iframeModal = document.getElementById('iframe-modal');
-            var paymentIframe = document.getElementById('payment-iframe');
+            $.ajax({
+                url: executePaymentUrl,
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(payload),
+                dataType: 'text', // Get raw text to check for dd output
+                success: function (responseText, status, xhr) {
 
-            function showLoading() {
-                if (loadingDiv) loadingDiv.classList.add('active');
-            }
-
-            function hideLoading() {
-                if (loadingDiv) loadingDiv.classList.remove('active');
-            }
-
-            function showIframeModal(url) {
-                console.log('Opening 3DS/OTP iframe:', url);
-                paymentIframe.src = url;
-                iframeModal.classList.add('active');
-            }
-
-            function closeIframeModal() {
-                console.log('Closing iframe modal');
-                iframeModal.classList.remove('active');
-                paymentIframe.src = 'about:blank';
-                hideLoading();
-            }
-
-            // =====================================================
-            // Step 5: Handle the callback function
-            // =====================================================
-            function payment(response) {
-
-                if (response.isSuccess) {
-                    showLoading();
-                    var paymentType = response.paymentType || 'Card';
-                    console.log(paymentType + ' : ' + JSON.stringify(response));
-                    // Step 6: Send SessionId to backend for ExecutePayment
-                    executePayment(response, paymentType);
-                } else {
-                    console.error('Payment failed:', response);
-                    hideLoading();
-                    var errorMessage = '{{ __('Payment failed. Please try again.') }}';
-                    if (response.error) {
-                        errorMessage = response.error;
+                    // Check for dd/dump output
+                    if (isDebugOutput(responseText)) {
+                        console.log('Debug output detected!');
+                        showDebugOutput(responseText);
+                        return;
                     }
-                    alert('❌ ' + errorMessage);
-                }
-            }
 
-            // =====================================================
-            // Step 6: Call ExecutePayment Endpoint via Backend
-            // =====================================================
-            function executePayment(response, paymentType) {
-                // Prepare payload - send SessionId to backend
-                // Backend will call ExecutePayment endpoint
-                var payload = {
-                    session_id: response.sessionId,
-                    card_brand: response.cardBrand || (response.card ? response.card.brand : null),
-                    card_identifier: response.cardIdentifier,
-                    payment_type: paymentType
-                };
+                    // Parse JSON response
+                    var data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('Failed to parse JSON');
+                        showDebugOutput(responseText);
+                        return;
+                    }
 
-                $.ajax({
-                    url: executePaymentUrl,
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    data: JSON.stringify(payload),
-                    dataType: 'text', // Get raw text to check for dd output
-                    success: function(responseText, status, xhr) {
 
-                        // Check for dd/dump output
-                        if (isDebugOutput(responseText)) {
-                            console.log('Debug output detected!');
-                            showDebugOutput(responseText);
+                    if (data.success) {
+                        // Always redirect user when payment URL is returned
+                        if (data.payment_url) {
+                            window.location.href = data.payment_url;
                             return;
                         }
 
-                        // Parse JSON response
-                        var data;
-                        try {
-                            data = JSON.parse(responseText);
-                        } catch (e) {
-                            console.error('Failed to parse JSON');
-                            showDebugOutput(responseText);
+                        // No payment URL: payment completed (e.g. paid) — redirect to callback to confirm
+                        if (data.status === 'paid' || data.status === 'Paid') {
+                            window.location.href = callbackUrl + '?paymentId=' + data.payment_id;
                             return;
                         }
 
-
-                        if (data.success) {
-                            // Always redirect user when payment URL is returned
-                            if (data.payment_url) {
-                                window.location.href = data.payment_url;
-                                return;
-                            }
-
-                            // No payment URL: payment completed (e.g. paid) — redirect to callback to confirm
-                            if (data.status === 'paid' || data.status === 'Paid') {
-                                window.location.href = callbackUrl + '?paymentId=' + data.payment_id;
-                                return;
-                            }
-
-                            hideLoading();
-                        } else {
-                            hideLoading();
-                            var errorMsg = data.message || data.error ||
-                                '{{ __('Payment failed. Please try again.') }}';
-                            console.error('Payment failed:', errorMsg);
-                            alert('❌ ' + errorMsg);
-                        }
-                    },
-                    error: function(xhr, status, error) {
                         hideLoading();
-                        console.error('AJAX error:', {
-                            status: status,
-                            error: error
-                        });
+                    } else {
+                        hideLoading();
+                        var errorMsg = data.message || data.error ||
+                            '{{ __('Payment failed.Please try again.') }}';
+                console.error('Payment failed:', errorMsg);
+                alert('❌ ' + errorMsg);
+        }
+                    },
+        error: function(xhr, status, error) {
+            hideLoading();
+            console.error('AJAX error:', {
+                status: status,
+                error: error
+            });
 
-                        if (xhr.responseText && isDebugOutput(xhr.responseText)) {
-                            showDebugOutput(xhr.responseText);
-                            return;
-                        }
+            if (xhr.responseText && isDebugOutput(xhr.responseText)) {
+                showDebugOutput(xhr.responseText);
+                return;
+            }
 
-                        var errorMsg = '{{ __('An error occurred. Please try again.') }}';
-                        if (xhr.responseJSON) {
-                            errorMsg = xhr.responseJSON.message || xhr.responseJSON.error || errorMsg;
-                        }
-                        alert('❌ ' + errorMsg);
-                    }
+            var errorMsg = '{{ __('An error occurred.Please try again.') }}';
+            if (xhr.responseJSON) {
+                errorMsg = xhr.responseJSON.message || xhr.responseJSON.error || errorMsg;
+            }
+            alert('❌ ' + errorMsg);
+        }
                 });
             }
 
-            // =====================================================
-            // Event Listener for 3DS Iframe Redirection
-            // After customer completes OTP/3DS, get redirection URL
-            // =====================================================
-            window.addEventListener("message", function(event) {
-                if (!event.data) return;
+        // =====================================================
+        // Event Listener for 3DS Iframe Redirection
+        // After customer completes OTP/3DS, get redirection URL
+        // =====================================================
+        window.addEventListener("message", function (event) {
+            if (!event.data) return;
 
-                try {
-                    var message = JSON.parse(event.data);
+            try {
+                var message = JSON.parse(event.data);
 
-                    // Only proceed if sender is "MF-3DSecure"
-                    if (message.sender === "MF-3DSecure") {
-                        console.log('3DS message received:', message);
-                        var redirectUrl = message.url;
+                // Only proceed if sender is "MF-3DSecure"
+                if (message.sender === "MF-3DSecure") {
+                    console.log('3DS message received:', message);
+                    var redirectUrl = message.url;
 
-                        if (redirectUrl) {
-                            console.log('3DS completed, redirect URL:', redirectUrl);
+                    if (redirectUrl) {
+                        console.log('3DS completed, redirect URL:', redirectUrl);
 
-                            // Close iframe and redirect to callback
-                            closeIframeModal();
-                            showLoading();
+                        // Close iframe and redirect to callback
+                        closeIframeModal();
+                        showLoading();
 
-                            // Redirect to the callback URL
-                            window.location.href = redirectUrl;
-                        }
+                        // Redirect to the callback URL
+                        window.location.href = redirectUrl;
                     }
-                } catch (error) {
-                    // Not a JSON message, ignore
-                    return;
                 }
-            }, false);
-
-            // =====================================================
-            // Additional Callback Functions
-            // =====================================================
-            function onSessionStarted() {
-                console.log('Payment session started');
+            } catch (error) {
+                // Not a JSON message, ignore
+                return;
             }
+        }, false);
 
-            function onSessionCanceled() {
-                console.log('Payment session canceled');
+        // =====================================================
+        // Additional Callback Functions
+        // =====================================================
+        function onSessionStarted() {
+            console.log('Payment session started');
+        }
+
+        function onSessionCanceled() {
+            console.log('Payment session canceled');
+            hideLoading();
+        }
+
+        function onStcSessionStarted(data) {
+            console.log('STC Session Started:', data);
+        }
+
+        function onCardBinChanged(response) {
+            console.log('Card BIN changed:', response);
+        }
+
+        // Update amount (for dynamic pricing)
+        function updateAmount(newAmount) {
+            myfatoorah.updateAmount(newAmount);
+        }
+
+        // Custom submit (if using custom button)
+        function customSubmit() {
+            myfatoorah.submitCardPayment();
+        }
+
+        // =====================================================
+        // Debug Output Functions
+        // =====================================================
+        function showDebugOutput(content) {
+            var existingModal = document.getElementById('debug-modal');
+            if (existingModal) existingModal.remove();
+
+            var modal = document.createElement('div');
+            modal.id = 'debug-modal';
+            modal.style.cssText =
+                'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:999999;overflow:auto;padding:20px;';
+
+            var container = document.createElement('div');
+            container.style.cssText = 'background:#1e1e1e;border-radius:8px;max-width:95%;margin:0 auto;';
+
+            var header = document.createElement('div');
+            header.style.cssText =
+                'background:#333;padding:10px 15px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;';
+            header.innerHTML = '<span style="color:#ff6b6b;font-weight:bold;font-family:monospace;">🐛 Debug Output</span>';
+
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✕ Close';
+            closeBtn.style.cssText =
+                'background:#ff6b6b;color:white;border:none;padding:5px 15px;border-radius:4px;cursor:pointer;';
+            closeBtn.onclick = function () {
+                modal.remove();
                 hideLoading();
-            }
+            };
+            header.appendChild(closeBtn);
 
-            function onStcSessionStarted(data) {
-                console.log('STC Session Started:', data);
-            }
+            var contentDiv = document.createElement('div');
 
-            function onCardBinChanged(response) {
-                console.log('Card BIN changed:', response);
-            }
-
-            // Update amount (for dynamic pricing)
-            function updateAmount(newAmount) {
-                myfatoorah.updateAmount(newAmount);
-            }
-
-            // Custom submit (if using custom button)
-            function customSubmit() {
-                myfatoorah.submitCardPayment();
-            }
-
-            // =====================================================
-            // Debug Output Functions
-            // =====================================================
-            function showDebugOutput(content) {
-                var existingModal = document.getElementById('debug-modal');
-                if (existingModal) existingModal.remove();
-
-                var modal = document.createElement('div');
-                modal.id = 'debug-modal';
-                modal.style.cssText =
-                    'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:999999;overflow:auto;padding:20px;';
-
-                var container = document.createElement('div');
-                container.style.cssText = 'background:#1e1e1e;border-radius:8px;max-width:95%;margin:0 auto;';
-
-                var header = document.createElement('div');
-                header.style.cssText =
-                    'background:#333;padding:10px 15px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;';
-                header.innerHTML = '<span style="color:#ff6b6b;font-weight:bold;font-family:monospace;">🐛 Debug Output</span>';
-
-                var closeBtn = document.createElement('button');
-                closeBtn.innerHTML = '✕ Close';
-                closeBtn.style.cssText =
-                    'background:#ff6b6b;color:white;border:none;padding:5px 15px;border-radius:4px;cursor:pointer;';
-                closeBtn.onclick = function() {
-                    modal.remove();
-                    hideLoading();
-                };
-                header.appendChild(closeBtn);
-
-                var contentDiv = document.createElement('div');
-
-                if (content.indexOf('<') !== -1 && content.indexOf('>') !== -1) {
-                    var iframe = document.createElement('iframe');
-                    iframe.style.cssText = 'width:100%;height:80vh;border:none;background:white;';
-                    contentDiv.appendChild(iframe);
-                    container.appendChild(header);
-                    container.appendChild(contentDiv);
-                    modal.appendChild(container);
-                    document.body.appendChild(modal);
-                    iframe.contentDocument.open();
-                    iframe.contentDocument.write(content);
-                    iframe.contentDocument.close();
-                } else {
-                    var pre = document.createElement('pre');
-                    pre.style.cssText =
-                        'color:#00ff00;padding:15px;margin:0;font-family:monospace;font-size:13px;white-space:pre-wrap;';
-                    pre.textContent = content;
-                    contentDiv.appendChild(pre);
-                    container.appendChild(header);
-                    container.appendChild(contentDiv);
-                    modal.appendChild(container);
-                    document.body.appendChild(modal);
-                }
-            }
-
-            function isDebugOutput(text) {
-                if (!text || typeof text !== 'string') return false;
-                return text.indexOf('sf-dump') !== -1 ||
-                    text.indexOf('Sfdump') !== -1 ||
-                    text.indexOf('<!DOCTYPE html>') !== -1 ||
-                    text.indexOf('<pre>') !== -1 ||
-                    text.indexOf('xdebug') !== -1;
-            }
-
-            // =====================================================
-            // Initialize MyFatoorah SDK
-            // =====================================================
-            function initPayment() {
-                if (typeof myfatoorah !== 'undefined') {
-                    try {
-                        console.log('Initializing MyFatoorah SDK...');
-                        myfatoorah.init(config);
-                        console.log('✓ MyFatoorah SDK initialized successfully');
-                    } catch (e) {
-                        console.error('✗ MyFatoorah init error:', e);
-                        alert('{{ __('Payment form could not be initialized. Please refresh the page.') }}');
-                    }
-                } else {
-                    console.error('✗ MyFatoorah SDK not loaded');
-                    alert('{{ __('Payment system could not be loaded. Please refresh the page.') }}');
-                }
-            }
-
-            // Start when page loads
-            if (document.readyState === 'complete') {
-                initPayment();
+            if (content.indexOf('<') !== -1 && content.indexOf('>') !== -1) {
+                var iframe = document.createElement('iframe');
+                iframe.style.cssText = 'width:100%;height:80vh;border:none;background:white;';
+                contentDiv.appendChild(iframe);
+                container.appendChild(header);
+                container.appendChild(contentDiv);
+                modal.appendChild(container);
+                document.body.appendChild(modal);
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(content);
+                iframe.contentDocument.close();
             } else {
-                window.addEventListener('load', initPayment);
+                var pre = document.createElement('pre');
+                pre.style.cssText =
+                    'color:#00ff00;padding:15px;margin:0;font-family:monospace;font-size:13px;white-space:pre-wrap;';
+                pre.textContent = content;
+                contentDiv.appendChild(pre);
+                container.appendChild(header);
+                container.appendChild(contentDiv);
+                modal.appendChild(container);
+                document.body.appendChild(modal);
             }
-        </script>
+        }
+
+        function isDebugOutput(text) {
+            if (!text || typeof text !== 'string') return false;
+            return text.indexOf('sf-dump') !== -1 ||
+                text.indexOf('Sfdump') !== -1 ||
+                text.indexOf('<!DOCTYPE html>') !== -1 ||
+                text.indexOf('<pre>') !== -1 ||
+                text.indexOf('xdebug') !== -1;
+        }
+
+        // =====================================================
+        // Initialize MyFatoorah SDK
+        // =====================================================
+        function initPayment() {
+            if (typeof myfatoorah !== 'undefined') {
+                try {
+                    console.log('Initializing MyFatoorah SDK...');
+                    myfatoorah.init(config);
+                    console.log('✓ MyFatoorah SDK initialized successfully');
+                } catch (e) {
+                    console.error('✗ MyFatoorah init error:', e);
+                    alert('{{ __('Payment form could not be initialized.Please refresh the page.') }}');
+                }
+            } else {
+                console.error('✗ MyFatoorah SDK not loaded');
+                alert('{{ __('Payment system could not be loaded.Please refresh the page.') }}');
+            }
+        }
+
+        // Start when page loads
+        if (document.readyState === 'complete') {
+            initPayment();
+        } else {
+            window.addEventListener('load', initPayment);
+        }
+    </script>
     @endif
 </body>
 

@@ -318,12 +318,14 @@ return [
     'password_confirmation' => 'تأكيد كلمة المرور',
     'image' => 'الصورة',
     'business_field' => 'مجال العمل',
+    'assigned_branches' => 'الفروع المسند إليها',
     'other_business_field' => 'مجال عمل آخر',
     'profile_updated_success' => 'تم تحديث الملف الشخصي بنجاح',
     'profile_update_failed' => 'فشل في تحديث الملف الشخصي',
 
     // Common UI
     'confirm_delete' => 'هل أنت متأكد من الحذف؟',
+    'yes_delete' => 'نعم، احذف',
     'save' => 'حفظ',
     'cancel' => 'إلغاء',
     'loading' => 'جاري التحميل...',

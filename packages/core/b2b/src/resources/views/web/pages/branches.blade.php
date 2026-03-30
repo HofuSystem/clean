@@ -8,8 +8,8 @@
 <style>
     #branch-map {
         width: 100%;
-        height: 300px !important;
-        min-height: 300px !important;
+        height: 100% !important;
+        min-height: 350px !important;
         background-color: #f8fafc;
         border-radius: 24px;
         z-index: 1;
@@ -106,7 +106,7 @@
                     {{ trans('client.edit') }}
                 </button>
                 <form action="{{ route('client.branches.delete', $branche->id) }}" method="POST"
-                    onsubmit="return confirm('{{ trans('client.confirm_delete') }}');">
+                    class="delete-branch-form">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
@@ -125,7 +125,7 @@
 
 <!-- PREMIUM Add/Edit Branch Modal -->
 <div id="branch-modal"
-    class="modal-content hidden fixed inset-0 z-[100] outline-none focus:outline-none justify-center items-center flex overflow-x-hidden overflow-y-auto p-4 md:p-12"
+    class="modal-content hidden fixed inset-0 z-[100] outline-none focus:outline-none justify-center items-center flex overflow-x-hidden overflow-y-auto p-4 md:p-8"
     onclick="if(event.target === this) closeBranchModal()">
 
     <!-- Subtle Backdrop (Moved INSIDE to ensure z-index order) -->
@@ -133,7 +133,7 @@
         class="fixed inset-0 bg-black/20 backdrop-blur-[2px] -z-10 pointer-events-none transition-opacity duration-300">
     </div>
 
-    <div class="relative w-full max-w-2xl mx-auto transform transition-all duration-300 scale-95 origin-center"
+    <div class="relative w-full max-w-4xl mx-auto transform transition-all duration-300 scale-95 origin-center"
         onclick="event.stopPropagation()">
         <form id="branch-form" method="POST" class="w-full">
             @csrf
@@ -160,54 +160,49 @@
                 </div>
 
                 <!-- Modal Body -->
-                <div class="p-8 space-y-6">                    <!-- Name & City -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
+                <div class="p-8 space-y-6"> <!-- Name & City -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
                                 {{ trans('client.branch_name') }} *
                             </label>
                             <div class="relative group">
-                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1c75bc] transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                    </svg>
-                                </div>
                                 <input type="text" name="name" id="branch_name_input" required
-                                    class="w-full pr-12 p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 shadow-sm"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 text-sm shadow-sm"
                                     placeholder="{{ trans('client.branch_name') }}">
                             </div>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
+                        <div class="space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
                                 {{ trans('client.city') }} *
                             </label>
                             <select name="city_id" id="city_id_select" required onchange="updateDistricts()"
-                                class="select-premium w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 shadow-sm">
+                                class="select-premium w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 text-sm shadow-sm">
                                 <option value="">{{ trans('client.select_city') }}</option>
                                 @foreach($cities as $city)
-                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                <option value="{{ $city->id }}">{{ $city->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-
-                    <!-- District & Default -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
+                        <div class="space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
                                 {{ trans('client.district') }} *
                             </label>
                             <select name="district_id" id="district_id_select" required
-                                class="select-premium w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 shadow-sm">
+                                class="select-premium w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 text-sm shadow-sm">
                                 <option value="">{{ trans('client.select_district') }}</option>
                             </select>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
+                        <div class="space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
                                 {{ trans('client.is_default') }}
                             </label>
                             <select name="is_default" id="is_default_select"
-                                class="select-premium w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 shadow-sm">
+                                class="select-premium w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-bold text-gray-800 text-sm shadow-sm">
                                 <option value="0">{{ trans('client.no') }}</option>
                                 <option value="1">{{ trans('client.yes') }}</option>
                             </select>
@@ -215,60 +210,44 @@
                     </div>
 
 
-                    <!-- Full Address -->
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
-                            {{ trans('client.branch_address') }} *
-                        </label>
-                        <div class="relative group">
-                            <div
-                                class="absolute top-4 right-0 pr-4 pointer-events-none text-gray-400 group-focus-within:text-[#1c75bc] transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                    </path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <textarea name="location" id="location_input" required rows="3"
-                                class="w-full pr-12 p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-[#1c75bc] focus:bg-white transition-all font-medium text-gray-800 shadow-sm resize-none text-sm"
-                                placeholder="{{ trans('client.branch_placeholder') }}"></textarea>
+                    <!-- Location Row (Address, Lat, Lng) -->
+                    <div class="flex flex-row gap-4 items-end overflow-hidden">
+                        <div class="flex-[3] min-w-0 space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
+                                {{ trans('client.branch_address') }} *
+                            </label>
+                            <input type="text" name="location" id="location_input" required
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-medium text-gray-800 text-xs shadow-sm"
+                                placeholder="{{ trans('client.branch_placeholder') }}">
                         </div>
-                    </div>
-
-                    <!-- Coordinates -->
-                    <div
-                        class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/30 p-6 rounded-[24px] border border-blue-100/30">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#1c75bc] uppercase tracking-widest px-1 block mb-1">
-                                {{ trans('client.lat') }} *
+                        <div class="flex-1 min-w-0 space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-[#1c75bc] uppercase tracking-widest px-1 block mb-0.5">
+                                {{ trans('client.lat') }}
                             </label>
                             <input type="text" name="lat" id="lat_input" required
-                                class="w-full p-4 bg-white border border-blue-50 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-mono text-gray-800 text-sm shadow-sm"
+                                class="w-full px-4 py-3 bg-white border border-blue-50 rounded-xl font-mono text-gray-800 text-[11px] outline-none focus:border-[#1c75bc] transition-all shadow-sm"
                                 placeholder="24.7136">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-[#1c75bc] uppercase tracking-widest px-1 block mb-1">
-                                {{ trans('client.lng') }} *
+                        <div class="flex-1 min-w-0 space-y-1">
+                            <label
+                                class="text-[10px] font-bold text-[#1c75bc] uppercase tracking-widest px-1 block mb-0.5">
+                                {{ trans('client.lng') }}
                             </label>
                             <input type="text" name="lng" id="lng_input" required
-                                class="w-full p-4 bg-white border border-blue-50 rounded-xl outline-none focus:border-[#1c75bc] transition-all font-mono text-gray-800 text-sm shadow-sm"
+                                class="w-full px-4 py-3 bg-white border border-blue-50 rounded-xl font-mono text-gray-800 text-[11px] outline-none focus:border-[#1c75bc] transition-all shadow-sm"
                                 placeholder="46.6753">
-                        </div>
-                        <div class="md:col-span-2 text-[11px] text-gray-400 font-medium px-1 italic">
-                            {{ trans('client.branch_coordinates_help') }}
                         </div>
                     </div>
 
-                    <!-- OpenStreetMap Container -->
-                    <div class="space-y-4">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1 block mb-1">
+                    <!-- Map Row -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-0.5">
                             {{ trans('client.branch_map_search_help') }}
                         </label>
-
-                        <div id="branch-map" class="shadow-inner active overflow-hidden">
-                            <!-- Leaflet Map -->
+                        <div id="branch-map"
+                            class="shadow-inner active overflow-hidden border border-gray-100 rounded-3xl h-[300px]">
                         </div>
                     </div>
                 </div>
@@ -468,5 +447,25 @@
         document.getElementById('branch-modal').classList.add('hidden');
         $('body').removeClass('overflow-hidden');
     }
+
+    $(document).on('submit', '.delete-branch-form', function (e) {
+        e.preventDefault();
+        const form = this;
+        Swal.fire({
+            text: "{{ trans('client.confirm_delete') }}",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "{{ trans('client.yes_delete') }}",
+            cancelButtonText: "{{ trans('client.cancel') }}",
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-light"
+            }
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
 </script>
 @endpush

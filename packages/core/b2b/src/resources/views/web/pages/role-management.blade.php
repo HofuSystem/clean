@@ -38,7 +38,8 @@
                     @php 
                         $firstEmployee = $userEmployees->first();
                         $userPermissions = $userEmployees->pluck('permission.name')->filter()->implode(', ');
-                        $permissionIds = $userEmployees->pluck('permission_id')->toArray();
+                        $permissionIds = $userEmployees->pluck('permission_id')->filter()->unique()->values()->toArray();
+                        $branchIds = $userEmployees->pluck('branch_id')->filter()->unique()->values()->toArray();
                     @endphp
                     <tr class="hover:bg-gray-50/50 transition-colors">
                         <td class="py-4 px-6">
@@ -70,7 +71,7 @@
                                     id: {{ $userId }},
                                     fullname: '{{ addslashes($firstEmployee->user->fullname) }}',
                                     phone: '{{ $firstEmployee->user->phone }}',
-                                    branch_id: {{ $firstEmployee->branch_id ?? 'null' }},
+                                    branch_ids: {{ json_encode($branchIds) }},
                                     permission_ids: {{ json_encode($permissionIds) }}
                                 })"
                                     class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="{{ trans('client.edit') }}">
@@ -143,6 +144,12 @@
         // Reset form
         $('#userForm')[0].reset();
         $('.user-permission-checkbox').prop('checked', false);
+        $('.user-branch-checkbox').prop('checked', false);
+
+        // Password field
+        $('#password-field-container').show();
+        $('#user-password-input').attr('required', true);
+
         $('#user-fullname-input').prop('readonly', false).removeClass('bg-gray-50');
         $('#user-phone-input').prop('readonly', false).removeClass('bg-gray-50');
         
@@ -157,11 +164,22 @@
         // Populate fields
         $('#user-fullname-input').val(data.fullname).prop('readonly', true).addClass('bg-gray-50');
         $('#user-phone-input').val(data.phone).prop('readonly', true).addClass('bg-gray-50');
-        $('#user-branch-id').val(data.branch_id);
+        
+        // Password field (Hide on edit)
+        $('#password-field-container').hide();
+        $('#user-password-input').attr('required', false).val('');
+
+        // Branches
+        $('.user-branch-checkbox').prop('checked', false);
+        if (data.branch_ids && Array.isArray(data.branch_ids)) {
+            data.branch_ids.forEach(bId => {
+                $(`.user-branch-checkbox[value="${bId}"]`).prop('checked', true);
+            });
+        }
         
         // Permissions
         $('.user-permission-checkbox').prop('checked', false);
-        if (data.permission_ids) {
+        if (data.permission_ids && Array.isArray(data.permission_ids)) {
             data.permission_ids.forEach(pId => {
                 $(`.user-permission-checkbox[value="${pId}"]`).prop('checked', true);
             });
@@ -171,9 +189,21 @@
     }
 
     function handleDeleteEmployee(id) {
-        if (confirm("{{ trans('client.confirm_delete_employee') }}")) {
-            document.getElementById('delete-employee-' + id).submit();
-        }
+        Swal.fire({
+            text: "{{ trans('client.confirm_delete_employee') }}",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "{{ trans('client.yes_delete') }}",
+            cancelButtonText: "{{ trans('client.cancel') }}",
+            customClass: {
+                confirmButton: "btn btn-danger",
+                cancelButton: "btn btn-light"
+            }
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                document.getElementById('delete-employee-' + id).submit();
+            }
+        });
     }
 
     function openChangePasswordModal(id, name) {

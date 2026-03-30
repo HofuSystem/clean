@@ -134,7 +134,7 @@
                                     data-items-from="company-branches">
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h3>{{ trans('branches') }}</h3>
-                                        <button class="btn btn-success create-new-items"><i class="fas fa-plus"></i> @lang('Add Branch')</button>
+                                        <button class="btn btn-primary create-new-items"><i class="fas fa-plus"></i> @lang('Add Branch')</button>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-hover text-center">
@@ -191,7 +191,7 @@
                                     data-items-from="company-employees">
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h3>{{ trans('Company Employees') }}</h3>
-                                        <button class="btn btn-success create-new-items"><i class="fas fa-plus"></i> @lang('Add Employee')</button>
+                                        <button class="btn btn-primary create-new-items"><i class="fas fa-plus"></i> @lang('Add Employee')</button>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-hover text-center">
@@ -289,7 +289,7 @@
                                     data-items-from="contracts-prices">
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h3>{{ trans('Product Prices') }}</h3>
-                                        <button class="btn btn-success create-new-items"><i class="fas fa-plus"></i> @lang('Add Product Price')</button>
+                                        <button class="btn btn-primary create-new-items"><i class="fas fa-plus"></i> @lang('Add Product Price')</button>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-hover text-center">
@@ -330,7 +330,7 @@
                                     data-items-from="contracts-customer-prices">
                                     <div class="d-flex justify-content-between align-items-center mb-5">
                                         <h3>{{ trans('Customer Over Prices') }}</h3>
-                                        <button class="btn btn-success create-new-items"><i class="fas fa-plus"></i> @lang('Add Over Price')</button>
+                                        <button class="btn btn-primary create-new-items"><i class="fas fa-plus"></i> @lang('Add Over Price')</button>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped table-hover text-center">
