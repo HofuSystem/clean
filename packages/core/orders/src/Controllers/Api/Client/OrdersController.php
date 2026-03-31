@@ -59,7 +59,15 @@ class OrdersController extends Controller
     public function myOrder(Request $request, $id)
     {
         try {
-            $order = Order::with(['items.product', 'moreDatas'])
+            $order = Order::with([
+            'items.product.translations',
+            'items.product.category.translations',
+            'items.product.subCategory.translations',
+            'transactions',
+            'client.profile',
+            'orderRepresentatives',
+            'moreDatas'
+            ])
             ->whereNotIn('status',['pending_payment','failed_payment','cancel_payment'])
             ->findorFail($id);
             if (in_array($order->type, ['clothes', 'fastorder', 'services', 'sales'])) {
