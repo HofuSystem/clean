@@ -55,6 +55,10 @@ return [
     'select_receiving_time' => 'اختر وقت الاستلام',
     'select_delivery_date' => 'اختر تاريخ التسليم',
     'select_delivery_time' => 'اختر وقت التسليم',
+    'debtor' => 'مدين',
+    'creditor' => 'دائن',
+    'credit' => 'الرصيد',
+    'discounts_and_compensations' => 'الخصومات والتعويضات',
 
     // Order Summary
     'order_summary' => 'ملخص الطلب',
@@ -259,10 +263,14 @@ return [
     'point' => 'نقطة',
     'status' => 'الحاله',
     'date' => 'التاريخ',
+    'from_date' => 'من تاريخ',
+    'to_date' => 'إلى تاريخ',
     'type' => 'النوع',
     'purchases' => 'مشتريات',
     'may' => 'مايو',
     'points_pagination' => 'ترقيم النقاط',
+    "monthly-statement" => "كشف الحساب الشهري",
+    "guest-service-pricing-management" => "ادارة تسعير خدمة النزلاء",
 
     // Orders
     'order_number' => 'رقم الطلب',
@@ -523,6 +531,8 @@ return [
     'monthly_contract' => 'عقد شهري',
     'total_balance_due' => 'إجمالي الرصيد المستحق',
     'transaction_details' => 'تفاصيل العمليات',
+    'statement_details' => 'تفاصيل الكشف',
+    'invoice_number' => 'رقم الفاتورة',
     'discount' => 'الخصم',
     'final_invoice' => 'الفاتورة النهائية',
     'delete_row' => 'حذف الصف',

@@ -185,12 +185,7 @@
         <div class="text-lg font-bold text-gray-800">{{ trans('client.monthly_account_statement') }}</div>
 
         <div class="flex gap-2 w-full md:w-auto">
-            <button onclick="addStatementRow()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                {{ trans('client.add_new_row') }}
-            </button>
+          
 
             <button onclick="printDocument()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-bold shadow flex justify-center items-center gap-2 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -229,24 +224,20 @@
             <div class="compact-info-bar bg-gray-50 border border-gray-100 rounded-lg p-3 mb-4 flex flex-wrap justify-between items-center text-sm shadow-sm">
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.customer_name') }}</span>
-                    <span contenteditable="true" class="font-bold text-gray-800 text-[13px]">{{ auth()->user()->name }}</span>
+                    <span contenteditable="true" class="font-bold text-gray-800 text-[13px]">{{ $company->fullname }}</span>
                 </div>
 
                 <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.mobile_number') }}</span>
-                    <span contenteditable="true" class="font-semibold text-gray-800 text-[13px]" dir="ltr">{{ auth()->user()->phone }}</span>
+                    <span contenteditable="true" class="font-semibold text-gray-800 text-[13px]" dir="ltr">{{ $company->phone }}</span>
                 </div>
 
                 <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
 
-                <div class="flex flex-col">
-                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.city_and_district') }}</span>
-                    <span contenteditable="true" class="font-semibold text-gray-800 text-[13px]">{{ auth()->user()->address }}</span>
-                </div>
+              
 
-                <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.payment_method') }}</span>
@@ -257,37 +248,35 @@
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.total_balance_due') }}</span>
-                    <span contenteditable="true" class="font-bold text-red-600 text-[14px] mt-0.5" id="header-total-due">0.00 {{ trans('client.sar') }}</span>
+                    <span contenteditable="true" class="font-bold text-red-600 text-[14px] mt-0.5" id="header-total-due">{{$totalAmount}} {{ trans('client.sar') }}</span>
                 </div>
             </div>
 
             <!-- جدول كشف الحساب -->
             <div class="mb-4 relative">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 contenteditable="true" class="text-base font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">{{ trans('client.transaction_details') }}</h3>
+                    <h3 contenteditable="true" class="text-base font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">{{ trans('client.statement_details') }}</h3>
                 </div>
 
                 <div class="overflow-x-visible">
                     <table class="w-full text-center border-collapse stat-table" id="statement-table">
                         <thead>
                             <tr>
-                                <th class="w-24">{{ trans('client.order_number') }}</th>
-                                <th class="w-24">{{ trans('client.pickup_date') }}</th>
-                                <th class="w-24">{{ trans('client.order_total') }}</th>
-                                <th class="w-20">{{ trans('client.discount') }}</th>
-                                <th class="w-32 bg-gray-700 text-white">{{ trans('client.final_invoice') }}</th>
-                                <th class="w-14 no-print">{{ trans('client.delete') }}</th>
+                                <th class="w-24">{{ trans('client.invoice_number') }}</th>
+                                <th class="w-24">{{ trans('client.delivery_date') }}</th>
+                                <th class="w-24">{{ trans('client.debtor') }}</th>
+                                <th class="w-20">{{ trans('client.creditor') }}</th>
+                                <th class="w-32 bg-gray-700 text-white">{{ trans('client.credit') }}</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-700 bg-white" id="statement-tbody">
                           @foreach($orders as $order)
                             <tr class="hover:bg-gray-50 transition stat-row">
                                 <td contenteditable="true" dir="ltr">{{ $order->reference_id }}</td>
-                                <td contenteditable="true" dir="ltr">{{ $order->created_at->format('d/m/Y') }}</td>
-                                <td contenteditable="true">{{ $order->total_price ?? 0 }}</td>
-                                <td contenteditable="true">{{ $order->discount ?? 0 }}</td>
-                                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $order->final_price ?? 0 }}</span></td>
-                                <td class="no-print"><button class="delete-btn" onclick="removeStatementRow(this)" title="{{ trans('client.delete_row') }}">✖</button></td>
+                                <td contenteditable="true" dir="ltr">{{ $order->orderRepresentatives()->where('type', 'delivery')?->first()?->date }}</td>
+                                <td contenteditable="true">{{ $order->total_price + $order->total_coupon?? 0 }}</td>
+                                <td contenteditable="true">{{ $order->total_coupon ?? 0 }}</td>
+                                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $order->total_price ?? 0 }}</span></td>
                             </tr>
                            @endforeach
                         </tbody>
@@ -295,9 +284,8 @@
                             <tr class="bg-gray-100">
                                 <td colspan="4" class="py-2 px-3 text-left font-extrabold text-gray-800">{{ trans('client.total_balance_due') }}:</td>
                                 <td class="py-2 px-3 text-center font-extrabold text-blue-700 text-lg">
-                                    <span id="stat-total-due">0.00</span> <span class="text-xs">{{ trans('client.sar') }}</span>
+                                    <span id="stat-total-due">{{$totalAmount}}</span> <span class="text-xs">{{ trans('client.sar') }}</span>
                                 </td>
-                                <td class="no-print"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -384,23 +372,7 @@
             }
         };
 
-        window.calculateStatementTotal = function () {
-            const statTable = document.querySelector('.stat-table');
-            if (!statTable) return;
-
-            let total = 0;
-            statTable.querySelectorAll('.stat-final').forEach((el) => {
-                total += parseFloat(el.innerText) || 0;
-            });
-
-            const formattedTotal = total.toFixed(2);
-            document.getElementById('stat-total-due').innerText = formattedTotal;
-
-            const headerTotalEl = document.getElementById('header-total-due');
-            if (headerTotalEl) {
-                headerTotalEl.innerText = formattedTotal + ' {{ trans('client.sar') }}';
-            }
-        };
+      
 
         window.printDocument = function () {
             window.print();

@@ -136,7 +136,7 @@
         <div class="p-6 border-b border-gray-50 flex justify-between items-center dir-dependent-flex">
             <h3 class="font-black text-gray-900 text-lg tracking-tight" data-i18n="latest_orders">
                 {{ trans('recent_orders') }}</h3>
-            <a href="{{ route('client.clientsOrders') }}" class="text-[#1c75bc] text-sm font-bold hover:underline flex items-center gap-1">
+            <a href="{{ route('client.order.index') }}" class="text-[#1c75bc] text-sm font-bold hover:underline flex items-center gap-1">
                 <span data-i18n="view_all">{{ trans('view_all') }}</span> <span class="rtl-rotate">&rarr;</span>
                 </a>
         </div>

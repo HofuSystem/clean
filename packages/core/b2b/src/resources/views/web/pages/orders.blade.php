@@ -7,10 +7,25 @@
             class="flex flex-col md:flex-row justify-between items-center bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 gap-4 dir-dependent-flex flex-row-reverse">
             <div class="dir-dependent-text text-right"><h2 class="text-3xl font-black text-gray-900 tracking-tight"
                     data-i18n="orders_log">{{$title}}</h2></div>
-            <div class="flex gap-4 w-full md:w-auto dir-dependent-flex flex-row-reverse">
-                <input type="text" id="custom-order-search"
-                    class="w-full py-3 px-5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] font-medium text-sm transition-all placeholder-translate text-right dir-dependent-text"
-                    data-i18n-placeholder="search_placeholder" placeholder="{{ trans('search_placeholder') }}">
+            <div class="flex flex-wrap gap-4 w-full md:w-auto dir-dependent-flex flex-row-reverse items-end">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 text-right dir-dependent-text">{{ trans('From Date') }}</label>
+                    <input type="date" id="from-date"
+                        class="py-3 px-5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] font-medium text-sm transition-all text-right dir-dependent-text"
+                        placeholder="{{ trans('From Date') }}">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 text-right dir-dependent-text">{{ trans('To Date') }}</label>
+                    <input type="date" id="to-date"
+                        class="py-3 px-5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] font-medium text-sm transition-all text-right dir-dependent-text"
+                        placeholder="{{ trans('To Date') }}">
+                </div>
+                <div class="flex flex-col gap-1 w-full md:w-64">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-1 text-right dir-dependent-text">{{ trans('search_placeholder') }}</label>
+                    <input type="text" id="custom-order-search"
+                        class="w-full py-3 px-5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#1c75bc] font-medium text-sm transition-all placeholder-translate text-right dir-dependent-text"
+                        data-i18n-placeholder="search_placeholder" placeholder="{{ trans('search_placeholder') }}">
+                </div>
             </div>
         </div>
 
@@ -52,6 +67,8 @@
                 ajax: {
                     url: "{{ route('client.order.data') }}",
                     data: function (d) {
+                        d.from_date = $('#from-date').val();
+                        d.to_date = $('#to-date').val();
                     }
                 },
                 columns: [
@@ -75,6 +92,10 @@
 
             $('#custom-order-search').on('keyup', function () {
                 table.search(this.value).draw();
+            });
+
+            $('#from-date, #to-date').on('change', function () {
+                table.draw();
             });
         });
     </script>

@@ -278,7 +278,7 @@
         <h2 class="text-3xl font-black text-gray-900 mb-2">{{ trans('client.support_coming_soon') }}</h2>
         <p class="text-gray-500 font-medium mb-8">{{ trans('client.support_coming_soon_desc') }}</p>
         <button type="button" onclick="closeModal('ticket-new-modal')"
-            class="w-full py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-black transition-all shadow-lg">{{ trans('client.excellent_understanding') }}</button>
+            class="w-full py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-black transition-all shadow-lg">{{ trans('done') }}</button>
     </div>
 
     <!-- 4. Support Ticket VIEW Chat Modal -->

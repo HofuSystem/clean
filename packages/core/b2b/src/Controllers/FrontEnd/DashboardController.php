@@ -158,6 +158,13 @@ class DashboardController extends Controller
 
         $query = $query->b2b('client');
 
+        if ($request->filled('from_date')) {
+            $query->whereDate('orders.created_at', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('orders.created_at', '<=', $request->to_date);
+        }
+
         $limit = request()->input('length');
         $start = request()->input('start');
         $recordsFiltered = $query->count();
@@ -204,6 +211,13 @@ class DashboardController extends Controller
 
         $query = $query->b2b('company');
 
+        if ($request->filled('from_date')) {
+            $query->whereDate('orders.created_at', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('orders.created_at', '<=', $request->to_date);
+        }
+
         $limit = request()->input('length');
         $start = request()->input('start');
         $recordsFiltered = $query->count();
@@ -230,6 +244,7 @@ class DashboardController extends Controller
                 YEAR(created_at) as year, 
                 MONTH(created_at) as month, 
                 SUM(total_price) as total_amount, 
+                SUM(total_coupon) as total_coupon, 
                 COUNT(id) as orders_count,
                 SUM(CASE WHEN b2b_type = 'company' THEN total_price ELSE 0 END) as contract_cost,
                 SUM(CASE WHEN b2b_type = 'client' THEN total_price - b2b_profit ELSE 0 END) as guest_cost,
@@ -250,6 +265,7 @@ class DashboardController extends Controller
     {
         B2BHelper::checkPermission('invoices-payments');
         $companyId = B2BHelper::getB2BCompanyId();
+        $company = Company::find($companyId);
         $contract = Contract::where('company_id', $companyId)->currentActive()->first();
         $settings = \Core\Settings\Models\Setting::pluck('value', 'key');
 
@@ -267,7 +283,7 @@ class DashboardController extends Controller
         $title = trans('client.monthly_invoice_details');
         $description = trans('client.monthly_invoice_details_description');
 
-        return view('b2b::web.pages.monthly-invoice-details', compact('orders', 'year', 'month', 'totalAmount', 'ordersCount', 'contract', 'settings', 'title', 'description'));
+        return view('b2b::web.pages.monthly-invoice-details', compact('orders', 'company', 'year', 'month', 'totalAmount', 'ordersCount', 'contract', 'settings', 'title', 'description'));
     }
 
     public function showOrder($id)
@@ -432,8 +448,9 @@ class DashboardController extends Controller
 
         // Get all active products of type 'clothes' with translations to avoid N+1
         $allProducts = Product::where('type', 'clothes')
+
             ->whereDoesntHave('category',function($query){
-                $query->whereTranslationLike("name","%b2b%");
+                $query->whereTranslationLike("name","%b2b%")->orWhere("id",43);
             })
             ->where('status', 'active')
             ->with(['translations', 'category.translations', 'subCategory.translations'])
