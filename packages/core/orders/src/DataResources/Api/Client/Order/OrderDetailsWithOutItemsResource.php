@@ -33,13 +33,12 @@ class OrderDetailsWithOutItemsResource extends JsonResource
         $orderWentBelowCopounLevel = $couponMinmum > $this->order_price;
         return [
             'id'                        => $this->id ,
-            'reference_id'                  =>  $this->reference_id,
+            'reference_id'              => $this->reference_id,
             'type'                      => $this->type ,
             'status'                    => $this->status ,
             'city'                      => new CityResource($this->whenLoaded('city')),
             'district'                  => new DistrictResource($this->whenLoaded('distinct')),
 
-            'reference_id'              => $this->reference_id ,
             'client'                    => new SimpleUserResource($this->client),
 
             'execute_day'               =>  $technical?->date ? Carbon::parse($technical?->date)->format('l')          : null,
@@ -53,7 +52,7 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'has_coupon'                =>  $this->coupon_id > 0,
             'order_price'               =>  (double)$this->order_price ,
             'total_price'               =>  (double)$this->total_price ,
-            'returned_to_customer'      =>  (double)abs($this->transactions()->where('amount','<',0)->sum('amount')) ,
+            'returned_to_customer'      =>  (double)abs($this->transactions->where('amount','<',0)->sum('amount')) ,
             'delivery_price'            =>  (double)$this->delivery_price ,
             'coupon_discount_percentage'=>  ($this->order_price > 0) ?  ($this->total_coupon / $this->order_price)  * 100 : 0,
             'coupon_discount_total'     =>  $this->total_coupon,
