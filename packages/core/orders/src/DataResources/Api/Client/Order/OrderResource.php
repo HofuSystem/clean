@@ -20,6 +20,9 @@ class OrderResource extends JsonResource
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
         $technical = $this->orderRepresentatives->where('type','technical')->first();
+        if($technical){
+            $delivery = $technical;
+        }
 
         $couponMinmum = json_decode($this->coupon_data)?->order_minimum ?? ($this->coupon?->minimum_price ?? 0);
         $orderWentBelowCopounLevel = $couponMinmum > $this->order_price;
@@ -40,11 +43,6 @@ class OrderResource extends JsonResource
             'from_time'             => $delivery?->time         ? Carbon::parse($delivery?->time)->format('H:i') : Carbon::parse($receiver?->time)->format('H:i'),
             'to_time'               => $delivery?->to_time      ? Carbon::parse($delivery->to_time)->addHour()->format('H:i') : Carbon::parse($receiver?->to_time)->addHour()->format('H:i'),
            
-            'execute_day'           => $technical?->date         ? Carbon::parse($technical?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
-            'execute_date'          => $technical?->date         ? Carbon::parse($technical?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
-            'execute_from_time'     => $technical?->time         ? Carbon::parse($technical?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
-            'execute_to_time'       => $technical?->to_time      ? Carbon::parse($technical?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
-            
             'receiving_day'         => $receiver?->date         ? Carbon::parse($receiver?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
             'receiving_date'        => $receiver?->date         ? Carbon::parse($receiver?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
             'receiving_from_time'   => $receiver?->time         ? Carbon::parse($receiver?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),

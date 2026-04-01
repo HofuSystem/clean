@@ -20,6 +20,10 @@ class OrderDetailsResource extends JsonResource
     {
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
+        $technical = $this->orderRepresentatives->where('type','technical')->first();
+        if($technical){
+            $delivery = $technical;
+        }
         $couponMinmum = json_decode($this->coupon_data)?->order_minimum ?? ($this->coupon?->minimum_price ?? 0);
         $orderWentBelowCopounLevel = $couponMinmum > $this->order_price;
         return [
