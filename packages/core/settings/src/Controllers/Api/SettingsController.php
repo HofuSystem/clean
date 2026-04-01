@@ -67,6 +67,10 @@ class SettingsController extends Controller
                 "referral_riyals"        => SettingsService::getDataBaseSetting('referral_riyals'),
                 "login_using"            => SettingsService::getDataBaseSetting('login_using'),
                 "allowed_payment_methods" => SettingsService::getDataBaseSetting('allowed_payment_methods'),
+                "clothes_allowed_payment_methods"   => SettingsService::getDataBaseSetting('clothes_allowed_payment_methods') ?? ["cash", "card", "points", "wallet"],
+                "maid_allowed_payment_methods"      => SettingsService::getDataBaseSetting('maid_allowed_payment_methods') ?? ["cash", "card", "points", "wallet"],
+                "services_allowed_payment_methods"  => SettingsService::getDataBaseSetting('services_allowed_payment_methods') ?? ["cash", "card", "points", "wallet"],
+                "sales_allowed_payment_methods"     => SettingsService::getDataBaseSetting('sales_allowed_payment_methods') ?? ["cash", "card", "points", "wallet"],
                 "multiple_payment_fees" => SettingsService::getDataBaseSetting('multiple_payment_fees'),
                 "max_carpet_area"        => SettingsService::getDataBaseSetting('max_carpet_area'),
                 "time_difference"        => [

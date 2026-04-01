@@ -787,6 +787,106 @@
                                                 </option>
                                             </select>
                                         </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="required"
+                                                for="clothes_allowed_payment_methods">{{ trans('Clothes Allowed Payment Methods') }}</label>
+                                            <select class="custom-select form-select advance-select"
+                                                name="clothes_allowed_payment_methods[]" id="clothes_allowed_payment_methods" multiple>
+                                                <option value="">{{ trans('select allowed payment methods') }}</option>
+                                                @php
+                                                    $clothesMethods = isset($settings['clothes_allowed_payment_methods']) ? json_decode($settings['clothes_allowed_payment_methods'], true) : [];
+                                                    $clothesMethods = is_array($clothesMethods) ? $clothesMethods : [];
+                                                @endphp
+                                                <option value="cash" @selected(in_array('cash', $clothesMethods))>
+                                                    {{ trans('cash') }}
+                                                </option>
+                                                <option value="card" @selected(in_array('card', $clothesMethods))>
+                                                    {{ trans('card') }}
+                                                </option>
+                                                <option value="points" @selected(in_array('points', $clothesMethods))>
+                                                    {{ trans('points') }}
+                                                </option>
+                                                <option value="wallet" @selected(in_array('wallet', $clothesMethods))>
+                                                    {{ trans('wallet') }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="required"
+                                                for="maid_allowed_payment_methods">{{ trans('Maid Allowed Payment Methods') }}</label>
+                                            <select class="custom-select form-select advance-select"
+                                                name="maid_allowed_payment_methods[]" id="maid_allowed_payment_methods" multiple>
+                                                <option value="">{{ trans('select allowed payment methods') }}</option>
+                                                @php
+                                                    $maidMethods = isset($settings['maid_allowed_payment_methods']) ? json_decode($settings['maid_allowed_payment_methods'], true) : [];
+                                                    $maidMethods = is_array($maidMethods) ? $maidMethods : [];
+                                                @endphp
+                                                <option value="cash" @selected(in_array('cash', $maidMethods))>
+                                                    {{ trans('cash') }}
+                                                </option>
+                                                <option value="card" @selected(in_array('card', $maidMethods))>
+                                                    {{ trans('card') }}
+                                                </option>
+                                                <option value="points" @selected(in_array('points', $maidMethods))>
+                                                    {{ trans('points') }}
+                                                </option>
+                                                <option value="wallet" @selected(in_array('wallet', $maidMethods))>
+                                                    {{ trans('wallet') }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="required"
+                                                for="services_allowed_payment_methods">{{ trans('Services Allowed Payment Methods') }}</label>
+                                            <select class="custom-select form-select advance-select"
+                                                name="services_allowed_payment_methods[]" id="services_allowed_payment_methods" multiple>
+                                                <option value="">{{ trans('select allowed payment methods') }}</option>
+                                                @php
+                                                    $servicesMethods = isset($settings['services_allowed_payment_methods']) ? json_decode($settings['services_allowed_payment_methods'], true) : [];
+                                                    $servicesMethods = is_array($servicesMethods) ? $servicesMethods : [];
+                                                @endphp
+                                                <option value="cash" @selected(in_array('cash', $servicesMethods))>
+                                                    {{ trans('cash') }}
+                                                </option>
+                                                <option value="card" @selected(in_array('card', $servicesMethods))>
+                                                    {{ trans('card') }}
+                                                </option>
+                                                <option value="points" @selected(in_array('points', $servicesMethods))>
+                                                    {{ trans('points') }}
+                                                </option>
+                                                <option value="wallet" @selected(in_array('wallet', $servicesMethods))>
+                                                    {{ trans('wallet') }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="required"
+                                                for="sales_allowed_payment_methods">{{ trans('Sales Allowed Payment Methods') }}</label>
+                                            <select class="custom-select form-select advance-select"
+                                                name="sales_allowed_payment_methods[]" id="sales_allowed_payment_methods" multiple>
+                                                <option value="">{{ trans('select allowed payment methods') }}</option>
+                                                @php
+                                                    $salesMethods = isset($settings['sales_allowed_payment_methods']) ? json_decode($settings['sales_allowed_payment_methods'], true) : [];
+                                                    $salesMethods = is_array($salesMethods) ? $salesMethods : [];
+                                                @endphp
+                                                <option value="cash" @selected(in_array('cash', $salesMethods))>
+                                                    {{ trans('cash') }}
+                                                </option>
+                                                <option value="card" @selected(in_array('card', $salesMethods))>
+                                                    {{ trans('card') }}
+                                                </option>
+                                                <option value="points" @selected(in_array('points', $salesMethods))>
+                                                    {{ trans('points') }}
+                                                </option>
+                                                <option value="wallet" @selected(in_array('wallet', $salesMethods))>
+                                                    {{ trans('wallet') }}
+                                                </option>
+                                            </select>
+                                        </div>
                                         <div class="form-group mb-3 col-md-6">
                                             <label class="required"
                                                 for="max_carpet_area">{{ trans('Max Allowed Carpet Area (Width × Height)') }}</label>

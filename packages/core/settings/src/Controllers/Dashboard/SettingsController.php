@@ -42,6 +42,18 @@ class SettingsController extends Controller
             if (isset($data['allowed_payment_methods'])) {
                 $data['allowed_payment_methods'] = json_encode($data['allowed_payment_methods']);
             }
+            if (isset($data['clothes_allowed_payment_methods'])) {
+                $data['clothes_allowed_payment_methods'] = json_encode($data['clothes_allowed_payment_methods']);
+            }
+            if (isset($data['maid_allowed_payment_methods'])) {
+                $data['maid_allowed_payment_methods'] = json_encode($data['maid_allowed_payment_methods']);
+            }
+            if (isset($data['services_allowed_payment_methods'])) {
+                $data['services_allowed_payment_methods'] = json_encode($data['services_allowed_payment_methods']);
+            }
+            if (isset($data['sales_allowed_payment_methods'])) {
+                $data['sales_allowed_payment_methods'] = json_encode($data['sales_allowed_payment_methods']);
+            }
             
             $data  = array_filter($data,function($value){
                 return $value !== null;
