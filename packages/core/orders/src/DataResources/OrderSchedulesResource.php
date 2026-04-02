@@ -18,7 +18,9 @@ class OrderSchedulesResource extends JsonResource
         return [
             
             "id"               => $this->id,
-            "client_id"        => DashboardDataTableFormatter::relations($this->client,"fullname","dashboard.users.show"),
+            "client_id"        => DashboardDataTableFormatter::relations($this->client,"fullname","dashboard.users.edit"),
+            "branch_id"        => DashboardDataTableFormatter::relations($this->branch,"name","dashboard.company-branches.edit"),
+            "company_id"       => DashboardDataTableFormatter::relations($this->company,"name","dashboard.companies.edit"),
             "type"             => DashboardDataTableFormatter::text($this->type),
             "receiver_day"     => DashboardDataTableFormatter::text($this->receiver_day),
             "receiver_date"    => DashboardDataTableFormatter::text($this->receiver_date),

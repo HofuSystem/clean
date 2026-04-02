@@ -26,6 +26,7 @@
         "core/users": "*",
         "core/wallet": "*",
         "core/workers": "*",
+        "core/b2b": "*",
         "giggsey/libphonenumber-for-php": "^8.12",
         "google/apiclient": "^2.18",
         "intervention/image": "^2.7",

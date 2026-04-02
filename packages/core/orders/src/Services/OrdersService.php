@@ -3,6 +3,7 @@
 namespace Core\Orders\Services;
 
 use Carbon\Carbon;
+use Core\B2B\Models\CompanyBranch;
 use Core\Categories\Models\Category;
 use Core\Categories\Models\CategoryDateTime;
 use Core\Categories\Models\CategoryOffer;
@@ -30,7 +31,7 @@ use Core\Notification\Services\TelegramNotificationService;
 use Core\Orders\Models\Cart;
 use Core\Orders\Models\OrderTransaction;
 use Core\Products\Services\ProductsService;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use Core\PaymentGateways\Services\MyFatoorahService;
 
 class OrdersService
@@ -60,7 +61,7 @@ class OrdersService
     }
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $recordData = array_filter($data, fn($key) => in_array($key, ['reference_id', 'type', 'status', 'client_id', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'coupon_id', 'coupon_data', 'order_price', 'delivery_price', 'total_price', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'translations']), ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data, fn($key) => in_array($key, ['reference_id', 'type', 'status', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'coupon_id', 'coupon_data', 'order_price', 'delivery_price', 'total_price', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'translations']), ARRAY_FILTER_USE_KEY);
         $record     = Order::updateOrCreate(['id' => $id], $recordData);
 
         if (!isset($id)) {
@@ -353,8 +354,8 @@ class OrdersService
             ->where('width', $width)
             ->where('height', $height)
             ->first();
-        ProductsService::setCurrentContract($order->client);
-        $productData = ProductsService::getProductData($order->client, $product);
+        ProductsService::setCurrentContract($order->company);
+        $productData = ProductsService::getProductData($order->company,$order->b2b_type,$order->client?->profile?->city_id,$product);
         $cost          = $productData['cost'];
         $price         = $productData['price'];
         if ($orderItem) {
@@ -537,7 +538,8 @@ class OrdersService
             $prices = ProductsService::getProductOutOfContractPriceData($product, $order->city_id);
             $originalProductsTotal += $prices['price'] * $item->quantity;
         }
-        $order->update(['original_products_total' => $originalProductsTotal]);
+        $b2bPofit = $order->order_price - $originalProductsTotal;
+       $order->update(['original_products_total' => $originalProductsTotal,'b2b_profit' => $b2bPofit]);
         return $order;
     }
     public function get($id)
@@ -655,8 +657,8 @@ class OrdersService
 
         $recordsTotal       = Order::count();
         $recordsFiltered    = Order::search()->count();
-        $records            = Order::select(['id', 'reference_id', 'type', 'status', 'client_id', 'operator_id', 'pay_type', 'note', 'coupon_id', 'total_price','total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'online_payment_method', 'city_id', 'district_id', 'created_at', 'updated_at'])
-            ->with(['client', 'operator', 'coupon'])
+        $records            = Order::select(['id', 'reference_id', 'type', 'status', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'operator_id', 'pay_type', 'note', 'coupon_id', 'total_price','total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'online_payment_method', 'city_id', 'district_id', 'created_at', 'updated_at'])
+            ->with(['client', 'company', 'branch', 'operator', 'coupon'])
             ->search()->dataTable()->get();
 
         return [
@@ -781,7 +783,8 @@ class OrdersService
             ->orWhere('id', $data['delivery_address_id'] ?? null)
             ->orWhere('id', $data['execute_address_id'] ?? null)
             ->first();
-
+        $branch = CompanyBranch::find($data['branch_id'] ?? null);
+ 
 
         if (isset($data['days_per_week_names'])) {
             $data['days_per_week_names'] = json_encode(explode(',', $data['days_per_week_names']));
@@ -798,8 +801,8 @@ class OrdersService
         $data['coupon_data']  = isset($data['coupon_id']) ?  $coupon?->toJson() : json_encode([]);
         $data['status']       = $data['status'] ?? 'pending';
         $data  = array_merge($data, [
-            'city_id'            => $address?->city_id      ?? auth('api')->user()->city_id,
-            'district_id'        => $address?->district_id  ?? auth('api')->user()->district_id,
+            'city_id'            => $branch?->city_id      ?? $address?->city_id      ?? auth('api')->user()->city_id,
+            'district_id'        => $branch?->district_id  ?? $address?->district_id  ?? auth('api')->user()->district_id,
             'client_id'          => $user->id,
             'order_status_times' => [$data['status'] => date("Y-m-d H:i")],
             'is_admin_accepted'  => true,
@@ -813,9 +816,8 @@ class OrdersService
             'points_amount_used' => 0,
         ]);
 
-        $createOrderData['note']          = $createOrderData['desc'] ?? null;
-        $createOrderData['note']          .= ' - ' . $user->contract_note;
-        $createOrderData['operator_id']   = $user->operator_id;
+        $createOrderData['note']         = $createOrderData['desc'] ?? null;
+        $createOrderData['note']         .= ' - ' . $user->contract_note;
         $createOrderData['total_provider_invoice'] = $createOrderData['total_cost'] ?? 0;
         $order      = Order::create($createOrderData);
 
@@ -884,18 +886,19 @@ class OrdersService
             and isset($data['receiving_time']) and !empty($data['receiving_time'])
             and isset($data['receiving_to_time']) and !empty($data['receiving_to_time'])
         ) {
-            $address = Address::where('id', $data['receiving_address_id'])->first();
+            $address = Address::where('id', $data['receiving_address_id'] ?? null)->first();
             $order->orderRepresentatives()->create([
                 'type'          => 'receiver',
                 'date'          => $data['receiving_date']      ?? null,
                 'time'          => $data['receiving_time']      ?? null,
                 'to_time'       => $data['receiving_to_time']   ?? null,
-                'lat'           => $address?->lat       ?? $data['receiving_lat']       ?? null,
-                'lng'           => $address?->lng       ?? $data['receiving_lng']       ?? null,
-                'location'      => $address?->location  ?? $data['receiving_location']  ?? null,
+                'lat'           => $branch->lat ?? $address?->lat ?? $data['receiving_lat'] ?? null,
+                'lng'           => $branch->lng ?? $address?->lng ?? $data['receiving_lng'] ?? null,
+                'location'      => $branch->location ?? $address?->location ?? $data['receiving_location'] ?? null,
                 'has_problem'   => false,
                 'for_all_items' => true,
                 'address_id'    => $address?->id,
+                'branch_id'     => $branch?->id,
             ]);
         }
         if (
@@ -909,12 +912,13 @@ class OrdersService
                 'date'          => $data['execute_date']      ?? $data['receiving_date']      ?? null,
                 'time'          => $data['execute_time']      ?? $data['receiving_time']      ?? null,
                 'to_time'       => $data['execute_to_time']   ?? $data['receiving_to_time']   ?? null,
-                'lat'           => $address?->lat             ?? $data['execute_lat']       ?? null,
-                'lng'           => $address?->lng             ?? $data['execute_lng']       ?? null,
-                'location'      => $address?->location        ?? $data['execute_location']  ?? null,
+                'lat'           => $branch?->lat             ?? $address?->lat             ?? $data['execute_lat']       ?? null,
+                'lng'           => $branch?->lng             ?? $address?->lng             ?? $data['execute_lng']       ?? null,
+                'location'      => $branch?->location        ?? $address?->location        ?? $data['execute_location']  ?? null,
                 'has_problem'   => false,
                 'for_all_items' => true,
                 'address_id'    => $address?->id,
+                'branch_id'     => $branch?->id,
 
             ]);
         }
@@ -923,19 +927,20 @@ class OrdersService
             and isset($data['delivery_time']) and !empty($data['delivery_time'])
             and isset($data['delivery_to_time']) and !empty($data['delivery_to_time'])
         ) {
-            $address = Address::where('id', $data['delivery_address_id'])->first();
+            $address = Address::where('id', $data['delivery_address_id'] ?? null)->first();
 
             $order->orderRepresentatives()->create([
                 'type'          => 'delivery',
                 'date'          => $data['delivery_date']       ?? null,
                 'time'          => $data['delivery_time']       ?? null,
                 'to_time'       => $data['delivery_to_time']    ?? null,
-                'lat'           => $address?->lat               ?? $data['delivery_lat']       ?? null,
-                'lng'           => $address?->lng               ?? $data['delivery_lng']       ?? null,
-                'location'      => $address?->location          ?? $data['delivery_location']  ?? null,
+                'lat'           => $branch?->lat               ?? $address?->lat               ?? $data['delivery_lat']       ?? null,
+                'lng'           => $branch?->lng               ?? $address?->lng               ?? $data['delivery_lng']       ?? null,
+                'location'      => $branch?->location          ?? $address?->location          ?? $data['delivery_location']  ?? null,
                 'has_problem'   => false,
                 'for_all_items' => true,
                 'address_id'    => $address?->id,
+                'branch_id'     => $branch?->id,
 
             ]);
         }
@@ -955,8 +960,8 @@ class OrdersService
         $order = Order::findOrFail($orderId);
         foreach ($products as $item) {
             $product = Product::where('id', $item['id'])->first();
-            ProductsService::setCurrentContract($order->client);
-            $productData = ProductsService::getProductData($order->client, $product);
+            ProductsService::setCurrentContract($order->company);
+            $productData = ProductsService::getProductData($order->company,$order->b2b_type,$order->client?->profile?->city_id,$product);
             $price = $productData['price'];
             $cost = $productData['cost'];
             $order->items()->create([

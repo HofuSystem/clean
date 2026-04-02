@@ -59,7 +59,7 @@ class OrdersController extends Controller
     public function myOrder(Request $request, $id)
     {
         try {
-               $order = Order::with([
+            $order = Order::with([
             'items.product.translations',
             'items.product.category.translations',
             'items.product.subCategory.translations',

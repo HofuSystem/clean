@@ -8,19 +8,22 @@ use Core\Products\DataResources\ProductsResource;
 use Core\Categories\Services\PricesService;
 use Core\Products\DataResources\ProductCardResource;
 use Core\Settings\Helpers\ToolHelper;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use Illuminate\Support\Facades\DB;
 
 class ProductsService
 {
     protected static $currentContract;
     public function __construct(protected CommentingService $commentingService,protected PricesService $pricesService){}
-    function getProductsCard($type = null,$user = null)
+    function getProductsCard($type = null,$user = null,$company = null,$b2b_type = null)
     {
+        if($company){
+            ProductsService::setCurrentContract($company);
+            ProductCardResource::$company = $company;
+            ProductCardResource::$b2bType = $b2b_type;
+        }
         if($user){
-            ProductsService::setCurrentContract($user);
             ProductCardResource::$cityId = $user?->profile?->city_id;
-            ProductCardResource::$user   = $user;
         }
        return ProductCardResource::collection(Product::with(['translations','category.translations','subCategory.translations','prices','contractsPrices','contractCustomerPrices'])->get());
     }
@@ -132,38 +135,27 @@ class ProductsService
   
         return view('dashboard.best_sales',['top_sales_products'=>$top_sales_products,'top_sales_package_products'=>$top_sales_package_products]);
     }
-    public static function setCurrentContract($user){
-        if(!$user){
+    public static function setCurrentContract($company){
+        if(!$company){
             return null;
         }
-        $userContract = Contract::with(['contractPrices','contractCustomerPrices'])
-        ->where('client_id',$user->id)
+        $companyContract = Contract::with(['contractPrices','contractCustomerPrices'])
+        ->where('company_id',$company->id)
         ->currentActive()
         ->first();
-        if($userContract){
-            self::$currentContract = $userContract;
-        }else{
-            if(!$user->operator){
-               return null;
-            }
-            $contract = Contract::with(['contractPrices','contractCustomerPrices'])
-                ->where('client_id',$user->operator->id)
-                ->currentActive()
-                ->first();
-            if($contract){
-                self::$currentContract = $contract;
-            }
+        if($companyContract){
+            self::$currentContract = $companyContract;
         }
         return self::$currentContract;
     }
     public static function getCurrentContract(){
         return self::$currentContract;
     }
-    public static function getProductData($user,$product){
+    public static function getProductData($company,$b2bType,$cityId,$product){
         $price      = $product->price;
         $cost       = $product->cost;
         if(self::$currentContract){
-            if(self::$currentContract->client_id == $user->id){
+            if($b2bType == 'company'){
                 $contractPrice = self::$currentContract->contractPrices->where('product_id',$product->id)->first();
                 if($contractPrice){
                     $price = $contractPrice->price;
@@ -177,7 +169,7 @@ class ProductsService
                 }
             }
         }else{
-            $outOfContractPriceData = self::getProductOutOfContractPriceData($product,$user?->profile?->city_id);
+            $outOfContractPriceData = self::getProductOutOfContractPriceData($product,$cityId);
             if($outOfContractPriceData){
                 $price = $outOfContractPriceData['price'];
                 $cost = $outOfContractPriceData['cost'];

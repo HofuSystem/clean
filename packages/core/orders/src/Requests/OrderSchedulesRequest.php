@@ -28,20 +28,21 @@ class OrderSchedulesRequest extends FormRequest
      */
     public function rules()
     {
-      return [ 
-			  'client_id' => 'nullable|exists:users,id',
-        'type' => 'required|in:day,date',
-        'receiver_day' => 'required_if:type,day',
-        'receiver_date' => 'required_if:type,date|date',
-        'receiver_time' => 'required|date_format:H:i',
-        'receiver_to_time' => 'required|date_format:H:i|after:receiver_time',
-        'delivery_day' => 'required_if:type,day',
-        'delivery_date' => 'required_if:type,date|date|after_or_equal:receiver_date',
-        'delivery_time' => 'required|date_format:H:i',
-        'delivery_to_time' => 'required|date_format:H:i|after:delivery_time',
-        'receiver_address_id' => 'required|exists:addresses,id',
-        'delivery_address_id' => 'required|exists:addresses,id',
-			]; 
+        return [ 
+            'branch_id' => 'nullable|exists:company_branches,id',
+            'company_id' => 'nullable|exists:companies,id',
+            'type' => 'required|in:day,date',
+            'receiver_day' => 'required_if:type,day',
+            'receiver_date' => 'required_if:type,date|date',
+            'receiver_time' => 'required',
+            'receiver_to_time' => 'required|after:receiver_time',
+            'delivery_day' => 'required_if:type,day',
+            'delivery_date' => 'required_if:type,date|date|after_or_equal:receiver_date',
+            'delivery_time' => 'required',
+            'delivery_to_time' => 'required|after:delivery_time',
+            'receiver_address_id' => 'nullable|exists:addresses,id',
+            'delivery_address_id' => 'nullable|exists:addresses,id',
+        ]; 
 
     }
 

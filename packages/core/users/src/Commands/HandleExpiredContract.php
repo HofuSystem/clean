@@ -3,7 +3,7 @@
 namespace Core\Users\Commands;
 
 use Carbon\Carbon;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use Core\Users\Models\Point;
 use Core\Users\Models\User;
 use Illuminate\Console\Command;

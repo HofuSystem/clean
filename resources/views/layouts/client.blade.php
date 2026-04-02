@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 @php
-    $currentContract = Core\Users\Models\Contract::where('client_id', Auth::user()->id)->currentActive()->first();
+    $currentContract = Core\B2B\Models\Contract::where('client_id', Auth::user()->id)->currentActive()->first();
 @endphp
 
 <body>
@@ -115,8 +115,8 @@
                             <span>{{ trans('client.my_points') }}</span>
                         </a>
                     </li>
-                    <li class="sidebar-item @if(request()->routeIs('client.address.index')) active @endif">
-                        <a href="{{ route('client.address.index') }}" class="sidebar-link">
+                    <li class="sidebar-item @if(request()->routeIs('client.branches.index')) active @endif">
+                        <a href="{{ route('client.branches.index') }}" class="sidebar-link">
                             <ion-icon name="location-outline"></ion-icon>
                             <span>{{ trans('client.address_details') }}</span>
                         </a>

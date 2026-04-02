@@ -57,5 +57,7 @@ return [
     'login_failed' => 'An error occurred while logging in. Please try again.',
     'logout' => 'Logout',
     'logout_success' => 'Logout successful!',
+    'login_description' => 'Login to your business account to manage your services',
+    'register_description' => 'Create a new business account to start using our services',
 
 ];

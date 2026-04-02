@@ -20,8 +20,8 @@ class SimpleProductResource extends JsonResource
     public function toArray($request)
     {
         $user = auth('api')->user();
-        ProductsService::setCurrentContract($user);
-        $data = ProductsService::getProductData($user,$this->resource);
+        ProductsService::setCurrentContract($user->company);
+        $data = ProductsService::getProductData($user->company,'client',$user?->profile?->city_id,$this->resource);
 
         return [
             'id'                => $this->id,

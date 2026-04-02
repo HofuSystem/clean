@@ -92,6 +92,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active'            => \Core\Users\Middleware\ActiveUser::class,
             'checkPermission'   => \Core\Users\Middleware\CheckPermissions::class,
             'route-record'      => \Core\Admin\Http\Middleware\RouteRecordMiddleware::class,
+            'is_b2b_client'     => \Core\B2B\Middleware\IsB2BClient::class,
 
             //Spatie Permission
             'role'              => \Spatie\Permission\Middleware\RoleMiddleware::class,

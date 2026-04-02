@@ -27,7 +27,7 @@ class ContractPriceUpdateRequest extends FormRequest
         $priceId = $this->route('id');
         
         // Get the contract price and its max allowed value
-        $contractPrice = \Core\Users\Models\ContractsPrice::find($priceId);
+        $contractPrice = \Core\B2B\Models\ContractsPrice::find($priceId);
         $maxAllowed = $contractPrice?->contract?->max_allowed_over_price;
         
         $rules = [
@@ -53,7 +53,7 @@ class ContractPriceUpdateRequest extends FormRequest
         $priceId = $this->route('id');
         
         // Get the contract price and its max allowed value
-        $contractPrice = \Core\Users\Models\ContractsPrice::find($priceId);
+        $contractPrice = \Core\B2B\Models\ContractsPrice::find($priceId);
         $maxAllowed = $contractPrice?->contract?->max_allowed_over_price;
         
         return [

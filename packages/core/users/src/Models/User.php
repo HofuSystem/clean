@@ -30,7 +30,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     protected $table             = 'users';
-    protected $fillable          = ['image', 'fullname', 'email', 'password', 'email_verified_at', 'phone', 'phone_verified_at', 'is_active', 'is_allow_notify', 'date_of_birth', 'identity_number', 'wallet', 'points_balance', 'gender', 'rate_avg', 'referral_code', 'earned_referral_points', 'earned_referral_riyals', 'verified_code', 'last_login_at', 'operator_id', 'register_by_id', 'creator_id', 'updater_id', 'address', 'business_field', 'appear_at', 'contract_note', 'contract_expiration_date'];
+    protected $fillable          = ['image', 'fullname', 'email', 'password', 'email_verified_at', 'phone', 'phone_verified_at', 'is_active', 'is_allow_notify', 'date_of_birth', 'identity_number', 'wallet', 'points_balance', 'gender', 'rate_avg', 'referral_code', 'earned_referral_points', 'earned_referral_riyals', 'verified_code', 'last_login_at', 'operator_id', 'register_by_id', 'creator_id', 'updater_id', 'address', 'business_field', 'appear_at', 'contract_note', 'contract_expiration_date','company_id'];
     protected $guarded           = [];
     protected $casts = [
         'email_verified_at' => 'datetime',

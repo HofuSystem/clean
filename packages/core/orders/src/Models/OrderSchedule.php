@@ -1,6 +1,8 @@
 <?php
 
 namespace Core\Orders\Models;
+use Core\B2B\Models\Company;
+use Core\B2B\Models\CompanyBranch;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Core\Users\Models\User;
 use Core\Workers\Models\Worker;
@@ -17,7 +19,7 @@ use Core\Users\Models\Address;
 
 class OrderSchedule extends CoreModel {
 	protected $table             = 'order_schedules';
-	protected $fillable          = ['client_id', 'type', 'receiver_day', 'receiver_date', 'receiver_time', 'receiver_to_time', 'delivery_day', 'delivery_date', 'delivery_time', 'delivery_to_time', 'receiver_address_id', 'delivery_address_id', 'note', 'creator_id', 'updater_id'];
+	protected $fillable          = ['client_id', 'branch_id', 'company_id', 'type', 'receiver_day', 'receiver_date', 'receiver_time', 'receiver_to_time', 'delivery_day', 'delivery_date', 'delivery_time', 'delivery_to_time', 'receiver_address_id', 'delivery_address_id', 'note', 'creator_id', 'updater_id'];
     protected $guarded           = [];
     
 
@@ -27,6 +29,16 @@ class OrderSchedule extends CoreModel {
         //filter select on  client
         if((request()->has("filters.client_id")) and !empty(request("filters.client_id"))){
             $query->whereRelation("client","id",request("filters.client_id"));
+        }
+
+        //filter select on branch
+        if((request()->has("filters.branch_id")) and !empty(request("filters.branch_id"))){
+            $query->where("branch_id",request("filters.branch_id"));
+        }
+
+        //filter select on company
+        if((request()->has("filters.company_id")) and !empty(request("filters.company_id"))){
+            $query->where("company_id",request("filters.company_id"));
         }
         
         //filter select on  type
@@ -126,6 +138,14 @@ class OrderSchedule extends CoreModel {
     
     public function client(){
         return $this->belongsTo(User::class, 'client_id', 'id');
+    }
+
+    public function branch(){
+        return $this->belongsTo(CompanyBranch::class, 'branch_id', 'id');
+    }
+
+    public function company(){
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
     public function receiverAddress(){

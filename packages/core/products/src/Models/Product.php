@@ -12,8 +12,8 @@ use Carbon\Carbon;
 use App\Observers\GlobalModelObserver;
 use Core\Orders\Models\OrderItem;
 use Core\Users\Models\User;
-use Core\Users\Models\ContractsPrice;
-use Core\Users\Models\ContractsCustomerPrice;
+use Core\B2B\Models\ContractsPrice;
+use Core\B2B\Models\ContractsCustomerPrice;
 
 #[ObservedBy([ProductObserver::class])]
 #[ObservedBy([GlobalModelObserver::class])]

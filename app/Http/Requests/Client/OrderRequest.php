@@ -28,9 +28,9 @@ class OrderRequest extends FormRequest
             'delivery_address_id' => 'required|exists:addresses,id',
             'delivery_date' => 'required|date',
             'delivery_time' => 'required|exists:category_date_times,id',
-            'order_type' => 'required|in:me,customer',
-            'customer_name' => 'required_if:order_type,customer|nullable|string|max:255',
-            'customer_phone' => 'required_if:order_type,customer|nullable|string|max:20',
+            'b2b_type' => 'required|in:company,client',
+            'customer_name' => 'required_if:b2b_type,client|nullable|string|max:255',
+            'customer_phone' => 'required_if:b2b_type,client|nullable|string|max:20',
             'customer_email' => 'nullable|email|max:255',
         ];
     }

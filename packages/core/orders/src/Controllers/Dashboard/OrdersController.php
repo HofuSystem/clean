@@ -37,7 +37,7 @@ use Core\Products\Services\ProductsService;
 use Core\Orders\Services\OrderItemsService;
 use Core\Orders\Services\ReportReasonsService;
 use Core\Products\Models\Product;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use RuntimeException;
 
 class OrdersController extends Controller
@@ -79,8 +79,8 @@ class OrdersController extends Controller
 		$operators              = $this->usersService->selectable('id','fullname',['phone'],['operator'],['roles']);
 		$orderItems             = $order->items()->withTrashed()->get();
         $comments               = $order->comments()->where('parent_id',null)->get();
-        $contract               = Contract::forClient($order->client_id)->currentActive()->first();
-        $products               = $this->productsService->getProductsCard($order->type,$order->client);
+        $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
+        $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
         $categories             = $this->categoriesService->selectable('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id' ,null]],true);
         $subCategories          = $this->categoriesService->getSelect('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id','!=' ,null]],true);
 		$items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);

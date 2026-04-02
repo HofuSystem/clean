@@ -3,7 +3,7 @@
 namespace Core\Users\Services;
 
 use Core\Comments\Services\CommentingService;
-use Core\Users\Models\Contract;
+use Core\B2B\Models\Contract;
 use Core\Users\DataResources\ContractsResource;
 
 class ContractsService
