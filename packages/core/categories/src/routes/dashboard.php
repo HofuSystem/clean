@@ -11,6 +11,7 @@ use Core\Categories\Controllers\Dashboard\CategorySettingsController;
 use Core\Categories\Controllers\Dashboard\SlidersController;
 use Core\Categories\Controllers\Dashboard\CategoryDateTimesController;
 use Core\Categories\Controllers\Dashboard\PricesController;
+use Core\Categories\Controllers\Dashboard\CategoryAppFeaturesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -218,6 +219,11 @@ Route::group(
                     Route::delete('{id}/delete', [PricesController::class,'delete'])->name('delete');
                     Route::post('{id}/comment', [PricesController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [PricesController::class,'restore'])->name('restore');
+                });
+                Route::group(['prefix' => 'category-app-features', 'as' => 'category-app-features.' ], function () {
+                    Route::post('create', [CategoryAppFeaturesController::class,'storeOrUpdate'])->name('create');
+                    Route::delete('{id}/delete', [CategoryAppFeaturesController::class,'delete'])->name('delete');
+                    Route::put('{id}/edit', [CategoryAppFeaturesController::class,'storeOrUpdate'])->name('edit');
                 });
                 //{{ new_routes}}
 

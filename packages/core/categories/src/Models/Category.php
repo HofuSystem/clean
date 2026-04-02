@@ -137,6 +137,10 @@ class Category extends CoreModel implements TranslatableContract{
         return $this->hasMany(CategoryDateTime::class, 'category_id', 'id');
     }
 
+    public function appFeatures(){
+        return $this->hasMany(CategoryAppFeature::class, 'category_id', 'id');
+    }
+
     //end relations
 
     //start Attributes

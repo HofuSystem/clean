@@ -203,7 +203,7 @@ class CategoriesController extends Controller
     public function servicesDetails(Request $request, $categoryId)
     {
         try {
-            $category = Category::with(['translations', 'products.translations'])
+            $category = Category::with(['translations', 'products.translations', 'appFeatures.translations'])
                 ->active()
                 ->with(['products' => function ($query) {
                     $query->active();

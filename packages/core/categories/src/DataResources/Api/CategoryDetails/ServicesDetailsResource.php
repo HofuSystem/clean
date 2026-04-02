@@ -2,7 +2,9 @@
 
 namespace Core\Categories\DataResources\Api\CategoryDetails;
 
+use Core\Categories\DataResources\Api\CategoryAppFeaturesResource;
 use Core\Categories\Models\Category;
+use Core\Info\DataResources\CityResource;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -42,6 +44,8 @@ class ServicesDetailsResource extends JsonResource
             'delivery_price'    => (double)$deliveryPrice?->price,
             'availability'      => ['is_available'=> $isAvailable,'message'=>$message],
             'products'          => SimpleProductResource::collection($this->products),
+            'app_features'      => CategoryAppFeaturesResource::collection($this->appFeatures),
+            'cities'            => CityResource::collection($this->cities),
         ];
     }
 }
