@@ -38,15 +38,15 @@ class OrderResource extends JsonResource
             'type'                  => $this->type ,
             'client'                => $this->b2b_type == 'company' ? new SimpleCompaniesResource($this->company) : new SimpleUserResource($this->client),
             
-            'day'                   => $delivery?->date         ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),
-            'date'                  => $delivery?->date         ? Carbon::parse($delivery?->date)->format('Y-m-d') : Carbon::parse($receiver?->date)->format('Y-m-d'),
-            'from_time'             => $delivery?->time         ? Carbon::parse($delivery?->time)->format('H:i') : Carbon::parse($receiver?->time)->format('H:i'),
-            'to_time'               => $delivery?->to_time      ? Carbon::parse($delivery->to_time)->addHour()->format('H:i') : Carbon::parse($receiver?->to_time)->addHour()->format('H:i'),
+            'day'                   => $delivery ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),
+            'date'                  => $delivery ? Carbon::parse($delivery?->date)->format('Y-m-d') : Carbon::parse($receiver?->date)->format('Y-m-d'),
+            'from_time'             => $delivery ? Carbon::parse($delivery?->time)->format('H:i') : Carbon::parse($receiver?->time)->format('H:i'),
+            'to_time'               => $delivery ? Carbon::parse($delivery->to_time)->format('H:i') : Carbon::parse($receiver?->to_time)->format('H:i'),
             
-            'receiving_day'         => $receiver?->date         ? Carbon::parse($receiver?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
-            'receiving_date'        => $receiver?->date         ? Carbon::parse($receiver?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
-            'receiving_from_time'   => $receiver?->time         ? Carbon::parse($receiver?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
-            'receiving_to_time'     => $receiver?->to_time         ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
+            'receiving_day'         => $receiver ? Carbon::parse($receiver?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
+            'receiving_date'        => $receiver ? Carbon::parse($receiver?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
+            'receiving_from_time'   => $receiver ? Carbon::parse($receiver?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
+            'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
 
             'created_at'            => $this->created_at->format('d-m-Y'),
             'category'              => $this->items()->first()?->product()->first()?->category?->name ?? '',
