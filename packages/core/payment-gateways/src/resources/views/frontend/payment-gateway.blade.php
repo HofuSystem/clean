@@ -422,7 +422,7 @@
         var callbackUrl =
             '{{ route('payment-gateway.web.callback', ['transaction_id' => $transaction->transaction_id]) }}';
         var executePaymentUrl =
-            '{{ route('payment-gateway.web.execute - embedded', ['transaction_id' => $transaction->transaction_id]) }}';
+            '{{ route('payment-gateway.web.execute-embedded', ['transaction_id' => $transaction->transaction_id]) }}';
         var csrfToken = '{{ csrf_token() }}';
         var currentLanguage = '{{ app()->getLocale() }}';
         var paymentLanguage = (currentLanguage === 'ar') ? 'ar' : 'en';
