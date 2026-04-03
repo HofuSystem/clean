@@ -28,7 +28,7 @@ class CreateScheduledOrders extends Command
         // Get scheduled orders where type is 'date' and receiver_date is tomorrow
         $tomorrow = now()->addDay()->toDateString();
         $scheduledOrders = \Core\Orders\Models\OrderSchedule::query()
-            ->has('company')
+            ->has('company')->has('branch')
             ->where('type', 'date')
             ->whereDate('receiver_date', $tomorrow)
             ->get();
@@ -59,7 +59,7 @@ class CreateScheduledOrders extends Command
         // Handle 'day' type schedules where receiver_day is tomorrow's day name
         $orderReceivingDay = strtolower(now()->addDay()->format('l')); // e.g., 'Monday'
         $scheduledDayOrders = \Core\Orders\Models\OrderSchedule::query()
-            ->has('company')
+            ->has('company')->has('branch')
             ->where('type', 'day')
             ->where('receiver_day', $orderReceivingDay)
             ->get();

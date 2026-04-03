@@ -106,6 +106,40 @@ Route::get('/test-migration', function () {
             return "Migration Step 2 complete.";
         }
 
+        // Stage 3: Update OrderSchedules
+        if ($stage == 3) {
+            echo "<h2>Stage 3: Updating OrderSchedules</h2>";
+            $users = $query->get();
+            $count = 0;
+            $scheduleUpdates = 0;
+            foreach ($users as $user) {
+                $company = Core\B2B\Models\Company::where('owner_id', $user->id)->first();
+                if (!$company) {
+                    echo "Skipping user: {$user->fullname} (Company not found, run Stage 1 first)<br>";
+                    continue;
+                }
+
+                $branch = Core\B2B\Models\CompanyBranch::where('company_id', $company->id)->first();
+                if (!$branch) {
+                    echo "Skipping user: {$user->fullname} (Branch not found, run Stage 2 first)<br>";
+                    continue;
+                }
+
+                // Update OrderSchedules
+                $updated = Core\Orders\Models\OrderSchedule::where('client_id', $user->id)
+                    ->update([
+                        'company_id' => $company->id,
+                        'branch_id' => $branch->id,
+                    ]);
+
+                echo "Processed user: {$user->fullname} ($updated schedules updated)<br>";
+                $scheduleUpdates += $updated;
+                $count++;
+            }
+            echo "<br>Finished Stage 3. Processed $count users and updated $scheduleUpdates schedules.<br>";
+            return "Migration Step 3 complete.";
+        }
+
     });
 Route::group(
 [
