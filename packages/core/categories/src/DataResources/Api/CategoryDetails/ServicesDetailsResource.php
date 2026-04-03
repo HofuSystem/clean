@@ -5,6 +5,7 @@ namespace Core\Categories\DataResources\Api\CategoryDetails;
 use Core\Categories\DataResources\Api\CategoryAppFeaturesResource;
 use Core\Categories\Models\Category;
 use Core\Info\DataResources\CityResource;
+use Core\Info\Models\City;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,9 +24,13 @@ class ServicesDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
+        $showCities         = $this->cities;
         $categoryId         = $this->id;
         $cities             = $this->cities->pluck('id')->toArray();
         $isAvailable        = (($this->for_all_cities || in_array(auth('api')->user()?->profile?->city_id,$cities)) and $this->status == "active");
+        if ($this->for_all_cities) {
+            $showCities = City::all();
+        }
         $message            = (!$isAvailable) ? SettingsService::getDataBaseSetting('not_available_message_'.config('app.locale')) : null;
         $deliveryPrice      = DeliveryPrice::where(function($categoryQuery)use($categoryId){
             $categoryQuery->where('category_id',$categoryId)->orWhereNull('category_id');
@@ -45,7 +50,7 @@ class ServicesDetailsResource extends JsonResource
             'availability'      => ['is_available'=> $isAvailable,'message'=>$message],
             'products'          => SimpleProductResource::collection($this->products),
             'app_features'      => CategoryAppFeaturesResource::collection($this->appFeatures),
-            'cities'            => CityResource::collection($this->cities),
+            'cities'            => CityResource::collection($showCities),
         ];
     }
 }
