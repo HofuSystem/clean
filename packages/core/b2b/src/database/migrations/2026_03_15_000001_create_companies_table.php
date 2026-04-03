@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname', 255);
+            $table->string('fullname', 1000);
             $table->string('email', 255)->nullable()->unique();
             $table->string('phone', 50)->nullable();
             $table->string('image', 255)->nullable();

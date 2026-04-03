@@ -3,6 +3,7 @@
 namespace Core\Users\Models;
 
 use App\Observers\GlobalModelObserver;
+use Core\B2B\Models\Contract;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Core\Users\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
