@@ -2,6 +2,7 @@
 
 namespace Core\Orders\DataResources\Api\Client\Order;
 
+use Core\B2B\DataResources\Api\SimpleCompaniesResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\HomeMaidSale;
 use Carbon\Carbon;
@@ -39,7 +40,7 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'city'                      => new CityResource($this->whenLoaded('city')),
             'district'                  => new DistrictResource($this->whenLoaded('distinct')),
 
-            'client'                    => new SimpleUserResource($this->client),
+            'client'                    => $this->b2b_type == 'company' ? new SimpleCompaniesResource($this->company) : new SimpleUserResource($this->client),
 
             'execute_day'               =>  $technical?->date ? Carbon::parse($technical?->date)->format('l')          : null,
             'execute_date'              =>  $technical?->date ? Carbon::parse($technical?->date)->format('Y-m-d')      : null,

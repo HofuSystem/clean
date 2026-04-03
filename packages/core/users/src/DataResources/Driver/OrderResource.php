@@ -3,6 +3,8 @@
 namespace Core\Users\DataResources\Driver;
 
 use Carbon\Carbon;
+use Core\B2B\DataResources\Api\SimpleCompaniesResource;
+use Core\B2B\DataResources\CompaniesResource;
 use Core\Orders\DataResources\Api\Client\Order\OrderTransactionsResource;
 use Core\Users\DataResources\Api\SimpleUserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -34,7 +36,7 @@ class OrderResource extends JsonResource
             'id'                    => $this->id ,
             'reference_id'          => $this->reference_id ,
             'type'                  => $this->type ,
-            'client'                => new SimpleUserResource($this->client),
+            'client'                => $this->b2b_type == 'company' ? new SimpleCompaniesResource($this->company) : new SimpleUserResource($this->client),
             
             'day'                   => $delivery?->date         ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),
             'date'                  => $delivery?->date         ? Carbon::parse($delivery?->date)->format('Y-m-d') : Carbon::parse($receiver?->date)->format('Y-m-d'),
