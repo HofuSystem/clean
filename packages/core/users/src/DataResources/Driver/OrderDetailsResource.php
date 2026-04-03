@@ -28,6 +28,11 @@ class OrderDetailsResource extends JsonResource
         }
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
+        $technical = $this->orderRepresentatives->where('type','technical')->first();
+        if($technical){
+            $delivery = $technical;
+        }
+
         $driverStatus = in_array($this->status, ['pending', 'receiving_driver_accepted', 'order_has_been_delivered_to_admin']) ? 'receiver' : 'delivery';
         $lat = null;
         $lng = null;
