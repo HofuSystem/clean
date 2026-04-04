@@ -101,6 +101,7 @@ Route::group(
                 });
 
                 Route::group(['prefix' => 'users', 'as' => 'users.' ], function () {
+                    Route::get('search', [UsersController::class,'search'])->name('search');
                     Route::get('', [UsersController::class,'index'])->name('index');
                     Route::post('', [UsersController::class,'dataTable'])->name('index');
                     Route::get('create', [UsersController::class,'createOrEdit'])->name('create');

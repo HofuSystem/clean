@@ -228,5 +228,24 @@ class UsersController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }
-    
+    public function search(Request $request){
+        $query = $request->get('q');
+        $users = \Core\Users\Models\User::where(function($q) use ($query) {
+                $q->where('fullname', 'LIKE', "%{$query}%")
+                  ->orWhere('phone', 'LIKE', "%{$query}%")
+                  ->orWhere('email', 'LIKE', "%{$query}%");
+            })
+            ->limit(20)
+            ->get(['id', 'fullname', 'phone', 'image']);
+
+        return response()->json([
+            'results' => $users->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->fullname . ' (' . $user->phone . ')',
+                    'image' => $user->avatar_url // Using the attribute from User model
+                ];
+            })
+        ]);
+    }
 }

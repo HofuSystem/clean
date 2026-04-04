@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Core\Comments\Requests\CommentRequest;
 use Core\Comments\DataResources\CommentResource;
 use Core\Info\Services\CitiesService;
+use Core\Settings\Helpers\ToolHelper;
 use Core\Notification\Requests\NotificationsRequest; 
 use Core\Notification\Requests\ImportNotificationsRequest; 
 use Core\Notification\Exports\NotificationsExport;
@@ -46,8 +47,8 @@ class NotificationsController extends Controller
         $item       = isset($id)    ? $this->notificationsService->get($id) : null;
         $screen     = isset($item)  ? 'Notification-edit'          : 'Notification-create';
         $title      = isset($item)  ? trans("Notification  edit")  : trans("Notification  create");
-		$senders    = $this->usersService->selectable('id','fullname',['phone']);
-
+        $selectedIds = isset($item) ? (ToolHelper::isJson($item->for_data) ? json_decode($item->for_data, true) : []) : [];
+        $senders    = isset($item) ? \Core\Users\Models\User::whereIn('id', (array)$selectedIds)->get(['id', 'fullname', 'phone']) : collect();
 
         return view('notification::pages.notifications.edit', compact('item','title','screen','senders') );
     }

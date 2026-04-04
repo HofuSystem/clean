@@ -90,13 +90,14 @@
                             </div>
                             <div class="form-group mb-3 col-md-12" id="selected-users">
                                 <label class="" for="selected_users">{{ trans('selected users') }}</label>
-                                <select class="custom-select  form-select advance-select" name="selected_users"
+                                <select class="custom-select  form-select " name="selected_users"
                                     id="selected_users" multiple>
 
-                                    <option value="">{{ trans('select sender') }}</option>
                                     @foreach ($senders ?? [] as $sItem)
-                                        <option data-id="{{ $sItem->id }}" @selected(isset($item) and in_array($sItem->id, $item->for_data_array))
-                                            value="{{ $sItem->id }}">{{ $sItem->phone . ' : ' . $sItem->fullname }}
+                                        <option @selected(isset($item) and in_array($sItem->id, $item->for_data_array))
+                                            value="{{ $sItem->id }}"
+                                            data-image="{{ $sItem->avatar_url }}">
+                                            {{ $sItem->fullname . ' (' . $sItem->phone . ')' }}
                                         </option>
                                     @endforeach
 
@@ -326,6 +327,51 @@
             }
         });
         $('#for').trigger('change')
+        function formatUser(user) {
+            if (user.loading) return user.text;
+            let image = user.image;
+            if (!image && user.element) {
+                image = $(user.element).data('image');
+            }
+            let markup = `
+                <div class='select2-result-user d-flex align-items-center'>
+                    <div class='select2-result-user__avatar me-2'><img src='${image}' class='rounded-circle' style='width: 30px; height: 30px;' /></div>
+                    <div class='select2-result-user__info'>
+                        <div class='select2-result-user__fullname fw-bold'>${user.text}</div>
+                    </div>
+                </div>`;
+            return markup;
+        }
+
+        function formatUserSelection(user) {
+            return user.text || user.id;
+        }
+
+        $('#selected_users').select2({
+            ajax: {
+                url: "{{ route('dashboard.users.search') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            },
+            templateResult: formatUser,
+            templateSelection: formatUserSelection,
+            escapeMarkup: function(markup) { return markup; },
+            minimumInputLength: 2,
+            width: '100%',
+            placeholder: "{{ trans('select users') }}"
+        });
+
         $('#selected_users').change(function(e) {
             e.preventDefault();
             let value = $(this).val();
@@ -415,7 +461,7 @@
         });
         
         @if (!isset($item))
-            $('#operation-form select , #operation-form input, #operation-form textarea').change(function(e) {
+            $('#for, #users-filters input, #selected_users').change(function(e) {
                 e.preventDefault();
                 formData = getFormData($('#operation-form'));
                 DataTable.draw();
