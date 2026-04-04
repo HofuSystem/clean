@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>فاتورة مبدئية | Proforma Invoice</title>
+    <title>فاتورة |  Invoice</title>
     <style>
         @font-face {
             font-family: 'Cairo';
@@ -381,7 +381,7 @@
         <div class="header">
             <div class="logo"><img src="{{ config('app.logo') }}" alt="Clean Station logo"></div>
             <div class="brand">
-                <h1 class="title-ar">فاتورة مبدئية</h1>
+                <h1 class="title-ar">فاتورة</h1>
                 <div class="title-en">Proforma Invoice</div>
                 <div class="tag">Clean Station — Clean just click</div>
             </div>
