@@ -511,7 +511,7 @@ class OrdersService
         }
         $deliveryCharge = SettingsService::getDataBaseSetting('delivery_charge');
         $freeDelivery = SettingsService::getDataBaseSetting('free_delivery');
-        if (($subTotal - $couponValue) >= $freeDelivery) {
+        if (($subTotal - $couponValue) >= $freeDelivery || $order->b2b_type == 'company') {
             $deliveryPrice = 0;
         } elseif ($deliveryPrice == 0) {
             $deliveryPrice = $deliveryCharge;
