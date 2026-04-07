@@ -1,4 +1,7 @@
 {
+    "bank account number": "Bank Account Number",
+    "iban": "IBAN",
+    "taxable invoice": "Taxable Invoice",
     "important_contract_notes_title": "Important Contract Notes:",
     "important_contract_notes_point_1": "The first party (Clean Station) is committed to providing laundry services according to the agreed-upon schedule.",
     "important_contract_notes_point_2": "In case of loss or damage to any item due to laundry, compensation will be made according to the company policy attached to the main contract.",

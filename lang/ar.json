@@ -1,4 +1,7 @@
 {
+    "bank account number": "رقم الحساب البنكي",
+    "iban": "الآيبان",
+    "taxable invoice": "فاتورة ضريبية",
     "important_contract_notes_title": "ملاحظات هامة للتعاقد:",
     "important_contract_notes_point_1": "يلتزم الطرف الأول (كلين ستيشن) بتوفير خدمات الغسيل حسب الجدول المتفق عليه.",
     "important_contract_notes_point_2": "في حالة فقدان أو تلف أي قطعة بسبب الغسيل، يتم التعويض حسب سياسة الشركة المرفقة بالعقد الأساسي.",

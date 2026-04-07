@@ -100,11 +100,9 @@
                                 {{ trans('cancel') }} </a>
                         @endif
                         <!--end::Primary button-->
-                        @if ($order->status != 'issue')
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn fw-bold btn-danger" id="issueStatusBtn" data-id="{{ $order->id }}">
-                                {{ trans('issue status') }} </a>
-                            <!--end::Primary button-->
+                        @if ($order->electronicInvoice)
+                            <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="btn fw-bold btn-dark">
+                                {{ trans('Electronic Invoice') }} </a>
                         @endif
                     @endisset
                 </div>
@@ -154,6 +152,12 @@
                                     {{ trans('invoice') }}</a>
 
                             </li>
+                            @if ($order->electronicInvoice)
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}">
+                                        {{ trans('Electronic Invoice') }}</a>
+                                </li>
+                            @endif
                         </ul>
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade @if (!request()->has('tab') or empty(request('tab'))) show active @endif"

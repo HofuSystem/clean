@@ -15,6 +15,7 @@ use Core\Orders\Controllers\Dashboard\OrderInvoicesController;
 use Core\Orders\Controllers\Dashboard\DeliveryPricesController;
 use Core\Orders\Controllers\Dashboard\OrderSchedulesController;
 use Core\Orders\Controllers\Dashboard\OrderTransactionsController;
+use Core\Orders\Controllers\Dashboard\ElectronicInvoicesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,7 @@ Route::group(
                         Route::post('update-item', [OrdersController::class,'updateItem'])->name('edit');
                         Route::delete('delete', [OrdersController::class,'destroyItem'])->name('destroy');
                     });
+                  
                 });
 
                 Route::group(['prefix' => 'order-items', 'as' => 'order-items.' ], function () {
@@ -235,7 +237,12 @@ Route::group(
                     Route::delete('{id}/delete', [OrderTransactionsController::class,'delete'])->name('delete');
                     Route::post('{id}/comment', [OrderTransactionsController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [OrderTransactionsController::class,'restore'])->name('restore');
-                });
+                });        
+                Route::group(['prefix' => 'electronic-invoices', 'as' => 'electronic-invoices.' ], function () {
+                    Route::get('{id}', [ElectronicInvoicesController::class, 'show'])->name('show');
+                    Route::get('{id}/download', [ElectronicInvoicesController::class, 'downloadPdf'])->name('download');
+                    Route::get('{orderId}/generate', [ElectronicInvoicesController::class, 'generate'])->name('generate');
+                });       
                 //{{ new_routes}}
 
 

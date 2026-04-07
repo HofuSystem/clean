@@ -56,6 +56,14 @@
                                         <td>{{ $item->phone ?? '-' }}</td>
                                     </tr>
                                     <tr>
+                                        <th>@lang('bank account number')</th>
+                                        <td>{{ $item->bank_account_number ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@lang('iban')</th>
+                                        <td>{{ $item->iban ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
                                         <th>@lang('owner')</th>
                                         <td>{{ $item->owner?->fullname ?? '-' }}</td>
                                     </tr>

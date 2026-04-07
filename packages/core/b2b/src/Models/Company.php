@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class Company extends CoreModel
 {
     protected $table    = 'companies';
-    protected $fillable = ['fullname', 'line_of_business', 'email', 'phone', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
+    protected $fillable = ['fullname', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
     protected $guarded  = [];
 
     // ─── Scopes ──────────────────────────────────────────────────────────────

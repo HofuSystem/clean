@@ -95,14 +95,28 @@
                                             value="{{ old('email', $item->email ?? null) }}">
                                     </div>
 
-                                    <div class="form-group mb-3 col-md-6">
+                                    <div class="form-group mb-3 col-md-3">
                                         <label for="phone">{{ trans('phone') }}</label>
                                         <input type="text" name="phone" class="form-control"
                                             placeholder="{{ trans('Enter phone') }}"
                                             value="{{ old('phone', $item->phone ?? null) }}">
                                     </div>
 
-                                    <div class="form-group mb-3 col-md-6">
+                                    <div class="form-group mb-3 col-md-3">
+                                        <label for="bank_account_number">{{ trans('bank account number') }}</label>
+                                        <input type="text" name="bank_account_number" class="form-control"
+                                            placeholder="{{ trans('Enter bank account number') }}"
+                                            value="{{ old('bank_account_number', $item->bank_account_number ?? null) }}">
+                                    </div>
+
+                                    <div class="form-group mb-3 col-md-3">
+                                        <label for="iban">{{ trans('iban') }}</label>
+                                        <input type="text" name="iban" class="form-control"
+                                            placeholder="{{ trans('Enter IBAN') }}"
+                                            value="{{ old('iban', $item->iban ?? null) }}">
+                                    </div>
+
+                                    <div class="form-group mb-3 col-md-3">
                                         <label for="owner_id">{{ trans('owner') }}</label>
                                         <select class="custom-select form-select ajax-select" data-url="{{ route('dashboard.companies.search-users') }}" name="owner_id" id="owner_id">
                                             @if(isset($item) && $item->owner)

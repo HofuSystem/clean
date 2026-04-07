@@ -8,7 +8,9 @@
     "require": {
         "php": "^8.2",
         "astrotomic/laravel-translatable": "^11.15",
+        "barryvdh/laravel-dompdf": "^3.1",
         "core/admin": "*",
+        "core/b2b": "*",
         "core/blog": "*",
         "core/cache": "*",
         "core/categories": "*",
@@ -26,7 +28,6 @@
         "core/users": "*",
         "core/wallet": "*",
         "core/workers": "*",
-        "core/b2b": "*",
         "giggsey/libphonenumber-for-php": "^8.12",
         "google/apiclient": "^2.18",
         "intervention/image": "^2.7",
@@ -38,6 +39,7 @@
         "maatwebsite/excel": "*",
         "mcamara/laravel-localization": "*",
         "myfatoorah/library": "^2.2",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.9",
         "spatie/laravel-permission": "^6.10",
         "yoeunes/toastr": "*"

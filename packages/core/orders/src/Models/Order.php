@@ -399,6 +399,11 @@ class Order extends CoreModel
         return $this->hasMany(OrderTransaction::class, 'order_id', 'id');
     }
 
+    public function electronicInvoice()
+    {
+        return $this->hasOne(Invoice::class, 'order_id', 'id');
+    }
+
     public function histories()
     {
         return $this->hasMany(OrderHistory::class, 'order_id', 'id')->orderByDesc('created_at');
@@ -486,6 +491,20 @@ class Order extends CoreModel
             $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.' . $slug . '.invoice', ['id' => $this->reference_id,'forCompany' => $forCompany ?? false ]) . '">
                 <i class="fas fa-print"></i> <span>' . trans('invoice') . '</span>
                 </a>';
+        }
+        $invoice = $this->electronicInvoice;
+        if ($invoice) {
+            if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.show')) {
+                $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.show', ['id' => $invoice->id]) . '">
+                    <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
+                    </a>';
+            }
+        } else {
+            if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.generate')) {
+                $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.generate', ['orderId' => $this->id]) . '">
+                    <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
+                    </a>';
+            }
         }
         if (auth('web')->check() and auth('web')->user()->can('dashboard.' . $slug . '.delete')) {
             $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 delete-btn" href="' . route('dashboard.' . $slug . '.delete', ['id' => $this->id,'forCompany' => $forCompany ?? false ]) . '">

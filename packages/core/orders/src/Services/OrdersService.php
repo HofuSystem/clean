@@ -44,7 +44,8 @@ class OrdersService
         protected OrderTypesOfDatasService $orderTypesOfDatasService,
         protected TelegramNotificationService $telegramNotificationService,
         protected MyFatoorahService $myfatoorahService,
-        protected OrderHistoryService $orderHistoryService
+        protected OrderHistoryService $orderHistoryService,
+        protected InvoiceService $invoiceService
 
     ) {}
 
@@ -185,6 +186,7 @@ class OrdersService
             }
             $order = $this->reCalcOrder($order->id);
         }
+        $this->invoiceService->updateOrCreateInvoice($order->id);
         $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
         if (!in_array($clientId, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
@@ -526,6 +528,7 @@ class OrdersService
             'delivery_price'        => $deliveryPrice,
         ]);
         $this->calcOriginalProductsTotal($order->id);
+        $this->invoiceService->updateOrCreateInvoice($order->id);
         return $order;
     }
     public function calcOriginalProductsTotal($orderId)
