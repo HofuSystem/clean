@@ -74,6 +74,7 @@ class CreateScheduledOrders extends Command
             $client = $schedule->company?->owner;
             $data['company_id']         = $schedule->company_id;
             $data['branch_id']          = $schedule->branch_id;
+            $data['b2b_type']           = 'company';
             $data['client_id']          = $client?->id;
             $data['receiving_date']     = $orderReceivingDate;
             $data['receiving_time']     = $schedule->receiver_time;
