@@ -45,6 +45,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-active-primary py-5 @if(!isset($contract)) disabled @endif" data-bs-toggle="tab" href="#kt_company_step_6">@lang('6- Customer Prices')</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-active-primary py-5 @if(!isset($item)) disabled @endif" data-bs-toggle="tab" href="#kt_company_step_7">@lang('7- Financials')</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -373,6 +376,50 @@
                                 <button type="button" class="btn btn-light-primary font-weight-bold prev-step"><i class="fas fa-arrow-left"></i> @lang('Previous')</button>
                             </div>
                         </div>
+
+                        <!--– Step 7: Financials –-->
+                        <div class="tab-pane fade" id="kt_company_step_7" role="tabpanel">
+                            <div class="card-body">
+                                @if(isset($item))
+                                <div class="items-container"
+                                    data-items-on="company_id"
+                                    data-items-name="b2b-financials"
+                                    data-items-from="b2b-financials">
+                                    <div class="d-flex justify-content-between align-items-center mb-5">
+                                        <h3>{{ trans('Financials') }}</h3>
+                                        <button class="btn btn-primary create-new-items"><i class="fas fa-plus"></i> @lang('Add Financial Record')</button>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover text-center">
+                                            <thead class="table-primary">
+                                                <tr>
+                                                    <th scope="col" data-name="reference_id">{{ trans('Financial Reference ID') }}</th>
+                                                    <th scope="col" data-name="amount">{{ trans('Amount') }}</th>
+                                                    <th scope="col" data-name="collection_date">{{ trans('Collection Date') }}</th>
+                                                    <th scope="col" data-name="note">{{ trans('Note') }}</th>
+                                                    <th scope="col" data-name="actions" data-type="actions">{{ trans('actions') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($financials ?? [] as $financial)
+                                                    <tr data-id="{{ $financial->id }}" data-data="{{ json_encode($financial->itemData) }}">
+                                                        <td>{{ $financial->reference_id }}</td>
+                                                        <td>{{ $financial->amount }}</td>
+                                                        <td>{{ $financial->collection_date?->format('Y-m-d') }}</td>
+                                                        <td>{{ $financial->note }}</td>
+                                                        <td class="options">{!! $financial->itemsActions !!}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="card-footer d-flex justify-content-start">
+                                <button type="button" class="btn btn-light-primary font-weight-bold prev-step"><i class="fas fa-arrow-left"></i> @lang('Previous')</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -603,6 +650,50 @@
     </div>
     <div class="modal fade" id="contracts-customer-pricesDeleteModel" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog"><div class="modal-content text-center"><div class="modal-body"><button type="button" class="btn-close mb-5" data-bs-dismiss="modal"></button><h1 class="mb-3">@lang('Are you sure?')</h1><p>@lang('You want to delete this over price?')</p><button type="button" class="btn btn-danger items-final-delete">@lang('Delete')</button></div></div></div>
+    </div>
+
+    <!--– Financials Modal –-->
+    <div class="modal fade" id="b2b-financialsModal" aria-hidden="true"
+        aria-labelledby="b2b-financialsModalLabel"
+        data-store="{{ route('dashboard.b2b-financials.create') }}">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="b2b-financialsModalLabel">{{ trans('Financial Record') }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="modal-form items-modal-form">
+                        <input type="hidden" name="company_id" value="{{ $item->id }}">
+                        <div class="row">
+                            <div class="form-group mb-3 col-md-6">
+                                <label for="reference_id">{{ trans('Financial Reference ID') }}</label>
+                                <input type="text" name="reference_id" class="form-control" readonly placeholder="{{ trans('Auto-generated') }}">
+                            </div>
+                            <div class="form-group mb-3 col-md-6">
+                                <label class="required" for="amount">{{ trans('Amount') }}</label>
+                                <input type="number" name="amount" class="form-control" required step="0.01">
+                            </div>
+                            <div class="form-group mb-3 col-md-6">
+                                <label for="collection_date">{{ trans('Collection Date') }}</label>
+                                <input type="date" name="collection_date" class="form-control">
+                            </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <label for="note">{{ trans('Note') }}</label>
+                                <textarea name="note" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-12 mt-3 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary font-weight-bold">{{ trans('Submit') }}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="b2b-financialsDeleteModel" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content text-center"><div class="modal-body"><button type="button" class="btn-close mb-5" data-bs-dismiss="modal"></button><h1 class="mb-3">@lang('Are you sure?')</h1><p>@lang('You want to delete this financial record?')</p><button type="button" class="btn btn-danger items-final-delete">@lang('Delete')</button></div></div></div>
     </div>
     @endif
 

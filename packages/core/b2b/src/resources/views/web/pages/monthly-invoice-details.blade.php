@@ -263,6 +263,7 @@
                         <thead>
                             <tr>
                                 <th class="w-24">{{ trans('client.invoice_number') }}</th>
+                                <th class="w-24">{{ trans('client.details') }}</th>
                                 <th class="w-24">{{ trans('client.delivery_date') }}</th>
                                 <th class="w-24">{{ trans('client.debtor') }}</th>
                                 <th class="w-20">{{ trans('client.creditor') }}</th>
@@ -270,13 +271,20 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-700 bg-white" id="statement-tbody">
-                          @foreach($orders as $order)
+                            @php
+                            $totalAmountCredit = 0;
+                            @endphp
+                          @foreach($items as $item)
+                          @php
+                            $totalAmountCredit += $item->creditor - $item->debtor;
+                          @endphp
                             <tr class="hover:bg-gray-50 transition stat-row">
-                                <td contenteditable="true" dir="ltr">{{ $order->reference_id }}</td>
-                                <td contenteditable="true" dir="ltr">{{ $order->orderRepresentatives()->where('type', 'delivery')?->first()?->date }}</td>
-                                <td contenteditable="true">{{ $order->total_price + $order->total_coupon?? 0 }}</td>
-                                <td contenteditable="true">{{ $order->total_coupon ?? 0 }}</td>
-                                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $order->total_price ?? 0 }}</span></td>
+                                <td contenteditable="true" dir="ltr">{{ $item->reference_id }}</td>
+                                <td contenteditable="true" dir="ltr">{{ $item->note }}</td>
+                                <td contenteditable="true" dir="ltr">{{ $item->date }}</td>
+                                <td contenteditable="true">{{ $item->debtor }}</td>
+                                <td contenteditable="true">{{ $item->creditor }}</td>
+                                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $totalAmountCredit ?? 0 }}</span></td>
                             </tr>
                            @endforeach
                         </tbody>

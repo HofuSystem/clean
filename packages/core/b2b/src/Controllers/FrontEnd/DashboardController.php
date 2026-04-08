@@ -269,21 +269,57 @@ class DashboardController extends Controller
         $contract = Contract::where('company_id', $companyId)->currentActive()->first();
         $settings = \Core\Settings\Models\Setting::pluck('value', 'key');
 
-        $baseQuery = Order::query()
+        $orderQuery = Order::query()
             ->b2b('both')
             ->validOrders()
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month);
 
-        $totalAmount = $baseQuery->sum('total_price');
-        $ordersCount = $baseQuery->count();
+        $orders = $orderQuery->with(['orderRepresentatives' => function($q) {
+            $q->where('type', 'delivery');
+        }])->get();
 
-        $orders = $baseQuery->latest()->get();
+        $financials = \Core\B2B\Models\B2BFinancial::query()
+            ->where('company_id', $companyId)
+            ->whereYear('collection_date', $year)
+            ->whereMonth('collection_date', $month)
+            ->get();
+
+        $items = collect();
+
+        foreach ($orders as $order) {
+            $deliveryDate = $order->orderRepresentatives->first()?->date ?? $order->created_at->format('Y-m-d');
+            $items->push((object)[
+                'reference_id' => $order->reference_id,
+                'note'         => $order->b2b_financial_note,
+                'date'         => $deliveryDate,
+                'debtor'       => $order->total_price,
+                'creditor'     => 0,
+                'type'         => 'order'
+            ]);
+        }
+
+        foreach ($financials as $financial) {
+            $date = $financial->collection_date;
+            $items->push((object)[
+                'reference_id' => $financial->reference_id,
+                'note'         => $financial->note,
+                'date'         => $date,
+                'debtor'       => 0,
+                'creditor'     => $financial->amount,
+                'type'         => 'financial',
+            ]);
+        }
+
+        $items = $items->sortBy('date');
+
+        $totalAmount = $financials->sum('amount') -$orders->sum('total_price') ;
+        $ordersCount = $orders->count();
 
         $title = trans('client.monthly_invoice_details');
         $description = trans('client.monthly_invoice_details_description');
 
-        return view('b2b::web.pages.monthly-invoice-details', compact('orders', 'company', 'year', 'month', 'totalAmount', 'ordersCount', 'contract', 'settings', 'title', 'description'));
+        return view('b2b::web.pages.monthly-invoice-details', compact('items', 'company', 'year', 'month', 'totalAmount', 'ordersCount', 'contract', 'settings', 'title', 'description'));
     }
 
     public function showOrder($id)

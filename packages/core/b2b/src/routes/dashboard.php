@@ -7,6 +7,7 @@ use Core\B2B\Controllers\Dashboard\CompaniesController;
 use Core\B2B\Controllers\Dashboard\CompanyBranchesController;
 use Core\B2B\Controllers\Dashboard\CompanyEmployeesController;
 use Core\B2B\Controllers\Dashboard\CompanyPermissionsController;
+use Core\B2B\Controllers\Dashboard\B2BFinancialsController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Core\Info\Controllers\Dashboard\CountriesController;
@@ -125,6 +126,14 @@ Route::group(
                     Route::get('{id}/edit', [CompanyEmployeesController::class, 'createOrEdit'])->name('edit');
                     Route::put('{id}/edit', [CompanyEmployeesController::class, 'storeOrUpdate'])->name('edit');
                     Route::delete('{id}/delete', [CompanyEmployeesController::class, 'delete'])->name('delete');
+                });
+
+                Route::group(['prefix' => 'b2b-financials', 'as' => 'b2b-financials.'], function () {
+                    Route::post('', [B2BFinancialsController::class, 'dataTable'])->name('index');
+                    Route::post('create', [B2BFinancialsController::class, 'storeOrUpdate'])->name('create');
+                    Route::get('{id}/edit', [B2BFinancialsController::class, 'storeOrUpdate'])->name('edit');
+                    Route::put('{id}/edit', [B2BFinancialsController::class, 'storeOrUpdate'])->name('edit');
+                    Route::delete('{id}/delete', [B2BFinancialsController::class, 'delete'])->name('delete');
                 });
 
                 //{{ new_routes}}

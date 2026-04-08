@@ -31,6 +31,13 @@ class InvoiceService
             return null;
         }
 
+        // 0. Only generate for delivered or finished orders
+        if (!in_array($order->status, ['delivered', 'finished'])) {
+            // Remove existing invoice if status is not delivered or finished
+            Invoice::where('order_id', $order->id)->delete();
+            return null;
+        }
+
         // 1. Calculate values based on items
         $subtotal = 0;
         $vatAmount = 0;

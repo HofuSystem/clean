@@ -282,6 +282,7 @@ class OrdersService
                 ]);
             }
         }
+        $this->invoiceService->updateOrCreateInvoice($orderId);
     }
 
     private function refundToWallet($user, float $amount, string $notes, string $transaction_type,$order)
@@ -309,6 +310,7 @@ class OrdersService
     {
         $order = Order::findOrFail($orderId);
         OrderReport::where('order_id', $order->id)->forceDelete();
+        $this->invoiceService->updateOrCreateInvoice($orderId);
     }
     public function getDateTimes(array $productIds)
     {
@@ -640,6 +642,11 @@ class OrdersService
                
             }
         }
+    }
+
+    public function updateB2bFinancialNote(array $orderIds, $note)
+    {
+        Order::whereIn('id', $orderIds)->update(['b2b_financial_note' => $note]);
     }
 
     public function changePayType(string $payType, array $orderIds)

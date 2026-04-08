@@ -33,6 +33,7 @@ use Core\Orders\Requests\UpdateDeliveryPriceRequest;
 use Core\Orders\Requests\UpdateTotalProviderInvoiceRequest;
 use Core\Orders\Requests\UpdateItemRequest;
 use Core\Orders\Requests\UpdateOrderRequest;
+use Core\Orders\Requests\UpdateB2bFinancialNoteRequest;
 use Core\Products\Services\ProductsService;
 use Core\Orders\Services\OrderItemsService;
 use Core\Orders\Services\ReportReasonsService;
@@ -494,6 +495,23 @@ class OrdersController extends Controller
         $screen     = 'orders-invoice';
         $order       = $this->ordersService->get($id);;
         return view('orders::pages.orders.invoice', compact('title','screen','order'));
+    }
+
+    public function updateB2bFinancialNote(UpdateB2bFinancialNoteRequest $request){
+        try {
+            DB::beginTransaction();
+            $for    = json_decode($request->for);
+            $this->ordersService->updateB2bFinancialNote($for,$request->b2b_financial_note);
+            DB::commit();
+            return $this->returnSuccessMessage(trans('B2B Financial Note updated'));
+        }catch(ValidationException $e){
+            DB::rollback();
+            return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
+        }
     }
 
 }

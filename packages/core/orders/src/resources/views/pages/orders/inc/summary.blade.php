@@ -112,6 +112,12 @@
                         <th scope="row" class="p-2">{{ trans('customer notes') }}</th>
                         <td class="p-2">{{ $order->note ?? "---------------------" }}</td>
                     </tr>
+                    @if($order->company_id)
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('B2B Financial Note') }}</th>
+                        <td class="p-2 text-primary fw-bold">{{ $order->b2b_financial_note ?? "---------------------" }}</td>
+                    </tr>
+                    @endif
                     <tr>
                         <th scope="row" class="p-2">{{ trans('operator') }}</th>
                         <td class="p-2">{{ $order->operator?->fullname ?? "---------------------" }}</td>

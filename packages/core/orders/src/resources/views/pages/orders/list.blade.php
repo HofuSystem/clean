@@ -360,6 +360,7 @@
                                 <th class="text-center py-0" data-name="paid">@lang('paid')</th>
                                 <th class="text-center py-0" data-name="city_id">@lang('city')</th>
                                 <th class="text-center py-0" data-name="district_id">@lang('district')</th>
+                                <th class="text-center py-0" data-name="b2b_financial_note">@lang('B2B Financial Note')</th>
                                 <th class="text-center py-0" data-name="actions">@lang('Actions')</th>
                             </tr>
                             <!--end::Table row-->

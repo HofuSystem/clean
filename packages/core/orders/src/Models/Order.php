@@ -27,7 +27,7 @@ class Order extends CoreModel
 {
 
     protected $table             = 'orders';
-    protected $fillable          = ['reference_id', 'type', 'status','b2b_profit', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'operator_id', 'city_id', 'district_id', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'online_payment_method', 'coupon_id', 'coupon_data', 'total_coupon', 'order_price', 'delivery_price', 'total_price', 'total_cost', 'total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'cashback', 'wallet_amount_used', 'points_used','points_amount', 'points_amount_used', 'feedback_requested_at', 'creator_id', 'updater_id', 'hide_payment_option','original_products_total','cash_amount_used','card_amount_used','has_been_refunded'];
+    protected $fillable          = ['reference_id', 'type', 'status','b2b_profit', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'operator_id', 'city_id', 'district_id', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'b2b_financial_note', 'online_payment_method', 'coupon_id', 'coupon_data', 'total_coupon', 'order_price', 'delivery_price', 'total_price', 'total_cost', 'total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'cashback', 'wallet_amount_used', 'points_used','points_amount', 'points_amount_used', 'feedback_requested_at', 'creator_id', 'updater_id', 'hide_payment_option','original_products_total','cash_amount_used','card_amount_used','has_been_refunded'];
     protected $guarded           = [];
 
 
@@ -492,18 +492,20 @@ class Order extends CoreModel
                 <i class="fas fa-print"></i> <span>' . trans('invoice') . '</span>
                 </a>';
         }
-        $invoice = $this->electronicInvoice;
-        if ($invoice) {
-            if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.show')) {
-                $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.show', ['id' => $invoice->id]) . '">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
-                    </a>';
-            }
-        } else {
-            if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.generate')) {
-                $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.generate', ['orderId' => $this->id]) . '">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
-                    </a>';
+        if (in_array($this->status, ['delivered', 'finished'])) {
+            $invoice = $this->electronicInvoice;
+            if ($invoice) {
+                if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.show')) {
+                    $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.show', ['id' => $invoice->id]) . '">
+                        <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
+                        </a>';
+                }
+            } else {
+                if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.generate')) {
+                    $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.generate', ['orderId' => $this->id]) . '">
+                        <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
+                        </a>';
+                }
             }
         }
         if (auth('web')->check() and auth('web')->user()->can('dashboard.' . $slug . '.delete')) {

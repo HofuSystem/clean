@@ -41,6 +41,7 @@ class OrdersResource extends JsonResource
             "admin_cancel_reason" => DashboardDataTableFormatter::text($this->admin_cancel_reason),
             "wallet_used"         => DashboardDataTableFormatter::checkbox($this->wallet_used),
             "wallet_amount_used"  => DashboardDataTableFormatter::text($this->wallet_amount_used),
+            "b2b_financial_note"  => DashboardDataTableFormatter::text($this->b2b_financial_note),
             "phone"               => $this->client?->phone,
             "created_at"          => \Carbon\Carbon::parse($this->created_at)->format('Y-m-d'),
             "actions"             => $this->actions,

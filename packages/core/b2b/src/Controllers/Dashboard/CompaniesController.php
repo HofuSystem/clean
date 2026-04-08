@@ -4,6 +4,7 @@ namespace Core\B2B\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Core\B2B\Models\CompanyEmployee;
+use Core\B2B\Models\B2BFinancial;
 use Core\B2B\Models\Contract;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -24,20 +25,21 @@ class CompaniesController extends Controller
     use ApiResponse;
 
     public function __construct(
-        protected CompaniesService            $companiesService,
-        protected UsersService                $usersService,
-        protected CitiesService               $citiesService,
-        protected DistrictsService            $districtsService,
-        protected CompanyPermissionsService   $permissionsService,
-        protected ProductsService             $productsService
-    ) {}
+        protected CompaniesService $companiesService,
+        protected UsersService $usersService,
+        protected CitiesService $citiesService,
+        protected DistrictsService $districtsService,
+        protected CompanyPermissionsService $permissionsService,
+        protected ProductsService $productsService
+    ) {
+    }
 
     public function index()
     {
-        $title  = trans('companies index');
+        $title = trans('companies index');
         $screen = 'companies-index';
-        $total  = $this->companiesService->totalCount();
-        $trash  = $this->companiesService->trashCount();
+        $total = $this->companiesService->totalCount();
+        $trash = $this->companiesService->trashCount();
         $owners = $this->usersService->selectable('id', 'fullname', []);
 
         return view('b2b::pages.companies.list', compact('title', 'screen', 'total', 'trash', 'owners'));
@@ -64,13 +66,13 @@ class CompaniesController extends Controller
 
     public function createOrEdit(Request $request, $id = null)
     {
-        $item        = isset($id) ? $this->companiesService->get($id) : null;
-        $screen      = isset($item) ? 'companies-edit'   : 'companies-create';
-        $title       = isset($item) ? trans('companies edit') : trans('companies create');
-        $cities      = $this->citiesService->selectable('id','name');
-        $users       = [];
+        $item = isset($id) ? $this->companiesService->get($id) : null;
+        $screen = isset($item) ? 'companies-edit' : 'companies-create';
+        $title = isset($item) ? trans('companies edit') : trans('companies create');
+        $cities = $this->citiesService->selectable('id', 'name');
+        $users = [];
         $permissions = CompanyPermission::with('translations')->get();
-        $contract    = $item?->contracts()->currentActive()
+        $contract = $item?->contracts()->currentActive()
             ->with([
                 'contractPrices.product.category.translations',
                 'contractPrices.product.subCategory.translations',
@@ -78,26 +80,27 @@ class CompaniesController extends Controller
                 'contractCustomerPrices.product.subCategory.translations'
             ])
             ->first();
-        $employees   = CompanyEmployee::where('company_id', $item?->id)
+        $employees = CompanyEmployee::where('company_id', $item?->id)
             ->with(['user', 'permission', 'branch'])
             ->get();
-        $products    = $this->productsService->selectable('id', 'name',[
+        $products = $this->productsService->selectable('id', 'name', [
             'category_id',
             'sub_category_id'
         ], [
             'translations',
-            'category.translations', 
+            'category.translations',
             'subCategory.translations'
         ]);
+        $financials = B2BFinancial::where('company_id', $item?->id)->get();
 
-        return view('b2b::pages.companies.edit', compact('item', 'title', 'screen', 'cities', 'users', 'permissions', 'contract', 'employees', 'products'));
+        return view('b2b::pages.companies.edit', compact('item', 'title', 'screen', 'cities', 'users', 'permissions', 'contract', 'employees', 'products', 'financials'));
     }
 
     public function storeOrUpdate(CompaniesRequest $request, $id = null)
     {
         try {
             DB::beginTransaction();
-            $record            = $this->companiesService->storeOrUpdate($request->all(), $id);
+            $record = $this->companiesService->storeOrUpdate($request->all(), $id);
             $record->deleteUrl = route('dashboard.companies.delete', $record->id);
             $record->updateUrl = route('dashboard.companies.edit', $record->id);
             DB::commit();
@@ -114,9 +117,9 @@ class CompaniesController extends Controller
 
     public function show($id)
     {
-        $title  = trans('companies show');
+        $title = trans('companies show');
         $screen = 'companies-show';
-        $item   = $this->companiesService->get($id);
+        $item = $this->companiesService->get($id);
 
         return view('b2b::pages.companies.show', compact('title', 'screen', 'item'));
     }

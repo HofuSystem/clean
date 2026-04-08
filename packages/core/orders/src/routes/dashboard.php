@@ -70,6 +70,7 @@ Route::group(
                     Route::post('change-pay-type', [OrdersController::class,'changePayType'])->name('change-pay-type');
                     Route::post('update-delivery-price', [OrdersController::class,'updateDeliveryPrice'])->name('update-delivery-price');
                     Route::post('update-total-provider-invoice', [OrdersController::class,'updateTotalProviderInvoice'])->name('update-total-provider-invoice');
+                    Route::post('update-b2b-financial-note', [OrdersController::class,'updateB2bFinancialNote'])->name('update-b2b-financial-note');
                   
 
                     Route::get('{id}', [OrdersController::class,'show'])->name('show');

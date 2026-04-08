@@ -81,6 +81,12 @@
                             {{ trans('Change Payment Type') }} </a>
                         <!--end::Primary button-->
                         @endcan
+                        @if($order->company_id)
+                        <!--begin::Primary button-->
+                        <a href="#" class="btn fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#updateB2bFinancialNoteModal">
+                            {{ trans('B2B Financial Note') }} </a>
+                        <!--end::Primary button-->
+                        @endif
                         @if ($order->reports()->exists())
                             <!--begin::Primary button-->
                             <a href="#" class="btn  fw-bold btn-info" id="returnOrderContinueBtn"
@@ -100,7 +106,7 @@
                                 {{ trans('cancel') }} </a>
                         @endif
                         <!--end::Primary button-->
-                        @if ($order->electronicInvoice)
+                        @if (in_array($order->status, ['finished', 'delivered']) && $order->electronicInvoice)
                             <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="btn fw-bold btn-dark">
                                 {{ trans('Electronic Invoice') }} </a>
                         @endif
@@ -152,7 +158,7 @@
                                     {{ trans('invoice') }}</a>
 
                             </li>
-                            @if ($order->electronicInvoice)
+                            @if (in_array($order->status, ['finished', 'delivered']) && $order->electronicInvoice)
                                 <li class="nav-item" role="presentation">
                                     <a class="nav-link" href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}">
                                         {{ trans('Electronic Invoice') }}</a>
@@ -674,6 +680,7 @@
     @include('orders::pages.orders.inc.return-order-continue-modal')
     @include('orders::pages.orders.inc.applay-copoun-modal')
     @include('orders::pages.orders.inc.change-pay-type-modal')
+    @include('orders::pages.orders.inc.update-b2b-financial-note-modal')
 @endsection
 @push('css')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
