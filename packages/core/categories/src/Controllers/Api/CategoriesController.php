@@ -80,9 +80,9 @@ class CategoriesController extends Controller
                     ->where('is_package', true)->get();
 
                 return [
-                    'slider'                => SliderResource::collection($slider)->resolve(),
-                    'clothes_category'      => ClothesCategoryResource::collection($clothesCategory)->resolve(),
-                    'economy_bags'          => PackageDetailsResource::collection($economyBags)->resolve(),
+                    'slider'                => json_decode(json_encode(SliderResource::collection($slider)),true),
+                    'clothes_category'      => json_decode(json_encode(ClothesCategoryResource::collection($clothesCategory)),true),
+                    'economy_bags'          => json_decode(json_encode(PackageDetailsResource::collection($economyBags)),true),
                 ];
             });
 
@@ -127,7 +127,7 @@ class CategoriesController extends Controller
         } catch (ModelNotFoundException  $e) {
             abort(404);
         } catch (\Throwable $e) {
-            dd($e);
+            reprot($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
     }
@@ -154,7 +154,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ClothesDetailsResource($data)
+                'data'   => json_decode(json_encode(new ClothesDetailsResource($data)),true)
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -179,7 +179,7 @@ class CategoriesController extends Controller
                 ->findOrFail($categoryId);
             $data = [
                 'status' => 'success',
-                'data'   => new PackageDetailsResource($category)
+                'data'   => json_decode(json_encode(new PackageDetailsResource($category)),true)
             ];
             return $this->returnData(trans('categories are loaded'), $data);
         } catch (ValidationException $e) {
@@ -216,9 +216,9 @@ class CategoriesController extends Controller
                 $sales = CategoryOffer::whereType('service_category_sale')->latest()->get();
 
                 return [
-                    'slider'                => SliderResource::collection($slider)->resolve(),
-                    'services_category'     => ServicesCategoryResource::collection($servicesCategory)->resolve(),
-                    'sales'                 => ServiceCategorySaleResource::collection($sales)->resolve(),
+                    'slider'                => json_decode(json_encode(SliderResource::collection($slider)),true),
+                    'services_category'     => json_decode(json_encode(ServicesCategoryResource::collection($servicesCategory)),true),
+                    'sales'                 => json_decode(json_encode(ServiceCategorySaleResource::collection($sales)),true),
                 ];
             });
 
@@ -250,7 +250,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ServicesDetailsResource($data)
+                'data'   => json_decode(json_encode(new ServicesDetailsResource($data)),true)
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -287,9 +287,9 @@ class CategoriesController extends Controller
                     })->get();
 
                 return [
-                    'slider'        => SliderResource::collection($slider)->resolve(),
-                    'sales'         => HomeMaidSaleResource::collection($sales)->resolve(),
-                    'sub_services'  => SubServiceResource::collection($childs)->resolve(),
+                    'slider'        => json_decode(json_encode(SliderResource::collection($slider)->resolve()),true),
+                    'sales'         => json_decode(json_encode(HomeMaidSaleResource::collection($sales)->resolve()),true),
+                    'sub_services'  => json_decode(json_encode(SubServiceResource::collection($childs)->resolve()),true),
                 ];
             });
 
@@ -316,7 +316,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('services are loaded'), [
                 'status'   => 'success',
-                'data'     => new CustomServiceDetailsResource($data),
+                'data'     => json_decode(json_encode(new CustomServiceDetailsResource($data)),true),
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -334,7 +334,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'flexible-home-visit')
                 ->firstOrFail();
-            return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return json_decode(json_encode(new FlexibleOrderDetailsResource($service)),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -352,7 +352,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'scheduled-visits')
                 ->firstOrFail();
-            return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return json_decode(json_encode((new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -369,7 +369,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'resident-worker-packages')
                 ->firstOrFail();
-            return (new MonthlyPackagesOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new MonthlyPackagesOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -383,7 +383,7 @@ class CategoriesController extends Controller
     {
         try {
             $sale = CategoryOffer::active()->findOrFail($saleId);
-            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -429,9 +429,9 @@ class CategoriesController extends Controller
                 $extraSales = CategoryOffer::active()->whereType('care_host_sale')->get();
 
                 return [
-                    'slider'        => SliderResource::collection($slider)->resolve(),
-                    'care_host'     => CareHostServiceResource::collection($careHost)->resolve(),
-                    'sales'         => HomeMaidSaleResource::collection($extraSales)->resolve(),
+                    'slider'        => json_decode(json_encode(SliderResource::collection($slider),true)),
+                    'care_host'     =>  json_decode(json_encode(CareHostServiceResource::collection($careHost),true)),
+                    'sales'         =>  json_decode(json_encode(HomeMaidSaleResource::collection($extraSales),true)),
                 ];
             });
 
@@ -452,7 +452,7 @@ class CategoriesController extends Controller
             ->active()
             ->findOrFail($serviceId);
             $data = [
-                'data'     => new CustomServiceDetailsResource($service),
+                'data'     => json_decode(json_encode(new CustomServiceDetailsResource($service),true)),
             ];
 
             return $this->returnData(trans('services are loaded'), $data);
@@ -471,7 +471,7 @@ class CategoriesController extends Controller
         try {
             $service = Category::active()
                 ->findOrFail($serviceId);
-            return (new HostOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new HostOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -487,7 +487,7 @@ class CategoriesController extends Controller
         try {
             $service = Category::active()
                 ->findOrFail($serviceId);
-            return (new CareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new CareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -501,7 +501,7 @@ class CategoriesController extends Controller
     {
         try {
             $service = Category::active()->findOrFail($serviceId);
-            return (new SelfCareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new SelfCareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -515,7 +515,7 @@ class CategoriesController extends Controller
     {
         try {
             $sale = CategoryOffer::active()->findOrFail($saleId);
-            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return json_decode(json_encode((new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])),true);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
