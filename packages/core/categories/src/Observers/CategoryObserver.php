@@ -3,6 +3,7 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Category;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryObserver
 {
@@ -65,7 +66,7 @@ class CategoryObserver
      */
     public function saved(Category $category)
     {
-
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**
@@ -76,7 +77,7 @@ class CategoryObserver
      */
     public function deleted(Category $category)
     {
-      
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Price;
+use Illuminate\Support\Facades\Cache;
 
 class PriceObserver
 {
@@ -65,7 +66,7 @@ class PriceObserver
      */
     public function saved(Price $price)
     {
-
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**
@@ -76,7 +77,7 @@ class PriceObserver
      */
     public function deleted(Price $price)
     {
-      
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Core\Categories\Observers;
 use Core\Categories\Models\Slider;
 use Core\Categories\Models\SliderView;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class SliderObserver
 {
@@ -74,17 +75,17 @@ class SliderObserver
 
         if (!$link) {
             // No link — nothing to track
-            return;
-        }
-        if($slider->isDirty('link')){
+        } else if ($slider->isDirty('link')) {
             SliderView::updateOrCreate([
                 'slider_id' => $slider->id,
                 'url' => $link,
-            ],[
+            ], [
                 'uuid' => (string) Str::uuid(),
                 'views_count' => 0
             ]);
         }
+
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**
@@ -95,7 +96,7 @@ class SliderObserver
      */
     public function deleted(Slider $slider)
     {
-
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**

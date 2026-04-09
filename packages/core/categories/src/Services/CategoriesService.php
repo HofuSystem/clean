@@ -11,6 +11,9 @@ use Core\Categories\Models\CategoryDateTime;
 use Core\Settings\Helpers\ToolHelper;
 use Illuminate\Support\Collection;
 use Core\Products\Services\ProductsService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
 class CategoriesService
 {
     public function __construct(protected CommentingService $commentingService,protected CategoryTypesService $categoryTypesService,protected CategorySettingsService $categorySettingsService,protected CategoryDateTimesService $categoryDateTimesService){}
@@ -118,10 +121,24 @@ class CategoriesService
         ];
     }
 
-    public function order(array $list,$orderBy='order'){
-        foreach ($list as  $value) {
-            Category::find($value['id'])->update([$orderBy=>$value['order']]);
+    public function order(array $list, $orderBy = 'order')
+    {
+        $cases = [];
+        $ids = [];
+        foreach ($list as $value) {
+            $id = (int)$value['id'];
+            $order = (int)$value['order'];
+            $cases[] = "WHEN {$id} THEN {$order}";
+            $ids[] = $id;
         }
+
+        if (!empty($ids)) {
+            $idsList = implode(',', $ids);
+            $casesList = implode(' ', $cases);
+            DB::update("UPDATE categories SET `{$orderBy}` = (CASE id {$casesList} END) WHERE id IN ({$idsList})");
+        }
+
+        Cache::tags(['categories_api'])->flush();
     }
     public function import(array $items){
         foreach ($items as  $index => $item) {

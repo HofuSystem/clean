@@ -3,6 +3,7 @@
 namespace Core\Products\Observers;
 
 use Core\Products\Models\Product;
+use Illuminate\Support\Facades\Cache;
 
 class ProductObserver
 {
@@ -65,7 +66,7 @@ class ProductObserver
      */
     public function saved(Product $product)
     {
-
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**
@@ -76,7 +77,7 @@ class ProductObserver
      */
     public function deleted(Product $product)
     {
-      
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**

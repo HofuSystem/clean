@@ -3,6 +3,7 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\CategoryOffer;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryOfferObserver
 {
@@ -65,7 +66,7 @@ class CategoryOfferObserver
      */
     public function saved(CategoryOffer $categoryOffer)
     {
-
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**
@@ -76,7 +77,7 @@ class CategoryOfferObserver
      */
     public function deleted(CategoryOffer $categoryOffer)
     {
-      
+        Cache::tags(['categories_api'])->flush();
     }
 
     /**

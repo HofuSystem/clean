@@ -38,6 +38,7 @@ use Core\Notification\Models\BannerNotification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class CategoriesController extends Controller
 {
@@ -48,95 +49,118 @@ class CategoriesController extends Controller
     public function index(Request $request)
     {
         try {
-            $slider = Slider::with('city.translations', 'category.translations')
-            ->active()
-            ->where('type', 'clothes')
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })->latest()->get();
+            $cityId = $request->city_id ?? (auth('api')->user()?->profile?->city_id ?? 'all');
+            $locale = app()->getLocale();
+            $cacheKey = "categories_index_{$cityId}_{$locale}";
 
-            $clothesCategory = Category::with('translations')
-            ->whereNull('parent_id')
-            ->where('type', 'clothes')
-            ->where('is_package', false)
-            ->active()
-            ->orderBy('sort', 'asc')
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })->get();
-            $economyBags = Category::with(['translations', 'products.translations', 'products.prices'])
-                ->active()
-                ->with(['products' => function ($query) {
-                    $query->active();
-                }])
-                ->where('type', 'clothes')
-                ->where('is_package', true)->get();
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($request) {
+                $slider = Slider::with('city.translations', 'category.translations')
+                    ->active()
+                    ->where('type', 'clothes')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->latest()->get();
 
+                $clothesCategory = Category::with('translations')
+                    ->whereNull('parent_id')
+                    ->where('type', 'clothes')
+                    ->where('is_package', false)
+                    ->active()
+                    ->orderBy('sort', 'asc')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
+
+                $economyBags = Category::with(['translations', 'products.translations', 'products.prices'])
+                    ->active()
+                    ->with(['products' => function ($query) {
+                        $query->active();
+                    }])
+                    ->where('type', 'clothes')
+                    ->where('is_package', true)->get();
+
+                return [
+                    'slider'                => SliderResource::collection($slider)->resolve(),
+                    'clothes_category'      => ClothesCategoryResource::collection($clothesCategory)->resolve(),
+                    'economy_bags'          => PackageDetailsResource::collection($economyBags)->resolve(),
+                ];
+            });
+
+            $userId = auth('api')->id();
             $notifications = BannerNotification::active()
                 ->where('publish_date', '<=', now())
                 ->where('expired_date', '>=', now())
-                ->WhereHas('users', function ($userNotificationQuery) {
-                    $userNotificationQuery->where('users.id', auth('api')->id())
-                        ->where('users_notifications.next_vision_date', '<=', now()->format("Y-m-d h:i:s"))
+                ->WhereHas('users', function ($userNotificationQuery) use ($userId) {
+                    $userNotificationQuery->where('users.id', $userId)
+                        ->where('users_notifications.next_vision_date', '<=', now()->format("Y-m-d H:i:s"))
                         ->orWhereNull('users_notifications.next_vision_date');
                 })
-                ->orWhereDoesntHave('users', function ($userNotificationQuery) {
-                    $userNotificationQuery->where('users.id', auth('api')->id());
+                ->orWhereDoesntHave('users', function ($userNotificationQuery) use ($userId) {
+                    $userNotificationQuery->where('users.id', $userId);
                 })
                 ->get();
-                foreach($notifications as $notification){
-                    DB::table('users_notifications')->updateOrInsert([
-                        'user_id' => auth('api')->id(),
-                        'notifications_type' => BannerNotification::class,
-                        'notifications_id' => $notification->id,
-                    ], [
-                        'status' => 'sent',
-                        'read_at' => now()->format("Y-m-d h:i:s"),
-                        'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d h:i:s"),
-                    ]);
+
+            if ($notifications->isNotEmpty() && $userId) {
+                // Optimize: Only update if not recently updated (buffer check in Redis)
+                $notificationUpdateKey = "user_{$userId}_notification_update";
+                if (!Cache::has($notificationUpdateKey)) {
+                    foreach ($notifications as $notification) {
+                        DB::table('users_notifications')->updateOrInsert([
+                            'user_id' => $userId,
+                            'notifications_type' => BannerNotification::class,
+                            'notifications_id' => $notification->id,
+                        ], [
+                            'status' => 'sent',
+                            'read_at' => now()->format("Y-m-d H:i:s"),
+                            'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d H:i:s"),
+                        ]);
+                    }
+                    Cache::put($notificationUpdateKey, true, now()->addMinutes(5));
                 }
-            $data = [
-                'slider'                => SliderResource::collection($slider),
-                'clothes_category'      => ClothesCategoryResource::collection($clothesCategory),
-                'economy_bags'          => PackageDetailsResource::collection($economyBags),
-                'notifications'         => BannerNotificationResource::collection($notifications),
-            ];
+            }
+
+            $data['notifications'] = BannerNotificationResource::collection($notifications);
 
             return $this->returnData(trans('categories are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
-            report($e);
+            abort(404);
+        } catch (\Throwable $e) {
+            dd($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
     }
     public function details(Request $request, $categoryId)
     {
         try {
-            $category = Category::with(['translations', 'subCategories.productsSub.translations'])
-                ->active()
-                ->with(['subCategories'=>function($query){
-                    $query->active()
-                    ->orderBy('categories.sort', 'asc')
-                    ->with(['productsSub' => function($query){
-                        $query->active();
-                    }]);
-                }])
-                ->where('type', 'clothes')
-                ->where('is_package', false)
-                ->findOrFail($categoryId);
-            $data = [
+            $locale = app()->getLocale();
+            $cacheKey = "categories_details_{$categoryId}_{$locale}";
+
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($categoryId) {
+                return Category::with(['translations', 'subCategories.productsSub.translations'])
+                    ->active()
+                    ->with(['subCategories' => function ($query) {
+                        $query->active()
+                            ->orderBy('categories.sort', 'asc')
+                            ->with(['productsSub' => function ($query) {
+                                $query->active();
+                            }]);
+                    }])
+                    ->where('type', 'clothes')
+                    ->where('is_package', false)
+                    ->findOrFail($categoryId);
+            });
+
+            return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ClothesDetailsResource($category)
-            ];
-            return $this->returnData(trans('categories are loaded'), $data);
+                'data'   => new ClothesDetailsResource($data)->resolve()
+            ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
+            abort(404);
+        } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
@@ -155,7 +179,7 @@ class CategoriesController extends Controller
                 ->findOrFail($categoryId);
             $data = [
                 'status' => 'success',
-                'data'   => new PackageDetailsResource($category)
+                'data'   => new PackageDetailsResource($category)->resolve()
             ];
             return $this->returnData(trans('categories are loaded'), $data);
         } catch (ValidationException $e) {
@@ -172,30 +196,38 @@ class CategoriesController extends Controller
     public function servicesIndex(Request $request)
     {
         try {
-            $slider             = Slider::where('type', 'services')
-            ->active()
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })->latest()->get();
-            $servicesCategory   = Category::where('type', 'services')
-            ->active()
-            ->whereNull('parent_id')
-            ->orderBy('sort', 'asc')
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })->get();
-            $sales                      = CategoryOffer::whereType('service_category_sale')->latest()->get();
-            $data = [
-                'slider'                => SliderResource::collection($slider),
-                'services_category'     => ServicesCategoryResource::collection($servicesCategory),
-                'sales'                 => ServiceCategorySaleResource::collection($sales),
-            ];
+            $cityId = $request->city_id ?? (auth('api')->user()?->profile?->city_id ?? 'all');
+            $locale = app()->getLocale();
+            $cacheKey = "services_index_{$cityId}_{$locale}";
+
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($request) {
+                $slider = Slider::where('type', 'services')
+                    ->active()
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->latest()->get();
+                $servicesCategory = Category::where('type', 'services')
+                    ->active()
+                    ->whereNull('parent_id')
+                    ->orderBy('sort', 'asc')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
+                $sales = CategoryOffer::whereType('service_category_sale')->latest()->get();
+
+                return [
+                    'slider'                => SliderResource::collection($slider)->resolve(),
+                    'services_category'     => ServicesCategoryResource::collection($servicesCategory)->resolve(),
+                    'sales'                 => ServiceCategorySaleResource::collection($sales)->resolve(),
+                ];
+            });
+
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
+            abort(404);
+        } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
@@ -203,22 +235,27 @@ class CategoriesController extends Controller
     public function servicesDetails(Request $request, $categoryId)
     {
         try {
-            $category = Category::with(['translations', 'products.translations', 'appFeatures.translations'])
-                ->active()
-                ->with(['products' => function ($query) {
-                    $query->active();
-                }])
-                ->where('type', 'services')
-                ->findOrFail($categoryId);
-            $data = [
+            $locale = app()->getLocale();
+            $cacheKey = "services_details_{$categoryId}_{$locale}";
+
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($categoryId) {
+                return Category::with(['translations', 'products.translations', 'appFeatures.translations'])
+                    ->active()
+                    ->with(['products' => function ($query) {
+                        $query->active();
+                    }])
+                    ->where('type', 'services')
+                    ->findOrFail($categoryId);
+            });
+
+            return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ServicesDetailsResource($category)
-            ];
-            return $this->returnData(trans('categories are loaded'), $data);
+                'data'   => new ServicesDetailsResource($data)->resolve()
+            ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
+            abort(404);
         } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
@@ -229,32 +266,39 @@ class CategoriesController extends Controller
     public function homeMaidIndex(Request $request)
     {
         try {
-            $slider = Slider::with(['city.translations', 'category.translations'])
-            ->where('type', 'maid')
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })->latest()->get();
+            $cityId = $request->city_id ?? (auth('api')->user()?->profile?->city_id ?? 'all');
+            $locale = app()->getLocale();
+            $cacheKey = "home_maid_index_{$cityId}_{$locale}";
 
-            $sales  = CategoryOffer::with('translations')
-                ->active()
-                ->whereType('home_maid_sale')->get();
-            $childs = Category::with('translations')
-            ->whereNotNull('parent_id')
-            ->whereHas('parent', function ($parentQuery) {
-                $parentQuery->where('slug', 'maid-host');
-            })->get();
-            $data = [
-                'slider'        => SliderResource::collection($slider),
-                'sales'         => HomeMaidSaleResource::collection($sales),
-                'sub_services'  => SubServiceResource::collection($childs),
-            ];
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($request) {
+                $slider = Slider::with(['city.translations', 'category.translations'])
+                    ->where('type', 'maid')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->latest()->get();
+
+                $sales  = CategoryOffer::with('translations')
+                    ->active()
+                    ->whereType('home_maid_sale')->get();
+                $childs = Category::with('translations')
+                    ->whereNotNull('parent_id')
+                    ->whereHas('parent', function ($parentQuery) {
+                        $parentQuery->where('slug', 'maid-host');
+                    })->get();
+
+                return [
+                    'slider'        => SliderResource::collection($slider)->resolve(),
+                    'sales'         => HomeMaidSaleResource::collection($sales)->resolve(),
+                    'sub_services'  => SubServiceResource::collection($childs)->resolve(),
+                ];
+            });
 
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
+            abort(404);
+        } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
@@ -262,19 +306,23 @@ class CategoriesController extends Controller
     public function homeMaidDetails($serviceId)
     {
         try {
-            $service = Category::with('translations')
-            ->findOrFail($serviceId);
-            $data = [
-                'status'   => 'success',
-                'data'     => new CustomServiceDetailsResource($service),
-            ];
+            $locale = app()->getLocale();
+            $cacheKey = "home_maid_details_{$serviceId}_{$locale}";
 
-            return $this->returnData(trans('services are loaded'), $data);
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($serviceId) {
+                return Category::with('translations')
+                    ->findOrFail($serviceId);
+            });
+
+            return $this->returnData(trans('services are loaded'), [
+                'status'   => 'success',
+                'data'     => new CustomServiceDetailsResource($data)->resolve(),
+            ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
+            abort(404);
+        } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
@@ -286,7 +334,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'flexible-home-visit')
                 ->firstOrFail();
-            return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -304,7 +352,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'scheduled-visits')
                 ->firstOrFail();
-            return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -321,7 +369,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'resident-worker-packages')
                 ->firstOrFail();
-            return (new MonthlyPackagesOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new MonthlyPackagesOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -335,7 +383,7 @@ class CategoriesController extends Controller
     {
         try {
             $sale = CategoryOffer::active()->findOrFail($saleId);
-            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => '']);
+            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -350,42 +398,49 @@ class CategoriesController extends Controller
     public function hostIndex(Request $request)
     {
         try {
-            $slider = Slider::where('type', 'host')
-            ->active()
-            ->when($request->city_id, function ($q) use ($request) {
-                $q->where('city_id', $request->city_id);
-            })
-            ->latest()->get();
+            $cityId = $request->city_id ?? (auth('api')->user()?->profile?->city_id ?? 'all');
+            $locale = app()->getLocale();
+            $cacheKey = "host_index_{$cityId}_{$locale}";
 
-            $sales = CategoryOffer::whereType('host_care_sale')
-                ->active()
-                ->where('sale_price', '!=', 'null')
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->get();
+            $data = Cache::tags(['categories_api'])->remember($cacheKey, now()->addHours(24), function () use ($request) {
+                $slider = Slider::where('type', 'host')
+                    ->active()
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })
+                    ->latest()->get();
 
-            $careHost = Category::whereIn('slug', ['hospitality-services', 'care-service', 'selfcare-service'])
-                ->active()
-                ->with(['subCategories' => function ($query) {
-                    $query->active();
-                }])
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->get();
+                $sales = CategoryOffer::whereType('host_care_sale')
+                    ->active()
+                    ->where('sale_price', '!=', 'null')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
 
-            $sales = CategoryOffer::active()->whereType('care_host_sale')->get();
+                $careHost = Category::whereIn('slug', ['hospitality-services', 'care-service', 'selfcare-service'])
+                    ->active()
+                    ->with(['subCategories' => function ($query) {
+                        $query->active();
+                    }])
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
 
-            $data = [
-                'slider'        => SliderResource::collection($slider),
-                'care_host'     => CareHostServiceResource::collection($careHost),
-                'sales'         => HomeMaidSaleResource::collection($sales),
-            ];
+                $extraSales = CategoryOffer::active()->whereType('care_host_sale')->get();
+
+                return [
+                    'slider'        => SliderResource::collection($slider)->resolve(),
+                    'care_host'     => CareHostServiceResource::collection($careHost)->resolve(),
+                    'sales'         => HomeMaidSaleResource::collection($extraSales)->resolve(),
+                ];
+            });
+
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
-           abort(404);
-        }catch (\Throwable $e) {
+            abort(404);
+        } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
@@ -416,7 +471,7 @@ class CategoriesController extends Controller
         try {
             $service = Category::active()
                 ->findOrFail($serviceId);
-            return (new HostOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new HostOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -432,7 +487,7 @@ class CategoriesController extends Controller
         try {
             $service = Category::active()
                 ->findOrFail($serviceId);
-            return (new CareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new CareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -446,7 +501,7 @@ class CategoriesController extends Controller
     {
         try {
             $service = Category::active()->findOrFail($serviceId);
-            return (new SelfCareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
+            return (new SelfCareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -460,7 +515,7 @@ class CategoriesController extends Controller
     {
         try {
             $sale = CategoryOffer::active()->findOrFail($saleId);
-            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => '']);
+            return (new SaleOrderDetailsResource($sale))->additional(['status' => 'success', 'message' => ''])->resolve();
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {

@@ -39,6 +39,7 @@
         "maatwebsite/excel": "*",
         "mcamara/laravel-localization": "*",
         "myfatoorah/library": "^2.2",
+        "predis/predis": "*",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.9",
         "spatie/laravel-permission": "^6.10",
