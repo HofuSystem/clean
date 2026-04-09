@@ -69,6 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \Core\Orders\Commands\OrderStartsDeliveryInOneHour::class,
         \Core\Orders\Commands\DailySummaryOffAddedOrRemovedItems::class,
         \Core\Orders\Commands\CreateScheduledOrders::class,
+        \Core\Orders\Commands\GenerateInvoicesForFinishedOrders::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
         // Add route-record to the API middleware group

@@ -20,6 +20,8 @@ class CompaniesResource extends JsonResource
             'owner'        => DashboardDataTableFormatter::text($this->owner?->fullname),
             'bank_account_number' => DashboardDataTableFormatter::text($this->bank_account_number),
             'iban'                => DashboardDataTableFormatter::text($this->iban),
+            'commercial_registration' => DashboardDataTableFormatter::text($this->commercial_registration),
+            'tax_number'             => DashboardDataTableFormatter::text($this->tax_number),
             'actions'      => $this->actions,
             'select_switch'=> $this->select_switch,
         ];

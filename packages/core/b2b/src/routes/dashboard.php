@@ -8,6 +8,7 @@ use Core\B2B\Controllers\Dashboard\CompanyBranchesController;
 use Core\B2B\Controllers\Dashboard\CompanyEmployeesController;
 use Core\B2B\Controllers\Dashboard\CompanyPermissionsController;
 use Core\B2B\Controllers\Dashboard\B2BFinancialsController;
+use Core\B2B\Controllers\Dashboard\CompanyStatementController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Core\Info\Controllers\Dashboard\CountriesController;
@@ -137,6 +138,23 @@ Route::group(
                 });
 
                 //{{ new_routes}}
+
+                Route::group(['prefix' => 'companies/{companyId}/statement', 'as' => 'company-statement.'], function () {
+                    Route::get('', [CompanyStatementController::class, 'show'])->name('show');
+                    Route::post('owed', [CompanyStatementController::class, 'addOwed'])->name('add-owed');
+                    Route::post('paid', [CompanyStatementController::class, 'addPaid'])->name('add-paid');
+                    Route::get('export-xlsx', [CompanyStatementController::class, 'exportExcel'])->name('export-xlsx');
+                    Route::get('financials/{financialId}/print', [CompanyStatementController::class, 'printCreditNote'])->name('print-credit-note');
+                });
+
+                Route::group(['prefix' => 'electronic-invoices', 'as' => 'electronic-invoices.' ], function () {
+                    Route::get('', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'index'])->name('index');
+                    Route::get('data-table', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'dataTable'])->name('data-table');
+                    Route::get('declaration', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'declaration'])->name('declaration');
+                    Route::get('{id}', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'show'])->name('show');
+                    Route::get('{id}/download', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'downloadPdf'])->name('download');
+                    Route::get('{orderId}/generate', [\Core\B2B\Controllers\Dashboard\ElectronicInvoicesController::class, 'generate'])->name('generate');
+                });
             });
         });
     }

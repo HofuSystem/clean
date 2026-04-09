@@ -399,6 +399,11 @@ class Order extends CoreModel
         return $this->hasMany(OrderTransaction::class, 'order_id', 'id');
     }
 
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class, 'order_id', 'id');
+    }
+
     public function electronicInvoice()
     {
         return $this->hasOne(Invoice::class, 'order_id', 'id');
@@ -497,12 +502,6 @@ class Order extends CoreModel
             if ($invoice) {
                 if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.show')) {
                     $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.show', ['id' => $invoice->id]) . '">
-                        <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
-                        </a>';
-                }
-            } else {
-                if (auth('web')->check() and auth('web')->user()->can('dashboard.electronic-invoices.generate')) {
-                    $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.electronic-invoices.generate', ['orderId' => $this->id]) . '">
                         <i class="fas fa-file-invoice-dollar"></i> <span>' . trans('taxable invoice') . '</span>
                         </a>';
                 }

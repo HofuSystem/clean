@@ -17,7 +17,7 @@ use Carbon\Carbon;
 class Contract extends CoreModel
 {
     protected $table = 'contracts';
-    protected $fillable = ['title', 'months_count', 'month_fees', 'max_allowed_over_price', 'unlimited_days', 'number_of_days', 'contract', 'start_date', 'end_date', 'client_id', 'company_id', 'creator_id', 'updater_id', 'commercial_registration', 'tax_number'];
+    protected $fillable = ['title', 'months_count', 'month_fees', 'max_allowed_over_price', 'unlimited_days', 'number_of_days', 'contract', 'start_date', 'end_date', 'client_id', 'company_id', 'creator_id', 'updater_id'];
     protected $guarded = [];
     protected $casts = [
         'start_date' => 'date',

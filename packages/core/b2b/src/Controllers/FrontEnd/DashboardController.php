@@ -269,15 +269,14 @@ class DashboardController extends Controller
         $contract = Contract::where('company_id', $companyId)->currentActive()->first();
         $settings = \Core\Settings\Models\Setting::pluck('value', 'key');
 
-        $orderQuery = Order::query()
-            ->b2b('both')
-            ->validOrders()
+        $invoiceQuery = \Core\Orders\Models\Invoice::query()
+            ->whereHas('order', function ($q) {
+                $q->b2b('both')->validOrders();
+            })
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month);
 
-        $orders = $orderQuery->with(['orderRepresentatives' => function($q) {
-            $q->where('type', 'delivery');
-        }])->get();
+        $invoices = $invoiceQuery->get();
 
         $financials = \Core\B2B\Models\B2BFinancial::query()
             ->where('company_id', $companyId)
@@ -287,34 +286,37 @@ class DashboardController extends Controller
 
         $items = collect();
 
-        foreach ($orders as $order) {
-            $deliveryDate = $order->orderRepresentatives->first()?->date ?? $order->created_at->format('Y-m-d');
+        foreach ($invoices as $invoice) {
             $items->push((object)[
-                'reference_id' => $order->reference_id,
-                'note'         => $order->b2b_financial_note,
-                'date'         => $deliveryDate,
-                'debtor'       => $order->total_price,
+                'id'           => $invoice->id,
+                'reference_id' => $invoice->invoice_number,
+                'note'         => $invoice->order?->b2b_financial_note,
+                'date'         => $invoice->created_at->format('Y-m-d'),
+                'debtor'       => $invoice->total,
                 'creditor'     => 0,
-                'type'         => 'order'
+                'type'         => 'invoice',
+                'url'          => route('client.order.invoice', $invoice->order_id)
             ]);
         }
 
         foreach ($financials as $financial) {
             $date = $financial->collection_date;
             $items->push((object)[
+                'id'           => $financial->id,
                 'reference_id' => $financial->reference_id,
                 'note'         => $financial->note,
-                'date'         => $date,
+                'date'         => $financial->collection_date ? $financial->collection_date->format('Y-m-d') : $financial->created_at->format('Y-m-d'),
                 'debtor'       => 0,
                 'creditor'     => $financial->amount,
                 'type'         => 'financial',
+                'url'          => null // We can add print-credit-note for frontend if needed
             ]);
         }
 
         $items = $items->sortBy('date');
 
-        $totalAmount = $financials->sum('amount') -$orders->sum('total_price') ;
-        $ordersCount = $orders->count();
+        $totalAmount = $financials->sum('amount') - $invoices->sum('total');
+        $ordersCount = $invoices->count();
 
         $title = trans('client.monthly_invoice_details');
         $description = trans('client.monthly_invoice_details_description');

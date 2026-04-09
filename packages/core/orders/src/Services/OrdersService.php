@@ -186,7 +186,6 @@ class OrdersService
             }
             $order = $this->reCalcOrder($order->id);
         }
-        $this->invoiceService->updateOrCreateInvoice($order->id);
         $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
         if (!in_array($clientId, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
@@ -282,7 +281,6 @@ class OrdersService
                 ]);
             }
         }
-        $this->invoiceService->updateOrCreateInvoice($orderId);
     }
 
     private function refundToWallet($user, float $amount, string $notes, string $transaction_type,$order)
@@ -310,7 +308,6 @@ class OrdersService
     {
         $order = Order::findOrFail($orderId);
         OrderReport::where('order_id', $order->id)->forceDelete();
-        $this->invoiceService->updateOrCreateInvoice($orderId);
     }
     public function getDateTimes(array $productIds)
     {
@@ -530,7 +527,6 @@ class OrdersService
             'delivery_price'        => $deliveryPrice,
         ]);
         $this->calcOriginalProductsTotal($order->id);
-        $this->invoiceService->updateOrCreateInvoice($order->id);
         return $order;
     }
     public function calcOriginalProductsTotal($orderId)

@@ -4,6 +4,7 @@ namespace Core\Orders\Observers;
 
 use Core\Notification\Services\TelegramNotificationService;
 use Core\Orders\Models\Order;
+use Core\Orders\Services\InvoiceService;
 use Core\Orders\Services\OrderHistoryService;
 
 class OrderObserver
@@ -78,6 +79,10 @@ class OrderObserver
         if($order->isDirty('status')){
             $orderHistoryService = app(OrderHistoryService::class);
             $orderHistoryService->logStatusChange($order->id, $order->getOriginal('status'), $order->status);
+            if($order->status == 'finished'){
+                $invoiceService = app(InvoiceService::class);
+                $invoiceService->generateInvoice($order->id);
+            }
         }
         if($order->isDirty('pay_type')){
             $orderHistoryService = app(OrderHistoryService::class);

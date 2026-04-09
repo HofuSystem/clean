@@ -45,8 +45,6 @@ class ContractsRequest extends FormRequest
 			"contractCustomerPrices" => ['nullable', 'array'],
 			"contractCustomerPrices.*.product_id" => ['nullable', 'exists:products,id'],
 			"contractCustomerPrices.*.over_price" => ['required', 'numeric'],
-			"commercial_registration" => ['nullable', 'string'],
-			"tax_number" => ['nullable', 'string'],
 		];
 
 	}

@@ -24,19 +24,24 @@ class InvoiceService
      * @param int $orderId
      * @return Invoice|null
      */
-    public function updateOrCreateInvoice(int $orderId): ?Invoice
+    public function generateInvoice(int $orderId,$customDate = null): ?Invoice
     {
         $order = Order::find($orderId);
         if (!$order) {
             return null;
         }
-
         // 0. Only generate for delivered or finished orders
         if (!in_array($order->status, ['delivered', 'finished'])) {
             // Remove existing invoice if status is not delivered or finished
             Invoice::where('order_id', $order->id)->delete();
             return null;
         }
+        
+        
+        $invoice = Invoice::where('order_id', $order->id)->first();
+        if($invoice){
+            return $invoice;
+    }
 
         // 1. Calculate values based on items
         $subtotal = 0;
@@ -56,13 +61,22 @@ class InvoiceService
         $total = $subtotal + $vatAmount;
 
         // 2. Identify Type (B2B/B2C)
-        $taxNumber = $this->getCustomerTaxNumber($order);
+        $taxNumber = $order->company;
         $type = $taxNumber ? 'B2B' : 'B2C';
 
         // 3. Generate Invoice Number (INV-XXXX) IF NEW
-        $existing = Invoice::where('order_id', $order->id)->first();
-        $invoiceNumber = $existing ? $existing->invoice_number : 'INV-' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
-
+        $date = $customDate ?? date('Ymd');
+        $invociePrefix = 'INV-'.$date;
+        $lastInvoiceOfToday = Invoice::where('invoice_number', 'like', $invociePrefix.'%')->orderByDesc('invoice_number')->first();
+        $lastInvoiceNumber = $lastInvoiceOfToday?->invoice_number;
+        if($lastInvoiceNumber){
+            $lastInvoiceNumber = explode('-', $lastInvoiceNumber);
+            $lastInvoiceNumber = $lastInvoiceNumber[2];
+            $invoiceOrderNumber = $lastInvoiceNumber + 1;
+        }else{
+            $invoiceOrderNumber = 1;
+        }
+        $invoiceNumber = $invociePrefix .'-'. str_pad($invoiceOrderNumber, 5, '0', STR_PAD_LEFT);
         // 4. Seller Details (from settings)
         $sellerName = SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
         $sellerVat = SettingsService::getDataBaseSetting('clean_station_tax_number') ?: '300000000000003';
@@ -83,9 +97,9 @@ class InvoiceService
             [
                 'invoice_number' => $invoiceNumber,
                 'type'           => $type,
-                'subtotal'       => $subtotal,
-                'vat_amount'     => $vatAmount,
-                'total'          => $total,
+                'subtotal'       => number_format($subtotal, 2),
+                'vat_amount'     => number_format($vatAmount, 2),
+                'total'          => number_format($total, 2),
                 'qr_code'        => $tlvBase64,
             ]
         );

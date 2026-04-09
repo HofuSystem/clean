@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class B2BFinancial extends CoreModel
 {
     protected $table    = 'b2b_financials';
-    protected $fillable = ['company_id', 'reference_id', 'amount', 'collection_date', 'note', 'creator_id', 'updater_id'];
+    protected $fillable = ['company_id', 'reference_id', 'amount', 'type', 'collection_date', 'note', 'attachment', 'creator_id', 'updater_id'];
     protected $guarded  = [];
 
     protected $casts = [

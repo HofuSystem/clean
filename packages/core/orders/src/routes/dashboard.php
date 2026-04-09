@@ -239,11 +239,6 @@ Route::group(
                     Route::post('{id}/comment', [OrderTransactionsController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [OrderTransactionsController::class,'restore'])->name('restore');
                 });        
-                Route::group(['prefix' => 'electronic-invoices', 'as' => 'electronic-invoices.' ], function () {
-                    Route::get('{id}', [ElectronicInvoicesController::class, 'show'])->name('show');
-                    Route::get('{id}/download', [ElectronicInvoicesController::class, 'downloadPdf'])->name('download');
-                    Route::get('{orderId}/generate', [ElectronicInvoicesController::class, 'generate'])->name('generate');
-                });       
                 //{{ new_routes}}
 
 

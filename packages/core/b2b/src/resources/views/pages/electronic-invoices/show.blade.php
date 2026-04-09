@@ -172,11 +172,9 @@
                 <div class="text-right">
                     <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">TAX INVOICE | فاتورة ضريبية</h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
-                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span contenteditable="true">INV-2026-001</span></div>
+                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span contenteditable="true">{{ $invoice->invoice_number }}</span></div>
                         <div><span class="text-gray-300">|</span></div>
-                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span contenteditable="true" class="auto-date"></span></div>
-                        <div><span class="text-gray-300">|</span></div>
-                        <div><span class="font-semibold text-[#00AEEF]">Due Date:</span> <span contenteditable="true">26 Mar 2026</span></div>
+                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span contenteditable="true" class="auto-date">{{ $invoice->created_at->format('d M Y') }}</span></div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4 header-logos">
@@ -198,10 +196,12 @@
                         $companyName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
                         $companyNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين ستيشن';
                         $companyVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('clean_station_tax_number') ?: '300000000000003';
+                        $companyCommercialRegistration = \Core\Settings\Services\SettingsService::getDataBaseSetting('clean_station_commercial_registration') ?: '300000000000003';
                     @endphp
                     <h3 contenteditable="true" class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">البائع / Seller:</h3>
                     <p contenteditable="true" class="font-bold text-base leading-tight">{{ $companyName }} / {{ $companyNameAr }}</p>
                     <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $companyVat }}</span></p>
+                    <p class="text-sm mt-1">السجل التجارى: <span contenteditable="true" class="font-semibold">{{ $companyCommercialRegistration }}</span></p>
                 </div>
                 <div class="w-1/2 pl-4 text-right">
                     <h3 contenteditable="true" class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed To:</h3>
@@ -281,30 +281,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-between gap-4 mt-2">
-                <div class="w-1/2 bg-gray-50 border border-gray-200 p-2 rounded-lg">
-                    <h3 contenteditable="true" class="text-sm font-bold text-gray-800 mb-1 border-b border-[#00AEEF] inline-block pb-1">طرق الدفع | Payment</h3>
-                    <ul class="space-y-1 text-[10px] text-gray-700 list-disc list-inside">
-                        <li><strong class="text-gray-800">اسم العميل:</strong> <span contenteditable="true" class="font-bold border-b border-dashed border-gray-300">{{ $invoice->order?->company?->fullname ?? $invoice->order?->client?->fullname }}</span></li>
-                        <li><strong class="text-gray-800">رقم الحساب الجاري:</strong> <span contenteditable="true" class="font-bold border-b border-dashed border-gray-300">{{ $invoice->order?->company?->bank_account_number ?? $invoice->order?->client?->bank_account_number }}</span></li>
-                        <li><strong class="text-gray-800">الآيبان (IBAN):</strong> <span contenteditable="true" class="font-bold border-b border-dashed border-gray-300" dir="ltr">{{ $invoice->order?->company?->iban ?? $invoice->order?->client?->iban }}</span></li>
-                    </ul>
-                </div>
-                <div class="w-1/2 flex justify-between pt-2 border-t border-gray-100 signature-area">
-                    <div class="w-1/2 text-center pr-2">
-                        <h4 contenteditable="true" class="font-bold text-gray-800 text-[10px] mb-1">الختم / Stamp</h4>
-                        <div class="relative h-16 mt-6 w-3/4 mx-auto flex justify-center items-end border-b border-dashed border-gray-300 mb-1 stamp-container">
-                            <img src="https://i.postimg.cc/cLmC5rHf/Adobe-Express-file.png" alt="ختم هوفو سيستم" class="h-28 w-auto absolute bottom-[-20px] pointer-events-none mix-blend-multiply opacity-90 -rotate-6 stamp-img">
-                        </div>
-                        <p class="text-[9px] text-gray-400 mt-1">شركة هوفو سيستم</p>
-                    </div>
-                    <div class="w-1/2 text-center pl-2 border-r border-gray-100">
-                        <h4 contenteditable="true" class="font-bold text-gray-800 text-[10px] mb-1">الاستلام / Received By</h4>
-                        <div class="relative h-16 mt-6 w-3/4 mx-auto flex justify-center items-end border-b border-dashed border-gray-300 mb-1 stamp-container"></div>
-                        <p class="text-[9px] text-gray-400 mt-1">التوقيع / Signature</p>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- تذييل ثابت للفاتورة -->
             <div class="print-footer mt-4 w-full bg-white pb-2">

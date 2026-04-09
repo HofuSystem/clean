@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class Company extends CoreModel
 {
     protected $table    = 'companies';
-    protected $fillable = ['fullname', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
+    protected $fillable = ['fullname', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'commercial_registration', 'tax_number', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
     protected $guarded  = [];
 
     // ─── Scopes ──────────────────────────────────────────────────────────────
@@ -66,7 +66,14 @@ class Company extends CoreModel
 
     public function getActionsAttribute()
     {
-        return $this->getActions('companies');
+        $actions = $this->getActions('companies');
+        
+        $statementUrl = route('dashboard.company-statement.show', $this->id);
+        $btn = '<a class="btn-operation d-flex justify-content-center align-items-center mx-1" href="' . $statementUrl . '" title="' . trans('Statement') . '">
+                    <i class="fas fa-file-invoice"></i> <span>' . trans('Statement') . '</span>
+                </a>';
+        
+        return preg_replace('/<\/div>$/', $btn . '</div>', $actions);
     }
 
     public function getItemsActionsAttribute()

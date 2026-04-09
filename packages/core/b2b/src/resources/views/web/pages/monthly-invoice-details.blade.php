@@ -274,19 +274,25 @@
                             @php
                             $totalAmountCredit = 0;
                             @endphp
-                          @foreach($items as $item)
-                          @php
-                            $totalAmountCredit += $item->creditor - $item->debtor;
-                          @endphp
-                            <tr class="hover:bg-gray-50 transition stat-row">
-                                <td contenteditable="true" dir="ltr">{{ $item->reference_id }}</td>
-                                <td contenteditable="true" dir="ltr">{{ $item->note }}</td>
-                                <td contenteditable="true" dir="ltr">{{ $item->date }}</td>
-                                <td contenteditable="true">{{ $item->debtor }}</td>
-                                <td contenteditable="true">{{ $item->creditor }}</td>
-                                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $totalAmountCredit ?? 0 }}</span></td>
-                            </tr>
-                           @endforeach
+                            @foreach($items as $item)
+                                @php
+                                    $totalAmountCredit += $item->creditor - $item->debtor;
+                                @endphp
+                                <tr class="hover:bg-gray-50 transition stat-row">
+                                    <td contenteditable="true" dir="ltr">
+                                        @if(isset($item->url))
+                                            <a href="{{ $item->url }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition font-bold">{{ $item->reference_id }}</a>
+                                        @else
+                                            {{ $item->reference_id }}
+                                        @endif
+                                    </td>
+                                    <td contenteditable="true" dir="ltr">{{ $item->note }}</td>
+                                    <td contenteditable="true" dir="ltr">{{ $item->date }}</td>
+                                    <td contenteditable="true">{{ $item->debtor }}</td>
+                                    <td contenteditable="true">{{ $item->creditor }}</td>
+                                    <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $totalAmountCredit ?? 0 }}</span></td>
+                                </tr>
+                            @endforeach
                         </tbody>
                         <tfoot class="border-t-4 border-gray-800 text-sm">
                             <tr class="bg-gray-100">

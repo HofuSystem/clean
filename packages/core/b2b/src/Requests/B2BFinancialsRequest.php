@@ -18,7 +18,9 @@ class B2BFinancialsRequest extends FormRequest
             'reference_id'    => 'nullable|string|max:255',
             'collection_date' => 'nullable|date',
             'amount'          => 'required|numeric',
+            'type'            => 'required|in:owed,paid',
             'note'            => 'nullable|string',
+            'attachment'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ];
     }
 }

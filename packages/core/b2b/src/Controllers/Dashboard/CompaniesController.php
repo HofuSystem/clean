@@ -150,7 +150,6 @@ class CompaniesController extends Controller
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), [], 422);
         } catch (\Throwable $e) {
             report($e);
-
             return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
         }
     }

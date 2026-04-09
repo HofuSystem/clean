@@ -15,6 +15,7 @@ class B2BFinancialsResource extends JsonResource
             'company'      => DashboardDataTableFormatter::text($this->company?->fullname),
             'reference_id' => DashboardDataTableFormatter::text($this->reference_id),
             'amount'       => DashboardDataTableFormatter::text($this->amount),
+            'type'         => DashboardDataTableFormatter::text($this->type),
             'collection_date' => DashboardDataTableFormatter::text($this->collection_date?->format('Y-m-d')),
             'note'         => DashboardDataTableFormatter::text($this->note),
             'created_at'   => DashboardDataTableFormatter::text($this->created_at?->format('Y-m-d')),

@@ -75,6 +75,9 @@
                                 <a href="{{ route('dashboard.companies.edit', $item->id) }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> @lang('edit')
                                 </a>
+                                <a href="{{ route('dashboard.company-statement.show', $item->id) }}" class="btn btn-info btn-sm ms-2">
+                                    <i class="fas fa-file-invoice-dollar"></i> @lang('Company Statement')
+                                </a>
                             </div>
                         </div>
 

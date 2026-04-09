@@ -23,7 +23,7 @@ class ContractsService
 
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $recordData = array_filter($data, fn($key) => in_array($key, ['title', 'months_count', 'month_fees', 'max_allowed_over_price', 'unlimited_days', 'number_of_days', 'contract', 'start_date', 'end_date', 'client_id', 'company_id', 'commercial_registration', 'tax_number', 'translations']), ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data, fn($key) => in_array($key, ['title', 'months_count', 'month_fees', 'max_allowed_over_price', 'unlimited_days', 'number_of_days', 'contract', 'start_date', 'end_date', 'client_id', 'company_id', 'translations']), ARRAY_FILTER_USE_KEY);
         $record = Contract::updateOrCreate(['id' => $id], $recordData);
 
         if (!isset($id)) {
