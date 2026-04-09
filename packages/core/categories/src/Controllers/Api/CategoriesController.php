@@ -154,7 +154,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ClothesDetailsResource($data)->resolve()
+                'data'   => new ClothesDetailsResource($data)
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -179,7 +179,7 @@ class CategoriesController extends Controller
                 ->findOrFail($categoryId);
             $data = [
                 'status' => 'success',
-                'data'   => new PackageDetailsResource($category)->resolve()
+                'data'   => new PackageDetailsResource($category)
             ];
             return $this->returnData(trans('categories are loaded'), $data);
         } catch (ValidationException $e) {
@@ -250,7 +250,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('categories are loaded'), [
                 'status' => 'success',
-                'data'   => new ServicesDetailsResource($data)->resolve()
+                'data'   => new ServicesDetailsResource($data)
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -316,7 +316,7 @@ class CategoriesController extends Controller
 
             return $this->returnData(trans('services are loaded'), [
                 'status'   => 'success',
-                'data'     => new CustomServiceDetailsResource($data)->resolve(),
+                'data'     => new CustomServiceDetailsResource($data),
             ]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -334,7 +334,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'flexible-home-visit')
                 ->firstOrFail();
-            return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
@@ -352,7 +352,7 @@ class CategoriesController extends Controller
                 ->active()
                 ->where('slug', 'scheduled-visits')
                 ->firstOrFail();
-            return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => ''])->resolve();
+            return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (ModelNotFoundException  $e) {
