@@ -38,7 +38,7 @@ class GenerateInvoicesForFinishedOrders extends Command
             try {
                 $delivaryDate = $order->orderRepresentatives->where('type', 'delivery')->first()->date;
                 if ($delivaryDate) {
-                    $delivaryDate = \Carbon\Carbon::parse($delivaryDate)->format('Ymd');
+                    $delivaryDate = \Carbon\Carbon::parse($delivaryDate);
                     $invoice = $invoiceService->generateInvoice($order->id, $delivaryDate);
                     if ($invoice) {
                         $this->info("Success: Invoice {$invoice->invoice_number} created.");

@@ -3,6 +3,7 @@
 namespace Core\B2B\Controllers\FrontEnd;
 
 use Core\B2B\DataResources\B2BOrderResource;
+use Core\B2B\Models\B2BFinancial;
 use Core\B2B\Models\Company;
 use Core\B2B\Models\CompanyBranch;
 use Core\B2B\Requests\FrontEnd\UserProfileRequest;
@@ -19,7 +20,9 @@ use Core\Info\Models\City;
 use Core\Info\Models\District;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Orders\Helpers\OrderHelper;
+use Core\Orders\Models\Invoice;
 use Core\Orders\Models\OrderItem;
+use Core\Settings\Models\Setting;
 use Core\Users\Models\User;
 use Core\B2B\Models\Contract;
 use Core\B2B\Models\ContractsCustomerPrice;
@@ -267,18 +270,18 @@ class DashboardController extends Controller
         $companyId = B2BHelper::getB2BCompanyId();
         $company = Company::find($companyId);
         $contract = Contract::where('company_id', $companyId)->currentActive()->first();
-        $settings = \Core\Settings\Models\Setting::pluck('value', 'key');
+        $settings = Setting::pluck('value', 'key');
 
-        $invoiceQuery = \Core\Orders\Models\Invoice::query()
+        $invoiceQuery = Invoice::query()
             ->whereHas('order', function ($q) {
                 $q->b2b('both')->validOrders();
             })
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month);
+            ->whereYear('filed_at', $year)
+            ->whereMonth('filed_at', $month);
 
         $invoices = $invoiceQuery->get();
 
-        $financials = \Core\B2B\Models\B2BFinancial::query()
+        $financials = B2BFinancial::query()
             ->where('company_id', $companyId)
             ->whereYear('collection_date', $year)
             ->whereMonth('collection_date', $month)

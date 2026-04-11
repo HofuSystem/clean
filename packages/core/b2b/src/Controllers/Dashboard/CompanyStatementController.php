@@ -63,13 +63,13 @@ class CompanyStatementController extends Controller
         // Fetch Invoices
         $invoicesQuery = Invoice::whereHas('order', function ($q) use ($companyId) {
             $q->where('company_id', $companyId);
-        })->orderBy('created_at', 'asc');
+        })->orderBy('filed_at', 'asc');
 
         if ($request->from_date) {
-            $invoicesQuery->whereDate('created_at', '>=', $request->from_date);
+            $invoicesQuery->whereDate('filed_at', '>=', $request->from_date);
         }
         if ($request->to_date) {
-            $invoicesQuery->whereDate('created_at', '<=', $request->to_date);
+            $invoicesQuery->whereDate('filed_at', '<=', $request->to_date);
         }
 
         $invoices = $invoicesQuery->get()->map(function ($inv) {

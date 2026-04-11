@@ -197,30 +197,30 @@
     <div class="row g-4 mb-4 text-center">
         <div class="col-md-3">
             <div class="summary-card dark">
-                <div class="label">{{ trans('Total Net for Quarter') }}</div>
-                <div class="value text-warning">{{ number_format($summary['net_vat'] ?? 0, 2) }}</div>
-                <div class="small opacity-50"><i class="fas fa-check-circle me-1"></i> {{ trans('Due for current quarter') }}</div>
+                <div class="label">{{ trans('Total VAT This Current Quarter') }}</div>
+                <div class="value text-warning">{{ number_format($systemTotals['current_quarter_vat'] ?? 0, 2) }}</div>
+                <div class="small opacity-50"><i class="fas fa-calendar-day me-1"></i> {{ trans('System Current Quarter') }}</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="summary-card">
-                <div class="label" style="color:var(--zatca-warning)">{{ trans('Total Output VAT') }}</div>
-                <div class="value" style="color:var(--zatca-warning)">{{ number_format(($summary['b2c_vat'] ?? 0) + ($summary['b2b_vat'] ?? 0), 2) }}</div>
-                <div class="small text-muted">{{ trans('Gross Output VAT') }}</div>
+                <div class="label" style="color:var(--zatca-warning)">{{ trans('Total VAT Over All') }}</div>
+                <div class="value" style="color:var(--zatca-warning)">{{ number_format($systemTotals['total_vat_overall'] ?? 0, 2) }}</div>
+                <div class="small text-muted"><i class="fas fa-globe me-1"></i> {{ trans('System All Time') }}</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="summary-card">
-                <div class="label" style="color:var(--zatca-blue)">{{ trans('B2B Company Sales') }}</div>
-                <div class="value" style="color:var(--zatca-blue)">{{ number_format($summary['b2b_sales'] ?? 0, 2) }}</div>
-                <div class="small text-muted"><i class="fas fa-building me-1"></i> {{ trans('Standard Tax Invoices') }}</div>
+                <div class="label" style="color:var(--zatca-blue)">{{ trans('Total B2B Sales') }}</div>
+                <div class="value" style="color:var(--zatca-blue)">{{ number_format($systemTotals['total_b2b_sales'] ?? 0, 2) }}</div>
+                <div class="small text-muted"><i class="fas fa-building me-1"></i> {{ trans('System All Time') }}</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="summary-card">
-                <div class="label" style="color:var(--zatca-accent)">{{ trans('B2C Individual Sales') }}</div>
-                <div class="value" style="color:var(--zatca-accent)">{{ number_format($summary['b2c_sales'] ?? 0, 2) }}</div>
-                <div class="small text-muted"><i class="fas fa-user me-1"></i> {{ trans('Simplified Tax Invoices') }}</div>
+                <div class="label" style="color:var(--zatca-accent)">{{ trans('Total B2C Sales') }}</div>
+                <div class="value" style="color:var(--zatca-accent)">{{ number_format($systemTotals['total_b2c_sales'] ?? 0, 2) }}</div>
+                <div class="small text-muted"><i class="fas fa-user me-1"></i> {{ trans('System All Time') }}</div>
             </div>
         </div>
     </div>
@@ -232,7 +232,7 @@
         </div>
         <div class="table-responsive">
             <table class="table mb-0 text-center">
-                <thead>
+                <thead class="table-dark">
                     <tr>
                         <th style="width: 80px;">{{ trans('Quarter') }}</th>
                         <th>{{ trans('Sales Type') }}</th>
@@ -254,8 +254,7 @@
                                 <td>{{ number_format($data['b2c_sales'], 2) }}</td>
                                 <td><span class="text-primary fw-bold">{{ number_format($data['b2c_vat'], 2) }}</span></td>
                                 <td rowspan="2" class="align-middle bg-white border-start border-end">
-                                    <div class="text-danger fw-bold">{{ number_format($data['adj_amount'], 2) }}</div>
-                                    <div class="small text-muted">{{ trans('VAT') }}: {{ number_format($data['adj_vat'], 2) }}</div>
+                                    <div class="text-danger fw-bold">{{ number_format(0, 2) }}</div>
                                 </td>
                                 <td rowspan="2" class="align-middle bg-zatca-light fw-bold fs-5 text-warning border-start border-end">
                                     {{ number_format($data['net_vat'], 2) }}
@@ -273,7 +272,7 @@
                                 <td class="text-start">{{ trans('Total') }}</td>
                                 <td>{{ number_format($data['b2c_sales'] + $data['b2b_sales'], 2) }}</td>
                                 <td>{{ number_format($data['b2c_vat'] + $data['b2b_vat'], 2) }}</td>
-                                <td>{{ number_format($data['adj_amount'], 2) }}</td>
+                                <td>{{ number_format(0, 2) }}</td>
                                 <td class="bg-zatca-light text-warning">{{ number_format($data['net_vat'], 2) }}</td>
                             </tr>
                         @else
@@ -299,7 +298,7 @@
         </div>
 
         <table class="table table-sm text-center">
-            <thead>
+            <thead class="table-dark">
                 <tr class="text-muted small">
                     <th class="text-start">{{ trans('ZATCA Form Item') }}</th>
                     <th>{{ trans('Original Amount (SAR)') }}</th>
@@ -315,12 +314,13 @@
                 <tr class="text-danger">
                     <td class="text-start fw-bold">2. {{ trans('Sales Adjustments / Credit Notes') }}</td>
                     <td>{{ number_format($summary['adj_amount'] ?? 0, 2) }} -</td>
-                    <td>{{ number_format($summary['adj_vat'] ?? 0, 2) }} -</td>
+                    <td class="text-primary">{{ number_format(($summary['adj_vat'] ?? 0), 2) }}</td>
+
                 </tr>
                 <tr class="bg-zatca-light">
                     <td class="text-start fw-bold text-primary">3. {{ trans('Net Output VAT Payable') }}</td>
-                    <td>—</td>
-                    <td class="text-primary">{{ number_format($summary['net_vat'] ?? 0, 2) }}</td>
+                    <td>{{ number_format(($summary['net_sales'] ?? 0) - ($summary['adj_amount'] ?? 0), 2) }}</td>
+                    <td class="text-primary">{{ number_format(($summary['net_vat'] ?? 0) - ($summary['adj_vat'] ?? 0), 2) }}</td>
                 </tr>
                 <tr>
                     <td class="text-start fw-bold">4. {{ trans('Domestic Purchases Subject to 15% VAT') }}</td>
@@ -340,55 +340,12 @@
             <div class="d-flex align-items-center gap-4">
                 <div class="text-end">
                     <div class="small opacity-50">{{ trans('Total Sum (SAR)') }}</div>
-                    <div class="fs-2 fw-bolder">{{ number_format($summary['net_vat'] ?? 0, 2) }}</div>
+                    <div class="fs-2 fw-bolder">{{ number_format($summary['net_vat'] - $summary['adj_vat'] ?? 0, 2) }}</div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Bottom Compliance Reports --}}
-    <div class="row g-4 mt-2 mb-5">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100" style="background: #eef2ff;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h6 class="fw-bold mb-1 text-primary">{{ trans('Audit Assistant') }} (AI)</h6>
-                            <p class="small text-muted">{{ trans('The system analyzed all taxable documents for this year. Verified inputs vs outputs.') }}</p>
-                        </div>
-                        <div class="bg-primary text-white p-2 rounded"><i class="fas fa-robot"></i></div>
-                    </div>
-                    <div class="alert bg-white border-0 py-2 d-flex align-items-center gap-3">
-                        <i class="fas fa-check-circle text-success"></i>
-                        <span class="small fw-bold">100% {{ trans('Consistency Match Detected') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-shield-alt me-2 text-success"></i> ZATCA Phase 2 Compliance Report</h6>
-                        <span class="badge bg-success-subtle text-success">Phase 2 Ready</span>
-                    </div>
-                    <ul class="list-unstyled mb-0">
-                        <li class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
-                            <span class="small">{{ trans('Invoice Sequential Check') }} (Sequentiality)</span>
-                            <span class="badge bg-success"><i class="fas fa-check"></i></span>
-                        </li>
-                        <li class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
-                            <span class="small">{{ trans('Time Intelligence Mapping') }} (ISO 8601)</span>
-                            <span class="badge bg-success"><i class="fas fa-check"></i></span>
-                        </li>
-                        <li class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                            <span class="small">{{ trans('Hash Chaining Verification') }}</span>
-                            <span class="badge bg-warning text-dark">{{ trans('Pending Sync') }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+   
 </div>
 @endsection

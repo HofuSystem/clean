@@ -19,6 +19,7 @@ class Invoice extends CoreModel
         'subtotal',
         'vat_amount',
         'total',
+        'filed_at',
         'qr_code',
     ];
 
@@ -47,11 +48,11 @@ class Invoice extends CoreModel
         }
 
         if (request()->has('filters.from_date') && !empty(request('filters.from_date'))) {
-            $query->whereDate('created_at', '>=', Carbon::parse(request('filters.from_date')));
+            $query->whereDate('filed_at', '>=', Carbon::parse(request('filters.from_date')));
         }
 
         if (request()->has('filters.to_date') && !empty(request('filters.to_date'))) {
-            $query->whereDate('created_at', '<=', Carbon::parse(request('filters.to_date')));
+            $query->whereDate('filed_at', '<=', Carbon::parse(request('filters.to_date')));
         }
 
         return $query;
