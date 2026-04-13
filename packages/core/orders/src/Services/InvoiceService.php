@@ -85,6 +85,7 @@ class InvoiceService
             $total,
             $vatAmount
         );
+        $date = isset($customDate) ? $customDate : now();
 
         // 6. Update or Create
         return Invoice::updateOrCreate(
