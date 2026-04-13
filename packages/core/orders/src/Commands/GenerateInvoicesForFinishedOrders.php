@@ -42,7 +42,7 @@ class GenerateInvoicesForFinishedOrders extends Command
                     $invoice = $invoiceService->generateInvoice($order->id, $delivaryDate);
                     if ($invoice) {
                         $this->info("Success: Invoice {$invoice->invoice_number} created.");
-                        usleep(25000); // 0.25 seconds sleep to allow DB to register
+                        usleep(30000); // 0.25 seconds sleep to allow DB to register
                     } else {
                         $this->error("Failed to generate invoice for Order ID: {$order->id}");
                     }
