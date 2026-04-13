@@ -36,7 +36,7 @@ class GenerateInvoicesForFinishedOrders extends Command
         foreach ($orders as $order) {
             $this->comment("Generating invoice for Order ID: {$order->id} (Ref: {$order->reference_id})...");
             try {
-                $delivaryDate = $order->orderRepresentatives->where('type', 'delivery')->first()->date;
+                $delivaryDate = $order->orderRepresentatives->where('type', 'delivery')->first()?->date;
                 if ($delivaryDate) {
                     $delivaryDate = \Carbon\Carbon::parse($delivaryDate);
                     $invoice = $invoiceService->generateInvoice($order->id, $delivaryDate);
