@@ -262,7 +262,10 @@ class CategoriesController extends Controller
     public function homeMaidDetails($serviceId)
     {
         try {
-            $service = Category::with('translations')
+            $service = Category::with([
+                'translations',
+                'appFeatures.translations'
+            ])
             ->findOrFail($serviceId);
             $data = [
                 'status'   => 'success',

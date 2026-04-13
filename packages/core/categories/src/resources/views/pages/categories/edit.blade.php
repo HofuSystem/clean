@@ -63,14 +63,12 @@
                                         data-bs-target="#general" type="button" role="tab" aria-controls="general"
                                         aria-selected="true">{{ trans('General Information') }}</button>
                                 </li>
-                                @if ($type == 'categories')
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="app-features-tab" data-bs-toggle="tab"
-                                            data-bs-target="#app-features" type="button" role="tab"
-                                            aria-controls="app-features"
-                                            aria-selected="false">{{ trans('App Features') }}</button>
-                                    </li>
-                                @endif
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="app-features-tab" data-bs-toggle="tab"
+                                        data-bs-target="#app-features" type="button" role="tab"
+                                        aria-controls="app-features"
+                                        aria-selected="false">{{ trans('App Features') }}</button>
+                                </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo"
                                         type="button" role="tab" aria-controls="seo"
@@ -418,65 +416,63 @@
                                     </div>
                                 </div>
 
-                                @if ($type == 'categories')
-                                    <!-- App Features Tab -->
-                                    <div class="tab-pane fade" id="app-features" role="tabpanel"
-                                        aria-labelledby="app-features-tab">
-                                        <div class="row">
-                                            <div class="form-group mb-3 col-md-12">
-                                                <div class="mt-3 items-container" data-items-on="category_id"
-                                                    data-items-name="app_features"
-                                                    data-items-from="category-app-features">
-                                                    <h3 class="text-dark">{{ trans('App Features') }}</h3>
-                                                    <button type="button" class="btn-operation create-new-items"><i
-                                                            class="fas fa-plus"></i></button>
-                                                    <hr>
-                                                    <div class="table-responsive ">
-                                                        <table class="table table-striped table-hover text-center">
-                                                            <thead class="table-primary text-white text-capitalize h6">
-                                                                <tr>
-                                                                    <th scope="col" data-name="section"
-                                                                        data-type="select">
-                                                                        {{ trans('Section') }}</th>
-                                                                    <th scope="col" data-name="translations.en.title"
-                                                                        data-type="text">
-                                                                        {{ trans('Title (en)') }}</th>
-                                                                    <th scope="col" data-name="translations.ar.title"
-                                                                        data-type="text">
-                                                                        {{ trans('Title (ar)') }}</th>
-                                                                    <th scope="col" data-name="image"
-                                                                        data-type="mediacenter">
-                                                                        {{ trans('Image') }}</th>
-                                                                    <th scope="col" data-name="value"
-                                                                        data-type="text">
-                                                                        {{ trans('Value') }}</th>
-                                                                    <th scope="col" data-name="actions"
-                                                                        data-type="actions">
-                                                                        {{ trans('Actions') }}</th>
+                                <!-- App Features Tab -->
+                                <div class="tab-pane fade" id="app-features" role="tabpanel"
+                                    aria-labelledby="app-features-tab">
+                                    <div class="row">
+                                        <div class="form-group mb-3 col-md-12">
+                                            <div class="mt-3 items-container" data-items-on="category_id"
+                                                data-items-name="app_features"
+                                                data-items-from="category-app-features">
+                                                <h3 class="text-dark">{{ trans('App Features') }}</h3>
+                                                <button type="button" class="btn-operation create-new-items"><i
+                                                        class="fas fa-plus"></i></button>
+                                                <hr>
+                                                <div class="table-responsive ">
+                                                    <table class="table table-striped table-hover text-center">
+                                                        <thead class="table-primary text-white text-capitalize h6">
+                                                            <tr>
+                                                                <th scope="col" data-name="section"
+                                                                    data-type="select">
+                                                                    {{ trans('Section') }}</th>
+                                                                <th scope="col" data-name="translations.en.title"
+                                                                    data-type="text">
+                                                                    {{ trans('Title (en)') }}</th>
+                                                                <th scope="col" data-name="translations.ar.title"
+                                                                    data-type="text">
+                                                                    {{ trans('Title (ar)') }}</th>
+                                                                <th scope="col" data-name="image"
+                                                                    data-type="mediacenter">
+                                                                    {{ trans('Image') }}</th>
+                                                                <th scope="col" data-name="value"
+                                                                    data-type="text">
+                                                                    {{ trans('Value') }}</th>
+                                                                <th scope="col" data-name="actions"
+                                                                    data-type="actions">
+                                                                    {{ trans('Actions') }}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($item->appFeatures ?? [] as $sItem)
+                                                                <tr data-id="{{ $sItem->id }}"
+                                                                    data-data="{{ json_encode($sItem->itemData) }}">
+                                                                    <td>{{ trans($sItem->section) }}</td>
+                                                                    <td>{{ $sItem?->translate('en')?->title }}</td>
+                                                                    <td>{{ $sItem?->translate('ar')?->title }}</td>
+                                                                    <td>{!! \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesHtml($sItem->image) !!}</td>
+                                                                    <td>{{ $sItem->value }}</td>
+                                                                    <td class="options">
+                                                                        {!! $sItem->itemsActions !!}
+                                                                    </td>
                                                                 </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($item->appFeatures ?? [] as $sItem)
-                                                                    <tr data-id="{{ $sItem->id }}"
-                                                                        data-data="{{ json_encode($sItem->itemData) }}">
-                                                                        <td>{{ trans($sItem->section) }}</td>
-                                                                        <td>{{ $sItem?->translate('en')?->title }}</td>
-                                                                        <td>{{ $sItem?->translate('ar')?->title }}</td>
-                                                                        <td>{!! \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesHtml($sItem->image) !!}</td>
-                                                                        <td>{{ $sItem->value }}</td>
-                                                                        <td class="options">
-                                                                            {!! $sItem->itemsActions !!}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                </div>
 
                                 <!-- Items Tab -->
                                 @if (in_array($type, ['categories', 'services', 'sub-services']))
@@ -1303,6 +1299,7 @@
                                                     <option value="secFeaures">{{ trans('secFeaures') }}</option>
                                                     <option value="whyus">{{ trans('whyus') }}</option>
                                                     <option value="included">{{ trans('included') }}</option>
+                                                    <option value="instructions">{{ trans('instructions') }}</option>
                                                 </select>
                                             </div>
 
