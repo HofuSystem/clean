@@ -38,7 +38,7 @@ class GenerateInvoicesForFinishedOrders extends Command
             try {
                 $delivaryDate = $order->orderRepresentatives->where('type', 'delivery')->first()?->date;
                 if(!$delivaryDate){
-                    $delivaryDate = $order->orderRepresentatives->whereNotNull('date')
+                    $delivaryDate = $order->orderRepresentatives()->whereNotNull('date')
                     ->whereNot('type','technical')
                     ->latest()->first()?->date;
                 }
