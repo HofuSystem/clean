@@ -199,14 +199,12 @@
             <div class="summary-card dark">
                 <div class="label">{{ trans('Total VAT This Current Quarter') }}</div>
                 <div class="value text-warning">{{ number_format($systemTotals['current_quarter_vat'] ?? 0, 2) }}</div>
-                <div class="small opacity-50"><i class="fas fa-calendar-day me-1"></i> {{ trans('System Current Quarter') }}</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="summary-card">
                 <div class="label" style="color:var(--zatca-warning)">{{ trans('Total VAT Over All') }}</div>
                 <div class="value" style="color:var(--zatca-warning)">{{ number_format($systemTotals['total_vat_overall'] ?? 0, 2) }}</div>
-                <div class="small text-muted"><i class="fas fa-globe me-1"></i> {{ trans('System All Time') }}</div>
             </div>
         </div>
         <div class="col-md-3">
@@ -294,7 +292,7 @@
                 <i class="fas fa-file-invoice-dollar me-2" style="color:var(--zatca-blue)"></i> 
                 {{ trans('VAT Return (Annual) Comprehensive Summary') }}
             </h5>
-            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download me-1"></i> {{ trans('Export ZATCA Summary') }}</button>
+            {{-- <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download me-1"></i> {{ trans('Export ZATCA Summary') }}</button> --}}
         </div>
 
         <table class="table table-sm text-center">
@@ -340,7 +338,7 @@
             <div class="d-flex align-items-center gap-4">
                 <div class="text-end">
                     <div class="small opacity-50">{{ trans('Total Sum (SAR)') }}</div>
-                    <div class="fs-2 fw-bolder">{{ number_format($summary['net_vat'] - $summary['adj_vat'] ?? 0, 2) }}</div>
+                    <div class="fs-2 fw-bolder">{{ number_format(($summary['net_vat'] ?? 0) - ($summary['adj_vat'] ?? 0), 2) }}</div>
                 </div>
             </div>
         </div>
