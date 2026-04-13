@@ -93,9 +93,9 @@ class InvoiceService
             [
                 'invoice_number' => $invoiceNumber,
                 'type' => $type,
-                'subtotal' => number_format($subtotal, 2),
-                'vat_amount' => number_format($vatAmount, 2),
-                'total' => number_format($total, 2),
+                'subtotal' => number_format($subtotal, 2, '.', ''),
+                'vat_amount' => number_format($vatAmount, 2, '.', ''),
+                'total' => number_format($total, 2, '.', ''),
                 'qr_code' => $tlvBase64,
                 'filed_at' => $customDate ?? now(),
             ]
