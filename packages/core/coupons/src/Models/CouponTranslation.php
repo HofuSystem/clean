@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CouponTranslation extends Model
 {
-   protected $fillable  = ["title"];
+   protected $fillable  = ["title", "intro"];
+
    public $timestamps   = false;
 }
 

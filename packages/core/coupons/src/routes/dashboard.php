@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Core\Coupons\Controllers\Dashboard\CouponsController;
+use Core\Coupons\Controllers\Dashboard\GiftsController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +41,18 @@ Route::group(
                     Route::post('{id}/comment', [CouponsController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [CouponsController::class,'restore'])->name('restore');
                 });
+                Route::group(['prefix' => 'gifts', 'as' => 'gifts.' ], function () {
+                    Route::get('', [GiftsController::class,'index'])->name('index');
+                    Route::post('', [GiftsController::class,'dataTable'])->name('index');
+                    Route::get('create', [GiftsController::class,'createOrEdit'])->name('create');
+                    Route::post('create', [GiftsController::class,'storeOrUpdate'])->name('create');
+                    Route::get('{id}/edit', [GiftsController::class,'createOrEdit'])->name('edit');
+                    Route::put('{id}/edit', [GiftsController::class,'storeOrUpdate'])->name('edit');
+                    Route::delete('{id}/delete', [GiftsController::class,'delete'])->name('delete');
+                    Route::put('{id}/restore', [GiftsController::class,'restore'])->name('restore');
+                });
                 //{{ new_routes}}
+
 
 
 

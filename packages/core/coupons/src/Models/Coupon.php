@@ -23,9 +23,10 @@ class Coupon extends CoreModel implements TranslatableContract
 {
     use Translatable;
     protected $table             = 'coupons';
-    protected $fillable          = ['status', 'applying', 'code', 'max_use', 'max_use_per_user', 'payment_method', 'start_at', 'end_at', 'order_type', 'all_products', 'all_users', 'order_minimum', 'order_maximum', 'type', 'value', 'max_value', 'creator_id', 'updater_id'];
+    protected $fillable          = ['status', 'applying', 'code', 'max_use', 'max_use_per_user', 'payment_method', 'start_at', 'end_at', 'order_type', 'all_products', 'all_users', 'order_minimum', 'order_maximum', 'type', 'value', 'max_value', 'creator_id', 'updater_id', 'register_from', 'register_to', 'orders_from', 'orders_to'];
     protected $guarded           = [];
-    public $translatedAttributes = ["title"];
+    public $translatedAttributes = ["title", "intro"];
+
 
     //start Scopes
     function scopeSearch($query)

@@ -611,6 +611,17 @@
       },
       {
         "url": null,
+        "route": "dashboard.gifts.index",
+        "type": null,
+        "icon": "fa fa-gift",
+        "title": {
+          "en": "Gifts",
+          "ar": "الهدايا"
+        }
+      },
+
+      {
+        "url": null,
         "route": "dashboard.category-date-times.index",
         "type": null,
         "icon": "fa fa-truck-loading",
