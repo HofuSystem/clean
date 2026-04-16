@@ -18,7 +18,7 @@ class CompaniesService
 
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $allowed = ['fullname', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'commercial_registration', 'tax_number', 'image', 'owner_id'];
+        $allowed = ['fullname', 'name_ar', 'name_en', 'street_name', 'building_no', 'district_id', 'postal_code', 'additional_number', 'city_id', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'commercial_registration', 'tax_number', 'image', 'owner_id'];
         $recordData = array_filter($data, fn($key) => in_array($key, $allowed), ARRAY_FILTER_USE_KEY);
         return Company::updateOrCreate(['id' => $id], $recordData);
     }

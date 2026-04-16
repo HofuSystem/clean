@@ -37,7 +37,7 @@ class HostOrderDetailsResource extends JsonResource
         ->get();
         
         $serviceDates = CategoryDateTimesService::getDateTimes(type: 'host',categoryIds: $this->id);
-        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $serviceDates);
+        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $serviceDates);
 
         return [
             'id'                => $this->id ,

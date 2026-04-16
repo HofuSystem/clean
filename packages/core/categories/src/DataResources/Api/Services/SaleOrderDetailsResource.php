@@ -41,7 +41,7 @@ class SaleOrderDetailsResource extends JsonResource
         $isAvailable = (($this->for_all_cities || in_array(auth('api')->user()?->profile?->city_id,$cities)) and $this->status == "active");
         $message        = (!$isAvailable) ? SettingsService::getDataBaseSetting('not_available_message_'.config('app.locale')) : null;
         $serviceDates   = CategoryDateTimesService::getDateTimes(type: $type,categoryIds: $categoryId);
-        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $serviceDates);
+        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $serviceDates);
         
 
         return [

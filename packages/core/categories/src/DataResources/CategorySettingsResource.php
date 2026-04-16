@@ -22,6 +22,7 @@ class CategorySettingsResource extends JsonResource
             "name"              => DashboardDataTableFormatter::text($this->name),
             "category_id"       => DashboardDataTableFormatter::relations($this->category,"name","dashboard.categories.show"),
             "addon_price"       => DashboardDataTableFormatter::text($this->addon_price),
+            "discount_percent"  => DashboardDataTableFormatter::text($this->discount_percent),
             "cost"              => DashboardDataTableFormatter::text($this->cost),
             "parent_id"         => DashboardDataTableFormatter::relations($this->parent,"name","dashboard.category-settings.show"),
             "status"            => DashboardDataTableFormatter::text(trans($this->status)),

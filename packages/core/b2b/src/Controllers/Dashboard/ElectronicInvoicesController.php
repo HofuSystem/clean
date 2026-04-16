@@ -116,7 +116,7 @@ class ElectronicInvoicesController extends Controller
      */
     public function show($id)
     {
-        $invoice = Invoice::with(['order.items.product', 'order.client'])->findOrFail($id);
+        $invoice = Invoice::with(['order.items.product', 'order.client', 'order.company.city', 'order.company.district'])->findOrFail($id);
         
         $qrCodeImage = $this->zatcaService->generateQrCode($invoice->qr_code);
         

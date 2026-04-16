@@ -57,7 +57,7 @@ class CategoriesService
         return $newCategory;
     }
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData         = array_filter($data,fn($key) => in_array($key, ['slug','image','type','delivery_price','sort','is_package','status','parent_id','for_all_cities','cities','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData         = array_filter($data,fn($key) => in_array($key, ['slug','image','type','delivery_price','discount_percent','sort','is_package','status','parent_id','for_all_cities','cities','translations']),ARRAY_FILTER_USE_KEY);
         $record             = Category::updateOrCreate(['id' => $id],$recordData);
         $record->cities()->sync($data['cities'] ?? []);
         if(!isset($id)){

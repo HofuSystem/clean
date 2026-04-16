@@ -123,7 +123,7 @@
                                             <th>{{ trans('From Time') }}</th>
                                             <th>{{ trans('To Time') }}</th>
                                             <th>{{ trans('Receiver Count') }}</th>
-                                            <th>{{ trans('Delivery Count') }}</th>
+                                            <th class="delivery-column">{{ trans('Delivery Count') }}</th>
                                             <th>{{ trans('Order Count') }}</th>
                                             <th>{{ trans('Action') }}</th>
                                         </tr>
@@ -136,7 +136,7 @@
                                             <th> <input type="time" class="form-control" id="fromTime" ></th>
                                             <th> <input type="time" class="form-control" id="toTime" ></th>
                                             <th> <input type="number" class="form-control" id="receiverCount" ></th>
-                                            <th> <input type="number" class="form-control" id="deliveryCount" ></th>
+                                            <th class="delivery-column"> <input type="number" class="form-control" id="deliveryCount" ></th>
                                             <th colspan="2"> <button id="addToTable" class="btn btn-primary">{{ trans('Add to Table') }}</button></th>
                                         </tr>
                                     </tfoot>
@@ -191,6 +191,13 @@
                 // Trigger Select2 to update the dropdown
                 $Category.trigger('change');
 
+                if (type == 'maid' || type == 'host') {
+                    $('.delivery-column').hide();
+                    $('#deliveryCount').val(0);
+                } else {
+                    $('.delivery-column').show();
+                }
+
             });
             // Function to populate the 'All Days' select based on the date range
             $('#dateFrom, #dateTo').change(function() {
@@ -213,15 +220,20 @@
                 var toTime          = $('#toTime').val();
                 var receiverCount   = $('#receiverCount').val();
                 var deliveryCount   = $('#deliveryCount').val();
-                
+                var type            = $('#type').val();
 
-                if (fromTime && toTime && receiverCount && deliveryCount) {
+                if (type == 'maid' || type == 'host') {
+                    deliveryCount = 0;
+                }
+
+                if (fromTime && toTime && receiverCount !== "" && deliveryCount !== "") {
+                    var displayNone = (type == 'maid' || type == 'host') ? 'style="display:none"' : '';
                     var newRow = `
                     <tr>
                         <td> <input name="from_time[]" type="time" class="form-control"  value="${fromTime}" ></td>
                         <td> <input name="to_time[]" type="time" class="form-control"  value="${toTime}" ></td>
                         <td> <input name="receiver_count[]" type="number" class="form-control receiver-count"  value="${receiverCount}" > </td>
-                        <td> <input name="delivery_count[]" type="number" class="form-control delivery-count"  value="${deliveryCount}" > </td>
+                        <td class="delivery-column" ${displayNone}> <input name="delivery_count[]" type="number" class="form-control delivery-count"  value="${deliveryCount}" > </td>
                         <td> <input disabled name="order_count[]" type="number" class="form-control order-count"  value="${(parseInt(receiverCount)+parseInt(deliveryCount))}" > </td>
                         <td><button  class="btn btn-danger btn-sm delete-row">Delete</button></td>
                     </tr>`;
@@ -323,6 +335,9 @@
                     }
                 });
             });
+
+            // Initial check on load
+             $('#type').trigger('change');
         });
     </script>
 @endpush

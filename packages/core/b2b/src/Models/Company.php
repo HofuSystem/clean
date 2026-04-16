@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class Company extends CoreModel
 {
     protected $table    = 'companies';
-    protected $fillable = ['fullname', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'commercial_registration', 'tax_number', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
+    protected $fillable = ['fullname', 'name_ar', 'name_en', 'street_name', 'building_no', 'district_id', 'postal_code', 'additional_number', 'city_id', 'line_of_business', 'email', 'phone', 'bank_account_number', 'iban', 'commercial_registration', 'tax_number', 'image', 'owner_id', 'is_active', 'creator_id', 'updater_id'];
     protected $guarded  = [];
 
     // ─── Scopes ──────────────────────────────────────────────────────────────
@@ -60,6 +60,16 @@ class Company extends CoreModel
     public function contracts()
     {
         return $this->hasMany(Contract::class, 'company_id', 'id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(\Core\Info\Models\City::class, 'city_id', 'id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(\Core\Info\Models\District::class, 'district_id', 'id');
     }
 
     // ─── Actions Attributes ───────────────────────────────────────────────────

@@ -27,12 +27,20 @@ class FlexibleOrderDetailsResource extends JsonResource
         })
         ->active()
         ->get();
+
+        $nationalities   = CategorySetting::whereHas('parent',function($parentQuery){
+            $parentQuery->where('slug','nationalities');
+        })
+        ->active()
+        ->get();
+
         $serviceDates  = CategoryDateTimesService::getDateTimes(type: 'maidflex',categoryIds: $this->id);
-        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $serviceDates);
+        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $serviceDates);
 
         return [
             'id'                => $this->id ,
             'name'              => $this->name ,
+            'nationalities'     => ChildServiceSettingResource::collection($nationalities),
             'workers_number'    => ChildServiceSettingResource::collection($workersNumber),
             'hours_number'      => ChildServiceSettingResource::collection($hoursNumber),
             'dates'             => $serviceDates,

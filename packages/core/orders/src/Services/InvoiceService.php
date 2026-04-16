@@ -74,7 +74,7 @@ class InvoiceService
         $invoiceNumber = $invociePrefix.'-'.str_pad($invoiceOrderNumber, 5, '0', STR_PAD_LEFT);
         // 4. Seller Details (from settings)
         $sellerName = SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
-        $sellerVat = SettingsService::getDataBaseSetting('clean_station_tax_number') ?: '300000000000003';
+        $sellerVat = SettingsService::getDataBaseSetting('tax_tax_number') ?: '300000000000003';
 
         // 5. Generate QR Code
         $timestamp = $order->created_at?->toIso8601String();

@@ -286,7 +286,6 @@ class CategoriesController extends Controller
     {
         try {
             $service = Category::with('translations')
-                ->active()
                 ->where('slug', 'flexible-home-visit')
                 ->firstOrFail();
             return (new FlexibleOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
@@ -301,10 +300,8 @@ class CategoriesController extends Controller
     }
     public function scheduledOrderDetails()
     {
-        //dd('stop');
         try {
             $service = Category::with('translations')
-                ->active()
                 ->where('slug', 'scheduled-visits')
                 ->firstOrFail();
             return (new ScheduledOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
@@ -321,7 +318,6 @@ class CategoriesController extends Controller
     {
         try {
             $service = Category::with('translations')
-                ->active()
                 ->where('slug', 'resident-worker-packages')
                 ->firstOrFail();
             return (new MonthlyPackagesOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);

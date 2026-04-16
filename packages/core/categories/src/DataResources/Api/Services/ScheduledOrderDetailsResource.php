@@ -17,6 +17,11 @@ class ScheduledOrderDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
+        $contractDuration   = CategorySetting::whereHas('parent',function($parentQuery){
+            $parentQuery->where('slug','contract-duration');
+        })
+        ->active()
+        ->get();
         $workersNumber = CategorySetting::whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','workers-number');
         })
@@ -28,14 +33,22 @@ class ScheduledOrderDetailsResource extends JsonResource
         })
         ->active()
         ->get();
+
+        $nationalities   = CategorySetting::whereHas('parent',function($parentQuery){
+            $parentQuery->where('slug','nationalities');
+        })
+        ->active()
+        ->get();
         
-        $serviceDates  =  CategoryDateTimesService::getDateTimes(type: 'maid',categoryIds: $this->id);
-        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $serviceDates);
+        $serviceDates = CategoryDateTimesService::getDateTimes(type: 'maid',categoryIds: $this->id);
+        $serviceDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $serviceDates);
 
 
         return [
             'id'                => $this->id ,
             'name'              => $this->name ,
+            'contract_duration' => ChildServiceSettingResource::collection($contractDuration),
+            'nationalities'     => ChildServiceSettingResource::collection($nationalities),
             'workers_number'    => ChildServiceSettingResource::collection($workersNumber),
             'hours_number'      => ChildServiceSettingResource::collection($hoursNumber),
             'dates'             => $serviceDates,

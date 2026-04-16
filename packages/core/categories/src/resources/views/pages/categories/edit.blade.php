@@ -253,6 +253,14 @@
                                         </div>
 
                                         <div class="form-group mb-3 col-md-12">
+                                            <label class=""
+                                                for="discount_percent">{{ trans('discount percent') }}</label>
+                                            <input type="number" step="0.01" name="discount_percent" class="form-control "
+                                                placeholder="{{ trans('Enter discount percent') }} "
+                                                value="{{ old('discount_percent', $item->discount_percent ?? null) }}">
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
                                             <label class="" for="sort">{{ trans('sort') }}</label>
                                             <input type="number" name="sort" class="form-control "
                                                 placeholder="{{ trans('Enter sort') }} "
@@ -511,6 +519,9 @@
                                                                         <th scope="col" data-name="sort"
                                                                             data-type="number">
                                                                             {{ trans('sort') }}</th>
+                                                                         <th scope="col" data-name="discount_percent"
+                                                                             data-type="number">
+                                                                             {{ trans('discount percent') }}</th>
                                                                         <th scope="col" data-name="status"
                                                                             data-type="select">
                                                                             {{ trans('status') }}</th>
@@ -530,6 +541,7 @@
                                                                             <td>{{ $sItem->name }}</td>
                                                                             <td>{!! \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesHtml($sItem->image) !!}</td>
                                                                             <td>{{ $sItem->sort }}</td>
+                                                                             <td>{{ $sItem->discount_percent }}</td>
                                                                             <td>{{ $sItem->status }}</td>
                                                                             <td class="options">
                                                                                 {!! $sItem->itemsActions !!}</td>
@@ -632,6 +644,9 @@
                                                                         <th scope="col" data-name="addon_price"
                                                                             data-type="number">
                                                                             {{ trans('addon price') }}</th>
+                                                                         <th scope="col" data-name="discount_percent"
+                                                                             data-type="number">
+                                                                             {{ trans('discount percent') }}</th>
                                                                         <th scope="col" data-name="status"
                                                                             data-type="select">
                                                                             {{ trans('status') }}</th>
@@ -650,6 +665,7 @@
                                                                             </td>
                                                                             <td>{{ $sItem->name }}</td>
                                                                             <td>{{ $sItem->addon_price }}</td>
+                                                                             <td>{{ $sItem->discount_percent }}</td>
                                                                             <td>{{ $sItem->status }}</td>
                                                                             <td class="options">
                                                                                 {!! $sItem->itemsActions !!}</td>
@@ -870,6 +886,12 @@
                                                 <input type="number" name="delivery_price" class="form-control "
                                                     placeholder="{{ trans('Enter delivery price') }} " value="">
 
+                                            </div>
+                                            <div class="form-group mb-3 col-md-12">
+                                                <label class=""
+                                                    for="discount_percent">{{ trans('discount percent') }}</label>
+                                                <input type="number" step="0.01" name="discount_percent" class="form-control "
+                                                    placeholder="{{ trans('Enter discount percent') }} " value="">
                                             </div>
 
                                             <div class="form-group mb-3 col-md-12">
@@ -1237,6 +1259,13 @@
                                                     for="addon_price">{{ trans('addon price') }}</label>
                                                 <input type="number" name="addon_price" class="form-control "
                                                     placeholder="{{ trans('Enter addon price') }} " value="">
+
+                                            </div>
+                                            <div class="form-group mb-3 col-md-6">
+                                                <label class=""
+                                                    for="discount_percent">{{ trans('discount percent') }}</label>
+                                                <input type="number" step="0.01" name="discount_percent" class="form-control "
+                                                    placeholder="{{ trans('Enter discount percent') }} " value="">
 
                                             </div>
                                             <div class="form-group mb-3 col-md-6">

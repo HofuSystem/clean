@@ -109,8 +109,16 @@ class SettingsRequest extends FormRequest
 			"sales_allowed_payment_methods" => ['required', 'array'],
 			"sales_allowed_payment_methods.*" => ['required', 'string', 'in:cash,card,points,wallet'],
 			"multiple_payment_fees" => ['nullable', 'numeric', 'min:0'],
-			"clean_station_commercial_registration" => ['nullable', 'string'],
-			"clean_station_tax_number" => ['nullable', 'string'],
+			"tax_name_ar" => ['nullable', 'string'],
+			"tax_name_en" => ['nullable', 'string'],
+			"tax_commercial_registration" => ['nullable', 'string'],
+			"tax_tax_number" => ['nullable', 'string'],
+			"tax_street_name" => ['nullable', 'string'],
+			"tax_building_no" => ['nullable', 'string'],
+			"tax_district" => ['nullable', 'string'],
+			"tax_postal_code" => ['nullable', 'string'],
+			"tax_additional_number" => ['nullable', 'string'],
+			"tax_city" => ['nullable', 'string'],
 		];
 
 	}

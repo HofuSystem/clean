@@ -32,6 +32,7 @@ class CategoriesResource extends JsonResource
             "desc"           => DashboardDataTableFormatter::text($this->desc),
             "type"           => DashboardDataTableFormatter::text(trans($this->type)),
             "delivery_price" => DashboardDataTableFormatter::text($deliveryPrice?->price),
+            "discount_percent" => DashboardDataTableFormatter::text($this->discount_percent),
             "sort"           => DashboardDataTableFormatter::text($this->sort),
             "is_package"     => DashboardDataTableFormatter::checkbox($this->is_package),
             "status"         => DashboardDataTableFormatter::text(trans($this->status)),

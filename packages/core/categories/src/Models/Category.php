@@ -19,7 +19,7 @@ use Core\Users\Models\User;
 class Category extends CoreModel implements TranslatableContract{
     use Translatable;
 	protected $table             = 'categories';
-	protected $fillable          = ['slug', 'image', 'type', 'delivery_price','for_all_cities', 'sort', 'is_package', 'status', 'parent_id', 'city_id', 'creator_id', 'updater_id'];
+	protected $fillable          = ['slug', 'image', 'type', 'delivery_price', 'discount_percent', 'for_all_cities', 'sort', 'is_package', 'status', 'parent_id', 'city_id', 'creator_id', 'updater_id'];
     protected $guarded           = [];
     public $translatedAttributes = ["name","intro","desc","meta_title","meta_description"];
 

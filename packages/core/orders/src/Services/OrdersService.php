@@ -33,6 +33,8 @@ use Core\Orders\Models\OrderTransaction;
 use Core\Products\Services\ProductsService;
 use Core\B2B\Models\Contract;
 use Core\PaymentGateways\Services\MyFatoorahService;
+use Illuminate\Validation\ValidationException;
+
 
 class OrdersService
 {
@@ -718,6 +720,20 @@ class OrdersService
         } else if ($data['type'] == 'maidflex' || $data['type'] == 'maidscheduled' || $data['type'] == 'maidPackage' || $data['type'] == 'maidoffer') {
             $reference_id = 'C' . rand(100000000, 999999999);
         }
+        if($data['type'] == 'maidflex' || $data['type'] == 'maidscheduled'){
+            if(!isset($data['nationality_id'])){
+               throw ValidationException::withMessages([
+                   'nationality_id' => trans('please update the app to the latest version'),
+               ]);
+            }
+        }
+        if($data['type'] == 'maidscheduled'){
+            if(!isset($data['contract_duration_id'])){
+               throw ValidationException::withMessages([
+                   'contract_duration_id' => trans('please update the app to the latest version'),
+               ]);
+            }
+        }
         $orderData           = [];
         if (isset($data['service_id']) && $data['service_id']) {
             if ($data['type'] == 'maidoffer') {
@@ -747,6 +763,20 @@ class OrdersService
             $nameEn  = $uniform?->translate('en')?->name;
             $uniform = ['id' => $uniform->id, 'name' => $nameAr, 'name_en' => $nameEn, 'price' => $uniform->addon_price, 'custom_service_id' => $uniform->category_id, 'parent_id' => $uniform->parent_id];
             $orderData['uniform_data'] =  $uniform  != null  ? json_encode($uniform) : null;
+        }
+         if (isset($data['nationality_id']) && $data['nationality_id']) {
+            $nationality = CategorySetting::find($data['nationality_id']);
+            $nameAr      = $nationality?->translate('ar')?->name;
+            $nameEn      = $nationality?->translate('en')?->name;
+            $nationality = ['id' => $nationality->id, 'name' => $nameAr, 'name_en' => $nameEn, 'price' => $nationality->addon_price, 'custom_service_id' => $nationality->category_id, 'parent_id' => $nationality->parent_id];
+            $orderData['nationality_data'] =  $nationality  != null  ? json_encode($nationality) : null;
+        }
+        if (isset($data['contract_duration_id']) && $data['contract_duration_id']) {
+            $contractDuration = CategorySetting::find($data['contract_duration_id']);
+            $nameAr      = $contractDuration?->translate('ar')?->name;
+            $nameEn      = $contractDuration?->translate('en')?->name;
+            $contractDuration = ['id' => $contractDuration->id, 'name' => $nameAr, 'name_en' => $nameEn, 'price' => $contractDuration->addon_price, 'custom_service_id' => $contractDuration->category_id, 'parent_id' => $contractDuration->parent_id];
+            $orderData['contract_duration_data'] =  $contractDuration  != null  ? json_encode($contractDuration) : null;
         }
         if (isset($data['worker_count_id']) && $data['worker_count_id']) {
             $workerCount = CategorySetting::find($data['worker_count_id']);

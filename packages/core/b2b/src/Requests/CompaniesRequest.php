@@ -20,6 +20,14 @@ class CompaniesRequest extends FormRequest
     {
         return [
             'fullname'         => ['required', 'string', 'max:255'],
+            'name_ar'          => ['nullable', 'string', 'max:255'],
+            'name_en'          => ['nullable', 'string', 'max:255'],
+            'street_name'      => ['nullable', 'string', 'max:255'],
+            'building_no'      => ['nullable', 'string', 'max:255'],
+            'district_id'      => ['nullable', 'exists:districts,id'],
+            'postal_code'      => ['nullable', 'string', 'max:255'],
+            'additional_number' => ['nullable', 'string', 'max:255'],
+            'city_id'          => ['nullable', 'exists:cities,id'],
             'line_of_business' => ['nullable', 'string', 'max:255'],
             'email'            => ['nullable', 'email', 'max:255'],
             'phone'            => ['nullable', 'string', 'max:50'],

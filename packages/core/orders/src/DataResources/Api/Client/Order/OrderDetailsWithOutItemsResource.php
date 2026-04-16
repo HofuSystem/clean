@@ -23,6 +23,8 @@ class OrderDetailsWithOutItemsResource extends JsonResource
     public function toArray($request)
     {
         $workerCount    = json_decode($this->moreDatas->where('key','worker_count_data')->first()?->value)?->name;
+        $nationality    = json_decode($this->moreDatas->where('key','nationality_data')->first()?->value)?->name;
+        $contractDuration    = json_decode($this->moreDatas->where('key','contract_duration_data')->first()?->value)?->name;
         $hoursCount     = json_decode($this->moreDatas->where('key','hours_count_data')->first()?->value)?->name;
         $serviceData    = json_decode($this->moreDatas->where('key','service_data')->first()?->value);
         if(CategoryOffer::where('id',$serviceData?->id)->exists()){
@@ -66,9 +68,12 @@ class OrderDetailsWithOutItemsResource extends JsonResource
 
 
             'service'                   => json_decode($this->moreDatas->where('key','service_data')->first()?->value)?->name_ar,
+            
             'service_type'              => json_decode($this->moreDatas->where('key','service_type_data')->first()?->value)?->name_ar,
             'uniform'                   => json_decode($this->moreDatas->where('key','uniform_data')->first()?->value)?->name,
+            'nationality'               => $nationality,
             'worker_count'              => $workerCount,
+            'contract_duration'         => $contractDuration,
             'hours_count'               => $hoursCount,
             'period'                    => json_decode($this->moreDatas->where('key','period_data')->first()?->value)?->name,
             'duration'                  => json_decode($this->moreDatas->where('key','duration_data')->first()?->value)?->name,

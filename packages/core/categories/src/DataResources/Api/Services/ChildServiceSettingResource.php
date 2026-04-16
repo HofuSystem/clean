@@ -27,6 +27,7 @@ class ChildServiceSettingResource extends JsonResource
             'name'   => $this->name ,
             'price'  => ToolHelper::getPriceBasedOnCurrentWeekDay($price),
             'cost'   => $cost,
+            'discount_percent' => $this->discount_percent,
         ];
     }
 }

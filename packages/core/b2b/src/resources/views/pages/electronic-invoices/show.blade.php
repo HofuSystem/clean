@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,28 +14,59 @@
             -webkit-print-color-adjust: exact;
             color-adjust: exact;
         }
-        
+
         /* تصميم حقول الإدخال */
-        [contenteditable="true"] { outline: none; transition: all 0.2s; border-radius: 4px; }
-        [contenteditable="true"]:hover, [contenteditable="true"]:focus { background-color: #f0f9ff; box-shadow: 0 0 0 2px #bae6fd; }
-        
-        th, td { padding-top: 0.35rem; padding-bottom: 0.35rem; }
-        
+        [contenteditable="true"] {
+            outline: none;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+
+        [contenteditable="true"]:hover,
+        [contenteditable="true"]:focus {
+            background-color: #f0f9ff;
+            box-shadow: 0 0 0 2px #bae6fd;
+        }
+
+        th,
+        td {
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+        }
+
         /* إخفاء القوائم عند التبديل */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* تصميم خاص لجدول كشف الحساب */
-        .stat-table th, .stat-table td { padding: 0.35rem 0.5rem !important; border: 1px solid #e5e7eb; font-size: 11px; text-align: center; }
-        .stat-table thead th { background-color: #1f2937; color: white; border-color: #374151; }
-        
+        .stat-table th,
+        .stat-table td {
+            padding: 0.35rem 0.5rem !important;
+            border: 1px solid #e5e7eb;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .stat-table thead th {
+            background-color: #1f2937;
+            color: white;
+            border-color: #374151;
+        }
+
         /* --- أزرار الحذف الخارجية --- */
         .row-wrapper {
             position: relative;
         }
+
         .delete-btn {
             position: absolute;
-            right: -25px; /* خارج الجدول من اليمين */
+            right: -25px;
+            /* خارج الجدول من اليمين */
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -43,54 +74,123 @@
             font-size: 12px;
             padding: 4px;
         }
+
         .delete-btn:hover {
             color: #ef4444;
         }
-        
+
         /* --- إعدادات الطباعة العامة --- */
         @media print {
-            body { background-color: white; padding: 0 !important; font-size: 12px !important; }
-            .no-print { display: none !important; }
-            .hide-on-print { display: none !important; }
-            
+            body {
+                background-color: white;
+                padding: 0 !important;
+                font-size: 12px !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .hide-on-print {
+                display: none !important;
+            }
+
             /* إصلاح مشكلة انكماش العرض وتشوه الجداول */
-            .print-container { 
-                box-shadow: none !important; 
-                border: none !important; 
-                margin: 0 auto !important; 
-                padding: 0 !important; 
-                width: 100% !important; 
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                width: 100% !important;
                 max-width: none !important;
             }
+
             /* تعطيل السحب الجانبي لمنع تصغير محتوى الطباعة */
-            .overflow-x-auto { overflow: visible !important; }
+            .overflow-x-auto {
+                overflow: visible !important;
+            }
 
-            [contenteditable="true"] { box-shadow: none !important; background-color: transparent !important; }
-            
+            [contenteditable="true"] {
+                box-shadow: none !important;
+                background-color: transparent !important;
+            }
+
             /* ضغط المسافات للطباعة */
-            .mb-8 { margin-bottom: 0.5rem !important; }
-            .mb-6 { margin-bottom: 0.25rem !important; }
-            .mb-4 { margin-bottom: 0.25rem !important; }
-            .pb-4, .pb-3 { padding-bottom: 0.25rem !important; }
-            .p-4, .p-3, .p-6 { padding: 0.25rem !important; }
-            .pt-8 { padding-top: 0.5rem !important; }
-            .mt-6 { margin-top: 0.25rem !important; }
-            .mt-4 { margin-top: 0.15rem !important; }
+            .mb-8 {
+                margin-bottom: 0.5rem !important;
+            }
 
-            th, td { padding-top: 0.15rem !important; padding-bottom: 0.15rem !important; font-size: 0.75rem !important; }
-            tr { break-inside: avoid; page-break-inside: avoid; }
-            
-            .print-footer { position: fixed !important; bottom: 0 !important; left: 0; right: 0; background-color: white !important; z-index: 50; }
-            
+            .mb-6 {
+                margin-bottom: 0.25rem !important;
+            }
+
+            .mb-4 {
+                margin-bottom: 0.25rem !important;
+            }
+
+            .pb-4,
+            .pb-3 {
+                padding-bottom: 0.25rem !important;
+            }
+
+            .p-4,
+            .p-3,
+            .p-6 {
+                padding: 0.25rem !important;
+            }
+
+            .pt-8 {
+                padding-top: 0.5rem !important;
+            }
+
+            .mt-6 {
+                margin-top: 0.25rem !important;
+            }
+
+            .mt-4 {
+                margin-top: 0.15rem !important;
+            }
+
+            th,
+            td {
+                padding-top: 0.15rem !important;
+                padding-bottom: 0.15rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            tr {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .print-footer {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0;
+                right: 0;
+                background-color: white !important;
+                z-index: 50;
+            }
+
             /* إخفاء أزرار الحذف الخارجية في الطباعة */
-            .delete-btn { display: none !important; }
+            .delete-btn {
+                display: none !important;
+            }
         }
 
-        body.printing-invoice @page { size: A4; margin: 8mm; }
-        body.printing-invoice .invoice-view { display: block !important; }
-        
-        body.printing-statement * { line-height: 1.2 !important; }
-        
+        body.printing-invoice @page {
+            size: A4;
+            margin: 8mm;
+        }
+
+        body.printing-invoice .invoice-view {
+            display: block !important;
+        }
+
+        body.printing-statement * {
+            line-height: 1.2 !important;
+        }
+
         /* إجبار شريط بيانات العميل الحديث على البقاء أفقياً في الطباعة */
         body.printing-statement .compact-info-bar {
             display: flex !important;
@@ -104,10 +204,12 @@
             border-radius: 6px !important;
             page-break-inside: avoid !important;
         }
-        body.printing-statement .compact-info-bar > div {
+
+        body.printing-statement .compact-info-bar>div {
             display: flex !important;
             flex-direction: column !important;
         }
+
         body.printing-statement .info-divider {
             display: block !important;
             width: 1px !important;
@@ -121,14 +223,16 @@
             table-layout: fixed !important;
             border-collapse: collapse !important;
         }
-        body.printing-statement .stat-table th, 
-        body.printing-statement .stat-table td { 
-            font-size: 8pt !important; /* خط صغير جداً ليتسع */
-            padding: 2px !important; 
+
+        body.printing-statement .stat-table th,
+        body.printing-statement .stat-table td {
+            font-size: 8pt !important;
+            /* خط صغير جداً ليتسع */
+            padding: 2px !important;
             word-wrap: break-word !important;
             overflow: hidden !important;
         }
-        
+
         /* تثبيت الشعارات العلوية لمنع تشوهها */
         body.printing-statement .header-logos img {
             max-height: 40px !important;
@@ -143,23 +247,35 @@
             page-break-inside: avoid !important;
             margin-top: 5px !important;
         }
+
         body.printing-statement .stamp-img {
             height: 60px !important;
             bottom: -5px !important;
         }
-        body.printing-statement .print-footer { bottom: 0 !important; }
+
+        body.printing-statement .print-footer {
+            bottom: 0 !important;
+        }
     </style>
 </head>
+
 <body class="py-4 md:py-8 overflow-x-hidden"> <!-- منع التمرير الأفقي للصفحة ككل -->
 
     <!-- شريط التحكم والأدوات (لا يظهر في الطباعة) -->
-    <div class="max-w-4xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-4 no-print border-t-4 border-[#00AEEF]">
-        
+    <div
+        class="max-w-4xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-4 no-print border-t-4 border-[#00AEEF]">
+
         <div></div>
 
         <!-- أزرار الطباعة -->
-        <button onclick="printDocument()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow flex justify-center items-center gap-2 transition" id="main-print-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+        <button onclick="printDocument()"
+            class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow flex justify-center items-center gap-2 transition"
+            id="main-print-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
+                    clip-rule="evenodd" />
+            </svg>
             <span id="print-text">طباعة الفاتورة</span>
         </button>
     </div>
@@ -167,97 +283,154 @@
 
     <div id="invoice-tab" class="invoice-view">
 
-        <div class="print-container max-w-4xl mx-auto bg-white p-6 md:p-10 shadow-2xl rounded-xl border-t-8 border-[#00AEEF] relative overflow-hidden">
+        <div
+            class="print-container max-w-4xl mx-auto bg-white p-6 md:p-10 shadow-2xl rounded-xl border-t-8 border-[#00AEEF] relative overflow-hidden">
             <div class="flex justify-between items-start border-b-2 border-gray-100 pb-3 mb-4">
                 <div class="text-right">
-                    <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">TAX INVOICE | فاتورة ضريبية</h2>
+                    <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">TAX
+                        INVOICE | فاتورة ضريبية</h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
-                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span contenteditable="true">{{ $invoice->invoice_number }}</span></div>
+                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span
+                                contenteditable="true">{{ $invoice->invoice_number }}</span></div>
                         <div><span class="text-gray-300">|</span></div>
-                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span contenteditable="true" class="auto-date">{{ $invoice->created_at->format('d M Y') }}</span></div>
+                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span contenteditable="true"
+                                class="auto-date">{{ $invoice->created_at->format('d M Y') }}</span></div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4 header-logos">
                     {!! $qrCodeImage !!}
                     <div class="h-10 border-r-2 border-gray-200"></div>
                     <div class="flex flex-col justify-center items-center mt-1">
-                        <span contenteditable="true" class="text-[8px] text-gray-400 font-bold mb-0 tracking-wider whitespace-nowrap">مدعوم من</span>
-                        <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="هوفو سيستم" class="h-7 w-auto object-contain opacity-80">
+                        <span contenteditable="true"
+                            class="text-[8px] text-gray-400 font-bold mb-0 tracking-wider whitespace-nowrap">مدعوم
+                            من</span>
+                        <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="هوفو سيستم"
+                            class="h-7 w-auto object-contain opacity-80">
                     </div>
                     <div class="h-10 border-r-2 border-gray-200"></div>
-                    <img src="https://i.postimg.cc/Cx8YsGLw/lwqw-msttyl-2-(1).png" alt="كلين ستيشن" class="h-20 w-auto object-contain">
-                
+                    <img src="https://i.postimg.cc/Cx8YsGLw/lwqw-msttyl-2-(1).png" alt="كلين ستيشن"
+                        class="h-20 w-auto object-contain">
+
                 </div>
             </div>
 
             <div class="flex justify-between text-gray-800 mb-4 border-b border-gray-100 pb-3">
                 <div class="w-1/2 pr-2 border-l border-gray-100 text-right">
-                    @php 
-                        $companyName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
-                        $companyNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين ستيشن';
-                        $companyVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('clean_station_tax_number') ?: '300000000000003';
-                        $companyCommercialRegistration = \Core\Settings\Services\SettingsService::getDataBaseSetting('clean_station_commercial_registration') ?: '300000000000003';
+                    @php
+                    $sellerName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
+                    $sellerNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين ستيشن';
+                    $sellerVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_tax_number') ?: '—';
+                    $sellerCrn = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_commercial_registration') ?: '—';
+                    $sellerStreet = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_street_name') ?: '';
+                    $sellerBuilding = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_building_no') ?: '';
+                    $sellerDistrictId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_district');
+                    $sellerCityId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_city');
+                    $sellerPostal = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_postal_code') ?: '';
+                    $sellerAdditional = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_additional_number') ?: '';
+                    $sellerCity = $sellerCityId ? \Core\Info\Models\City::find($sellerCityId)?->name : '';
+                    $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name : '';
                     @endphp
-                    <h3 contenteditable="true" class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">البائع / Seller:</h3>
-                    <p contenteditable="true" class="font-bold text-base leading-tight">{{ $companyName }} / {{ $companyNameAr }}</p>
-                    <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $companyVat }}</span></p>
-                    <p class="text-sm mt-1">السجل التجارى: <span contenteditable="true" class="font-semibold">{{ $companyCommercialRegistration }}</span></p>
+                    <h3 contenteditable="true"
+                        class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">البائع / Seller:</h3>
+                    <p contenteditable="true" class="font-bold text-base leading-tight">{{ $sellerNameAr }} / {{ $sellerName }}</p>
+                    <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $sellerVat }}</span></p>
+                    <p class="text-sm mt-1">السجل التجارى: <span contenteditable="true" class="font-semibold">{{ $sellerCrn }}</span></p>
+                    <div class="text-[10px] text-gray-500 mt-1">
+                        <div>@lang('Building No'): {{ $sellerBuilding }}</div>
+                        <div>@lang('Street'): {{ $sellerStreet }}</div>
+                        @if($sellerDistrict) <div>@lang('District'): {{ $sellerDistrict }}</div> @endif
+                        @if($sellerCity) <div>@lang('City'): {{ $sellerCity }}</div> @endif
+                        @if($sellerPostal) <div>@lang('Postal Code'): {{ $sellerPostal }}</div> @endif
+                        @if($sellerAdditional) <div>@lang('Additional Number'): {{ $sellerAdditional }}</div> @endif
+                    </div>
                 </div>
                 <div class="w-1/2 pl-4 text-right">
-                    <h3 contenteditable="true" class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed To:</h3>
-                    <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order?->company?->fullname ?? $invoice->order?->client?->fullname }}</p>
-                    <p class="text-sm mt-1 whitespace-nowrap"><span contenteditable="true">عناية:</span> <span contenteditable="true" class="font-semibold">{{ $invoice->order?->client?->fullname }}</span></p>
-                    <p contenteditable="true" class="text-sm text-gray-500 mt-1">{{ $invoice->order?->client?->address }}</p>
+                    <h3 contenteditable="true"
+                        class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed
+                        To:</h3>
+                    @if($invoice->order?->company)
+                        <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order->company->name_ar ?: $invoice->order->company->fullname }}</p>
+                        <p contenteditable="true" class="text-xs text-gray-500">{{ $invoice->order->company->name_en }}</p>
+                        @if($invoice->order->company->tax_number)
+                            <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $invoice->order->company->tax_number }}</span></p>
+                        @endif
+                        <div contenteditable="true" class="text-xs text-gray-500 mt-1">
+                            <div>@lang('Building No'): {{ $invoice->order->company->building_no }}</div>
+                            <div>@lang('Street'): {{ $invoice->order->company->street_name }}</div>
+                            @if($invoice->order->company->district) <div>@lang('District'): {{ $invoice->order->company->district->name }}</div> @endif
+                            @if($invoice->order->company->city) <div>@lang('City'): {{ $invoice->order->company->city->name }}</div> @endif
+                            @if($invoice->order->company->postal_code) <div>@lang('Postal Code'): {{ $invoice->order->company->postal_code }}</div> @endif
+                            @if($invoice->order->company->additional_number) <div>@lang('Additional Number'): {{ $invoice->order->company->additional_number }}</div> @endif
+                        </div>
+                    @else
+                        <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
+                        <p class="text-sm mt-1 whitespace-nowrap"><span contenteditable="true">عناية:</span> <span
+                                contenteditable="true" class="font-semibold">{{ $invoice->order?->client?->fullname
+                                }}</span></p>
+                        <p contenteditable="true" class="text-sm text-gray-500 mt-1">{{ $invoice->order?->client?->address }}</p>
+                    @endif
                 </div>
             </div>
 
             <div class="mb-4 relative">
-                <h3 contenteditable="true" class="text-base font-bold text-gray-800 mb-2 border-b-2 border-[#00AEEF] inline-block pb-1">تفاصيل الفاتورة | Invoice Details</h3>
+                <h3 contenteditable="true"
+                    class="text-base font-bold text-gray-800 mb-2 border-b-2 border-[#00AEEF] inline-block pb-1">تفاصيل
+                    الفاتورة | Invoice Details</h3>
                 <div class="overflow-x-visible">
                     <table class="w-full text-left border-collapse inv-table">
                         <thead>
                             <tr class="bg-gray-800 text-white text-xs">
                                 <th class="py-1 px-2 rounded-tr-lg text-right w-8">#</th>
-                                <th class="py-1 px-2 text-right border-r border-gray-600 whitespace-nowrap">البيان / Description</th>
+                                <th class="py-1 px-2 text-right border-r border-gray-600 whitespace-nowrap">البيان /
+                                    Description</th>
                                 <th class="py-1 px-2 text-center border-r border-gray-600 w-16">الكمية/Qty</th>
-                                <th class="py-1 px-2 text-center border-r border-gray-600 w-24 leading-tight">سعر الوحدة<br><span class="text-[9px] text-gray-300 font-normal">Unit Price</span></th>
-                                <th class="py-1 px-2 text-center border-r border-gray-600 w-20 leading-tight">الضريبة 15 %<br><span class="text-[9px] text-gray-300 font-normal">Disc.</span></th>
-                                <th class="py-1 px-2 rounded-tl-lg text-center bg-[#00AEEF] w-28 leading-tight">المجموع<br><span class="text-[9px] text-[#e0f7fa] font-normal">Total</span></th>
+                                <th class="py-1 px-2 text-center border-r border-gray-600 w-24 leading-tight">سعر
+                                    الوحدة<br><span class="text-[9px] text-gray-300 font-normal">Unit Price</span></th>
+                                <th class="py-1 px-2 text-center border-r border-gray-600 w-20 leading-tight">الضريبة 15
+                                    %<br><span class="text-[9px] text-gray-300 font-normal">Disc.</span></th>
+                                <th class="py-1 px-2 rounded-tl-lg text-center bg-[#00AEEF] w-28 leading-tight">
+                                    المجموع<br><span class="text-[9px] text-[#e0f7fa] font-normal">Total</span></th>
                             </tr>
                         </thead>
                         @php
-                            $totalBeforeTax = 0;
-                            $totalTax = 0;
-                            $total = 0;
+                        $totalBeforeTax = 0;
+                        $totalTax = 0;
+                        $total = 0;
                         @endphp
                         <tbody class="text-sm text-gray-700">
                             @foreach($invoice?->order?->items ?? [] as $index => $item)
                             @php
-                                $price = $item->product_price;
-                                $tax = (15 * $price / 100);
-                                $beforeTax = $price - $tax;
-                                $totalBeforeTax += $beforeTax * $item->quantity;
-                                $totalTax += $tax * $item->quantity;
-                                $total += $price * $item->quantity;
+                            $price = $item->product_price;
+                            $tax = (15 * $price / 100);
+                            $beforeTax = $price - $tax;
+                            $totalBeforeTax += $beforeTax * $item->quantity;
+                            $totalTax += $tax * $item->quantity;
+                            $total += $price * $item->quantity;
                             @endphp
-                            <tr class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
+                            <tr
+                                class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
                                 <td class="px-2 text-right font-bold text-gray-400">{{ $index + 1 }}</td>
                                 <td class="px-2 text-right font-semibold leading-tight">
-                                    <div contenteditable="true">{{ $item->product?->translate('ar')->name . ' ' . $item->product?->translate('en')->name }}</div>
-                                    <div class="text-gray-400 text-[10px]">{{ $item->product?->translate('en')->name ?? $item->product?->sku ?? '' }}</div>
+                                    <div contenteditable="true">{{ $item->product?->translate('ar')->name . ' ' .
+                                        $item->product?->translate('en')->name }}</div>
+                                    <div class="text-gray-400 text-[10px]">{{ $item->product?->translate('en')->name ??
+                                        $item->product?->sku ?? '' }}</div>
                                 </td>
                                 <td class="px-2 text-center text-gray-500">
                                     <span contenteditable="true" class="qty font-semibold">{{ $item->quantity }}</span>
                                 </td>
                                 <td class="px-2 text-center">
-                                    <span contenteditable="true" class="base-price font-semibold">{{ number_format($beforeTax * $item->quantity, 2, '.', '') }}</span> 
+                                    <span contenteditable="true" class="base-price font-semibold">{{
+                                        number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
                                     <span class="text-[10px]">ر.س</span>
                                 </td>
                                 <td class="px-2 text-center text-red-500">
-                                    <span contenteditable="true" class="discount font-semibold">{{number_format($tax * $item->quantity, 2, '.', '')}}</span> ر.س
+                                    <span contenteditable="true" class="discount font-semibold">{{number_format($tax *
+                                        $item->quantity, 2, '.', '')}}</span> ر.س
                                 </td>
                                 <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
-                                    <span class="final-price text-base">{{ number_format($price * $item->quantity, 2, '.', '') }}</span> 
+                                    <span class="final-price text-base">{{ number_format($price * $item->quantity, 2,
+                                        '.', '') }}</span>
                                     <span class="text-[10px]">ر.س</span>
                                 </td>
                             </tr>
@@ -265,16 +438,28 @@
                         </tbody>
                         <tfoot class="border-t-2 border-gray-800 text-sm">
                             <tr>
-                                <td colspan="5" class="py-1 px-3 text-left font-semibold text-gray-600" id="sub-total-label">المجموع الفرعي (غير شامل الضريبة) | Subtotal:</td>
-                                <td class="py-1 px-3 text-center font-bold text-gray-700"><span id="sub-total">{{ number_format($totalBeforeTax, 2, '.', '') }}</span> <span class="text-[10px]">ر.س</span></td>
+                                <td colspan="5" class="py-1 px-3 text-left font-semibold text-gray-600"
+                                    id="sub-total-label">المجموع الفرعي (غير شامل الضريبة) | Subtotal:</td>
+                                <td class="py-1 px-3 text-center font-bold text-gray-700"><span id="sub-total">{{
+                                        number_format($totalBeforeTax, 2, '.', '') }}</span> <span
+                                        class="text-[10px]">ر.س</span></td>
                             </tr>
                             <tr id="vat-row">
-                                <td colspan="5" class="py-1 px-3 text-left font-semibold text-gray-600 border-t border-gray-200">ضريبة القيمة المضافة (15%) | VAT 15%:</td>
-                                <td class="py-1 px-3 text-center font-bold text-red-500 border-t border-gray-200">+ <span id="vat-amount">{{ number_format($totalTax, 2, '.', '') }}</span> <span class="text-[10px]">ر.س</span></td>
+                                <td colspan="5"
+                                    class="py-1 px-3 text-left font-semibold text-gray-600 border-t border-gray-200">
+                                    ضريبة القيمة المضافة (15%) | VAT 15%:</td>
+                                <td class="py-1 px-3 text-center font-bold text-red-500 border-t border-gray-200">+
+                                    <span id="vat-amount">{{ number_format($totalTax, 2, '.', '') }}</span> <span
+                                        class="text-[10px]">ر.س</span></td>
                             </tr>
                             <tr class="bg-[#00AEEF]/10">
-                                <td colspan="5" class="py-2 px-3 text-left font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF]">الإجمالي النهائي المستحق | Grand Total:</td>
-                                <td class="py-2 px-3 text-center font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF] text-lg"><span id="grand-total">{{ number_format($total, 2, '.', '') }}</span> <span class="text-[10px]">ر.س</span></td>
+                                <td colspan="5"
+                                    class="py-2 px-3 text-left font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF]">
+                                    الإجمالي النهائي المستحق | Grand Total:</td>
+                                <td
+                                    class="py-2 px-3 text-center font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF] text-lg">
+                                    <span id="grand-total">{{ number_format($total, 2, '.', '') }}</span> <span
+                                        class="text-[10px]">ر.س</span></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -285,12 +470,16 @@
 
             <!-- تذييل ثابت للفاتورة -->
             <div class="print-footer mt-4 w-full bg-white pb-2">
-                <div class="h-[4px] w-full bg-gradient-to-l from-[#00AEEF] via-blue-400 to-transparent mb-2 rounded-full print-color-adjust"></div>
+                <div
+                    class="h-[4px] w-full bg-gradient-to-l from-[#00AEEF] via-blue-400 to-transparent mb-2 rounded-full print-color-adjust">
+                </div>
                 <div class="flex justify-between items-end">
                     <div class="flex items-center gap-4 header-logos">
-                        <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="هوفو سيستم" class="h-6 w-auto object-contain">
+                        <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="هوفو سيستم"
+                            class="h-6 w-auto object-contain">
                         <div class="border-r-2 border-gray-200 pr-3">
-                            <p class="text-[10px] font-bold text-gray-800 leading-none mb-1">مدعوم تقنياً وتشغيلياً بواسطة شركة هوفو سيستم</p>
+                            <p class="text-[10px] font-bold text-gray-800 leading-none mb-1">مدعوم تقنياً وتشغيلياً
+                                بواسطة شركة هوفو سيستم</p>
                             <p class="text-[8px] text-gray-500 leading-none">بالتقنية نصنع إتقان</p>
                         </div>
                     </div>
@@ -298,7 +487,7 @@
                         <p class="mb-1 text-[#00AEEF]">www.cleanstation.app | support@cleanstation.app</p>
                         <p class="text-[7px] text-gray-400">© 2026 Powered by Hofo System. All rights reserved.</p>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -312,9 +501,9 @@
         const currentTab = 'invoice';
 
         // دالة الطباعة الذكية
-        window.printDocument = function() {
+        window.printDocument = function () {
             document.body.className = 'printing-invoice';
-            
+
             document.querySelectorAll('.inv-row').forEach(row => {
                 const qty = parseFloat(row.querySelector('.qty')?.innerText) || 0;
                 const finalPrice = parseFloat(row.querySelector('.final-price')?.innerText) || 0;
@@ -331,8 +520,9 @@
             }, 100);
         };
 
-     
-        
+
+
     </script>
 </body>
+
 </html>

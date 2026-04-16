@@ -3,6 +3,7 @@
 namespace Core\B2B\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Core\B2B\Models\B2BFinancial;
 use Core\B2B\Models\Company;
 use Core\B2B\Requests\B2BFinancialsRequest;
@@ -24,7 +25,9 @@ class CompanyStatementController extends Controller
     public function __construct(
         protected B2BFinancialsService $financialsService,
         protected ZatcaService $zatcaService
-    ) {}
+        )
+    {
+    }
 
     /**
      * Show the account statement for a company.
@@ -33,30 +36,24 @@ class CompanyStatementController extends Controller
     {
         $companies = Company::underMyControl()->get(['id', 'fullname']);
         $nextOwedRefrence = $this->financialsService->getNextOwedRefrence();
-        $company = Company::with(['owner', 'contracts' => function ($q) {
+        $company = Company::with(['owner', 'city', 'district', 'contracts' => function ($q) {
             $q->latest()->first();
         }])->findOrFail($companyId);
 
         $query = B2BFinancial::where('company_id', $companyId)->orderBy('collection_date', 'asc')->orderBy('created_at', 'asc');
 
-        // Date range filters for Financials
-        if ($request->from_date) {
-            $query->whereDate('collection_date', '>=', $request->from_date);
-        }
-        if ($request->to_date) {
-            $query->whereDate('collection_date', '<=', $request->to_date);
-        }
+       
 
         $financials = $query->get()->map(function ($fin) {
             return [
-                'id'              => $fin->id,
-                'reference_id'    => $fin->reference_id,
-                'date'            => $fin->collection_date ?? $fin->created_at,
-                'note'            => $fin->note,
-                'type'            => $fin->type, // owed or paid
-                'amount'          => $fin->amount,
-                'attachment'      => $fin->attachment,
-                'source'          => 'financial',
+            'id' => $fin->id,
+            'reference_id' => $fin->reference_id,
+            'date' => Carbon::parse($fin->collection_date)->format('Y-m-d'),
+            'note' => $fin->note,
+            'type' => $fin->type, // owed or paid
+            'amount' => $fin->amount,
+            'attachment' => $fin->attachment,
+            'source' => 'financial',
             ];
         });
 
@@ -65,24 +62,18 @@ class CompanyStatementController extends Controller
             $q->where('company_id', $companyId);
         })->orderBy('filed_at', 'asc');
 
-        if ($request->from_date) {
-            $invoicesQuery->whereDate('filed_at', '>=', $request->from_date);
-        }
-        if ($request->to_date) {
-            $invoicesQuery->whereDate('filed_at', '<=', $request->to_date);
-        }
-
+      
         $invoices = $invoicesQuery->get()->map(function ($inv) {
             return [
-                'id'              => $inv->id,
-                'reference_id'    => $inv->invoice_number,
-                'date'            => $inv->created_at,
-                'note'            => $inv->invoice_number,
-                'type'            => 'invoice', // Invoices are always charges (owed)
-                'amount'          => $inv->total,
-                'attachment'      => null,
-                'source'          => 'invoice',
-                'url'             => route('dashboard.electronic-invoices.show', $inv->id),
+            'id' => $inv->id,
+            'reference_id' => $inv->invoice_number,
+            'date' => Carbon::parse($inv->filed_at)->format('Y-m-d'),
+            'note' => $inv->invoice_number,
+            'type' => 'invoice', // Invoices are always charges (owed)
+            'amount' => $inv->total,
+            'attachment' => null,
+            'source' => 'invoice',
+            'url' => route('dashboard.electronic-invoices.show', $inv->id),
             ];
         });
 
@@ -93,8 +84,8 @@ class CompanyStatementController extends Controller
 
         // Calculate running balance
         $balance = 0;
-        $totalsOwed  = 0;
-        $totalsPaid  = 0;
+        $totalsOwed = 0;
+        $totalsPaid = 0;
 
         $rows = $merged->map(function ($item) use (&$balance, &$totalsOwed, &$totalsPaid) {
             if ($item['type'] === 'owed') {
@@ -103,22 +94,23 @@ class CompanyStatementController extends Controller
                 $totalsOwed += $item['amount']; // Keep tracking total adjustments
                 $debit = null;
                 $credit = $item['amount'];
-            } else {
+            }
+            else {
                 // Payments also reduce debt
                 $balance -= $item['amount'];
                 $totalsPaid += $item['amount'];
                 $debit = null;
                 $credit = $item['amount'];
             }
-            
+
             // Wait, Invoices (orders) should INCREASE debt.
             // I need to check the source.
             if ($item['source'] === 'invoice') {
-                // Re-calculating correctly:
-                // Start with balance = 0.
-                // If Invoice: balance += amount (Debit)
-                // If Paid: balance -= amount (Credit)
-                // If Owed (Credit Note): balance -= amount (Credit)
+            // Re-calculating correctly:
+            // Start with balance = 0.
+            // If Invoice: balance += amount (Debit)
+            // If Paid: balance -= amount (Credit)
+            // If Owed (Credit Note): balance -= amount (Credit)
             }
             return $item;
         });
@@ -134,12 +126,14 @@ class CompanyStatementController extends Controller
                 $totalsDebit += $item['amount'];
                 $debit = $item['amount'];
                 $credit = null;
-            } elseif ($item['type'] === 'paid') {
+            }
+            elseif ($item['type'] === 'paid') {
                 $balance -= $item['amount'];
                 $totalsCredit += $item['amount'];
                 $debit = null;
                 $credit = $item['amount'];
-            } else { // 'owed' = Credit Note
+            }
+            else { // 'owed' = Credit Note
                 $balance -= $item['amount'];
                 $totalsCredit += $item['amount'];
                 $debit = null;
@@ -155,11 +149,11 @@ class CompanyStatementController extends Controller
         $totalsOwed = $totalsDebit;
         $totalsPaid = $totalsCredit;
 
-        $contract  = $company->contracts()->latest()->first();
+        $contract = $company->contracts()->latest()->first();
         $from_date = $request->from_date;
-        $to_date   = $request->to_date;
+        $to_date = $request->to_date;
 
-        $title  = trans('Company Statement') . ' - ' . $company->fullname;
+        $title = trans('Company Statement') . ' - ' . $company->fullname;
         $screen = 'company-statement';
 
         return view('b2b::pages.companies.statement', compact(
@@ -184,14 +178,16 @@ class CompanyStatementController extends Controller
             if ($type) {
                 $data['type'] = $type;
             }
-            
+
             $this->financialsService->storeOrUpdate($data);
             DB::commit();
             return $this->returnSuccessMessage(trans('Financial record saved successfully'));
-        } catch (ValidationException $e) {
+        }
+        catch (ValidationException $e) {
             DB::rollback();
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), [], 422);
-        } catch (\Throwable $e) {
+        }
+        catch (\Throwable $e) {
             DB::rollback();
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
@@ -229,17 +225,17 @@ class CompanyStatementController extends Controller
     public function printCreditNote($companyId, $financialId)
     {
         $financial = B2BFinancial::with('company')->findOrFail($financialId);
-        
+
         if ($financial->type !== 'owed') {
             abort(404);
         }
 
         // Generate ZATCA QR
         $sellerName = SettingsService::getDataBaseSetting('name_ar') ?: 'CleanStation';
-        $sellerVat  = SettingsService::getDataBaseSetting('clean_station_tax_number') ?: '300000000000003';
-        $timestamp  = $financial->created_at->toIso8601String();
-        $total      = (float) $financial->amount;
-        $vatAmount  = $total - ($total / 1.15);
+        $sellerVat = SettingsService::getDataBaseSetting('tax_tax_number') ?: '300000000000003';
+        $timestamp = $financial->created_at->toIso8601String();
+        $total = (float)$financial->amount;
+        $vatAmount = $total - ($total / 1.15);
 
         $tlv = $this->zatcaService->generateTlvString($sellerName, $sellerVat, $timestamp, $total, $vatAmount);
         $qrCode = $this->zatcaService->generateQrCode($tlv);

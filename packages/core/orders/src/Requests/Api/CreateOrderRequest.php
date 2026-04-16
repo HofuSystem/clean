@@ -89,6 +89,8 @@ class CreateOrderRequest extends FormRequest
       'products.*.height'             => 'nullable|required_if:products.product_type,carpet',
 
       'service_id'                    => 'nullable',
+      'nationality_id'                => 'nullable|exists:category_settings,id',
+      'contract_duration_id'          => 'nullable|exists:category_settings,id',
       'service_type_id'               => 'nullable|exists:category_types,id',
       'uniform_id'                    => 'nullable|exists:category_settings,id',
       'worker_count_id'               => 'nullable|exists:category_settings,id',

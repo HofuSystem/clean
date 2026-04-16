@@ -19,6 +19,7 @@ class SettingsController extends Controller
         $screen     = 'settings-index';
         $settings   = Setting::all()->keyBy('key')->map(function($settings){return $settings->value;}); 
         $users      = User::select('id','fullname','phone')->get();
+        $cities     = \Core\Info\Models\City::all();
         
         // Parse no order notifications from settings
         $noOrderNotifications = [];
@@ -26,7 +27,7 @@ class SettingsController extends Controller
             $noOrderNotifications = json_decode($settings['no_order_notifications'], true) ?: [];
         }
         
-        return view('settings::views.pages.settings.edit',compact('title','screen','settings','users','noOrderNotifications'));
+        return view('settings::views.pages.settings.edit',compact('title','screen','settings','users','noOrderNotifications', 'cities'));
     }
 
     public function settingsSave(SettingsRequest $request){

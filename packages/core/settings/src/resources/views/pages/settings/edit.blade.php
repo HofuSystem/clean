@@ -129,6 +129,12 @@
                                         aria-controls="pills-testing"
                                         aria-selected="false">{{ trans('testingAccounts') }}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-tax-data-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-tax-data" type="button" role="tab"
+                                        aria-controls="pills-tax-data"
+                                        aria-selected="false">{{ trans('tax data') }}</button>
+                                </li>
 
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
@@ -221,21 +227,7 @@
 
                                         </div>
 
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label class=""
-                                                for="clean_station_commercial_registration">{{ trans('commercial_registration') }}</label>
-                                            <input type="text" name="clean_station_commercial_registration"
-                                                class="form-control "
-                                                placeholder="{{ trans('Enter commercial registration') }} "
-                                                value="{{ $settings['clean_station_commercial_registration'] ?? null }}">
-                                        </div>
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label class="" for="clean_station_tax_number">{{ trans('tax_number') }}</label>
-                                            <input type="text" name="clean_station_tax_number" class="form-control "
-                                                placeholder="{{ trans('Enter tax number') }} "
-                                                value="{{ $settings['clean_station_tax_number'] ?? null }}">
-                                        </div>
+                                      
 
                                         <div class="form-group mb-3 col-md-12">
                                             <label class="" for="logo">{{ trans('logo') }}</label>
@@ -930,6 +922,81 @@
 
                                     </div>
                                 </div>
+                                <div class="tab-pane fade" id="pills-tax-data" role="tabpanel"
+                                    aria-labelledby="pills-tax-data-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_name_ar">{{ trans('name in arabic') }}</label>
+                                            <input type="text" name="tax_name_ar" class="form-control "
+                                                placeholder="{{ trans('Enter name in arabic') }} "
+                                                value="{{ $settings['tax_name_ar'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_name_en">{{ trans('name in english') }}</label>
+                                            <input type="text" name="tax_name_en" class="form-control "
+                                                placeholder="{{ trans('Enter name in english') }} "
+                                                value="{{ $settings['tax_name_en'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_commercial_registration">{{ trans('commercial_registration') }}</label>
+                                            <input type="text" name="tax_commercial_registration" class="form-control "
+                                                placeholder="{{ trans('Enter commercial registration') }} "
+                                                value="{{ $settings['tax_commercial_registration'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_tax_number">{{ trans('tax_number') }}</label>
+                                            <input type="text" name="tax_tax_number" class="form-control "
+                                                placeholder="{{ trans('Enter tax number') }} "
+                                                value="{{ $settings['tax_tax_number'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_street_name">{{ trans('street name') }}</label>
+                                            <input type="text" name="tax_street_name" class="form-control "
+                                                placeholder="{{ trans('Enter street name') }} "
+                                                value="{{ $settings['tax_street_name'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_building_no">{{ trans('building no') }}</label>
+                                            <input type="text" name="tax_building_no" class="form-control "
+                                                placeholder="{{ trans('Enter building no') }} "
+                                                value="{{ $settings['tax_building_no'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_city">{{ trans('city') }}</label>
+                                            <select name="tax_city" id="tax_city" class="form-select select2">
+                                                <option value="">{{ trans('Select City') }}</option>
+                                                @foreach($cities as $city)
+                                                    <option value="{{ $city->id }}" @selected(($settings['tax_city'] ?? null) == $city->id)>{{ $city->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_district">{{ trans('district') }}</label>
+                                            <select name="tax_district" id="tax_district" class="form-select select2">
+                                                <option value="">{{ trans('Select District') }}</option>
+                                                @if(isset($settings['tax_city']))
+                                                    @foreach(\Core\Info\Models\District::where('city_id', $settings['tax_city'])->get() as $district)
+                                                        <option value="{{ $district->id }}" @selected(($settings['tax_district'] ?? null) == $district->id)>{{ $district->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_postal_code">{{ trans('postal code') }}</label>
+                                            <input type="text" name="tax_postal_code" class="form-control "
+                                                placeholder="{{ trans('Enter postal code') }} "
+                                                value="{{ $settings['tax_postal_code'] ?? null }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tax_additional_number">{{ trans('additional number') }}</label>
+                                            <input type="text" name="tax_additional_number" class="form-control "
+                                                placeholder="{{ trans('Enter additional number') }} "
+                                                value="{{ $settings['tax_additional_number'] ?? null }}">
+                                        </div>
+
+                                    </div>
+                                </div>
                                 <div class="tab-pane fade" id="pills-week-prices" role="tabpanel"
                                     aria-labelledby="pills-week-prices-tab" tabindex="0">
                                     <div class="row">
@@ -1491,6 +1558,29 @@
 
             // Initialize day options on page load
             updateDayOptions();
+
+            // – Dynamic Districts for Tax Data –
+            $(document).on('change', '#tax_city', function () {
+                let cityId = $(this).val();
+                let districtSelect = $('#tax_district');
+
+                districtSelect.empty().append('<option value="">{{ trans("Select District") }}</option>');
+
+                if (cityId) {
+                    $.ajax({
+                        url: "{{ route('dashboard.districts.getByCity', ':id') }}".replace(':id', cityId),
+                        type: 'GET',
+                        success: function (response) {
+                            if (response.data) {
+                                $.each(response.data, function (index, district) {
+                                    districtSelect.append('<option value="' + district.id + '">' + district.name + '</option>');
+                                });
+                                districtSelect.trigger('change');
+                            }
+                        }
+                    });
+                }
+            });
         });
     </script>
 @endpush

@@ -87,6 +87,20 @@
                                 </div>
 
                                 <div class="form-group mb-3 col-md-4">
+                                    <label class="" for="name_ar">{{ trans('name in arabic') }}</label>
+                                    <input type="text" name="name_ar" class="form-control"
+                                        placeholder="{{ trans('Enter name in arabic') }}"
+                                        value="{{ old('name_ar', $item->name_ar ?? null) }}">
+                                </div>
+
+                                <div class="form-group mb-3 col-md-4">
+                                    <label class="" for="name_en">{{ trans('name in english') }}</label>
+                                    <input type="text" name="name_en" class="form-control"
+                                        placeholder="{{ trans('Enter name in english') }}"
+                                        value="{{ old('name_en', $item->name_en ?? null) }}">
+                                </div>
+
+                                <div class="form-group mb-3 col-md-4">
                                     <label for="line_of_business">{{ trans('line of business') }}</label>
                                     <input type="text" name="line_of_business" class="form-control"
                                         placeholder="{{ trans('Enter line of business') }}"
@@ -134,6 +148,58 @@
                                         placeholder="{{ trans('Enter tax number') }}"
                                         value="{{ old('tax_number', $item->tax_number ?? null) }}">
                                 </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="street_name">{{ trans('street name') }}</label>
+                                    <input type="text" name="street_name" class="form-control"
+                                        placeholder="{{ trans('Enter street name') }}"
+                                        value="{{ old('street_name', $item->street_name ?? null) }}">
+                                </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="building_no">{{ trans('building no') }}</label>
+                                    <input type="text" name="building_no" class="form-control"
+                                        placeholder="{{ trans('Enter building no') }}"
+                                        value="{{ old('building_no', $item->building_no ?? null) }}">
+                                </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="city_id">{{ trans('city') }}</label>
+                                    <select name="city_id" id="city_id" class="form-select select2">
+                                        <option value="">{{ trans('Select City') }}</option>
+                                        @foreach($cities as $city)
+                                            <option value="{{ $city->id }}" @selected(old('city_id', $item->city_id ?? null) == $city->id)>{{ $city->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="district_id">{{ trans('district') }}</label>
+                                    <select name="district_id" id="district_id" class="form-select select2">
+                                        <option value="">{{ trans('Select District') }}</option>
+                                        @if(isset($item) && $item->city_id)
+                                            @foreach(\Core\Info\Models\District::where('city_id', $item->city_id)->get() as $district)
+                                                <option value="{{ $district->id }}" @selected(old('district_id', $item->district_id ?? null) == $district->id)>{{ $district->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="postal_code">{{ trans('postal code') }}</label>
+                                    <input type="text" name="postal_code" class="form-control"
+                                        placeholder="{{ trans('Enter postal code') }}"
+                                        value="{{ old('postal_code', $item->postal_code ?? null) }}">
+                                </div>
+
+                                <div class="form-group mb-3 col-md-3">
+                                    <label for="additional_number">{{ trans('additional number') }}</label>
+                                    <input type="text" name="additional_number" class="form-control"
+                                        placeholder="{{ trans('Enter additional number') }}"
+                                        value="{{ old('additional_number', $item->additional_number ?? null) }}">
+                                </div>
+
+
 
                                 <div class="form-group mb-3 col-md-3">
                                     <label for="owner_id">{{ trans('owner') }}</label>
@@ -946,6 +1012,28 @@
     });
 
     // – Dynamic Districts for Branches –
+    $(document).on('change', '#city_id', function () {
+        let cityId = $(this).val();
+        let districtSelect = $('#district_id');
+
+        districtSelect.empty().append('<option value="">{{ trans("Select District") }}</option>');
+
+        if (cityId) {
+            $.ajax({
+                url: "{{ route('dashboard.districts.getByCity', ':id') }}".replace(':id', cityId),
+                type: 'GET',
+                success: function (response) {
+                    if (response.data) {
+                        $.each(response.data, function (index, district) {
+                            districtSelect.append('<option value="' + district.id + '">' + district.name + '</option>');
+                        });
+                        districtSelect.trigger('change');
+                    }
+                }
+            });
+        }
+    });
+
     $(document).on('change', '#company-branchesModal select[name="city_id"]', function () {
         let cityId = $(this).val();
         let districtSelect = $('#company-branchesModal select[name="district_id"]');

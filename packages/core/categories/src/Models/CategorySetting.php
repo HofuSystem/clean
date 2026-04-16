@@ -16,7 +16,7 @@ use App\Observers\GlobalModelObserver;
 class CategorySetting extends CoreModel implements TranslatableContract{
     use Translatable;
 	protected $table             = 'category_settings';
-	protected $fillable          = ['slug', 'category_id', 'addon_price','cost' ,'parent_id', 'status', 'creator_id', 'updater_id'];
+	protected $fillable          = ['slug', 'category_id', 'addon_price','cost' ,'discount_percent', 'parent_id', 'status', 'creator_id', 'updater_id'];
     protected $guarded           = [];
     public $translatedAttributes = ["name"];
 
