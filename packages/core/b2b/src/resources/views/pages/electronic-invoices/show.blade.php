@@ -12,7 +12,7 @@
             font-family: 'Cairo', sans-serif;
             background-color: #f3f4f6;
             -webkit-print-color-adjust: exact;
-            color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         /* تصميم حقول الإدخال */
@@ -178,7 +178,7 @@
             }
         }
 
-        body.printing-invoice @page {
+        @page {
             size: A4;
             margin: 8mm;
         }
@@ -287,8 +287,13 @@
             class="print-container max-w-4xl mx-auto bg-white p-6 md:p-10 shadow-2xl rounded-xl border-t-8 border-[#00AEEF] relative overflow-hidden">
             <div class="flex justify-between items-start border-b-2 border-gray-100 pb-3 mb-4">
                 <div class="text-right">
-                    <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">TAX
-                        INVOICE | فاتورة ضريبية</h2>
+                    <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">
+                        @if($invoice->type == 'B2C')
+                            SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
+                        @else
+                            TAX INVOICE | فاتورة ضريبية
+                        @endif
+                    </h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
                         <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span
                                 contenteditable="true">{{ $invoice->invoice_number }}</span></div>
@@ -345,29 +350,31 @@
                     </div>
                 </div>
                 <div class="w-1/2 pl-4 text-right">
-                    <h3 contenteditable="true"
-                        class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed
-                        To:</h3>
-                    @if($invoice->order?->company)
-                        <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order->company->name_ar ?: $invoice->order->company->fullname }}</p>
-                        <p contenteditable="true" class="text-xs text-gray-500">{{ $invoice->order->company->name_en }}</p>
-                        @if($invoice->order->company->tax_number)
-                            <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $invoice->order->company->tax_number }}</span></p>
+                    @if($invoice->type !== 'B2C')
+                        <h3 contenteditable="true"
+                            class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed
+                            To:</h3>
+                        @if($invoice->order?->company)
+                            <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order->company->name_ar ?: $invoice->order->company->fullname }}</p>
+                            <p contenteditable="true" class="text-xs text-gray-500">{{ $invoice->order->company->name_en }}</p>
+                            @if($invoice->order->company->tax_number)
+                                <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $invoice->order->company->tax_number }}</span></p>
+                            @endif
+                            <div contenteditable="true" class="text-xs text-gray-500 mt-1">
+                                <div>@lang('Building No'): {{ $invoice->order->company->building_no }}</div>
+                                <div>@lang('Street'): {{ $invoice->order->company->street_name }}</div>
+                                @if($invoice->order->company->district) <div>@lang('District'): {{ $invoice->order->company->district->name }}</div> @endif
+                                @if($invoice->order->company->city) <div>@lang('City'): {{ $invoice->order->company->city->name }}</div> @endif
+                                @if($invoice->order->company->postal_code) <div>@lang('Postal Code'): {{ $invoice->order->company->postal_code }}</div> @endif
+                                @if($invoice->order->company->additional_number) <div>@lang('Additional Number'): {{ $invoice->order->company->additional_number }}</div> @endif
+                            </div>
+                        @else
+                            <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
+                            <p class="text-sm mt-1 whitespace-nowrap"><span contenteditable="true">عناية:</span> <span
+                                    contenteditable="true" class="font-semibold">{{ $invoice->order?->client?->fullname
+                                    }}</span></p>
+                            <p contenteditable="true" class="text-sm text-gray-500 mt-1">{{ $invoice->order?->client?->address }}</p>
                         @endif
-                        <div contenteditable="true" class="text-xs text-gray-500 mt-1">
-                            <div>@lang('Building No'): {{ $invoice->order->company->building_no }}</div>
-                            <div>@lang('Street'): {{ $invoice->order->company->street_name }}</div>
-                            @if($invoice->order->company->district) <div>@lang('District'): {{ $invoice->order->company->district->name }}</div> @endif
-                            @if($invoice->order->company->city) <div>@lang('City'): {{ $invoice->order->company->city->name }}</div> @endif
-                            @if($invoice->order->company->postal_code) <div>@lang('Postal Code'): {{ $invoice->order->company->postal_code }}</div> @endif
-                            @if($invoice->order->company->additional_number) <div>@lang('Additional Number'): {{ $invoice->order->company->additional_number }}</div> @endif
-                        </div>
-                    @else
-                        <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
-                        <p class="text-sm mt-1 whitespace-nowrap"><span contenteditable="true">عناية:</span> <span
-                                contenteditable="true" class="font-semibold">{{ $invoice->order?->client?->fullname
-                                }}</span></p>
-                        <p contenteditable="true" class="text-sm text-gray-500 mt-1">{{ $invoice->order?->client?->address }}</p>
                     @endif
                 </div>
             </div>
