@@ -187,16 +187,6 @@ $currency = trans('SAR');
                                     ACCOUNT</p>
                                 <p class="mb-0 mt-2 fw-bold" style="font-size:1rem;">{{ $sellerNameAr }}</p>
                                 <p class="mb-1 text-muted" style="font-size:0.85rem;">{{ $sellerName }}</p>
-                                <p class="mb-0 text-muted" style="font-size:.8rem;">@lang('VAT Number:'): {{ $sellerVat }}</p>
-                                <p class="mb-0 text-muted" style="font-size:.8rem;">@lang('Commercial Registration:'): {{ $sellerCrn }}</p>
-                                <div class="mb-0 text-muted" style="font-size:.7rem;">
-                                    <div>@lang('Building No'): {{ $sellerBuilding }}</div>
-                                    <div>@lang('Street'): {{ $sellerStreet }}</div>
-                                    @if($sellerDistrict) <div>@lang('District'): {{ $sellerDistrict }}</div> @endif
-                                    @if($sellerCity) <div>@lang('City'): {{ $sellerCity }}</div> @endif
-                                    @if($sellerPostal) <div>@lang('Postal Code'): {{ $sellerPostal }}</div> @endif
-                                    @if($sellerAdditional) <div>@lang('Additional Number'): {{ $sellerAdditional }}</div> @endif
-                                </div>
                             </div>
                             @if($sellerLogo)
                             <img src="{{ asset($sellerLogo) }}" alt="{{ $sellerName }}"
@@ -210,45 +200,105 @@ $currency = trans('SAR');
                         </div>
 
                         {{-- Meta info row --}}
-                        <div class="d-flex justify-content-between align-items-start mb-4 gap-4">
-
+                        <div class="row mb-5 g-4 flex-nowrap">
                             {{-- Issue info box --}}
-                            <div class="border rounded p-3" style="min-width:200px;font-size:.82rem;line-height:1.9;">
-                                <div class="d-flex justify-content-between gap-4">
-                                    <span class="text-muted">@lang('Issue Date:'):</span>
-                                    <strong>{{ now()->format('Y-m-d') }}</strong>
-                                </div>
-                                <div class="d-flex justify-content-between gap-4">
-                                    <span class="text-muted">@lang('Currency:'):</span>
-                                    <strong>{{ $currency }}</strong>
-                                </div>
-
+                            <div class="col-6">
+                                <table class="table table-bordered mb-0 fs-8">
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end" style="width: 40%;">Account Name:</th>
+                                        <td class="p-2">{{ $sellerName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Account Arabic Name:</th>
+                                        <td class="p-2">{{ $sellerNameAr }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">CR No:</th>
+                                        <td class="p-2">{{ $sellerCrn }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">VAT No:</th>
+                                        <td class="p-2">{{ $sellerVat }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Building No - رقم المبنى:</th>
+                                        <td class="p-2">{{ $sellerBuilding ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Street Name - اسم الشارع:</th>
+                                        <td class="p-2">{{ $sellerStreet ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">District - الحي:</th>
+                                        <td class="p-2">{{ $sellerDistrict ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">City - المدينة:</th>
+                                        <td class="p-2">{{ $sellerCity ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Postal Code - الرمز البريدي:</th>
+                                        <td class="p-2">{{ $sellerPostal ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Additional No - الرقم الإضافي:</th>
+                                        <td class="p-2">{{ $sellerAdditional ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Country - البلد:</th>
+                                        <td class="p-2">Saudi Arabia - المملكة العربية السعودية</td>
+                                    </tr>
+                                </table>
                             </div>
 
                             {{-- Billed to box --}}
-                            <div class="border rounded p-3 text-end"
-                                style="min-width:260px;font-size:.82rem;line-height:1.9;background:#f9f9f9;">
-                                <p class="text-muted mb-1"
-                                    style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;">@lang('BILLED TO / Customer')</p>
-                                <p class="fw-bold mb-1" style="font-size:1.1rem;">{{ $company->name_ar ?: $company->fullname }}</p>
-                                <p class="mb-1 text-muted" style="font-size:0.85rem;">{{ $company->name_en }}</p>
-                                @if($company->tax_number)
-                                <p class="mb-0 text-muted">@lang('VAT Number:'): {{ $company->tax_number }}</p>
-                                @endif
-                                @if($company->commercial_registration)
-                                <p class="mb-0 text-muted">@lang('Reference Register:'): {{ $company->commercial_registration }}</p>
-                                @endif
-                                @if($contract)
-                                <p class="mb-0 text-muted">@lang('Reference Contract:'): {{ $contract->title }}</p>
-                                @endif
-                                <div class="mb-0 text-muted" style="font-size:.75rem;">
-                                    <div>@lang('Building No'): {{ $company->building_no }}</div>
-                                    <div>@lang('Street'): {{ $company->street_name }}</div>
-                                    @if($company->district) <div>@lang('District'): {{ $company->district->name }}</div> @endif
-                                    @if($company->city) <div>@lang('City'): {{ $company->city->name }}</div> @endif
-                                    @if($company->postal_code) <div>@lang('Postal Code'): {{ $company->postal_code }}</div> @endif
-                                    @if($company->additional_number) <div>@lang('Additional Number'): {{ $company->additional_number }}</div> @endif
-                                </div>
+                            <div class="col-6">
+                                <table class="table table-bordered mb-0 fs-8">
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end" style="width: 40%;">Account Name:</th>
+                                        <td class="p-2">{{ $company->name_en ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Account Arabic Name:</th>
+                                        <td class="p-2 fw-bold">{{ $company->name_ar ?: $company->fullname }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">CR No:</th>
+                                        <td class="p-2">{{ $company->commercial_registration ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">VAT No:</th>
+                                        <td class="p-2">{{ $company->tax_number ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Building No - رقم المبنى:</th>
+                                        <td class="p-2">{{ $company->building_no ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Street Name - اسم الشارع:</th>
+                                        <td class="p-2">{{ $company->street_name ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">District - الحي:</th>
+                                        <td class="p-2">{{ $company->district ? $company->district->name : '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">City - المدينة:</th>
+                                        <td class="p-2">{{ $company->city ? $company->city->name : '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Postal Code - الرمز البريدي:</th>
+                                        <td class="p-2">{{ $company->postal_code ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Additional No - الرقم الإضافي:</th>
+                                        <td class="p-2">{{ $company->additional_number ?: '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light fw-bold p-2 text-end">Country - البلد:</th>
+                                        <td class="p-2">Saudi Arabia - المملكة العربية السعودية</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
 

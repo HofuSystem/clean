@@ -289,9 +289,9 @@
                 <div class="text-right">
                     <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">
                         @if($invoice->type == 'B2C')
-                            SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
+                        SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
                         @else
-                            TAX INVOICE | فاتورة ضريبية
+                        TAX INVOICE | فاتورة ضريبية
                         @endif
                     </h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
@@ -319,62 +319,147 @@
                 </div>
             </div>
 
-            <div class="flex justify-between text-gray-800 mb-4 border-b border-gray-100 pb-3">
-                <div class="w-1/2 pr-2 border-l border-gray-100 text-right">
+            <div class="flex justify-between gap-4 mb-8 text-right">
+                <div class="w-1/2">
                     @php
-                    $sellerName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
-                    $sellerNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين ستيشن';
+                    $sellerName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?:
+                    'CleanStation';
+                    $sellerNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين
+                    ستيشن';
                     $sellerVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_tax_number') ?: '—';
-                    $sellerCrn = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_commercial_registration') ?: '—';
-                    $sellerStreet = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_street_name') ?: '';
-                    $sellerBuilding = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_building_no') ?: '';
+                    $sellerCrn =
+                    \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_commercial_registration') ?: '—';
+                    $sellerStreet = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_street_name') ?:
+                    '';
+                    $sellerBuilding = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_building_no') ?:
+                    '';
                     $sellerDistrictId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_district');
                     $sellerCityId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_city');
-                    $sellerPostal = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_postal_code') ?: '';
-                    $sellerAdditional = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_additional_number') ?: '';
+                    $sellerPostal = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_postal_code') ?:
+                    '';
+                    $sellerAdditional =
+                    \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_additional_number') ?: '';
                     $sellerCity = $sellerCityId ? \Core\Info\Models\City::find($sellerCityId)?->name : '';
-                    $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name : '';
+                    $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name :
+                    '';
                     @endphp
-                    <h3 contenteditable="true"
-                        class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">البائع / Seller:</h3>
-                    <p contenteditable="true" class="font-bold text-base leading-tight">{{ $sellerNameAr }} / {{ $sellerName }}</p>
-                    <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $sellerVat }}</span></p>
-                    <p class="text-sm mt-1">السجل التجارى: <span contenteditable="true" class="font-semibold">{{ $sellerCrn }}</span></p>
-                    <div class="text-[10px] text-gray-500 mt-1">
-                        <div>@lang('Building No'): {{ $sellerBuilding }}</div>
-                        <div>@lang('Street'): {{ $sellerStreet }}</div>
-                        @if($sellerDistrict) <div>@lang('District'): {{ $sellerDistrict }}</div> @endif
-                        @if($sellerCity) <div>@lang('City'): {{ $sellerCity }}</div> @endif
-                        @if($sellerPostal) <div>@lang('Postal Code'): {{ $sellerPostal }}</div> @endif
-                        @if($sellerAdditional) <div>@lang('Additional Number'): {{ $sellerAdditional }}</div> @endif
-                    </div>
+                    <table class="w-full border-collapse border border-gray-300 text-[11px]">
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold w-1/3">Account Name En:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerName }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Account Arabic Name:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerNameAr }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">CR No:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerCrn }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">VAT No:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerVat }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Building No - رقم المبنى:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerBuilding ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Street Name - اسم الشارع:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerStreet ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">District - الحي:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerDistrict ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">City - المدينة:</th>
+                            <td class="border border-gray-300 p-1">{{ $sellerCity ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Postal Code - الرمز البريدي:
+                            </th>
+                            <td class="border border-gray-300 p-1">{{ $sellerPostal ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Additional No - الرقم الإضافي:
+                            </th>
+                            <td class="border border-gray-300 p-1">{{ $sellerAdditional ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Country - البلد:</th>
+                            <td class="border border-gray-300 p-1">Saudi Arabia - المملكة العربية السعودية</td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="w-1/2 pl-4 text-right">
-                    @if($invoice->type !== 'B2C')
-                        <h3 contenteditable="true"
-                            class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-1">فاتورة إلى / Billed
-                            To:</h3>
-                        @if($invoice->order?->company)
-                            <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order->company->name_ar ?: $invoice->order->company->fullname }}</p>
-                            <p contenteditable="true" class="text-xs text-gray-500">{{ $invoice->order->company->name_en }}</p>
-                            @if($invoice->order->company->tax_number)
-                                <p class="text-sm mt-1">الرقم الضريبي: <span contenteditable="true" class="font-semibold">{{ $invoice->order->company->tax_number }}</span></p>
-                            @endif
-                            <div contenteditable="true" class="text-xs text-gray-500 mt-1">
-                                <div>@lang('Building No'): {{ $invoice->order->company->building_no }}</div>
-                                <div>@lang('Street'): {{ $invoice->order->company->street_name }}</div>
-                                @if($invoice->order->company->district) <div>@lang('District'): {{ $invoice->order->company->district->name }}</div> @endif
-                                @if($invoice->order->company->city) <div>@lang('City'): {{ $invoice->order->company->city->name }}</div> @endif
-                                @if($invoice->order->company->postal_code) <div>@lang('Postal Code'): {{ $invoice->order->company->postal_code }}</div> @endif
-                                @if($invoice->order->company->additional_number) <div>@lang('Additional Number'): {{ $invoice->order->company->additional_number }}</div> @endif
-                            </div>
-                        @else
-                            <p contenteditable="true" class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
-                            <p class="text-sm mt-1 whitespace-nowrap"><span contenteditable="true">عناية:</span> <span
-                                    contenteditable="true" class="font-semibold">{{ $invoice->order?->client?->fullname
-                                    }}</span></p>
-                            <p contenteditable="true" class="text-sm text-gray-500 mt-1">{{ $invoice->order?->client?->address }}</p>
-                        @endif
+
+                <div class="w-1/2">
+                    @if($invoice->type !== 'B2C' && $invoice->order?->company)
+                    <table class="w-full border-collapse border border-gray-300 text-[11px]">
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold w-1/3">Account Name En:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_en ?: '—'
+                                }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Account Arabic Name:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_ar ?:
+                                $invoice->order->company->fullname }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">CR No:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->commercial_registration
+                                ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">VAT No:</th>
+                            <td class="border border-gray-300 p-1 font-semibold">{{ $invoice->order->company->tax_number
+                                ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Building No - رقم المبنى:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->building_no ?: '—' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Street Name - اسم الشارع:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->street_name ?: '—' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">District - الحي:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->district ?
+                                $invoice->order->company->district->name : '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">City - المدينة:</th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->city ?
+                                $invoice->order->company->city->name : '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Postal Code - الرمز البريدي:
+                            </th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->postal_code ?: '—' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Additional No - الرقم الإضافي:
+                            </th>
+                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->additional_number ?: '—'
+                                }}</td>
+                        </tr>
+                        <tr>
+                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Country - البلد:</th>
+                            <td class="border border-gray-300 p-1">Saudi Arabia - المملكة العربية السعودية</td>
+                        </tr>
+                    </table>
+                    @else
+                    <div class="p-4 border border-gray-300 rounded-lg">
+                        <h3 class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-2">Account Arabic
+                            Name:</h3>
+                        <p class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
+                        <p class="text-sm text-gray-500 mt-2">{{ $invoice->order?->client?->address }}</p>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -457,7 +542,8 @@
                                     ضريبة القيمة المضافة (15%) | VAT 15%:</td>
                                 <td class="py-1 px-3 text-center font-bold text-red-500 border-t border-gray-200">+
                                     <span id="vat-amount">{{ number_format($totalTax, 2, '.', '') }}</span> <span
-                                        class="text-[10px]">ر.س</span></td>
+                                        class="text-[10px]">ر.س</span>
+                                </td>
                             </tr>
                             <tr class="bg-[#00AEEF]/10">
                                 <td colspan="5"
@@ -466,7 +552,8 @@
                                 <td
                                     class="py-2 px-3 text-center font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF] text-lg">
                                     <span id="grand-total">{{ number_format($total, 2, '.', '') }}</span> <span
-                                        class="text-[10px]">ر.س</span></td>
+                                        class="text-[10px]">ر.س</span>
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
