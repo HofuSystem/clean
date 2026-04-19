@@ -15,7 +15,7 @@ $sellerAdditional = \Core\Settings\Services\SettingsService::getDataBaseSetting(
 $sellerCity = $sellerCityId ? \Core\Info\Models\City::find($sellerCityId)?->name : '';
 $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name : '';
 
-$sellerLogo = \Core\Settings\Services\SettingsService::getDataBaseSetting('logo');
+$sellerLogo = config('app.logo');
 $currency = trans('SAR');
 @endphp
 
