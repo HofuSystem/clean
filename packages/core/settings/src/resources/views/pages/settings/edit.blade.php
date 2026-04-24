@@ -135,6 +135,12 @@
                                         aria-controls="pills-tax-data"
                                         aria-selected="false">{{ trans('tax data') }}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-maidscheduled-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-maidscheduled" type="button" role="tab"
+                                        aria-controls="pills-maidscheduled"
+                                        aria-selected="false">{{ trans('maid scheduled') }}</button>
+                                </li>
 
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
@@ -1275,6 +1281,67 @@
 
                                     </div>
                                 </div>
+                                <div class="tab-pane fade" id="pills-maidscheduled" role="tabpanel"
+                                    aria-labelledby="pills-maidscheduled-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="form-group mb-3 col-md-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">{{ trans('maid scheduled') }}</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped table-hover"
+                                                            id="maid-scheduled-table">
+                                                            <thead class="table-primary">
+                                                                <tr>
+                                                                    <th width="40%">{{ trans('from') }}</th>
+                                                                    <th width="40%">{{ trans('to') }}</th>
+                                                                    <th width="20%">{{ trans('actions') }}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="maid-scheduled-tbody">
+                                                                @php
+                                                                    $maidScheduled = isset($settings['maid_scheduled']) ? json_decode($settings['maid_scheduled'], true) : [];
+                                                                    $maidScheduled = is_array($maidScheduled) ? $maidScheduled : [];
+                                                                @endphp
+                                                                @foreach($maidScheduled as $index => $slot)
+                                                                    <tr class="maid-scheduled-row">
+                                                                        <td>
+                                                                            <input type="time"
+                                                                                name="maid_scheduled[{{ $index }}][from]"
+                                                                                class="form-control"
+                                                                                value="{{ $slot['from'] ?? '' }}"
+                                                                                required>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="time"
+                                                                                name="maid_scheduled[{{ $index }}][to]"
+                                                                                class="form-control"
+                                                                                value="{{ $slot['to'] ?? '' }}"
+                                                                                required>
+                                                                        </td>
+                                                                        <td>
+                                                                            <button type="button"
+                                                                                class="btn btn-danger btn-sm remove-maid-scheduled">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        <button type="button" class="btn btn-primary" id="add-maid-scheduled">
+                                                            <i class="fa fa-plus"></i> {{ trans('add time slot') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
 
@@ -1581,6 +1648,49 @@
                     });
                 }
             });
+
+            // Maid Scheduled functionality
+            let maidScheduledIndex = {{ isset($maidScheduled) ? count($maidScheduled) : 0 }};
+
+            $('#add-maid-scheduled').click(function () {
+                const newRow = `
+                    <tr class="maid-scheduled-row">
+                        <td>
+                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][from]" 
+                                   class="form-control" required>
+                        </td>
+                        <td>
+                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][to]" 
+                                   class="form-control" required>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-maid-scheduled">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                $('#maid-scheduled-tbody').append(newRow);
+                maidScheduledIndex++;
+            });
+
+            $(document).on('click', '.remove-maid-scheduled', function () {
+                $(this).closest('tr').remove();
+                updateMaidScheduledIndices();
+            });
+
+            function updateMaidScheduledIndices() {
+                $('#maid-scheduled-tbody tr').each(function (index) {
+                    $(this).find('input').each(function () {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            const newName = name.replace(/\[\d+\]/, `[${index}]`);
+                            $(this).attr('name', newName);
+                        }
+                    });
+                });
+                maidScheduledIndex = $('#maid-scheduled-tbody tr').length;
+            }
         });
     </script>
 @endpush

@@ -5,6 +5,8 @@ namespace Core\Categories\DataResources\Api\Services;
 use Core\Categories\Models\CategoryDateTime;
 use Core\Categories\Models\CategorySetting;
 use Core\Categories\Services\CategoryDateTimesService;
+use Core\Pages\Helpers\SettingsHelper;
+use Core\Settings\Services\SettingsService;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ScheduledOrderDetailsResource extends JsonResource
@@ -42,6 +44,7 @@ class ScheduledOrderDetailsResource extends JsonResource
         
         $serviceDates = CategoryDateTimesService::getDateTimes(type: 'maid',categoryIds: $this->id);
         $serviceDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $serviceDates);
+        $timeSlots = SettingsService::getDataBaseSetting('maid_scheduled');
 
 
         return [
@@ -52,6 +55,7 @@ class ScheduledOrderDetailsResource extends JsonResource
             'workers_number'    => ChildServiceSettingResource::collection($workersNumber),
             'hours_number'      => ChildServiceSettingResource::collection($hoursNumber),
             'dates'             => $serviceDates,
+            'time_slots'        => $timeSlots,
         ];
     }
 }

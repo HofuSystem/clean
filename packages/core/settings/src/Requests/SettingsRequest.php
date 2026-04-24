@@ -119,6 +119,9 @@ class SettingsRequest extends FormRequest
 			"tax_postal_code" => ['nullable', 'string'],
 			"tax_additional_number" => ['nullable', 'string'],
 			"tax_city" => ['nullable', 'string'],
+			"maid_scheduled" => ['nullable', 'array'],
+			"maid_scheduled.*.from" => ['required', 'string'],
+			"maid_scheduled.*.to" => ['required', 'string'],
 		];
 
 	}

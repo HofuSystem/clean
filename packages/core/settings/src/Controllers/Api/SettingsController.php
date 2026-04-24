@@ -77,7 +77,8 @@ class SettingsController extends Controller
                     'carpets'   => SettingsService::getDataBaseSetting('carpets_hours'),
                     'clothes'   => SettingsService::getDataBaseSetting('clothes_hours'),
                     'furniture' => SettingsService::getDataBaseSetting('furniture_hours'),
-                ]
+                ],
+                "maid_scheduled"         => SettingsService::getDataBaseSetting('maid_scheduled') ?? [],
             ]
         ];
         return $this->returnData(trans('appSettings'), $data);
