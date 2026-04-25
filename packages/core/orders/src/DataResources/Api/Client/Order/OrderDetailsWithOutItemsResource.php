@@ -82,6 +82,7 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'days_per_week_names'       => $this->days_per_week_names  ? json_decode($this->days_per_week_names) : [],
             'days_per_month_dates'      => $this->days_per_month_dates  ? json_decode($this->days_per_month_dates) : [],
             'address_description'       => $this->addressDescription,
+            'address_text'                  => $technical?->location,
             'hide_payment_option'       => $this->hide_payment_option,
             'coupon_minimum'            => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,

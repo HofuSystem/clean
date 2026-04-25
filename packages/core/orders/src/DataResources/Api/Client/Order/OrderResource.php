@@ -50,6 +50,7 @@ class OrderResource extends JsonResource
             'total_price'           => (double)$this->total_price,
             'online_payment_method' => $this->online_payment_method,
             'address_description'   => $this->addressDescription,
+            'address_text'              => $delivery?->location,
             'hide_payment_option'   => $this->hide_payment_option,
             'coupon_minimum'        => $couponMinmum,
             

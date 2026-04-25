@@ -62,6 +62,7 @@ class OrderDetailsResource extends JsonResource
             'online_payment_method'         => $this->online_payment_method,
             'nots'                          => $this->desc,
             'address_description'           => $this->addressDescription,
+            'address_text'                  => $delivery?->location,
             'hide_payment_option'           => $this->hide_payment_option,
             'coupon_minimum'                => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,

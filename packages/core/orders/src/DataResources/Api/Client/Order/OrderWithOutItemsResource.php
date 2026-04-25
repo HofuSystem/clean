@@ -35,6 +35,7 @@ class OrderWithOutItemsResource extends JsonResource
             'to_time'       => $technical?->to_time ? Carbon::parse($technical?->to_time)->format('H:i')  : null,
             'total_price'   => (double)$this->total_price ,
             'address_description'   => $this->addressDescription,
+            'address_text'                  => $technical?->location,
             'hide_payment_option'   => $this->hide_payment_option,
             'coupon_minimum'        => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,

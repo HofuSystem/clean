@@ -53,6 +53,7 @@ class OrderResource extends JsonResource
             'category_type'         => $this->type ,
             'status'                => $this->status,
             'address_description'   => $this->addressDescription,
+            'address_text'              => $delivery?->location,
             'hide_payment_option'   => $this->hide_payment_option,
             'coupon_minimum'        => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,
