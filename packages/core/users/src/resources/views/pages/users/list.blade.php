@@ -100,13 +100,10 @@
                                 <div class="d-flex flex-wrap">
 
                                     @can('dashboard.users.export')
-                                        <a href="{{ route('dashboard.users.export') }}" id="export" type="button"
-                                            class="btn-operation ">
+                                        <button type="button" id="export-modal-btn" class="btn-operation">
                                             <i class="fas fa-upload"></i>
-                                            <span>
-                                                @lang('Export Report')
-                                            </span>
-                                        </a>
+                                            <span>@lang('Export Report')</span>
+                                        </button>
                                     @endcan
                                     @can('dashboard.users.import')
                                         <a href="{{ route('dashboard.users.import') }}" class="btn-operation">
@@ -423,4 +420,84 @@
 
         });
     </script>
+@endpush
+
+{{-- ===== Export Chunks Modal ===== --}}
+<div class="modal fade" id="exportChunksModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-file-csv me-2"></i>@lang('Export Users')
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="export-chunks-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">@lang('Loading...')</p>
+                </div>
+                <div id="export-chunks-list" class="d-none">
+                    <p class="text-muted small mb-3" id="export-chunks-summary"></p>
+                    <div id="export-chunks-buttons" class="d-flex flex-wrap gap-2"></div>
+                </div>
+                <div id="export-chunks-error" class="d-none text-danger">
+                    @lang('Failed to load export info. Please try again.')
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('js')
+<script>
+(function () {
+    var chunksUrl  = '{{ route("dashboard.users.export-chunks") }}';
+    var exportBase = '{{ route("dashboard.users.export") }}';
+
+    $('#export-modal-btn').on('click', function () {
+        $('#export-chunks-loading').removeClass('d-none');
+        $('#export-chunks-list').addClass('d-none');
+        $('#export-chunks-error').addClass('d-none');
+        $('#export-chunks-buttons').empty();
+        $('#exportChunksModal').modal('show');
+
+        $.getJSON(chunksUrl, function (data) {
+            var total     = data.total;
+            var chunkSize = data.chunkSize;
+            var chunks    = data.chunks;
+
+            $('#export-chunks-summary').html(
+                '<strong>' + total + '</strong> @lang("total users") &mdash; ' +
+                chunks + ' @lang("file(s) of") ' + chunkSize + ' @lang("users each")'
+            );
+
+            for (var i = 0; i < chunks; i++) {
+                var offset = i * chunkSize;
+                var from   = offset + 1;
+                var to     = Math.min(offset + chunkSize, total);
+                var url    = exportBase + '?offset=' + offset;
+
+                var btn = $('<a>')
+                    .attr('href', url)
+                    .attr('target', '_blank')
+                    .addClass('btn btn-outline-success btn-sm mb-2')
+                    .html('<i class="fas fa-download me-1"></i> @lang("File") ' + (i + 1) +
+                          ' <small class="text-muted">(' + from + '&ndash;' + to + ')</small>');
+
+                $('#export-chunks-buttons').append(btn);
+            }
+
+            $('#export-chunks-loading').addClass('d-none');
+            $('#export-chunks-list').removeClass('d-none');
+        }).fail(function () {
+            $('#export-chunks-loading').addClass('d-none');
+            $('#export-chunks-error').removeClass('d-none');
+        });
+    });
+}());
+</script>
 @endpush

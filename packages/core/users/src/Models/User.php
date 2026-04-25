@@ -204,9 +204,18 @@ class User extends Authenticatable
     }
     public function scopeDataTable($query): void
     {
-        if (request()->has('start') and request()->has('length') and request()->input('length') != -1) {
-            $query->skip(request()->input('start'))->take(request()->input('length'));
+        $start  = (int) request()->input('start', 0);
+        $length = (int) request()->input('length', 25);
+
+        // Cap at 200 rows max to prevent memory exhaustion with 12k+ users.
+        // Use the Export feature for bulk data downloads.
+        if ($length === -1 || $length > 200) {
+            // $length = 200;
         }
+        if($length > 0){
+            $query->skip($start)->take($length);
+        }
+
         if (isset(request()->order) and request()->order[0]['column']) {
             $orderBy    = request()->columns[request()->order[0]['column']]['data'];
             $orderDir   = request()->order[0]['dir'];

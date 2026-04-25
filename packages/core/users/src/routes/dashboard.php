@@ -108,6 +108,7 @@ Route::group(
                     Route::post('create', [UsersController::class,'storeOrUpdate'])->name('create');
                     Route::get('import', [UsersController::class,'importView'])->name('import');
                     Route::post('import', [UsersController::class,'import'])->name('import');
+                    Route::get('export-chunks', [UsersController::class,'exportChunks'])->name('export-chunks');
                     Route::get('export', [UsersController::class,'export'])->name('export');
                     Route::get('{id}', [UsersController::class,'show'])->name('show');
                     Route::patch('{id}/update-password', [UsersController::class,'updatePassword'])->name('update-password');

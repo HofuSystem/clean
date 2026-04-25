@@ -8,6 +8,7 @@ use Core\Users\DataResources\UsersResource;
 use Core\Orders\Services\OrdersService;
 use Core\Wallet\Services\WalletTransactionsService;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
 class UsersService
 {
@@ -99,11 +100,19 @@ class UsersService
         return true;
     }
 
-    public function dataTable($draw){
 
-        $recordsTotal       = User::underMyControl()->count();
-        $recordsFiltered    = User::underMyControl()->search()->count();
-        $records            = User::underMyControl()
+    public function dataTable($draw){
+        $hasFilters = collect(request()->input('filters', []))->filter()->isNotEmpty()
+                   || request()->input('trash')
+                   || request()->input('forCompany');
+
+        // Lightweight queries just for counts — no selects, no withs, no subqueries
+        $countQuery = User::underMyControl();
+        $recordsTotal    = (clone $countQuery)->count();
+        $recordsFiltered = $hasFilters ? (clone $countQuery)->search()->count() : $recordsTotal;
+
+        // Actual data query — paginated, with relations only after LIMIT is applied by dataTable scope
+        $records = User::underMyControl()
             ->select([
                 'users.id',
                 'users.image',
@@ -115,20 +124,21 @@ class UsersService
                 'users.date_of_birth',
                 'users.gender',
                 'users.created_at',
-                \DB::raw('(SELECT MAX(created_at) FROM orders WHERE orders.client_id = users.id) as latest_order_at')
+                DB::raw('(SELECT MAX(o.created_at) FROM orders o WHERE o.client_id = users.id) as latest_order_at'),
+                DB::raw('(SELECT COUNT(*) FROM orders o WHERE o.client_id = users.id AND o.status IN ("finished","delivered")) as orders_count'),
             ])
-            ->with(['roles'])
-            ->withCount(['orders as orders_count' => function ($query) {
-                $query->whereIn('status', ['finished', 'delivered']);
-            }])
-        
-        ->search()->dataTable()->get();
-        
+            ->search()
+            ->dataTable()
+            ->get();
+
+        // Lazy-load relations only on the small paginated set
+        $records->load(['roles', 'profile.city', 'profile.district']);
+
         return [
-            'draw'              => $draw,
-            'recordsTotal'      => $recordsTotal,
-            'recordsFiltered'   => $recordsFiltered,
-            'data'              => UsersResource::collection($records)
+            'draw'            => $draw,
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => UsersResource::collection($records)
         ];
     }
 

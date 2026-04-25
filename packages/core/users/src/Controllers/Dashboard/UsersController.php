@@ -36,27 +36,27 @@ class UsersController extends Controller
     public function index(){
         $title      = trans('User index');
         $screen     = 'users-index';
-        $total      = $this->usersService->totalCount();
-        $trash      = $this->usersService->trashCount();
 		$roles      = $this->rolesService->selectable('id','name');
-		$clients    = $this->usersService->selectable('id','fullname');
-		$coupons    = $this->couponsService->selectable('id','code');
-		$users      = $this->usersService->selectable('id','fullname');
-		$addedBies  = $this->usersService->selectable('id','fullname');
-		$packages   = $this->walletPackagesService->selectable('id','price');
 		$cities     = $this->citiesService->selectable('id','name');
 		$districts  = $this->districtsService->selectable('id','name');
-        // Get total users and total users in trash by role using the User and Role models directly, merged into one collection
+
+        // Single query to get total and trash counts together
+        $counts = \Core\Users\Models\User::withoutGlobalScopes()
+            ->selectRaw('SUM(CASE WHEN deleted_at IS NULL THEN 1 ELSE 0 END) as total, SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) as trash')
+            ->first();
+        $total = $counts->total ?? 0;
+        $trash = $counts->trash ?? 0;
+
         $rolesWithUserCounts = Role::withCount([
             'users as users_count' => function($query) {
-            $query->whereNull('deleted_at');
+                $query->whereNull('deleted_at');
             },
             'users as users_trash_count' => function($query) {
-            $query->withoutGlobalScopes()->whereNotNull('deleted_at');
+                $query->withoutGlobalScopes()->whereNotNull('deleted_at');
             }
         ])->get(['id', 'name', 'users_count', 'users_trash_count']);
 
-        return view('users::pages.users.list', compact('title','screen','roles','clients','coupons','users','addedBies','packages','cities','districts',"total","trash",'rolesWithUserCounts'));
+        return view('users::pages.users.list', compact('title','screen','roles','cities','districts',"total","trash",'rolesWithUserCounts'));
     }
 
 
@@ -65,17 +65,14 @@ class UsersController extends Controller
         $screen     = isset($item)  ? 'User-edit'          : 'User-create';
         $title      = isset($item)  ? trans("User  edit")  : trans("User  create");
 		$roles      = $this->rolesService->selectable('id','name');
-		$clients    = $this->usersService->selectable('id','fullname');
-		$coupons    = $this->couponsService->selectable('id','code');
-		$users      = $this->usersService->selectable('id','fullname');
 		$technicals = $this->usersService->selectable('id','fullname',[],'technical');
-		$addedBies  = $this->usersService->selectable('id','fullname');
+		$coupons    = $this->couponsService->selectable('id','code');
 		$packages   = $this->walletPackagesService->selectable('id','price');
         $countries  = $this->countriesService->selectable('id','name');
 		$cities     = $this->citiesService->selectable('id','name');
 		$districts  = $this->districtsService->selectable('id','name');
 
-        return view('users::pages.users.edit', compact('item','title','screen','roles','technicals','clients','coupons','users','addedBies','packages','countries','cities','districts') );
+        return view('users::pages.users.edit', compact('item','title','screen','roles','technicals','coupons','packages','countries','cities','districts') );
     }
 
     public function storeOrUpdate(UsersRequest $request, $id = null){
@@ -163,6 +160,8 @@ class UsersController extends Controller
 
     public function dataTable(Request $request){
         try {
+            set_time_limit(300);
+            ini_set('memory_limit', '512M');
             $data             = $this->usersService->dataTable($request->draw);
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
@@ -196,10 +195,33 @@ class UsersController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }
+    /**
+     * Returns chunk metadata used by the export modal.
+     * e.g. { total: 11500, chunkSize: 1000, chunks: 12 }
+     */
+    public function exportChunks(Request $request)
+    {
+        $total     = \Core\Users\Models\User::whereNull('deleted_at')->count();
+        $chunkSize = 1000;
+        $chunks    = (int) ceil($total / $chunkSize);
+        return response()->json(compact('total', 'chunkSize', 'chunks'));
+    }
+
     public function export(Request $request)
     {
-        $filename = $request->headersOnly ? 'users-template.xlsx' : 'users.xlsx';
-        return Excel::download(new UsersExport($request->headersOnly,$request->cols), $filename);
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
+        $offset    = max(0, (int) $request->input('offset', 0));
+        $chunkSize = 1000;
+        $fileNum   = (int) ($offset / $chunkSize) + 1;
+        $filename  = "users-part-{$fileNum}.csv";
+
+        return Excel::download(
+            new UsersExport($request->headersOnly, $request->cols, $offset, $chunkSize),
+            $filename,
+            \Maatwebsite\Excel\Excel::CSV
+        );
     }
     public function comment(CommentRequest $request,$id){
         try {
