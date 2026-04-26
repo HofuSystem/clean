@@ -49,7 +49,7 @@ class RolesController extends Controller
 
         $tabs               = [
             'dashboard-permission'          => ['index','analysis' ,'nav-bar','translation','fixed-costs'],
-            'company'                       => ['companies','company','contracts','contracts-prices'],
+            'company'                       => ['companies','company','contracts','contracts-prices','b2b-financials'],
             'users'                         => ['roles','permissions','users','profiles','user-edit-requests','devices','address','bans'],
             'categories-and-services'       => ['categories','sub-categories','services','sub-services',"category-date-times","category-offers","sliders",'prices','category-settings','category-types','additional-features','category-sub-settings'],
             'products'                      => ['products'],

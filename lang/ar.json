@@ -3137,5 +3137,14 @@
     "Total B2C Sales": "إجمالي مبيعات الأفراد (B2C)",
     "Unified Quarterly Tax Declaration": "الإقرار الضريبي الربع سنوي الموحد",
     "Total Sum (SAR)": "المجموع الكلي (ر.س)",
-    "please update the app to the latest version": "يرجى تحديث التطبيق إلى أحدث إصدار"
+    "please update the app to the latest version": "يرجى تحديث التطبيق إلى أحدث إصدار",
+    "Order Type": "نوع الطلب",
+    "Order Quantities Report": "تقرير كميات الطلبات",
+    "Product ID": "معرف المنتج",
+    "Product Name": "اسم المنتج",
+    "Quantity": "الكمية",
+    "Total Quantity": "إجمالي الكمية",
+    "Subcategory": "القسم الفرعي",
+    "Client": "العميل",
+    "Company": "الشركة"
 }

@@ -13,6 +13,8 @@ use Core\Admin\Controllers\Dashboard\RoutesRecordsController;
 use Core\Admin\Controllers\Dashboard\DetailedAnalysisController;
 use Core\Admin\Controllers\Dashboard\FixedCostController;
 use Core\Admin\Controllers\Dashboard\ActivityLogController;
+use Core\Admin\Controllers\Dashboard\OrderQuantitiesReportController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +47,15 @@ Route::group(
                 Route::post('detailed-analysis/fixed-cost', [DetailedAnalysisController::class, 'storeFixedCost'])->name('detailed-analysis.store-fixed-cost');
                 Route::get('detailed-analysis/order-transactions', [DetailedAnalysisController::class, 'getOrderTransactions'])->name('detailed-analysis.order-transactions');
                 Route::get('detailed-analysis/order-transactions/export', [DetailedAnalysisController::class, 'exportOrderTransactions'])->name('detailed-analysis.order-transactions.export');
+
+                // Order Quantities Report
+                Route::group(['prefix' => 'order-quantities-report', 'as' => 'order-quantities-report.'], function () {
+                    Route::get('', [OrderQuantitiesReportController::class, 'index'])->name('index');
+                    Route::get('select-clients', [OrderQuantitiesReportController::class, 'selectClients'])->name('select-clients');
+                    Route::get('select-companies', [OrderQuantitiesReportController::class, 'selectCompanies'])->name('select-companies');
+                    Route::get('export', [OrderQuantitiesReportController::class, 'export'])->name('export');
+                });
+
 
                 //nav routes
                 Route::group(['prefix' => 'nav-bar', 'as' => 'nav-bar.'], function () {

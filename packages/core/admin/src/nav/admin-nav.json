@@ -296,6 +296,16 @@
       },
       {
         "url": null,
+        "route": "dashboard.order-quantities-report.index",
+        "type": null,
+        "icon": "fa fa-list-ol",
+        "title": {
+          "en": "Order Quantities Report",
+          "ar": "تقرير كميات الطلبات"
+        }
+      },
+      {
+        "url": null,
         "route": "dashboard.order-representatives.analysis",
         "type": null,
         "icon": null,
