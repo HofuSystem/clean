@@ -58,8 +58,22 @@
                                 </div>
                             </div>
                         </div>
+                        <!--begin::Group actions-->
+                        <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
+                            <div class="border border-warning border-dashed rounded text-warning p-2 mx-1">
+                                <span class="me-2" data-kt-user-table-select="selected_count"></span>@lang('Selected')
+                            </div>
+                            <button type="button" class="btn btn-primary" data-kt-user-table-select="delete_selected">@lang('Delete Selected')</button>
+                        </div>
+                        <!--end::Group actions-->
                     </div>
                 </div>
+
+                <div class="p-1 row d-none" data-kt-user-table-filter="form">
+                    <button type="reset" data-kt-user-table-filter="reset"></button>
+                    <button type="submit" data-kt-user-table-filter="filter"></button>
+                </div>
+
 
                 <div class="card-body pt-0 table-responsive ">
                     <table class="table align-middle text-center table-row-dashed fs-6 gy-5" id="view-datatable"

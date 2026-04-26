@@ -1,7 +1,9 @@
 <?php
 
 use Core\Coupons\Controllers\Api\CouponsController;
+use Core\Coupons\Controllers\Api\GiftsController;
 use Illuminate\Support\Facades\Route;
+
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /*
@@ -19,5 +21,6 @@ Route::group([
     'middleware' => ['auth:sanctum','active'] ,
 ], function () {
     Route::get('coupon',[CouponsController::class,'get'])->name('coupons.get');
+    Route::get('matching-gift',[GiftsController::class,'getMatchingGift'])->name('gifts.matching');
   
 });
