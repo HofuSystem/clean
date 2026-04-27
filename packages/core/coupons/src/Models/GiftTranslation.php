@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class GiftTranslation extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['title', 'intro'];
+    protected $fillable = ['title', 'intro', 'btn_text'];
 }

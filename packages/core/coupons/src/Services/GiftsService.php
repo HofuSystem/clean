@@ -19,6 +19,11 @@ class GiftsService
             'orders_min', 'orders_max', 'translations',
             'type', 'value', 'max_value'
         ]), ARRAY_FILTER_USE_KEY);
+        if (isset($recordData['order_type']) && is_array($recordData['order_type'])) {
+            $recordData['order_type'] = implode(',', $recordData['order_type']);
+        }else{
+            $recordData['order_type'] = null;
+        }
 
         
         $record = Gift::updateOrCreate(['id' => $id], $recordData);
@@ -81,12 +86,11 @@ class GiftsService
      */
     public function getMatchingGift($user,$orderType = null)
     {
-        $now = Carbon::now();
-        $userId = $user->id;
-        $userCreatedAt = $user->created_at;
+        $now            = Carbon::now();
+        $userId         = $user->id;
+        $userCreatedAt  = $user->created_at;
 
-        return Gift::where('status', 'active')
-            ->where(function ($query) use ($now) {
+        return Gift::where(function ($query) use ($now) {
                 $query->whereNull('from')->orWhere('from', '<=', $now);
             })
             ->where(function ($query) use ($now) {
@@ -94,7 +98,7 @@ class GiftsService
             })
             ->when($orderType, function ($query) use ($orderType) {
                 $query->where(function($q) use ($orderType){
-                    $q->where('order_type', $orderType);
+                    $q->whereRaw("FIND_IN_SET(?, order_type)", [$orderType]);
                     $q->orWhereNull('order_type');
                 });
             })
@@ -139,7 +143,7 @@ class GiftsService
                     });
                 });
             })
-            ->orderBy('id', 'desc')
+            ->orderBy('status')
             ->first();
     }
 }

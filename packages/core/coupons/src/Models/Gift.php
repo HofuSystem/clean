@@ -38,7 +38,7 @@ class Gift extends CoreModel implements TranslatableContract
         'updater_id'
     ];
 
-    public $translatedAttributes = ['title', 'intro'];
+    public $translatedAttributes = ['title', 'intro', 'btn_text', 'label', 'description'];
 
     public function coupon()
     {

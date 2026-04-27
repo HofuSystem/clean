@@ -13,6 +13,8 @@ class GiftApiResource extends JsonResource
             "id"            => $this->id,
             "title"         => $this->title,
             "intro"         => $this->intro,
+            "btn_text"      => $this->btn_text,
+            "status"        => $this->status,
             "coupon_code"   => $this->coupon_code,
             "coupon_id"     => $this->coupon_id,
             "value"         => $this->value,
