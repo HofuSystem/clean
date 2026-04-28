@@ -22,5 +22,6 @@ Route::group([
 ], function () {
     Route::get('coupon',[CouponsController::class,'get'])->name('coupons.get');
     Route::get('matching-gift',[GiftsController::class,'getMatchingGift'])->name('gifts.matching');
-  
+    Route::post('matching-gift', [GiftsController::class, 'attachGift'])->name('gifts.attach');
+    Route::get('my-gifts', [GiftsController::class, 'myGifts'])->name('gifts.my_gifts');
 });

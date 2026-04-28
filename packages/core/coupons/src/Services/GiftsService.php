@@ -146,6 +146,76 @@ class GiftsService
             ->orderBy('status')
             ->first();
     }
+
+    public function attachToUser($giftId, $userId)
+    {
+        $gift = Gift::findOrFail($giftId);
+        $gift->users()->syncWithoutDetaching([$userId]);
+        return $gift;
+    }
+
+    public function getMyMatchingGifts($user, $orderType = null)
+    {
+        $now            = Carbon::now();
+        $userId         = $user->id;
+        $userCreatedAt  = $user->created_at;
+
+        return $user->gifts()->where(function ($query) use ($now) {
+                $query->whereNull('from')->orWhere('from', '<=', $now);
+            })
+            ->where(function ($query) use ($now) {
+                $query->whereNull('to')->orWhere('to', '>=', $now);
+            })
+            ->when($orderType, function ($query) use ($orderType) {
+                $query->where(function($q) use ($orderType){
+                    $q->whereRaw("FIND_IN_SET(?, order_type)", [$orderType]);
+                    $q->orWhereNull('order_type');
+                });
+            })
+            ->when(!$orderType, function ($query) {
+                $query->whereNull('order_type');
+            })
+            // Check registration date range
+            ->where(function ($query) use ($userCreatedAt) {
+                $query->whereNull('register_from')->orWhere('register_from', '<=', $userCreatedAt);
+            })
+            ->where(function ($query) use ($userCreatedAt) {
+                $query->whereNull('register_to')->orWhere('register_to', '>=', $userCreatedAt);
+            })
+            // Check if coupon already used
+            ->where(function ($query) use ($userId) {
+                $query->whereNull('coupon_id')
+                    ->orWhereNotExists(function ($subQuery) use ($userId) {
+                        $subQuery->select(DB::raw(1))
+                            ->from('orders')
+                            ->where('client_id', $userId)
+                            ->whereColumn('orders.coupon_id', 'gifts.coupon_id');
+                    });
+            })
+            // Check order count criteria using a subquery
+            ->where(function ($query) use ($userId) {
+                $query->where(function ($q) use ($userId) {
+                    $orderCountSubquery = DB::table('orders')
+                        ->selectRaw('count(*)')
+                        ->where('client_id', $userId)
+                        ->where(function ($sub) {
+                            $sub->whereRaw('gifts.orders_from IS NULL OR orders.created_at >= gifts.orders_from')
+                                ->whereRaw('gifts.orders_to IS NULL OR orders.created_at <= gifts.orders_to');
+                        });
+
+                    $q->where(function ($inner) use ($orderCountSubquery) {
+                        $inner->whereNull('orders_min')
+                            ->orWhereRaw('orders_min <= (' . $orderCountSubquery->toSql() . ')', $orderCountSubquery->getBindings());
+                    })
+                    ->where(function ($inner) use ($orderCountSubquery) {
+                        $inner->whereNull('orders_max')
+                            ->orWhereRaw('orders_max >= (' . $orderCountSubquery->toSql() . ')', $orderCountSubquery->getBindings());
+                    });
+                });
+            })
+            ->orderBy('status')
+            ->get();
+    }
 }
 
 

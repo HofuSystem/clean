@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Carbon\Carbon;
 use Core\Comments\Models\Comment;
+use Core\Coupons\Models\Gift;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Notification\Models\BannerNotification;
 use Core\Notification\Models\Notification;
@@ -276,6 +277,11 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function gifts()
+    {
+        return $this->belongsToMany(Gift::class, 'gifts_users', 'user_id', 'gift_id');
     }
 
     public function edit_profile()

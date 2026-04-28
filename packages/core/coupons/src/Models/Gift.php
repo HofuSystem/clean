@@ -45,6 +45,11 @@ class Gift extends CoreModel implements TranslatableContract
         return $this->belongsTo(Coupon::class, 'coupon_id');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(\Core\Users\Models\User::class, 'gifts_users', 'gift_id', 'user_id');
+    }
+
     public function scopeSearch($query)
     {
         if (request()->has("filters.title") && !empty(request("filters.title"))) {
