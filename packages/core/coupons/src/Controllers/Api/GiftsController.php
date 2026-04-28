@@ -65,10 +65,14 @@ class GiftsController extends Controller
             return $this->returnErrorMessage(trans('User not authenticated'), [], [], 401);
         }
 
-        $gifts = $this->giftsService->getMyMatchingGifts($user, $request->order_type);
+        $gift = $this->giftsService->getMyMatchingGifts($user, $request->order_type);
 
-        return $this->returnData(trans('Gifts retrieved successfully'), [
-            'data' => GiftApiResource::collection($gifts)
+        if (!$gift) {
+            return $this->returnData(trans('No matching gift found'), ['data' => null]);
+        }
+
+        return $this->returnData(trans('Gift retrieved successfully'), [
+            'data' => new GiftApiResource($gift)
         ]);
     }
 }

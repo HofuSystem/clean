@@ -214,7 +214,7 @@ class GiftsService
                 });
             })
             ->orderBy('status')
-            ->get();
+            ->first();
     }
 }
 
