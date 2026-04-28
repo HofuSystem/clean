@@ -49,7 +49,8 @@ class CouponsController extends Controller
         }
 
         // Check order type
-        if ($orderType && $coupon->order_type && $coupon->order_type !== $orderType) {
+        
+        if ($orderType && $coupon->order_type && !in_array($orderType, explode(',',$coupon->order_type))) {
             return $this->returnErrorMessage(trans('This coupon is not valid for this order type'));
         }
 
