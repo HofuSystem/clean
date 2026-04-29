@@ -95,14 +95,14 @@
                                                         @if ($receiver->representative_id == $representative->id)
                                                             <p class="bg-primary text-white p-1 rounded-pill text-center"> {{ trans('receiver') }}</p>
                                                         @else
-                                                            <p class="bg-secondary text-dark p-1 rounded-pill text-center"> {{ trans('receiver')." : " .$receiver->representative?->fullname }}</p>
+                                                            <p class="bg-primary text-dark p-1 rounded-pill text-center"> {{ trans('receiver')." : " .$receiver->representative?->fullname }}</p>
                                                         @endif
                                                     @endif
                                                     @if (isset($delivery))
                                                         @if ($delivery->representative_id == $representative->id)
                                                             <p class="bg-success text-white p-1 rounded-pill text-center"> {{ trans('delivery') }}</p>
                                                         @else
-                                                            <p class="bg-secondary text-dark p-1 rounded-pill text-center"> {{ trans('delivery')." : " .$delivery->representative?->fullname }}</p>
+                                                            <p class="bg-primary text-dark p-1 rounded-pill text-center"> {{ trans('delivery')." : " .$delivery->representative?->fullname }}</p>
                                                         @endif
                                                     @endif
                                                     
