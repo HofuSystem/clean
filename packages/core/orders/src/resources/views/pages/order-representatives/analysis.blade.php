@@ -93,16 +93,16 @@
                                                 <td>
                                                     @if (isset($receiver))
                                                         @if ($receiver->representative_id == $representative->id)
-                                                            <span class="bg-primary text-white p-1 rounded-pill"> {{ trans('receiver') }}</span>
+                                                            <p class="bg-primary text-white p-1 rounded-pill"> {{ trans('receiver') }}</p>
                                                         @else
-                                                            <span class="bg-warning text-dark p-1 rounded-pill"> {{ trans('receiver')." : " .$receiver->representative?->fullname }}</span>
+                                                            <p class="bg-warning text-dark p-1 rounded-pill"> {{ trans('receiver')." : " .$receiver->representative?->fullname }}</p>
                                                         @endif
                                                     @endif
                                                     @if (isset($delivery))
                                                         @if ($delivery->representative_id == $representative->id)
-                                                            <span class="bg-success text-white p-1 rounded-pill"> {{ trans('delivery') }}</span>
+                                                            <p class="bg-success text-white p-1 rounded-pill"> {{ trans('delivery') }}</p>
                                                         @else
-                                                            <span class="bg-warning text-dark p-1 rounded-pill"> {{ trans('delivery')." : " .$delivery->representative?->fullname }}</span>
+                                                            <p class="bg-warning text-dark p-1 rounded-pill"> {{ trans('delivery')." : " .$delivery->representative?->fullname }}</p>
                                                         @endif
                                                     @endif
                                                     
