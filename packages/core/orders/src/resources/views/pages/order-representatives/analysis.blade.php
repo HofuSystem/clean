@@ -82,8 +82,8 @@
                                     <tbody>
                                         @foreach ($representative->representativeOrders ?? [] as $order)
                                         @php
-                                            $delivery = $order->orderRepresentatives->where('type','delivery')->where('representative_id',$representative->id)->first();
-                                            $receiver = $order->orderRepresentatives->where('type','receiver')->where('representative_id',$representative->id)->first();
+                                            $delivery = $order->orderRepresentatives->where('type','delivery')->first();
+                                            $receiver = $order->orderRepresentatives->where('type','receiver')->first();
                                             if($delivery){
                                                 $hasToPay += $order->cash_amount_used;
                                             }
@@ -91,13 +91,21 @@
                                             <tr class="">
                                                 <td scope="row">{{ $order->created_at?->format('Y-m-d h:i: a') }}</td>
                                                 <td>
-                                                    @if ($receiver)
-                                                        <span class="bg-primary text-white p-1 rounded-pill"> {{ trans('receiver') }}</span>
+                                                    @if (isset($receiver))
+                                                        @if ($receiver->representative_id == $representative->id)
+                                                            <span class="bg-primary text-white p-1 rounded-pill"> {{ trans('receiver') }}</span>
+                                                        @else
+                                                            <span class="bg-warning text-dark p-1 rounded-pill"> {{ trans('receiver')." : " .$receiver->representative?->fullname }}</span>
+                                                        @endif
                                                     @endif
-
-                                                    @if ($delivery)
-                                                       <span class="bg-success text-white p-1 rounded-pill"> {{ trans('delivery') }} </span>
+                                                    @if (isset($delivery))
+                                                        @if ($delivery->representative_id == $representative->id)
+                                                            <span class="bg-success text-white p-1 rounded-pill"> {{ trans('delivery') }}</span>
+                                                        @else
+                                                            <span class="bg-warning text-dark p-1 rounded-pill"> {{ trans('delivery')." : " .$delivery->representative?->fullname }}</span>
+                                                        @endif
                                                     @endif
+                                                    
                                                 </td>
                                                 <td><a href="{{ route('dashboard.orders.edit', ['id' => $order->reference_id]) }}">{{ $order->reference_id ?? '---' }}</a></td>
                                                 <td>{{ $order?->city?->name }}</td>

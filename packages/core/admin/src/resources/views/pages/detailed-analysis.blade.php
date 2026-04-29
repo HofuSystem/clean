@@ -89,7 +89,7 @@
         <div class="filter-card">
             <form method="GET" action="{{ route('dashboard.detailed-analysis') }}">
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-bold" for="city_id">{{ trans("city") }}</label>
                         <select class="form-select form-select-lg" name="city_id" id="city_id">
                             <option value="">{{trans("select city")}}</option>
@@ -98,7 +98,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-bold" for="year">{{ trans('Year') }}</label>
                         <select name="year" id="year" class="form-select form-select-lg">
                             @for($y = date('Y') - 5; $y <= date('Y') + 1; $y++)
@@ -106,7 +106,15 @@
                             @endfor
                         </select>
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold" for="company_type">{{ trans('type') }}</label>
+                        <select name="company_type" id="company_type" class="form-select form-select-lg">
+                            <option value="">{{ trans('all') }}</option>
+                            <option value="b2b" @selected(request('company_type') == 'b2b')>{{ trans('b2b') }}</option>
+                            <option value="b2c" @selected(request('company_type') == 'b2c')>{{ trans('b2c') }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
                         <button class="btn btn-primary btn-lg w-100" type="submit">
                             <i class="fas fa-filter me-2"></i>{{ trans('filter') }}
                         </button>
@@ -417,7 +425,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-2 d-flex align-items-end">
+                            <div class="col-md-1">
+                                <label for="filter_company_type" class="form-label fw-bold">{{ trans('Type') }}</label>
+                                <select class="form-select" id="filter_company_type" name="filter_company_type">
+                                    <option value="">{{ trans('All') }}</option>
+                                    <option value="b2b">{{ trans('b2b') }}</option>
+                                    <option value="b2c">{{ trans('b2c') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
                                 <button type="button" class="btn btn-primary w-100" id="filter_transactions_btn">
                                     <i class="fas fa-search me-2"></i>{{ trans('Filter') }}
                                 </button>
@@ -586,6 +602,7 @@
                     reference_id: document.getElementById('filter_reference_id').value,
                     phone: document.getElementById('filter_phone').value,
                     city_id: document.getElementById('filter_city_id').value,
+                    company_type: document.getElementById('filter_company_type').value,
                     per_page: 15
                 };
 
@@ -732,6 +749,7 @@
                     reference_id: document.getElementById('filter_reference_id').value,
                     phone: document.getElementById('filter_phone').value,
                     city_id: document.getElementById('filter_city_id').value,
+                    company_type: document.getElementById('filter_company_type').value,
                 };
 
                 const url = `{{ route('dashboard.detailed-analysis.order-transactions.export') }}?${new URLSearchParams(filters)}`;

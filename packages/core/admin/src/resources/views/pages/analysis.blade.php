@@ -7,7 +7,7 @@
             <form class="d-flex" method="GET" action="{{ route('dashboard.analysis') }}">
                 <div class="col-10">
                    <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="" for="city_id">{{ trans("city") }}</label>
                             <select class="custom-select  form-select advance-select" name="city_id" id="city_id"  >
                                 <option   value="" >{{trans("select city")}}</option>
@@ -17,11 +17,19 @@
         
                             </select>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
+                            <label class="" for="company_type">{{ trans("type") }}</label>
+                            <select class="custom-select form-select" name="company_type" id="company_type">
+                                <option value="">{{ trans("all") }}</option>
+                                <option value="b2b" @selected(request('company_type') == 'b2b')>{{ trans("b2b") }}</option>
+                                <option value="b2c" @selected(request('company_type') == 'b2c')>{{ trans("b2c") }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
                             <label for="from">{{ trans('from') }}</label>
                             <input value="{{ request()->from }}" type="date" name="from" class="form-control">
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label for="to">{{ trans('to') }}</label>
                             <input value="{{ request()->to }}" type="date" name="to" class="form-control">
                         </div>

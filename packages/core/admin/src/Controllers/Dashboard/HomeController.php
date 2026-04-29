@@ -53,7 +53,8 @@ class HomeController extends Controller
      */
     private function getOrderHourlyAnalysis($request)
     {
-        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $companyType = $request->get('company_type');
+        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false);
 
         $hourlyData = $query->select(
@@ -96,7 +97,8 @@ class HomeController extends Controller
      */
     private function getOrderDailyAnalysis($request)
     {
-        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $companyType = $request->get('company_type');
+        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false);
 
         $dailyData = $query->select(
@@ -150,8 +152,9 @@ class HomeController extends Controller
      */
     private function getOrderPeakUsageAnalysis($request)
     {
+        $companyType = $request->get('company_type');
         // Get peak hour (hour with most orders)
-        $peakHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $peakHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false)
             ->select(
                 DB::raw('HOUR(created_at) as hour'),
@@ -161,9 +164,9 @@ class HomeController extends Controller
             ->groupBy('hour')
             ->orderBy('order_count', 'desc')
             ->first();
-
+ 
         // Get peak day (day with most orders)
-        $peakDay = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $peakDay = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false)
             ->select(
                 DB::raw('DAYOFWEEK(created_at) as day_of_week'),
@@ -174,15 +177,15 @@ class HomeController extends Controller
             ->groupBy('day_of_week', 'day_name')
             ->orderBy('order_count', 'desc')
             ->first();
-
+ 
         // Get average orders per hour
-        $avgOrdersPerHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $avgOrdersPerHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false)
             ->select(DB::raw('COUNT(*) / 24 as avg_orders_per_hour'))
             ->first();
-
+ 
         // Get total orders and revenue
-        $totalStats = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $totalStats = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false)
             ->select(
                 DB::raw('COUNT(*) as total_orders'),
@@ -214,13 +217,14 @@ class HomeController extends Controller
         $title = trans('dashboard-home');
         $screen = 'dashboard-home';
         $cities = $this->citiesService->selectable('id', 'name');
+        $companyType = $request->get('company_type');
         $timePeriod = (isset($request->from) or isset($request->to)) ? trans('from').' '.$request->from.' - '.trans('to').' '.$request->to : null;
-        $ordersCount = Order::analysis($request->city_id, $request->from, $request->to)->testAccounts(false)->count();
-        $ordersPayTypeCounts = Order::analysis($request->city_id, $request->from, $request->to)->testAccounts(false)
+        $ordersCount = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)->count();
+        $ordersPayTypeCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
             ->select('pay_type', DB::raw('COUNT(*) as count'))->groupBy('pay_type')->get();
-        $ordersStatusCounts = Order::analysis($request->city_id, $request->from, $request->to)->testAccounts(false)
+        $ordersStatusCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
             ->select('status', DB::raw('COUNT(*) as count'))->groupBy('status')->get();
-        $ordersTypeCounts = Order::analysis($request->city_id, $request->from, $request->to)->testAccounts(false)
+        $ordersTypeCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
             ->select('type', DB::raw('COUNT(*) as count'))->groupBy('type')->get();
 
         $orderStatusValues = [
@@ -273,6 +277,7 @@ class HomeController extends Controller
             'card' => ['icon' => 'fas fa-tshirt', 'color' => '#32a852'],
             'cash' => ['icon' => 'fas fa-shipping-fast', 'color' => '#f2f21f'],
             'wallet' => ['icon' => 'fas fa-wallet', 'color' => '#2d91b5'],
+            'contract' => ['icon' => 'fas fa-file-invoice', 'color' => '#329aa8ff'],
         ];
         $ordersPayTypeCounts->map(function ($item) use ($orderPayTypesValues, $ordersCount) {
             $value = $orderPayTypesValues[$item->pay_type] ?? null;
@@ -287,7 +292,7 @@ class HomeController extends Controller
             return $item;
         });
 
-        $ordersAnalysis = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'])
+        $ordersAnalysis = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
             ->testAccounts(false)
             ->selectRaw('type,COUNT(*)as type_count,AVG(total_price)as order_average,SUM(total_price)as total_revenue,SUM(total_cost)as total_cost,SUM(total_coupon)as total_discount,SUM(delivery_price)as total_delivery')
             ->groupBy('type')
@@ -306,8 +311,8 @@ class HomeController extends Controller
             ->underMyControl()
             ->has('representativeOrders')
             ->withCount([
-                'representativeOrders as count_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null)
+                'representativeOrders as count_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, null, $companyType)
                         ->where('order_representatives.type', 'delivery')
                         ->when(isset($request->from), function ($query) use ($request) {
                             $query->where('order_representatives.date', '>=', $request->from);
@@ -317,8 +322,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'representativeOrders as count_finished_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+                'representativeOrders as count_finished_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                         ->where('order_representatives.type', 'delivery')
                         ->when(isset($request->from), function ($query) use ($request) {
                             $query->where('order_representatives.date', '>=', $request->from);
@@ -328,8 +333,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'representativeOrders as count_issue_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['issue'])
+                'representativeOrders as count_issue_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['issue'], $companyType)
                         ->where('order_representatives.type', 'delivery')
                         ->when(isset($request->from), function ($query) use ($request) {
                             $query->where('order_representatives.date', '>=', $request->from);
@@ -339,8 +344,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'representativeOrders as count_canceled_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['canceled'])
+                'representativeOrders as count_canceled_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['canceled'], $companyType)
                         ->where('order_representatives.type', 'delivery')
                         ->when(isset($request->from), function ($query) use ($request) {
                             $query->where('order_representatives.date', '>=', $request->from);
@@ -351,8 +356,8 @@ class HomeController extends Controller
                         ->testAccounts(false);
                 },
             ])
-            ->withSum(['representativeOrders as total_orders' => function ($query) use ($request) {
-                $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+            ->withSum(['representativeOrders as total_orders' => function ($query) use ($request, $companyType) {
+                $query->analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                     ->where('order_representatives.type', 'delivery')
                     ->when(isset($request->from), function ($query) use ($request) {
                         $query->where('order_representatives.date', '>=', $request->from);
@@ -367,8 +372,8 @@ class HomeController extends Controller
             ->underMyControl()
             ->has('operatorOrders')
             ->withCount([
-                'operatorOrders as count_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null)
+                'operatorOrders as count_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, null, $companyType)
                         ->whereHas('orderRepresentatives', function ($query) use ($request) {
                             $query->where('type', 'delivery')
                                 ->when(isset($request->from), function ($query) use ($request) {
@@ -380,8 +385,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'operatorOrders as count_finished_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+                'operatorOrders as count_finished_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                         ->whereHas('orderRepresentatives', function ($query) use ($request) {
                             $query->where('type', 'delivery')
                                 ->when(isset($request->from), function ($query) use ($request) {
@@ -393,8 +398,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'operatorOrders as count_issue_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['issue'])
+                'operatorOrders as count_issue_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['issue'], $companyType)
                         ->whereHas('orderRepresentatives', function ($query) use ($request) {
                             $query->where('type', 'delivery')
                                 ->when(isset($request->from), function ($query) use ($request) {
@@ -406,8 +411,8 @@ class HomeController extends Controller
                         })
                         ->testAccounts(false);
                 },
-                'operatorOrders as count_canceled_orders' => function ($query) use ($request) {
-                    $query->analysis($request->city_id, null, null, ['canceled'])
+                'operatorOrders as count_canceled_orders' => function ($query) use ($request, $companyType) {
+                    $query->analysis($request->city_id, null, null, ['canceled'], $companyType)
                         ->whereHas('orderRepresentatives', function ($query) use ($request) {
                             $query->where('type', 'delivery')
                                 ->when(isset($request->from), function ($query) use ($request) {
@@ -420,8 +425,8 @@ class HomeController extends Controller
                         ->testAccounts(false);
                 },
             ])
-            ->withSum(['operatorOrders as total_orders' => function ($query) use ($request) {
-                $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+            ->withSum(['operatorOrders as total_orders' => function ($query) use ($request, $companyType) {
+                $query->analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                     ->whereHas('orderRepresentatives', function ($query) use ($request) {
                         $query->where('type', 'delivery')
                             ->when(isset($request->from), function ($query) use ($request) {
@@ -434,7 +439,7 @@ class HomeController extends Controller
                     ->testAccounts(false);
             }], 'total_price')
             ->get();
-        $revenuesAnalysis = Order::analysis($request->city_id, null, null, ['delivered', 'finished'])
+        $revenuesAnalysis = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
             ->join('order_representatives', 'orders.id', '=', 'order_representatives.order_id')
             ->where('order_representatives.type', 'delivery')
             ->when(isset($request->from), function ($query) use ($request) {
@@ -455,8 +460,8 @@ class HomeController extends Controller
         for ($month = 1; $month <= 12; $month++) {
             $startDate = $currentYear.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-01';
             $endDate = date('Y-m-t', strtotime($startDate));
-
-            $monthData = Order::analysis($request->city_id, null, null, ['delivered', 'finished'])
+ 
+            $monthData = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
                     $query->where('type', 'delivery')
                         ->whereBetween('date', [$startDate, $endDate]);

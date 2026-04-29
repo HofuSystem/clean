@@ -17,26 +17,26 @@ class DetailedAnalysisService
     /**
      * Get financial summary for all months in a year
      */
-    public function getFinancialSummaryByYear($year = null, $cityId = null)
+    public function getFinancialSummaryByYear($year = null, $cityId = null, $companyType = null)
     {
         $year = $year ?? date('Y');
         $monthlySummaries = [];
-
+ 
         for ($month = 1; $month <= 12; $month++) {
-            $monthlySummaries[] = $this->getMonthlyFinancialSummary($year, $month, $cityId);
+            $monthlySummaries[] = $this->getMonthlyFinancialSummary($year, $month, $cityId, $companyType);
         }
-
+ 
         return $monthlySummaries;
     }
 
     /**
      * Get financial summary for a given month
      */
-    private function getMonthlyFinancialSummary($year, $month, $cityId = null)
+    private function getMonthlyFinancialSummary($year, $month, $cityId = null, $companyType = null)
     {
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, 1)->endOfMonth();
-
+ 
         // Base query for delivered orders
         $deliveredOrdersQuery = Order::query()
             ->testAccounts(false)
@@ -45,19 +45,34 @@ class DetailedAnalysisService
                 ->whereBetween('date', [$startDate, $endDate]);
             })
             ->whereIn('status', $this->finishedStatuses);
-
+ 
         if ($cityId) {
             $deliveredOrdersQuery->where('city_id', $cityId);
         }
 
+        if ($companyType) {
+            if ($companyType == 'b2b') {
+                $deliveredOrdersQuery->whereNotNull('company_id');
+            } elseif ($companyType == 'b2c') {
+                $deliveredOrdersQuery->whereNull('company_id');
+            }
+        }
+ 
         // Get order transactions (all transactions in the period)
         $transactionsQuery = OrderTransaction::query()
-            ->whereHas('order', function($query) use ($startDate, $endDate) {
+            ->whereHas('order', function($query) use ($startDate, $endDate, $companyType) {
                $query->testAccounts(false)
-               ->whereNotIn('status', $this->notValidStatuses);
+               ->whereNotIn('status', $this->notValidStatuses)
+               ->when($companyType, function ($q) use ($companyType) {
+                   if ($companyType == 'b2b') {
+                       $q->whereNotNull('company_id');
+                   } elseif ($companyType == 'b2c') {
+                       $q->whereNull('company_id');
+                   }
+               });
             })
             ->whereBetween('created_at', [$startDate, $endDate]);
-
+ 
         if ($cityId) {
             $transactionsQuery->whereHas('order', function($q) use ($cityId) {
                 $q->where('city_id', $cityId);
@@ -109,29 +124,36 @@ class DetailedAnalysisService
     /**
      * Get financial summary for a given date range (deprecated - use getFinancialSummaryByYear)
      */
-    public function getFinancialSummary($year = null, $month = null, $cityId = null)
+    public function getFinancialSummary($year = null, $month = null, $cityId = null, $companyType = null)
     {
         if ($month) {
-            return $this->getMonthlyFinancialSummary($year ?? date('Y'), $month, $cityId);
+            return $this->getMonthlyFinancialSummary($year ?? date('Y'), $month, $cityId, $companyType);
         }
-        return $this->getFinancialSummaryByYear($year, $cityId);
+        return $this->getFinancialSummaryByYear($year, $cityId, $companyType);
     }
 
     /**
      * Get transactions per city for donut chart (for entire year)
      */
-    public function getTransactionsPerCity($year = null)
+    public function getTransactionsPerCity($year = null, $companyType = null)
     {
         $year = $year ?? date('Y');
         $startDate = Carbon::create($year, 1, 1)->startOfYear();
         $endDate = Carbon::create($year, 12, 31)->endOfYear();
-
+ 
         $transactions = OrderTransaction::query()
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('amount', '>', 0)
-            ->whereHas('order', function($query) {
+            ->whereHas('order', function($query) use ($companyType) {
                 $query->testAccounts(false)
-                ->whereNotIn('status', $this->notValidStatuses);
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->when($companyType, function ($q) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $q->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $q->whereNull('company_id');
+                    }
+                });
             })
             ->with(['order' => function($query) {
                 $query->with('city');
@@ -159,32 +181,39 @@ class DetailedAnalysisService
     /**
      * Get monthly growth comparison (transactions vs provider invoice)
      */
-    public function getMonthlyGrowthComparison($year = null, $cityId = null)
+    public function getMonthlyGrowthComparison($year = null, $cityId = null, $companyType = null)
     {
         $year = $year ?? date('Y');
         $monthlyData = [];
-
+ 
         for ($month = 1; $month <= 12; $month++) {
             $startDate = Carbon::create($year, $month, 1)->startOfMonth();
             $endDate = Carbon::create($year, $month, 1)->endOfMonth();
-
+ 
             // Get transactions for this month
             $transactionsQuery = OrderTransaction::query()
-                ->whereHas('order', function($query) {
+                ->whereHas('order', function($query) use ($companyType) {
                     $query->testAccounts(false)
-                    ->whereNotIn('status', $this->notValidStatuses);
+                    ->whereNotIn('status', $this->notValidStatuses)
+                    ->when($companyType, function ($q) use ($companyType) {
+                        if ($companyType == 'b2b') {
+                            $q->whereNotNull('company_id');
+                        } elseif ($companyType == 'b2c') {
+                            $q->whereNull('company_id');
+                        }
+                    });
                 })
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->where('amount', '>', 0);
-
+ 
             if ($cityId) {
                 $transactionsQuery->whereHas('order', function($q) use ($cityId) {
                     $q->where('city_id', $cityId);
                 });
             }
-
+ 
             $totalTransactions = (float) $transactionsQuery->sum('amount');
-
+ 
             // Get provider invoice for delivered orders this month
             $ordersQuery = Order::query()
                 ->testAccounts(false)
@@ -192,6 +221,13 @@ class DetailedAnalysisService
                 ->whereHas('orderRepresentatives', function($query) use ($startDate, $endDate) {
                     $query->whereIn('type', $this->representativeTypes)
                     ->whereBetween('date', [$startDate, $endDate]);
+                })
+                ->when($companyType, function ($q) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $q->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $q->whereNull('company_id');
+                    }
                 });
 
             if ($cityId) {
@@ -213,16 +249,23 @@ class DetailedAnalysisService
     /**
      * Get payment method totals (for entire year)
      */
-    public function getPaymentMethodTotals($year = null, $cityId = null)
+    public function getPaymentMethodTotals($year = null, $cityId = null, $companyType = null)
     {
         $year = $year ?? date('Y');
         $startDate = Carbon::create($year, 1, 1)->startOfYear();
         $endDate = Carbon::create($year, 12, 31)->endOfYear();
-
+ 
         $transactionsQuery = OrderTransaction::query()
-            ->whereHas('order', function($query) {
+            ->whereHas('order', function($query) use ($companyType) {
                 $query->testAccounts(false)
-                ->whereNotIn('status', $this->notValidStatuses);
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->when($companyType, function ($q) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $q->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $q->whereNull('company_id');
+                    }
+                });
             })
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('amount', '>', 0);
@@ -257,10 +300,18 @@ class DetailedAnalysisService
      */
     public function getOrderTransactions($filters = [])
     {
+        $companyType = $filters['company_type'] ?? null;
         $query = OrderTransaction::query()
-            ->whereHas('order', function($query) {
+            ->whereHas('order', function($query) use ($companyType) {
                 $query->testAccounts(false)
-                ->whereNotIn('status', $this->notValidStatuses);
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->when($companyType, function ($q) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $q->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $q->whereNull('company_id');
+                    }
+                });
             })
             ->with(['order.client', 'order.city'])
             ->orderBy('created_at', 'desc');
@@ -308,7 +359,19 @@ class DetailedAnalysisService
      */
     public function getAllOrderTransactionsForExport($filters = [])
     {
+        $companyType = $filters['company_type'] ?? null;
         $query = OrderTransaction::query()
+            ->whereHas('order', function($query) use ($companyType) {
+                $query->testAccounts(false)
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->when($companyType, function ($q) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $q->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $q->whereNull('company_id');
+                    }
+                });
+            })
             ->with(['order.client', 'order.city'])
             ->orderBy('created_at', 'desc');
 

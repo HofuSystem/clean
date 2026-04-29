@@ -25,9 +25,10 @@ class DetailedAnalysisController extends Controller
         $title = trans('Detailed Yearly Financial Analysis');
         $year = $request->get('year', date('Y'));
         $cityId = $request->get('city_id');
-
+        $companyType = $request->get('company_type');
+ 
         // Get transactions per city for donut chart (entire year)
-        $cityTransactions = $this->detailedAnalysisService->getTransactionsPerCity($year);
+        $cityTransactions = $this->detailedAnalysisService->getTransactionsPerCity($year, $companyType);
         $notValidStatuses = $this->detailedAnalysisService->notValidStatuses;
         $finishedStatuses = $this->detailedAnalysisService->finishedStatuses;
         foreach ($notValidStatuses as $key => $notValidStatus) {
@@ -37,13 +38,13 @@ class DetailedAnalysisController extends Controller
             $finishedStatuses[$key] = trans( $finishedStatus);
         }
         // Get financial summary for all 12 months
-        $monthlySummaries = $this->detailedAnalysisService->getFinancialSummaryByYear($year, $cityId);
-
+        $monthlySummaries = $this->detailedAnalysisService->getFinancialSummaryByYear($year, $cityId, $companyType);
+ 
         // Get monthly growth comparison
-        $monthlyGrowth = $this->detailedAnalysisService->getMonthlyGrowthComparison($year, $cityId);
-
+        $monthlyGrowth = $this->detailedAnalysisService->getMonthlyGrowthComparison($year, $cityId, $companyType);
+ 
         // Get payment method totals (entire year)
-        $paymentMethods = $this->detailedAnalysisService->getPaymentMethodTotals($year, $cityId);
+        $paymentMethods = $this->detailedAnalysisService->getPaymentMethodTotals($year, $cityId, $companyType);
 
         $cities = City::get();
 
@@ -56,6 +57,7 @@ class DetailedAnalysisController extends Controller
             'cities',
             'year',
             'cityId',
+            'companyType',
             'notValidStatuses',
             'finishedStatuses'
         ));
@@ -73,6 +75,7 @@ class DetailedAnalysisController extends Controller
             'phone' => $request->get('phone'),
             'city_id' => $request->get('city_id'),
             'type' => $request->get('type'),
+            'company_type' => $request->get('company_type'),
             'per_page' => $request->get('per_page', 15),
         ];
 
@@ -124,6 +127,7 @@ class DetailedAnalysisController extends Controller
             'phone' => $request->get('phone'),
             'city_id' => $request->get('city_id'),
             'type' => $request->get('type'),
+            'company_type' => $request->get('company_type'),
         ];
 
         $transactions = $this->detailedAnalysisService->getAllOrderTransactionsForExport($filters);

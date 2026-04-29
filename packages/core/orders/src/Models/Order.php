@@ -32,7 +32,7 @@ class Order extends CoreModel
 
 
     //start Scopes
-    function scopeAnalysis($query, $cityId, $from, $to,$status = null)
+    function scopeAnalysis($query, $cityId, $from, $to, $status = null, $companyType = null)
     {
         $query->when($cityId, function ($query) use ($cityId) {
             $query->where('orders.city_id', $cityId);
@@ -45,6 +45,12 @@ class Order extends CoreModel
                 $query->whereIn('orders.status', $status);
             } else {
                 $query->where('orders.status', $status);
+            }
+        })->when($companyType, function ($query) use ($companyType) {
+            if ($companyType == 'b2b') {
+                $query->whereNotNull('orders.company_id');
+            } elseif ($companyType == 'b2c') {
+                $query->whereNull('orders.company_id');
             }
         });
     }
