@@ -22,22 +22,14 @@ class OrderDetailsWithOutItemsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $nationality      = json_decode($this->moreDatas->where('key','nationality_data')->first()?->value);
-        if($nationality){
-            $lang = app()->getLocale();
-            $nationality = $nationality->{'name_'.$lang} ?? $nationality->name;
-        }
-        $contractDuration = json_decode($this->moreDatas->where('key','contract_duration_data')->first()?->value);
-        if($contractDuration){
-            $lang = app()->getLocale();
-            $contractDuration = $contractDuration->{'name_'.$lang} ?? $contractDuration->name;
-        }
-        $workerCount      = json_decode($this->moreDatas->where('key','worker_count_data')->first()?->value)?->name;
-        $hoursCount       = json_decode($this->moreDatas->where('key','hours_count_data')->first()?->value)?->name;
+        $nationality      = $this->getLocalizedMoreData('nationality_data');
+        $contractDuration = $this->getLocalizedMoreData('contract_duration_data');
+        $workerCount      = $this->getLocalizedMoreData('worker_count_data');
+        $hoursCount       = $this->getLocalizedMoreData('hours_count_data');
         $serviceData      = json_decode($this->moreDatas->where('key','service_data')->first()?->value);
         if(CategoryOffer::where('id',$serviceData?->id)->exists()){
-            $workerCount = json_decode($this->moreDatas->where('key','service_data')->first()?->value)?->workers_num;
-            $hoursCount = json_decode($this->moreDatas->where('key','service_data')->first()?->value)?->hours_num;
+            $workerCount = $serviceData?->workers_num;
+            $hoursCount = $serviceData?->hours_num;
         }
         $technical = $this->orderRepresentatives->where('type','technical')->first();
         $couponMinmum = json_decode($this->coupon_data)?->order_minimum ?? ($this->coupon?->minimum_price ?? 0);
@@ -75,17 +67,17 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'nots'                      =>  $this->desc,
 
 
-            'service'                   => json_decode($this->moreDatas->where('key','service_data')->first()?->value)?->name_ar,
+            'service'                   => $this->getLocalizedMoreData('service_data'),
             
-            'service_type'              => json_decode($this->moreDatas->where('key','service_type_data')->first()?->value)?->name_ar,
-            'uniform'                   => json_decode($this->moreDatas->where('key','uniform_data')->first()?->value)?->name,
+            'service_type'              => $this->getLocalizedMoreData('service_type_data'),
+            'uniform'                   => $this->getLocalizedMoreData('uniform_data'),
             'nationality'               => $nationality,
             'worker_count'              => $workerCount,
             'contract_duration'         => $contractDuration,
             'hours_count'               => $hoursCount,
-            'period'                    => json_decode($this->moreDatas->where('key','period_data')->first()?->value)?->name,
-            'duration'                  => json_decode($this->moreDatas->where('key','duration_data')->first()?->value)?->name,
-            'additional'                => json_decode($this->moreDatas->where('key','additional_data')->first()?->value)?->name,
+            'period'                    => $this->getLocalizedMoreData('period_data'),
+            'duration'                  => $this->getLocalizedMoreData('duration_data'),
+            'additional'                => $this->getLocalizedMoreData('additional_data'),
             'days_per_week'             => $this->days_per_week,
             'days_per_week_names'       => $this->days_per_week_names  ? json_decode($this->days_per_week_names) : [],
             'days_per_month_dates'      => $this->days_per_month_dates  ? json_decode($this->days_per_month_dates) : [],
@@ -107,5 +99,15 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'order_transactions'    => OrderTransactionsResource::collection($this->whenLoaded('transactions')),
 
         ];
+    }
+
+    private function getLocalizedMoreData($key)
+    {
+        $data = json_decode($this->moreDatas->where('key', $key)->first()?->value);
+        if ($data) {
+            $lang = app()->getLocale();
+            return $data->{'name_' . $lang} ?? ($data->name ?? null);
+        }
+        return null;
     }
 }
