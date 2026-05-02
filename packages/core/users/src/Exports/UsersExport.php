@@ -11,7 +11,11 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, ShouldQueue
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeExport;
+use Laravel\Telescope\Telescope;
+
+class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, WithEvents, ShouldQueue
 {
     use Exportable;
 
@@ -24,29 +28,24 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
     public function query()
     {
         return User::query()
+            ->leftJoin('profiles', 'profiles.user_id', '=', 'users.id')
+            ->leftJoin('city_translations', function ($join) {
+                $join->on('city_translations.city_id', '=', 'profiles.city_id')
+                    ->where('city_translations.locale', '=', $this->locale);
+            })
+            ->leftJoin('district_translations', function ($join) {
+                $join->on('district_translations.district_id', '=', 'profiles.district_id')
+                    ->where('district_translations.locale', '=', $this->locale);
+            })
             ->select([
                 'users.id',
                 'users.fullname',
                 'users.email',
                 'users.phone',
                 'users.created_at',
-                // City name via translation table
-                DB::raw("(
-                    SELECT ct.name
-                    FROM city_translations ct
-                    INNER JOIN profiles p ON p.city_id = ct.city_id AND p.user_id = users.id
-                    WHERE ct.locale = '{$this->locale}'
-                    LIMIT 1
-                ) as city_name"),
-                // District name via translation table
-                DB::raw("(
-                    SELECT dt.name
-                    FROM district_translations dt
-                    INNER JOIN profiles p ON p.district_id = dt.district_id AND p.user_id = users.id
-                    WHERE dt.locale = '{$this->locale}'
-                    LIMIT 1
-                ) as district_name"),
-                // Last order date
+                'city_translations.name as city_name',
+                'district_translations.name as district_name',
+                // Last order date - keeping subquery for these aggregates as they are harder to join without grouping issues
                 DB::raw("(
                     SELECT MAX(o.created_at)
                     FROM orders o
@@ -97,5 +96,19 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
     public function chunkSize(): int
     {
         return 1000;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            BeforeExport::class => function (BeforeExport $event) {
+                // Increase memory limit for large exports
+                ini_set('memory_limit', '512M');
+                
+                if (class_exists(Telescope::class)) {
+                    Telescope::stopRecording();
+                }
+            },
+        ];
     }
 }
