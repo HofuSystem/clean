@@ -29,6 +29,8 @@ class UpdateOrdersWashTypes extends Command
      */
     public function handle()
     {
+        set_time_limit(10000);
+        ini_set('memory_limit', '512M');
         Product::query()->update([
             'wash_type' => 'washer'
         ]);
