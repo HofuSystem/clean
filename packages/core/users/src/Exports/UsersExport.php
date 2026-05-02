@@ -82,8 +82,14 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
         ];
     }
 
+    private $rowCounter = 0;
     public function map($model): array
     {
+        $this->rowCounter++;
+        if ($this->rowCounter % 100 === 0) {
+            gc_collect_cycles();
+        }
+
         return [
             $model->id,
             $model->fullname,
@@ -99,7 +105,7 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
 
     public function chunkSize(): int
     {
-        return 250;
+        return 500;
     }
 
     public function registerEvents(): array
@@ -107,15 +113,21 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
         return [
             BeforeExport::class => function (BeforeExport $event) {
                 ini_set('memory_limit', '512M');
+                
+                // Disable DB query log to save memory
+                DB::connection()->disableQueryLog();
+                
                 if (class_exists(Telescope::class)) {
                     Telescope::stopRecording();
                 }
             },
             BeforeWriting::class => function (BeforeWriting $event) {
                 ini_set('memory_limit', '512M');
+                gc_collect_cycles();
             },
             BeforeSheet::class => function (BeforeSheet $event) {
                 ini_set('memory_limit', '512M');
+                gc_collect_cycles();
             },
         ];
     }
