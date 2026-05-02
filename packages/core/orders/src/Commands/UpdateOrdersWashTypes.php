@@ -56,7 +56,10 @@ class UpdateOrdersWashTypes extends Command
             'wash_type' => 'lab'
         ]);
 
-       Order::where('total_provider_invoice','>', 0)->each(function($order){
+       Order::where('total_provider_invoice','>', 0)
+       ->whereNull('lab_cost')
+       ->whereNull('washer_cost')
+       ->each(function($order){
             if(isset($order->company_id)){
                 $order->update([
                     'lab_cost' => $order->total_provider_invoice,
