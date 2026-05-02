@@ -13,6 +13,8 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeExport;
+use Maatwebsite\Excel\Events\BeforeWriting;
+use Maatwebsite\Excel\Events\BeforeSheet;
 use Laravel\Telescope\Telescope;
 
 class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, WithEvents, ShouldQueue
@@ -23,6 +25,12 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
         protected $locale = null
     ) {
         $this->locale = $locale ?: app()->getLocale();
+        
+        // Ensure memory limit and Telescope are handled whenever this class is instantiated (including in jobs)
+        ini_set('memory_limit', '512M');
+        if (class_exists(Telescope::class)) {
+            Telescope::stopRecording();
+        }
     }
 
     public function query()
@@ -37,6 +45,13 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
                 $join->on('district_translations.district_id', '=', 'profiles.district_id')
                     ->where('district_translations.locale', '=', $this->locale);
             })
+            // Aggregate orders in a single join to avoid row-by-row subqueries
+            ->leftJoin(DB::raw("(
+                SELECT client_id, MAX(created_at) as latest_order_at, COUNT(*) as total_orders_count
+                FROM orders
+                WHERE status IN ('finished','delivered')
+                GROUP BY client_id
+            ) as order_stats"), 'order_stats.client_id', '=', 'users.id')
             ->select([
                 'users.id',
                 'users.fullname',
@@ -45,19 +60,8 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
                 'users.created_at',
                 'city_translations.name as city_name',
                 'district_translations.name as district_name',
-                // Last order date - keeping subquery for these aggregates as they are harder to join without grouping issues
-                DB::raw("(
-                    SELECT MAX(o.created_at)
-                    FROM orders o
-                    WHERE o.client_id = users.id
-                ) as latest_order_at"),
-                // Completed orders count
-                DB::raw("(
-                    SELECT COUNT(*)
-                    FROM orders o
-                    WHERE o.client_id = users.id
-                    AND o.status IN ('finished','delivered')
-                ) as orders_count"),
+                'order_stats.latest_order_at',
+                'order_stats.total_orders_count as orders_count',
             ])
             ->whereNull('users.deleted_at')
             ->orderBy('users.id');
@@ -95,19 +99,23 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 250;
     }
 
     public function registerEvents(): array
     {
         return [
             BeforeExport::class => function (BeforeExport $event) {
-                // Increase memory limit for large exports
                 ini_set('memory_limit', '512M');
-                
                 if (class_exists(Telescope::class)) {
                     Telescope::stopRecording();
                 }
+            },
+            BeforeWriting::class => function (BeforeWriting $event) {
+                ini_set('memory_limit', '512M');
+            },
+            BeforeSheet::class => function (BeforeSheet $event) {
+                ini_set('memory_limit', '512M');
             },
         ];
     }
