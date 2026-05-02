@@ -206,7 +206,7 @@ class UsersController extends Controller
 
     public function export(Request $request)
     {
-        $filename = 'exports/users_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $filename = 'exports/users_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
         
         // Ensure the directory exists
         if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('exports')) {

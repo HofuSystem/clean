@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeExport;
@@ -17,7 +18,7 @@ use Maatwebsite\Excel\Events\BeforeWriting;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Laravel\Telescope\Telescope;
 
-class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, WithEvents, ShouldQueue
+class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, WithEvents, WithCustomCsvSettings, ShouldQueue
 {
     use Exportable;
 
@@ -82,14 +83,8 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
         ];
     }
 
-    private $rowCounter = 0;
     public function map($model): array
     {
-        $this->rowCounter++;
-        if ($this->rowCounter % 100 === 0) {
-            gc_collect_cycles();
-        }
-
         return [
             $model->id,
             $model->fullname,
@@ -105,7 +100,14 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
 
     public function chunkSize(): int
     {
-        return 500;
+        return 1000;
+    }
+
+    public function getCsvSettings(): array
+    {
+        return [
+            'use_bom' => true, // Ensure Excel handles UTF-8 characters correctly
+        ];
     }
 
     public function registerEvents(): array
