@@ -6,6 +6,7 @@ use Core\Orders\Models\Order;
 use Core\Orders\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Core\Settings\Services\SettingsService;
 
 class OrderReportService
 {
@@ -59,9 +60,13 @@ class OrderReportService
         if (!empty($filters['status'])) {
             $query->where('orders.status', $filters['status']);
         }
+        
+        if (!empty($filters['wash_type'])) {
+            $query->where('order_items.wash_type', $filters['wash_type']);
+        }
 
         // Test accounts - usually we exclude them in reports
-        $testAccounts = \Core\Settings\Services\SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
         $query->whereNotIn('orders.client_id', $testAccounts);
 
         $query->select(
@@ -69,11 +74,57 @@ class OrderReportService
             'product_translations.name as product_name',
             'cat_trans.name as category_name',
             'sub_cat_trans.name as subcategory_name',
+            'order_items.wash_type',
             DB::raw('SUM(order_items.quantity) as total_quantity')
         )
-            ->groupBy('order_items.product_id', 'product_translations.name', 'cat_trans.name', 'sub_cat_trans.name')
+            ->groupBy('order_items.product_id', 'product_translations.name', 'cat_trans.name', 'sub_cat_trans.name', 'order_items.wash_type')
             ->orderBy('total_quantity', 'desc');
 
         return $query->get();
+    }
+
+    /**
+     * Get summarized costs from orders table
+     */
+    public function getOrderCostsSummary($filters)
+    {
+        $query = Order::query();
+
+        // Apply filters
+        if (!empty($filters['from_date'])) {
+            $query->whereDate('orders.created_at', '>=', Carbon::parse($filters['from_date']));
+        }
+        if (!empty($filters['to_date'])) {
+            $query->whereDate('orders.created_at', '<=', Carbon::parse($filters['to_date']));
+        }
+
+        if (!empty($filters['type'])) {
+            if ($filters['type'] === 'company') {
+                $query->whereNotNull('orders.company_id');
+            } elseif ($filters['type'] === 'client') {
+                $query->whereNull('orders.company_id');
+            }
+        }
+
+        if (!empty($filters['company_id'])) {
+            $query->where('orders.company_id', $filters['company_id']);
+        }
+
+        if (!empty($filters['client_id'])) {
+            $query->where('orders.client_id', $filters['client_id']);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('orders.status', $filters['status']);
+        }
+
+        // Test accounts
+        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+        $query->whereNotIn('orders.client_id', $testAccounts);
+
+        return $query->select(
+            DB::raw('SUM(lab_cost) as total_lab_cost'),
+            DB::raw('SUM(washer_cost) as total_washer_cost')
+        )->first();
     }
 }

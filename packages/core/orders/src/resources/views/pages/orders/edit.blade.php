@@ -68,11 +68,11 @@
                                 {{ trans('update delivery price') }} </a>
                             <!--end::Primary button-->
                         @endcan
-                        @can('dashboard.orders.update-total-provider-invoice')
+                        @can('dashboard.orders.update-cost')
                             <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-secondary" id="updateTotalProviderInvoiceBtn"
+                            <a href="#" class="btn  fw-bold btn-secondary" id="updateCostBtn"
                                 data-id="{{ $order->id }}">
-                                {{ trans('update total provider invoice') }} ({{ $order->total_provider_invoice }}) {{ trans('SAR') }} </a>
+                                {{ trans('update cost') }} ({{ $order->total_cost }}) {{ trans('SAR') }} </a>
                             <!--end::Primary button-->
                         @endcan
                         @can('dashboard.orders.change-pay-type')
@@ -941,19 +941,30 @@
                     $('#updateDeliveryModal #for').val(id);
                     $('#updateDeliveryModal').modal('show');
                 })
-                $('#updateTotalProviderInvoiceBtn').click(function(e) {
+                $('#updateCostBtn').click(function(e) {
                     e.preventDefault();
                     let id = $(this).data('id');
+                    let washType = '{{ $order->wash_type }}';
                     id = JSON.stringify([id]);
 
-                    // Set current total_provider_invoice if exists
-                    let currentTotalProviderInvoice = '{{ $order->total_provider_invoice ?? "" }}';
-                    if (currentTotalProviderInvoice) {
-                        $('#updateTotalProviderInvoiceModal #total_provider_invoice').val(currentTotalProviderInvoice);
+                    let washerCost = '{{ $order->washer_cost ?? "0" }}';
+                    let labCost = '{{ $order->lab_cost ?? "0" }}';
+                    $('#updateCostModal #washer_cost').val(washerCost);
+                    $('#updateCostModal #lab_cost').val(labCost);
+
+                    if(washType == 'lab'){
+                        $('#washer_cost_group').hide();
+                        $('#lab_cost_group').show().removeClass('col-md-6').addClass('col-md-12');
+                    }else if(washType == 'washer'){
+                        $('#lab_cost_group').hide();
+                        $('#washer_cost_group').show().removeClass('col-md-6').addClass('col-md-12');
+                    }else{
+                        $('#washer_cost_group').show().removeClass('col-md-12').addClass('col-md-6');
+                        $('#lab_cost_group').show().removeClass('col-md-12').addClass('col-md-6');
                     }
 
-                    $('#updateTotalProviderInvoiceModal #for').val(id);
-                    $('#updateTotalProviderInvoiceModal').modal('show');
+                    $('#updateCostModal #for').val(id);
+                    $('#updateCostModal').modal('show');
                 })
                 $('#changePayTypeBtn').click(function(e) {
                     e.preventDefault();

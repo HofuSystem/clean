@@ -58,7 +58,9 @@ class OrderObserver
      */
     public function saving(Order $order)
     {
-
+        if($order->isDirty('washer_cost') or $order->isDirty('lab_cost')){
+            $order->total_cost = (float)($order->washer_cost ?? 0) + (float)($order->lab_cost ?? 0);
+        }
     }
     /**
      * Handle the Order "saved" event.
@@ -88,11 +90,10 @@ class OrderObserver
             $orderHistoryService = app(OrderHistoryService::class);
             $orderHistoryService->logPayTypeChange($order->id, $order->getOriginal('pay_type'), $order->pay_type);
         }
-       
-        if($order->isDirty('total_provider_invoice')){
+        if($order->isDirty('washer_cost') or $order->isDirty('lab_cost')){
             $orderHistoryService = app(OrderHistoryService::class);
-            $orderHistoryService->logProviderTotalChange($order->id, $order->getOriginal('total_provider_invoice'), $order->total_provider_invoice);
-        }
+            $orderHistoryService->logProviderTotalChange($order->id, $order->getOriginal('total_cost'), $order->total_cost);
+        } 
         if($order->isDirty('delivery_price')){
             $orderHistoryService = app(OrderHistoryService::class);
             $orderHistoryService->logDeliveryPriceChange($order->id, $order->getOriginal('delivery_price'), $order->delivery_price);

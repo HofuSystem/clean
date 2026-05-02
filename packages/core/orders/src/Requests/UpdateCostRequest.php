@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Core\Settings\Traits\ApiResponse;
 
-class UpdateTotalProviderInvoiceRequest extends FormRequest
+class UpdateCostRequest extends FormRequest
 {
   use ApiResponse;
 
@@ -29,8 +29,9 @@ class UpdateTotalProviderInvoiceRequest extends FormRequest
   public function rules()
   {
     return [
-      'total_provider_invoice' => 'required|numeric|min:0',
-      'for'   => 'required|string',
+      'washer_cost' => 'nullable|numeric|min:0',
+      'lab_cost'    => 'nullable|numeric|min:0',
+      'for'         => 'required|string',
     ];
   }
 
@@ -46,4 +47,3 @@ class UpdateTotalProviderInvoiceRequest extends FormRequest
     throw new HttpResponseException($this->returnValidationError($validator));
   }
 }
-

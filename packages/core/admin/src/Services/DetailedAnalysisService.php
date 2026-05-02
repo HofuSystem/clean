@@ -98,7 +98,7 @@ class DetailedAnalysisService
         $totalDelivery = (float) $deliveredOrders->sum('delivery_price');
 
         // Total provider invoice for delivered orders
-        $totalProviderInvoice = (float) $deliveredOrders->sum('total_provider_invoice');
+        $totalProviderInvoice = (float) $deliveredOrders->sum('total_cost');
 
         // Fixed costs for this month
         $fixedCosts = FixedCost::getTotalForMonth($year ?? date('Y'), $month ?? date('m'));
@@ -115,7 +115,7 @@ class DetailedAnalysisService
             'total_income' => $totalIncome,
             'total_discount' => $totalDiscount,
             'total_delivery' => $totalDelivery,
-            'total_provider_invoice' => $totalProviderInvoice,
+            'total_cost' => $totalProviderInvoice,
             'fixed_costs' => $fixedCosts,
             'net_income' => $netIncome,
         ];
@@ -234,7 +234,7 @@ class DetailedAnalysisService
                 $ordersQuery->where('city_id', $cityId);
             }
 
-            $totalProviderInvoice = (float) $ordersQuery->sum('total_provider_invoice');
+            $totalProviderInvoice = (float) $ordersQuery->sum('total_cost');
 
             $monthlyData[] = [
                 'month' => Carbon::create($year, $month, 1)->format('M'),

@@ -2,31 +2,27 @@
 
 namespace Core\Users\Exports;
 
-use Core\Orders\Helpers\OrderHelper;
+use Core\Users\Models\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
-use Illuminate\Support\Facades\DB;
-use Core\Users\Models\User;
 
-class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsvSettings
+class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, ShouldQueue
 {
+    use Exportable;
+
     public function __construct(
-        protected $headersOnly = false,
-        protected $cols        = [],
-        protected int $offset  = 0,
-        protected int $limit   = 1000
-    ) {}
+        protected $locale = null
+    ) {
+        $this->locale = $locale ?: app()->getLocale();
+    }
 
     public function query()
     {
-        if ($this->headersOnly) {
-            return User::whereRaw('0 = 1');
-        }
-
-        $locale = app()->getLocale();
-
         return User::query()
             ->select([
                 'users.id',
@@ -39,7 +35,7 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsv
                     SELECT ct.name
                     FROM city_translations ct
                     INNER JOIN profiles p ON p.city_id = ct.city_id AND p.user_id = users.id
-                    WHERE ct.locale = '{$locale}'
+                    WHERE ct.locale = '{$this->locale}'
                     LIMIT 1
                 ) as city_name"),
                 // District name via translation table
@@ -47,7 +43,7 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsv
                     SELECT dt.name
                     FROM district_translations dt
                     INNER JOIN profiles p ON p.district_id = dt.district_id AND p.user_id = users.id
-                    WHERE dt.locale = '{$locale}'
+                    WHERE dt.locale = '{$this->locale}'
                     LIMIT 1
                 ) as district_name"),
                 // Last order date
@@ -65,14 +61,13 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsv
                 ) as orders_count"),
             ])
             ->whereNull('users.deleted_at')
-            ->orderBy('users.id')
-            ->offset($this->offset)
-            ->limit($this->limit);
+            ->orderBy('users.id');
     }
 
     public function headings(): array
     {
         return [
+            trans('id'),
             trans('full name'),
             trans('email'),
             trans('phone'),
@@ -81,15 +76,13 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsv
             trans('district'),
             trans('register date'),
             trans('last order date'),
-            trans('class'),
         ];
     }
 
     public function map($model): array
     {
-        // $tier = OrderHelper::getCustomerTier($model->orders_count ?? 0);
-
         return [
+            $model->id,
             $model->fullname,
             $model->email,
             $model->phone,
@@ -98,16 +91,11 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithCustomCsv
             $model->district_name,
             $model->created_at,
             $model->latest_order_at,
-            // trans($tier['type']),
         ];
     }
 
-    public function getCsvSettings(): array
+    public function chunkSize(): int
     {
-        return [
-            'delimiter'   => ',',
-            'enclosure'   => '"',
-            'line_ending' => "\n",
-        ];
+        return 1000;
     }
 }

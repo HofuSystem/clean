@@ -196,32 +196,30 @@ class UsersController extends Controller
         }
     }
     /**
-     * Returns chunk metadata used by the export modal.
-     * e.g. { total: 11500, chunkSize: 1000, chunks: 12 }
+     * Returns metadata for export.
      */
     public function exportChunks(Request $request)
     {
-        $total     = \Core\Users\Models\User::whereNull('deleted_at')->count();
-        $chunkSize = 1000;
-        $chunks    = (int) ceil($total / $chunkSize);
-        return response()->json(compact('total', 'chunkSize', 'chunks'));
+        $total = \Core\Users\Models\User::whereNull('deleted_at')->count();
+        return response()->json(compact('total'));
     }
 
     public function export(Request $request)
     {
-        set_time_limit(300);
-        ini_set('memory_limit', '512M');
+        $filename = 'exports/users_export_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        
+        // Ensure the directory exists
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('exports')) {
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('exports');
+        }
 
-        $offset    = max(0, (int) $request->input('offset', 0));
-        $chunkSize = 1000;
-        $fileNum   = (int) ($offset / $chunkSize) + 1;
-        $filename  = "users-part-{$fileNum}.csv";
+        // Trigger the queued export
+        (new UsersExport(app()->getLocale()))->store($filename, 'public');
 
-        return Excel::download(
-            new UsersExport($request->headersOnly, $request->cols, $offset, $chunkSize),
-            $filename,
-            \Maatwebsite\Excel\Excel::CSV
-        );
+        return $this->returnData(trans('Export started in background.'), [
+            'url' => asset('storage/' . $filename),
+            'filename' => $filename
+        ]);
     }
     public function comment(CommentRequest $request,$id){
         try {

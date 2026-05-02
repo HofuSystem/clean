@@ -30,7 +30,7 @@ use Core\Orders\Requests\OrdersChangePayTypeRequest;
 use Core\Orders\Requests\OrdersAssignOperatorsRequest;
 use Core\Orders\Requests\OrdersAssignRepresentativesRequest;
 use Core\Orders\Requests\UpdateDeliveryPriceRequest;
-use Core\Orders\Requests\UpdateTotalProviderInvoiceRequest;
+use Core\Orders\Requests\UpdateCostRequest;
 use Core\Orders\Requests\UpdateItemRequest;
 use Core\Orders\Requests\UpdateOrderRequest;
 use Core\Orders\Requests\UpdateB2bFinancialNoteRequest;
@@ -372,13 +372,14 @@ class OrdersController extends Controller
         }
 
     }
-    public function updateTotalProviderInvoice(UpdateTotalProviderInvoiceRequest $request){
+    public function updateCost(UpdateCostRequest $request)
+    {
         try {
             DB::beginTransaction();
             $for    = json_decode($request->for);
-            $this->ordersService->updateTotalProviderInvoice($for,$request->total_provider_invoice);
+            $this->ordersService->updateCost($for, $request->washer_cost, $request->lab_cost);
             DB::commit();
-            return $this->returnSuccessMessage(trans('Total provider invoice updated'));
+            return $this->returnSuccessMessage(trans('Cost updated successfully'));
         }catch(ValidationException $e){
             DB::rollback();
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);

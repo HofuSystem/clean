@@ -25,6 +25,7 @@ class OrderItemResource extends JsonResource
             'total_price'           => $this->total_price,
             'products'              => $this->product ? new SimpleProductResource($this->product) : new TestProductResource($this),
             'original_quantity'     => $originalQuantity,
+            'wash_type'             => $this->wash_type,
             
             'is_deleted'            => $this->deleted_at != null,
             'is_added'              => $this->add_by_admin != null,

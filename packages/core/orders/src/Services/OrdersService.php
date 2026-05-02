@@ -377,6 +377,7 @@ class OrdersService
                 'product_price'      =>  $price,
                 'product_cost'       =>  $cost,
                 'product_data'       =>  $product->toJson(),
+                'wash_type'          =>  $product->wash_type,
             ]);
         } elseif ($orderItemFromTrash) {
             $orderItem = $orderItemFromTrash;
@@ -397,6 +398,7 @@ class OrdersService
                 'product_price'         =>  $price,
                 'product_cost'          =>  $cost,
                 'product_data'          =>  $product->toJson(),
+                'wash_type'             =>  $product->wash_type,
             ]);
         } else {
 
@@ -410,6 +412,7 @@ class OrdersService
                 'height'                    =>   $height,
                 'product_data'              =>   $product->toJson(),
                 'add_by_admin'              =>   auth()->user()->email,
+                'wash_type'                 =>   $product->wash_type,
             ]);
         }
         if (($quantity != 0) and  json_decode($orderItem->product_data)->type == 'sales') {
@@ -502,7 +505,7 @@ class OrdersService
             $couponMin        =  $couponData?->order_minimum ?? $coupon?->order_minimum ?? 0;
             if (in_array($couponType, ['percentage', 'value','cashback']) and $subTotal >= $couponMin) {
                 $couponValue    = $couponData->discount_percentage ?? $couponData->value ?? $coupon->value;
-                $couponPresent  = $couponData->discount_percentage ?? $couponData->valeu ?? $coupon->value;
+                $couponPresent  = $couponData->discount_percentage ?? $couponData->value ?? $coupon->value;
                 if ($couponType == 'percentage') {
                     $couponValue   = $subTotal * $couponPresent / 100;
                 }
@@ -520,8 +523,18 @@ class OrdersService
             $deliveryPrice = $deliveryCharge;
         }
         $total = $subTotal + $deliveryPrice - $couponValue;
+      
+        
+        $washTypes     = $order->items->pluck('wash_type')->unique()->filter()->toArray();
+        $wash_type    = null;
+        if (count($washTypes) > 1) {
+            $wash_type = 'mixed';
+        } elseif (count($washTypes) == 1) {
+            $wash_type = reset($washTypes);
+        }
+
         $order->update([
-            'total_cost'            => $costTotal,
+            'wash_type'             => $wash_type,
             'order_price'           => $subTotal,
             'cashback'              => $cashBack,
             'total_coupon'          => $couponValue,
@@ -627,17 +640,15 @@ class OrdersService
         }
     }
 
-    public function updateTotalProviderInvoice(array $orderIds, $totalProviderInvoice)
+    public function updateCost(array $orderIds, $washerCost, $labCost)
     {
         foreach ($orderIds as $orderId) {
             $order = Order::where('id', $orderId)->first();
             if ($order) {
-                $oldTotal = $order->total_provider_invoice;
                 $order->update([
-                    'total_provider_invoice' => $totalProviderInvoice,
+                    'washer_cost' => $washerCost,
+                    'lab_cost' => $labCost,
                 ]);
-                
-               
             }
         }
     }
@@ -852,10 +863,9 @@ class OrdersService
             'points_amount_used' => 0,
         ]);
 
-        $createOrderData['note']         = $createOrderData['desc'] ?? null;
-        $createOrderData['note']         .= ' - ' . $user->contract_note;
-        $createOrderData['total_provider_invoice'] = $createOrderData['total_cost'] ?? 0;
-        $order      = Order::create($createOrderData);
+        $createOrderData['note']    = $createOrderData['desc'] ?? null;
+        $createOrderData['note']    .= ' - ' . $user->contract_note;
+        $order                      = Order::create($createOrderData);
 
 
         if ($data['pay_type'] == 'card') {

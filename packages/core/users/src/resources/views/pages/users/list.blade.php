@@ -422,27 +422,29 @@
     </script>
 @endpush
 
-{{-- ===== Export Chunks Modal ===== --}}
+{{-- ===== Export Modal ===== --}}
 <div class="modal fade" id="exportChunksModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary">
                 <h5 class="modal-title text-white">
-                    <i class="fas fa-file-csv me-2"></i>@lang('Export Users')
+                    <i class="fas fa-file-excel me-2"></i>@lang('Export All Users')
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div id="export-chunks-loading" class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 text-muted">@lang('Loading...')</p>
+            <div class="modal-body text-center">
+                <div id="export-info">
+                    <p class="fs-4">@lang('Total Users'): <span id="export-total-count" class="fw-bolder">...</span></p>
+                    <p class="text-muted">@lang('This will generate a single Excel file in the background.')</p>
+                    <button type="button" id="start-export-btn" class="btn btn-primary btn-lg w-100 mt-3">
+                        <i class="fas fa-play me-2"></i>@lang('Start Export')
+                    </button>
                 </div>
-                <div id="export-chunks-list" class="d-none">
-                    <p class="text-muted small mb-3" id="export-chunks-summary"></p>
-                    <div id="export-chunks-buttons" class="d-flex flex-wrap gap-2"></div>
-                </div>
-                <div id="export-chunks-error" class="d-none text-danger">
-                    @lang('Failed to load export info. Please try again.')
+                <div id="export-processing" class="d-none py-4">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h5 class="text-primary">@lang('Export Started!')</h5>
+                    <p class="text-muted">@lang('The export is being processed in the background.')</p>
+                    <p class="small">@lang('You can close this modal. The file will be available in the storage folder once completed.')</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -456,48 +458,84 @@
 <script>
 (function () {
     var chunksUrl  = '{{ route("dashboard.users.export-chunks") }}';
-    var exportBase = '{{ route("dashboard.users.export") }}';
+    var exportUrl  = '{{ route("dashboard.users.export") }}';
 
     $('#export-modal-btn').on('click', function () {
-        $('#export-chunks-loading').removeClass('d-none');
-        $('#export-chunks-list').addClass('d-none');
-        $('#export-chunks-error').addClass('d-none');
-        $('#export-chunks-buttons').empty();
+        $('#export-info').removeClass('d-none');
+        $('#export-processing').addClass('d-none');
+        $('#export-total-count').text('...');
         $('#exportChunksModal').modal('show');
 
         $.getJSON(chunksUrl, function (data) {
-            var total     = data.total;
-            var chunkSize = data.chunkSize;
-            var chunks    = data.chunks;
+            $('#export-total-count').text(data.total);
+        });
+    });
 
-            $('#export-chunks-summary').html(
-                '<strong>' + total + '</strong> @lang("total users") &mdash; ' +
-                chunks + ' @lang("file(s) of") ' + chunkSize + ' @lang("users each")'
-            );
+    $('#start-export-btn').on('click', function () {
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> @lang("Starting...")');
 
-            for (var i = 0; i < chunks; i++) {
-                var offset = i * chunkSize;
-                var from   = offset + 1;
-                var to     = Math.min(offset + chunkSize, total);
-                var url    = exportBase + '?offset=' + offset;
-
-                var btn = $('<a>')
-                    .attr('href', url)
-                    .attr('target', '_blank')
-                    .addClass('btn btn-outline-success btn-sm mb-2')
-                    .html('<i class="fas fa-download me-1"></i> @lang("File") ' + (i + 1) +
-                          ' <small class="text-muted">(' + from + '&ndash;' + to + ')</small>');
-
-                $('#export-chunks-buttons').append(btn);
+        $.get(exportUrl, function (response) {
+            $('#export-info').addClass('d-none');
+            $('#export-processing').removeClass('d-none');
+            
+            if (response.url) {
+                var downloadLink = response.url;
+                // Update modal title to success
+                $('#exportChunksModal .modal-title').html('<i class="fas fa-check-circle me-2"></i>@lang("Export Successfully Started")');
+                
+                $('#export-processing').html(
+                    '<div class="py-2">' +
+                        '<div class="mb-4 text-center">' +
+                            '<div class="mb-3">' +
+                                '<i class="fas fa-file-excel text-success fa-4x"></i>' +
+                            '</div>' +
+                            '<h4 class="text-dark fw-bolder">@lang("Exporting all in one...")</h4>' +
+                            '<p class="text-muted px-5">@lang("Please copy the link below and try to access it in 5 minutes. The system needs time to process all records.")</p>' +
+                        '</div>' +
+                        '<div class="p-4 bg-light rounded border border-secondary border-dashed mb-4">' +
+                            '<label class="form-label fw-bold text-gray-700 mb-2">@lang("Permanent Download Link")</label>' +
+                            '<div class="input-group input-group-solid">' +
+                                '<input type="text" class="form-control" value="' + downloadLink + '" readonly id="export-url-input" style="background-color: #f5f8fa;">' +
+                                '<button class="btn btn-primary d-flex align-items-center" type="button" onclick="copyExportUrl()">' +
+                                    '<i class="fas fa-copy me-2"></i> @lang("Copy Link")' +
+                                '</button>' +
+                            '</div>' +
+                            '<div class="mt-2 text-center text-danger fw-bold">' +
+                                '<i class="fas fa-clock me-1"></i> @lang("Note: Try this link in 5 minutes")' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="d-grid gap-2">' +
+                            '<a href="' + downloadLink + '" target="_blank" class="btn btn-success btn-lg">' +
+                                '<i class="fas fa-download me-2"></i>@lang("Try Download Now")' +
+                            '</a>' +
+                            '<button type="button" class="btn btn-light" data-bs-dismiss="modal">@lang("Got it")</button>' +
+                        '</div>' +
+                    '</div>'
+                );
             }
 
-            $('#export-chunks-loading').addClass('d-none');
-            $('#export-chunks-list').removeClass('d-none');
+            if (window.toastr) {
+                toastr.success(response.message || '@lang("Export started successfully")');
+            }
         }).fail(function () {
-            $('#export-chunks-loading').addClass('d-none');
-            $('#export-chunks-error').removeClass('d-none');
+            $btn.prop('disabled', false).html('<i class="fas fa-play me-2"></i> @lang("Start Export")');
+            alert('@lang("Failed to start export. Please try again.")');
         });
     });
 }());
+
+function copyExportUrl() {
+    var copyText = document.getElementById("export-url-input");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(copyText.value);
+    
+    if (window.toastr) {
+        toastr.success('@lang("Link copied to clipboard")');
+    } else {
+        alert('@lang("Link copied to clipboard")');
+    }
+}
 </script>
 @endpush

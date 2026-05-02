@@ -39,7 +39,7 @@ class ProductsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations', 'wash_type']),ARRAY_FILTER_USE_KEY);
         $record     = Product::updateOrCreate(['id' => $id],$recordData);
 
         if(!isset($id)){
@@ -181,9 +181,12 @@ class ProductsService
         ];
     }
     public static function getProductOutOfContractPriceData($product,$cityId){
-        $price = $product->price;
-        $cost = $product->cost;
-        $priceCityData = isset($product->prices) ? $product->prices->where('city_id',$cityId)->first() : null;
+        $price = $product->price ?? 0;
+        $cost = $product->cost ?? 0;
+        $priceCityData = null;
+        if (!($product instanceof \stdClass) && isset($product->prices)) {
+             $priceCityData = $product->prices->where('city_id',$cityId)->first();
+        }
         if($priceCityData){
             $price = $priceCityData->price;
             $cost = $priceCityData->cost;

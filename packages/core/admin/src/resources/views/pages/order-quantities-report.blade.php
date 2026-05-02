@@ -71,44 +71,59 @@
                 </div>
             </div>
 
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ trans('Order Quantities Report') }}</h5>
-                        <div class="card-tools">
-                            <a href="{{ route('dashboard.order-quantities-report.export', request()->all()) }}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-file-excel me-1"></i> {{ trans('Export XLSX') }}
-                            </a>
-                            <button onclick="exportTableToCSV('order-quantities-report.csv')" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-file-csv me-1"></i> {{ trans('Export CSV') }}
-                            </button>
+        <div class="row mb-4">
+            @foreach(['lab', 'washer'] as $type)
+                <div class="col-md-6 mb-3">
+                    <div class="card {{ $type == 'lab' ? 'bg-primary' : 'bg-success' }} text-white">
+                        <div class="card-body py-3 text-center">
+                            <div class="row">
+                                <div class="col-6 border-end">
+                                    <h6 class="text-white mb-1">{{ trans('Total') }} {{ trans($type) }} {{ trans('Quantity') }}</h6>
+                                    <h3 class="text-white mb-0">{{ number_format($reportData->get($type)?->sum('total_quantity') ?? 0) }}</h3>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="text-white mb-1">{{ trans('Total') }} {{ trans($type) }} {{ trans('Cost') }}</h6>
+                                    <h3 class="text-white mb-0">{{ number_format($costsSummary->{'total_' . $type . '_cost'} ?? 0, 2) }} <small>{{ trans('SAR') }}</small></h3>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
-                    <div class="card-body">
+                </div>
+            @endforeach
+        </div>
+
+        <div class="row">
+            @foreach(['lab', 'washer'] as $type)
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-capitalize">{{ trans($type) }} {{ trans('Report') }}</h5>
+                        <div class="card-tools">
+                            <a href="{{ route('dashboard.order-quantities-report.export', array_merge(request()->all(), ['wash_type' => $type])) }}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-file-excel me-1"></i> {{ trans('Export') }} {{ trans($type) }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped data-table" id="reportTable">
-                                <thead class="table-primary">
+                            <table class="table table-bordered table-striped mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>{{ trans('Product ID') }}</th>
                                         <th>{{ trans('Product Name') }}</th>
                                         <th>{{ trans('Category') }}</th>
-                                        <th>{{ trans('Subcategory') }}</th>
                                         <th>{{ trans('Total Quantity') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($reportData as $row)
+                                    @forelse($reportData->get($type) ?? [] as $row)
                                         <tr>
-                                            <td>{{ $row->product_id }}</td>
                                             <td>{{ $row->product_name }}</td>
                                             <td>{{ $row->category_name }}</td>
-                                            <td>{{ $row->subcategory_name ?? '-' }}</td>
                                             <td class="fw-bold">{{ number_format($row->total_quantity) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center">{{ trans('No data found for the selected filters') }}</td>
+                                            <td colspan="3" class="text-center py-4">{{ trans('No data found') }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -117,6 +132,8 @@
                     </div>
                 </div>
             </div>
+            @endforeach
+        </div>
         </div>
     </div>
 @endsection

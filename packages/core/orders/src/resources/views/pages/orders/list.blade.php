@@ -356,7 +356,7 @@
                                 <th class="text-center py-0" data-name="technical_date"> @lang('execute date')</th>
                                 <th class=" text-center py-0" data-name="technical_time"> @lang('execute time')</th>
                                 <th class="text-center py-0" data-name="total_price">@lang('order total')</th>
-                                <th class="text-center py-0" data-name="total_provider_invoice">@lang('provider total')</th>
+                                <th class="text-center py-0" data-name="total_cost">@lang('total cost')</th>
                                 <th class="text-center py-0" data-name="paid">@lang('paid')</th>
                                 <th class="text-center py-0" data-name="city_id">@lang('city')</th>
                                 <th class="text-center py-0" data-name="district_id">@lang('district')</th>

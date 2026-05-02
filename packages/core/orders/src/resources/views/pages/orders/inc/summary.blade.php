@@ -88,6 +88,22 @@
                         <th scope="row" class="p-2">{{ trans('total price') }}</th>
                         <td class="p-2">{{ number_format($order->total_price, 2) }}</td>
                     </tr>
+                    @if($order->wash_type == 'washer' || $order->wash_type == 'mixed')
+                    <tr>
+                        <th scope="row" class="p-2 text-primary">{{ trans('washer cost') }}</th>
+                        <td class="p-2 text-primary">{{ number_format($order->washer_cost, 2) }}</td>
+                    </tr>
+                    @endif
+                    @if($order->wash_type == 'lab' || $order->wash_type == 'mixed')
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('lab cost') }}</th>
+                        <td class="p-2 text-info">{{ number_format($order->lab_cost, 2) }}</td>
+                    </tr>
+                    @endif
+                    <tr>
+                        <th scope="row" class="p-2 text-danger">{{ trans('total cost') }}</th>
+                        <td class="p-2 text-danger fw-bold">{{ number_format($order->total_cost, 2) }}</td>
+                    </tr>
                     <tr>
                         <th scope="row" class="p-2">{{ trans('Payment Method') }}</th>
                         <td class="p-2">{{ trans($order->pay_type) }}</td>

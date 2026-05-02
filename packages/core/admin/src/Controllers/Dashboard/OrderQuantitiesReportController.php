@@ -51,7 +51,8 @@ class OrderQuantitiesReportController extends Controller
             'status' => $request->get('status'),
         ];
 
-        $reportData = $this->orderReportService->getOrderQuantitiesReport($filters);
+        $reportData = $this->orderReportService->getOrderQuantitiesReport($filters)->groupBy('wash_type');
+        $costsSummary = $this->orderReportService->getOrderCostsSummary($filters);
 
         return view('admin::pages.order-quantities-report', compact(
             'title',
@@ -60,6 +61,7 @@ class OrderQuantitiesReportController extends Controller
             'selectedClient',
             'statuses',
             'reportData',
+            'costsSummary',
             'filters'
         ));
     }
@@ -104,6 +106,7 @@ class OrderQuantitiesReportController extends Controller
     public function export(Request $request)
 
     {
+        $washType = $request->get('wash_type');
         $filters = [
             'from_date' => $request->get('from_date'),
             'to_date' => $request->get('to_date'),
@@ -111,11 +114,13 @@ class OrderQuantitiesReportController extends Controller
             'company_id' => $request->get('company_id'),
             'client_id' => $request->get('client_id'),
             'status' => $request->get('status'),
+            'wash_type' => $washType,
         ];
 
         $reportData = $this->orderReportService->getOrderQuantitiesReport($filters);
 
-        return Excel::download(new OrderQuantitiesExport($reportData), 'order-quantities-report.xlsx');
+        $filename = 'order-quantities-report' . ($washType ? '-' . $washType : '') . '.xlsx';
+        return Excel::download(new OrderQuantitiesExport($reportData), $filename);
     }
 }
 

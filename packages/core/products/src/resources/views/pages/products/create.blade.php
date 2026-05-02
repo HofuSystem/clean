@@ -64,6 +64,14 @@
                                 </select>
 
                             </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <label class="required" for="wash_type">{{ trans('wash type') }}</label>
+                                <select class="custom-select  form-select advance-select" name="wash_type" id="wash_type">
+                                    <option value="">{{ trans('select wash type') }}</option>
+                                    <option value="lab" @selected(isset($item) and $item->wash_type == 'lab')>{{ trans('lab') }}</option>
+                                    <option value="washer" @selected(isset($item) and $item->wash_type == 'washer')>{{ trans('washer') }}</option>
+                                </select>
+                            </div>
                             <div class="col-12 mt-5">
                                 <ul class="nav nav-tabs" id="languageTabs" role="tablist">
 

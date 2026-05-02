@@ -209,8 +209,8 @@
                                             <td class="text-center text-info" data-order="{{ $summary['total_delivery'] }}">
                                                 {{ number_format($summary['total_delivery'], 2) }} {{ trans('SAR') }}
                                             </td>
-                                            <td class="text-center text-danger" data-order="-{{ $summary['total_provider_invoice'] }}">
-                                                -{{ number_format($summary['total_provider_invoice'], 2) }} {{ trans('SAR') }}
+                                            <td class="text-center text-danger" data-order="-{{ $summary['total_cost'] }}">
+                                                -{{ number_format($summary['total_cost'], 2) }} {{ trans('SAR') }}
                                             </td>
                                             <td class="text-center text-danger" data-order="-{{ $summary['fixed_costs'] }}">
                                                 -{{ number_format($summary['fixed_costs'], 2) }} {{ trans('SAR') }}
@@ -247,7 +247,7 @@
                                                 {{ number_format(collect($monthlySummaries)->sum('total_delivery'), 2) }} {{ trans('SAR') }}
                                             </td>
                                             <td class="text-center text-danger">
-                                                {{ number_format(collect($monthlySummaries)->sum('total_provider_invoice'), 2) }} {{ trans('SAR') }}
+                                                {{ number_format(collect($monthlySummaries)->sum('total_cost'), 2) }} {{ trans('SAR') }}
                                             </td>
                                             <td class="text-center text-danger">
                                                 {{ number_format(collect($monthlySummaries)->sum('fixed_costs'), 2) }} {{ trans('SAR') }}

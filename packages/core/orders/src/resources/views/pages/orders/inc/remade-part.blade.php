@@ -97,6 +97,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                         <tr>
                             <th>{{ trans('operations') }}</th>
                             <th>{{ trans('product name') }}</th>
+                            <th>{{ trans('wash type') }}</th>
                             <th>{{ trans('sku') }}</th>
                             <th>{{ trans('category') }}</th>
                             <th>{{ trans('sub category') }}</th>
@@ -135,6 +136,11 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             <td>
                                 {{ $item?->product?->name ?? json_decode($item->product_data)->name }}
                             </td>
+                            <td>
+                                {{ trans($item?->wash_type ?? (isset(json_decode($item->product_data)->wash_type) ?
+                                json_decode($item->product_data)->wash_type : '')) }}
+                            </td>
+
                             <td>{{ $item?->product?->sku ?? (isset(json_decode($item->product_data)->sku) ?
                                 json_decode($item->product_data)->sku : '') }}
                             </td>

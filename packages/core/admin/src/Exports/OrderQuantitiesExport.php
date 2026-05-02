@@ -27,6 +27,7 @@ class OrderQuantitiesExport implements FromCollection, WithHeadings, WithMapping
             trans('Product Name'),
             trans('Category'),
             trans('Subcategory'),
+            trans('wash_type'),
             trans('Total Quantity'),
         ];
     }
@@ -38,6 +39,7 @@ class OrderQuantitiesExport implements FromCollection, WithHeadings, WithMapping
             $row->product_name,
             $row->category_name,
             $row->subcategory_name ?? '-',
+            trans($row->wash_type),
             $row->total_quantity,
         ];
     }
