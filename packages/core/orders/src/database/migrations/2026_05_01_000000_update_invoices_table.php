@@ -11,10 +11,18 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->double('subtotal')->nullable()->after('vat_amount');
-            $table->double('total_coupon')->nullable()->after('vat_amount');
-            $table->double('delivery_price')->nullable()->after('vat_amount');
-            $table->double('total_price')->nullable()->after('vat_amount');
+            if(!Schema::hasColumn('invoices','subtotal')){
+                $table->double('subtotal')->nullable()->after('vat_amount');
+            }
+            if(!Schema::hasColumn('invoices','subtotal')){
+                $table->double('total_coupon')->nullable()->after('vat_amount');
+            }
+            if(!Schema::hasColumn('invoices','subtotal')){
+                $table->double('delivery_price')->nullable()->after('vat_amount');
+            }
+            if(!Schema::hasColumn('invoices','subtotal')){
+                $table->double('total_price')->nullable()->after('vat_amount');
+            }
         });
     }
 
