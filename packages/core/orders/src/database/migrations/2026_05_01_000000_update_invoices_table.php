@@ -14,13 +14,13 @@ return new class extends Migration {
             if(!Schema::hasColumn('invoices','subtotal')){
                 $table->double('subtotal')->nullable()->after('vat_amount');
             }
-            if(!Schema::hasColumn('invoices','subtotal')){
+            if(!Schema::hasColumn('invoices','total_coupon')){
                 $table->double('total_coupon')->nullable()->after('vat_amount');
             }
-            if(!Schema::hasColumn('invoices','subtotal')){
+            if(!Schema::hasColumn('invoices','delivery_price')){
                 $table->double('delivery_price')->nullable()->after('vat_amount');
             }
-            if(!Schema::hasColumn('invoices','subtotal')){
+            if(!Schema::hasColumn('invoices','total_price')){
                 $table->double('total_price')->nullable()->after('vat_amount');
             }
         });
