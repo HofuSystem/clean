@@ -170,4 +170,13 @@ class OrderHelper
         }
         return $statusSpan;
     }
+    public static function getLocalizedMoreData($order,$key,$lang = null)
+    {
+        $data = json_decode($order->moreDatas->where('key', $key)->first()?->value);
+        if ($data) {
+            $lang = $lang ? $lang : app()->getLocale();
+            return $data->{'name_' . $lang} ?? ($data->name ?? null);
+        }
+        return null;
+    }
 }

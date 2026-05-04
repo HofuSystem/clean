@@ -20,7 +20,56 @@ class InvoiceService
     /**
      * Update or Create invoice for an order.
      */
-    public function generateInvoice(int $orderId, $customDate = null): ?Invoice
+    public function fixInvoice(int $invoiceId, $customDate = null)
+    {
+        $invoice = Invoice::where('fixed', 0)->where('id',$invoiceId)->first();
+        if (! $invoice) {
+            return null;
+        }
+        $order = $invoice->order;
+        
+
+        // 1. Calculate values based on items
+        $subtotal       = $order->order_price;
+        $deliveryPrice  = $order->delivery_price;
+        $couponValue    = $order->total_coupon;
+        $totalPrice     = $order->total_price;
+        $vatRate        = 0.15;
+        $vatAmount      = $order->total_price * $vatRate;
+
+        // 2. Identify Type (B2B/B2C)
+        $taxNumber = $order->company;
+        $type = $taxNumber ? 'B2B' : 'B2C';
+
+      
+        // 4. Seller Details (from settings)
+        $sellerName = SettingsService::getDataBaseSetting('name_en') ?: 'CleanStation';
+        $sellerVat = SettingsService::getDataBaseSetting('tax_tax_number') ?: '300000000000003';
+
+        // 5. Generate QR Code
+        $timestamp = $order->created_at?->toIso8601String();
+        $tlvBase64 = $this->zatcaService->generateTlvString(
+            $sellerName,
+            $sellerVat,
+            $timestamp,
+            $totalPrice,
+            $vatAmount
+        );
+
+        $invoice->update([
+            'type'              => $type,
+            'subtotal'          => $subtotal,
+            'vat_amount'        => number_format($vatAmount, 2, '.', ''),
+            'delivery_price'    => $deliveryPrice,
+            'total_coupon'      => $couponValue,
+            'total_price'       => $totalPrice,
+            'qr_code'           => $tlvBase64,
+            'fixed'             => 1,
+        ]);
+
+        return $invoice;
+    }
+     public function generateInvoice(int $orderId, $customDate = null): ?Invoice
     {
         $order = Order::find($orderId);
         if (! $order) {
@@ -40,20 +89,15 @@ class InvoiceService
         }
 
         // 1. Calculate values based on items
-        $subtotal = 0;
-        $vatAmount = 0;
-        $vatRate = 0.15;
+        $subtotal       = $order->order_price;
+        $deliveryPrice  = $order->delivery_price;
+        $couponValue    = $order->total_coupon;
+        $totalPrice     = $order->total_price;
+        $vatRate        = 0.15;
+        $vatAmount      = $order->total_price * $vatRate;
 
-        foreach ($order->items as $item) {
-            $itemTotal = (float) $item->total_price;
-            $itemSub = $itemTotal / (1 + $vatRate);
-            $itemVat = $itemTotal - $itemSub;
+      
 
-            $subtotal += $itemSub;
-            $vatAmount += $itemVat;
-        }
-
-        $total = $subtotal + $vatAmount;
 
         // 2. Identify Type (B2B/B2C)
         $taxNumber = $order->company;
@@ -82,7 +126,7 @@ class InvoiceService
             $sellerName,
             $sellerVat,
             $timestamp,
-            $total,
+            $totalPrice,
             $vatAmount
         );
         $date = isset($customDate) ? $customDate : now();
@@ -91,13 +135,15 @@ class InvoiceService
         return Invoice::updateOrCreate(
             ['order_id' => $order->id],
             [
-                'invoice_number' => $invoiceNumber,
-                'type' => $type,
-                'subtotal' => number_format($subtotal, 2, '.', ''),
-                'vat_amount' => number_format($vatAmount, 2, '.', ''),
-                'total' => number_format($total, 2, '.', ''),
-                'qr_code' => $tlvBase64,
-                'filed_at' => $customDate ?? now(),
+                'invoice_number'    => $invoiceNumber,
+                'type'              => $type,
+                'subtotal'          => number_format($subtotal, 2, '.', ''),
+                'vat_amount'        => number_format($vatAmount, 2, '.', ''),
+                'delivery_price'    => $deliveryPrice,
+                'total_coupon'      => $couponValue,
+                'total_price'       => $totalPrice,
+                'qr_code'           => $tlvBase64,
+                'filed_at'          => $customDate ?? now(),
             ]
         );
     }

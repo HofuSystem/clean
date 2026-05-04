@@ -22,10 +22,10 @@ class OrderDetailsWithOutItemsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $nationality      = $this->getLocalizedMoreData('nationality_data');
-        $contractDuration = $this->getLocalizedMoreData('contract_duration_data');
-        $workerCount      = $this->getLocalizedMoreData('worker_count_data');
-        $hoursCount       = $this->getLocalizedMoreData('hours_count_data');
+        $nationality      = OrderHelper::getLocalizedMoreData($this,'nationality_data');
+        $contractDuration = OrderHelper::getLocalizedMoreData($this,'contract_duration_data');
+        $workerCount      = OrderHelper::getLocalizedMoreData($this,'worker_count_data');
+        $hoursCount       = OrderHelper::getLocalizedMoreData($this,'hours_count_data');
         $serviceData      = json_decode($this->moreDatas->where('key','service_data')->first()?->value);
         if(CategoryOffer::where('id',$serviceData?->id)->exists()){
             $workerCount = $serviceData?->workers_num;
@@ -67,17 +67,16 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'nots'                      =>  $this->desc,
 
 
-            'service'                   => $this->getLocalizedMoreData('service_data'),
-            
-            'service_type'              => $this->getLocalizedMoreData('service_type_data'),
-            'uniform'                   => $this->getLocalizedMoreData('uniform_data'),
+            'service'                   => OrderHelper::getLocalizedMoreData($this,'service_data'),
+            'service_type'              => OrderHelper::getLocalizedMoreData($this,'service_type_data'),
+            'uniform'                   => OrderHelper::getLocalizedMoreData($this,'uniform_data'),
             'nationality'               => $nationality,
             'worker_count'              => $workerCount,
             'contract_duration'         => $contractDuration,
             'hours_count'               => $hoursCount,
-            'period'                    => $this->getLocalizedMoreData('period_data'),
-            'duration'                  => $this->getLocalizedMoreData('duration_data'),
-            'additional'                => $this->getLocalizedMoreData('additional_data'),
+            'period'                    => OrderHelper::getLocalizedMoreData($this,'period_data'),
+            'duration'                  => OrderHelper::getLocalizedMoreData($this,'duration_data'),
+            'additional'                => OrderHelper::getLocalizedMoreData($this,'additional_data'),
             'days_per_week'             => $this->days_per_week,
             'days_per_week_names'       => $this->days_per_week_names  ? json_decode($this->days_per_week_names) : [],
             'days_per_month_dates'      => $this->days_per_month_dates  ? json_decode($this->days_per_month_dates) : [],
@@ -101,13 +100,5 @@ class OrderDetailsWithOutItemsResource extends JsonResource
         ];
     }
 
-    private function getLocalizedMoreData($key)
-    {
-        $data = json_decode($this->moreDatas->where('key', $key)->first()?->value);
-        if ($data) {
-            $lang = app()->getLocale();
-            return $data->{'name_' . $lang} ?? ($data->name ?? null);
-        }
-        return null;
-    }
+ 
 }

@@ -18,9 +18,12 @@ class Invoice extends CoreModel
         'type',
         'subtotal',
         'vat_amount',
-        'total',
+        'delivery_price',
+        'total_coupon',
+        'total_price',
         'filed_at',
         'qr_code',
+        'fixed',
     ];
 
     /**

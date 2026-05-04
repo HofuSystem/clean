@@ -149,9 +149,19 @@
                 <td>ضريبة القيمة المضافة (15%)</td>
                 <td style="text-align: left;">{{ number_format($invoice->vat_amount, 2) }} ر.س</td>
             </tr>
+            <tr>
+                <td>سعر التوصيل</td>
+                <td style="text-align: left;">{{ number_format($invoice->delivery_price, 2) }} ر.س</td>
+            </tr>
+            @if($invoice->total_coupon > 0)
+            <tr>
+                <td>إجمالي الخصم</td>
+                <td style="text-align: left;">-{{ number_format($invoice->total_coupon, 2) }} ر.س</td>
+            </tr>
+            @endif
             <tr class="grand-total">
                 <td><strong>الإجمالي (شامل ضريبة القيمة المضافة)</strong></td>
-                <td style="text-align: left;"><strong>{{ number_format($invoice->total, 2) }} ر.س</strong></td>
+                <td style="text-align: left;"><strong>{{ number_format($invoice->total_price, 2) }} ر.س</strong></td>
             </tr>
         </table>
     </div>

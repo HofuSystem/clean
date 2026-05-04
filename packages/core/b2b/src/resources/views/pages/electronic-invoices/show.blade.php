@@ -289,9 +289,9 @@
                 <div class="text-right">
                     <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">
                         @if($invoice->type == 'B2C')
-                        SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
+                            SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
                         @else
-                        TAX INVOICE | فاتورة ضريبية
+                            TAX INVOICE | فاتورة ضريبية
                         @endif
                     </h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
@@ -322,26 +322,26 @@
             <div class="flex justify-between gap-4 mb-8 text-right">
                 <div class="w-1/2">
                     @php
-                    $sellerName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?:
-                    'CleanStation';
-                    $sellerNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين
-                    ستيشن';
-                    $sellerVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_tax_number') ?: '—';
-                    $sellerCrn =
-                    \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_commercial_registration') ?: '—';
-                    $sellerStreet = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_street_name') ?:
-                    '';
-                    $sellerBuilding = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_building_no') ?:
-                    '';
-                    $sellerDistrictId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_district');
-                    $sellerCityId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_city');
-                    $sellerPostal = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_postal_code') ?:
-                    '';
-                    $sellerAdditional =
-                    \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_additional_number') ?: '';
-                    $sellerCity = $sellerCityId ? \Core\Info\Models\City::find($sellerCityId)?->name : '';
-                    $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name :
-                    '';
+                        $sellerName = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_en') ?:
+                            'CleanStation';
+                        $sellerNameAr = \Core\Settings\Services\SettingsService::getDataBaseSetting('name_ar') ?: 'كلين
+                                            ستيشن';
+                        $sellerVat = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_tax_number') ?: '—';
+                        $sellerCrn =
+                            \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_commercial_registration') ?: '—';
+                        $sellerStreet = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_street_name') ?:
+                            '';
+                        $sellerBuilding = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_building_no') ?:
+                            '';
+                        $sellerDistrictId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_district');
+                        $sellerCityId = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_city');
+                        $sellerPostal = \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_postal_code') ?:
+                            '';
+                        $sellerAdditional =
+                            \Core\Settings\Services\SettingsService::getDataBaseSetting('tax_additional_number') ?: '';
+                        $sellerCity = $sellerCityId ? \Core\Info\Models\City::find($sellerCityId)?->name : '';
+                        $sellerDistrict = $sellerDistrictId ? \Core\Info\Models\District::find($sellerDistrictId)?->name :
+                            '';
                     @endphp
                     <table class="w-full border-collapse border border-gray-300 text-[11px]">
                         <tr>
@@ -395,71 +395,71 @@
 
                 <div class="w-1/2">
                     @if($invoice->type !== 'B2C' && $invoice->order?->company)
-                    <table class="w-full border-collapse border border-gray-300 text-[11px]">
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold w-1/3">Account Name En:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_en ?: '—'
-                                }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Account Arabic Name:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_ar ?:
-                                $invoice->order->company->fullname }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">CR No:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->commercial_registration
-                                ?: '—' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">VAT No:</th>
-                            <td class="border border-gray-300 p-1 font-semibold">{{ $invoice->order->company->tax_number
-                                ?: '—' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Building No - رقم المبنى:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->building_no ?: '—' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Street Name - اسم الشارع:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->street_name ?: '—' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">District - الحي:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->district ?
-                                $invoice->order->company->district->name : '—' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">City - المدينة:</th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->city ?
-                                $invoice->order->company->city->name : '—' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Postal Code - الرمز البريدي:
-                            </th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->postal_code ?: '—' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Additional No - الرقم الإضافي:
-                            </th>
-                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->additional_number ?: '—'
-                                }}</td>
-                        </tr>
-                        <tr>
-                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Country - البلد:</th>
-                            <td class="border border-gray-300 p-1">Saudi Arabia - المملكة العربية السعودية</td>
-                        </tr>
-                    </table>
+                                    <table class="w-full border-collapse border border-gray-300 text-[11px]">
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold w-1/3">Account Name En:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_en ?: '—'
+                                                }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Account Arabic Name:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->name_ar ?:
+                        $invoice->order->company->fullname }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">CR No:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->commercial_registration
+                        ?: '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">VAT No:</th>
+                                            <td class="border border-gray-300 p-1 font-semibold">{{ $invoice->order->company->tax_number
+                        ?: '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Building No - رقم المبنى:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->building_no ?: '—' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Street Name - اسم الشارع:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->street_name ?: '—' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">District - الحي:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->district ?
+                        $invoice->order->company->district->name : '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">City - المدينة:</th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->city ?
+                        $invoice->order->company->city->name : '—' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Postal Code - الرمز البريدي:
+                                            </th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->postal_code ?: '—' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Additional No - الرقم الإضافي:
+                                            </th>
+                                            <td class="border border-gray-300 p-1">{{ $invoice->order->company->additional_number ?: '—'
+                                                }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="border border-gray-300 bg-gray-50 p-1 font-bold">Country - البلد:</th>
+                                            <td class="border border-gray-300 p-1">Saudi Arabia - المملكة العربية السعودية</td>
+                                        </tr>
+                                    </table>
                     @else
-                    <div class="p-4 border border-gray-300 rounded-lg">
-                        <h3 class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-2">Account Arabic
-                            Name:</h3>
-                        <p class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
-                        <p class="text-sm text-gray-500 mt-2">{{ $invoice->order?->client?->address }}</p>
-                    </div>
+                        <div class="p-4 border border-gray-300 rounded-lg">
+                            <h3 class="text-[10px] font-bold text-[#00AEEF] uppercase tracking-wider mb-2">Account Arabic
+                                Name:</h3>
+                            <p class="font-bold text-base leading-tight">{{ $invoice->order?->client?->fullname }}</p>
+                            <p class="text-sm text-gray-500 mt-2">{{ $invoice->order?->client?->address }}</p>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -485,73 +485,180 @@
                             </tr>
                         </thead>
                         @php
-                        $totalBeforeTax = 0;
-                        $totalTax = 0;
-                        $total = 0;
+                            $totalBeforeTax = 0;
+                            $totalTax = 0;
+                            $total = 0;
                         @endphp
                         <tbody class="text-sm text-gray-700">
+
                             @foreach($invoice?->order?->items ?? [] as $index => $item)
-                            @php
-                            $price = $item->product_price;
-                            $tax = (15 * $price / 100);
-                            $beforeTax = $price - $tax;
-                            $totalBeforeTax += $beforeTax * $item->quantity;
-                            $totalTax += $tax * $item->quantity;
-                            $total += $price * $item->quantity;
-                            @endphp
-                            <tr
-                                class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
-                                <td class="px-2 text-right font-bold text-gray-400">{{ $index + 1 }}</td>
-                                <td class="px-2 text-right font-semibold leading-tight">
-                                    <div contenteditable="true">{{ $item->product?->translate('ar')->name . ' ' .
-                                        $item->product?->translate('en')->name }}</div>
-                                    <div class="text-gray-400 text-[10px]">{{ $item->product?->translate('en')->name ??
-                                        $item->product?->sku ?? '' }}</div>
-                                </td>
-                                <td class="px-2 text-center text-gray-500">
-                                    <span contenteditable="true" class="qty font-semibold">{{ $item->quantity }}</span>
-                                </td>
-                                <td class="px-2 text-center">
-                                    <span contenteditable="true" class="base-price font-semibold">{{
-                                        number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
-                                    <span class="text-[10px]">ر.س</span>
-                                </td>
-                                <td class="px-2 text-center text-red-500">
-                                    <span contenteditable="true" class="discount font-semibold">{{number_format($tax *
-                                        $item->quantity, 2, '.', '')}}</span> ر.س
-                                </td>
-                                <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
-                                    <span class="final-price text-base">{{ number_format($price * $item->quantity, 2,
-                                        '.', '') }}</span>
-                                    <span class="text-[10px]">ر.س</span>
-                                </td>
-                            </tr>
+                                    @php
+                                        $price = $item->product_price;
+                                        $tax = (15 * $price / 100);
+                                        $beforeTax = $price - $tax;
+                                        $totalBeforeTax += $beforeTax * $item->quantity;
+                                        $totalTax += $tax * $item->quantity;
+                                        $total += $price * $item->quantity;
+                                    @endphp
+                                    <tr
+                                        class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
+                                        <td class="px-2 text-right font-bold text-gray-400">{{ $index + 1 }}</td>
+                                        <td class="px-2 text-right font-semibold leading-tight">
+                                            <div contenteditable="true">{{ $item->product?->translate('ar')->name . ' ' .$item->product?->translate('en')->name }}</div>
+                                            <div class="text-gray-400 text-[10px]">{{ $item->product?->translate('en')->name ??$item->product?->sku ?? '' }}</div>
+                                        </td>
+                                        <td class="px-2 text-center text-gray-500">
+                                            <span contenteditable="true" class="qty font-semibold">{{ $item->quantity }}</span>
+                                        </td>
+                                        <td class="px-2 text-center">
+                                            <span contenteditable="true" class="base-price font-semibold">{{number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                        <td class="px-2 text-center text-red-500">
+                                            <span contenteditable="true" class="discount font-semibold">{{number_format($tax * $item->quantity, 2, '.', '')}}</span> ر.س
+                                        </td>
+                                        <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
+                                            <span class="final-price text-base">{{ number_format($price * $item->quantity, 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                    </tr>
                             @endforeach
+                             @if (str_starts_with($invoice->order->type,'maid'))
+                             @php
+                                $nationality      = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'nationality_data','ar');
+                                $contractDuration = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'contract_duration_data','ar');
+                                $workerCount      = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'worker_count_data','ar');
+                                $hoursCount       = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'hours_count_data','ar');
+                                $period           = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'period_data','ar');
+                                $duration         = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'duration_data','ar');
+                                $additional       = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'additional_data','ar');
+                                $service          = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'service_data','ar');
+                                $service_type     = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'service_type_data','ar');
+                                $uniform          = \Core\Orders\Helpers\OrderHelper::getLocalizedMoreData($invoice->order,'uniform_data','ar');
+                                $details = [];
+                                if (!empty($service)) {
+                                    $details[] = "الخدمة: $service";
+                                }
+
+                                if (!empty($service_type)) {
+                                    $details[] = "نوع الخدمة: $service_type";
+                                }
+
+                                if (!empty($nationality)) {
+                                    $details[] = "الجنسية: $nationality";
+                                }
+
+                                if (!empty($workerCount)) {
+                                    $details[] = "عدد العمال: $workerCount";
+                                }
+
+                                if (!empty($hoursCount)) {
+                                    $details[] = "عدد الساعات: $hoursCount";
+                                }
+
+                                if (!empty($period)) {
+                                    $details[] = "الفترة: $period";
+                                }
+
+                                if (!empty($duration)) {
+                                    $details[] = "المدة: $duration";
+                                }
+
+                                if (!empty($contractDuration)) {
+                                    $details[] = "مدة العقد: $contractDuration";
+                                }
+
+                                if (!empty($uniform)) {
+                                    $details[] = "الزي: $uniform";
+                                }
+
+                                if (!empty($additional)) {
+                                    $details[] = "إضافات: $additional";
+                                }
+
+                                // Final sentence
+                                $orderDetailsText = implode(' - ', $details);
+
+                             @endphp
+                             <tr
+                                        class="inv-row border-b border-gray-200 hover:bg-gray-50 transition bg-gray-50/50">
+                                        <td class="px-2 text-right font-bold text-gray-400">1</td>
+                                        <td class="px-2 text-right font-semibold leading-tight">
+                                            <div contenteditable="true">{{ $orderDetailsText  }}</div>
+                                        </td>
+                                        <td class="px-2 text-center text-gray-500">
+                                            <span contenteditable="true" class="qty font-semibold">1</span>
+                                        </td>
+                                        <td class="px-2 text-center">
+                                            <span contenteditable="true" class="base-price font-semibold">-{{ number_format($invoice->subtotal - ($invoice->subtotal *0.15), 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                        <td class="px-2 text-center text-red-500">
+                                            <span contenteditable="true" class="discount font-semibold">{{number_format($invoice->subtotal *0.15, 2, '.', '')}}</span> ر.س
+                                        </td>
+                                        <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
+                                            <span class="final-price text-base"> {{ number_format($invoice->subtotal, 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                    </tr>
+                            @endif
+                            @if ($invoice->total_coupon)
+                             <tr
+                                        class="inv-row border-b border-gray-200 hover:bg-gray-50 transition bg-gray-50/50">
+                                        <td class="px-2 text-right font-bold text-gray-400">#</td>
+                                        <td class="px-2 text-right font-semibold leading-tight">
+                                            <div contenteditable="true">{{ __('discount value',[],'ar')  }}</div>
+                                        </td>
+                                        <td class="px-2 text-center text-gray-500">
+                                            <span contenteditable="true" class="qty font-semibold">1</span>
+                                        </td>
+                                        <td class="px-2 text-center">
+                                            <span contenteditable="true" class="base-price font-semibold">-{{ number_format($invoice->total_coupon, 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                        <td class="px-2 text-center text-red-500">
+                                            <span contenteditable="true" class="discount font-semibold">{{number_format(0, 2, '.', '')}}</span> ر.س
+                                        </td>
+                                        <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
+                                            <span class="final-price text-base">- {{ number_format($invoice->total_coupon, 2, '.', '') }}</span>
+                                            <span class="text-[10px]">ر.س</span>
+                                        </td>
+                                    </tr>
+                            @endif
                         </tbody>
                         <tfoot class="border-t-2 border-gray-800 text-sm">
                             <tr>
                                 <td colspan="5" class="py-1 px-3 text-left font-semibold text-gray-600"
-                                    id="sub-total-label">المجموع الفرعي (غير شامل الضريبة) | Subtotal:</td>
-                                <td class="py-1 px-3 text-center font-bold text-gray-700"><span id="sub-total">{{
-                                        number_format($totalBeforeTax, 2, '.', '') }}</span> <span
+                                    id="sub-total-label">مجموع البنود باستثناء ضريبة القيمة المضافة</td>
+                                <td class="py-1 px-3 text-center font-bold text-gray-700"><span id="sub-total">{{number_format($invoice->subtotal - $invoice->total_coupon - $invoice->vat_amount, 2, '.', '') }}</span> <span
                                         class="text-[10px]">ر.س</span></td>
+                            </tr>
+                             <tr id="vat-row">
+                                <td colspan="5"
+                                    class="py-1 px-3 text-left font-semibold text-gray-600 border-t border-gray-200">
+                                    رسوم التوصيل باستثناء ضريبة القيمة المضافة </td>
+                                <td class="py-1 px-3 text-center font-bold  border-t border-gray-200">
+                                    <span id="vat-amount">{{ number_format($invoice->delivery_price - ($invoice->delivery_price * 0.15), 2, '.', '') }}</span> <span
+                                        class="text-[10px]">ر.س</span>
+                                </td>
                             </tr>
                             <tr id="vat-row">
                                 <td colspan="5"
                                     class="py-1 px-3 text-left font-semibold text-gray-600 border-t border-gray-200">
-                                    ضريبة القيمة المضافة (15%) | VAT 15%:</td>
-                                <td class="py-1 px-3 text-center font-bold text-red-500 border-t border-gray-200">+
-                                    <span id="vat-amount">{{ number_format($totalTax, 2, '.', '') }}</span> <span
+                                    يشمل ضريبة قيمة مضافة (15%)  %</td>
+                                <td class="py-1 px-3 text-center font-bold  border-t border-gray-200">
+                                    <span id="vat-amount">{{ number_format($invoice->vat_amount, 2, '.', '') }}</span> <span
                                         class="text-[10px]">ر.س</span>
                                 </td>
                             </tr>
+                           
                             <tr class="bg-[#00AEEF]/10">
                                 <td colspan="5"
                                     class="py-2 px-3 text-left font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF]">
                                     الإجمالي النهائي المستحق | Grand Total:</td>
                                 <td
                                     class="py-2 px-3 text-center font-extrabold text-[#00AEEF] border-t-2 border-[#00AEEF] text-lg">
-                                    <span id="grand-total">{{ number_format($total, 2, '.', '') }}</span> <span
+                                    <span id="grand-total">{{ number_format($invoice->total_price, 2, '.', '') }}</span> <span
                                         class="text-[10px]">ر.س</span>
                                 </td>
                             </tr>
