@@ -9,6 +9,7 @@ use Core\B2B\Models\CompanyBranch;
 use Core\B2B\Requests\FrontEnd\UserProfileRequest;
 use Core\Categories\Models\Category;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Core\B2B\Requests\FrontEnd\OrderRequest;
 use Core\B2B\Requests\FrontEnd\PasswordRequest;
 use Core\B2B\Requests\FrontEnd\ProfileRequest;
@@ -294,7 +295,7 @@ class DashboardController extends Controller
                 'id'           => $invoice->id,
                 'reference_id' => $invoice->invoice_number,
                 'note'         => $invoice->order?->b2b_financial_note,
-                'date'         => $invoice->created_at->format('Y-m-d'),
+                'date'         => Carbon::parse($invoice->filed_at)->format('Y-m-d'),
                 'debtor'       => $invoice->total,
                 'creditor'     => 0,
                 'type'         => 'invoice',
