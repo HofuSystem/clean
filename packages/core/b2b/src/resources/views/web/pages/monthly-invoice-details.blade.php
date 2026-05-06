@@ -19,17 +19,7 @@
             color-adjust: exact;
         }
 
-        [contenteditable="true"] {
-            outline: none;
-            transition: all 0.2s;
-            border-radius: 4px;
-        }
 
-        [contenteditable="true"]:hover,
-        [contenteditable="true"]:focus {
-            background-color: #f0f9ff;
-            box-shadow: 0 0 0 2px #bae6fd;
-        }
 
         .stat-table th,
         .stat-table td {
@@ -82,10 +72,7 @@
                 max-width: none !important;
             }
 
-            [contenteditable="true"] {
-                box-shadow: none !important;
-                background-color: transparent !important;
-            }
+
 
             .mb-8 { margin-bottom: 0.5rem !important; }
             .mb-6 { margin-bottom: 0.25rem !important; }
@@ -202,17 +189,17 @@
 
             <div class="flex justify-between items-start border-b-2 border-gray-100 pb-3 mb-4 relative z-10">
                 <div class="text-right">
-                    <h2 contenteditable="true" class="text-xl font-bold text-gray-800 mb-2">{{ trans('client.statement_of_account') }}</h2>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">{{ trans('client.statement_of_account') }}</h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
-                        <div><span class="font-semibold text-gray-800">{{ trans('client.period') }}:</span> <span contenteditable="true" class="text-blue-700 font-bold">{{ $monthName }} {{ $year }}</span></div>
+                        <div><span class="font-semibold text-gray-800">{{ trans('client.period') }}:</span> <span class="text-blue-700 font-bold">{{ $monthName }} {{ $year }}</span></div>
                         <div><span class="text-gray-300">|</span></div>
-                        <div><span class="font-semibold text-gray-800">{{ trans('client.date') }}:</span> <span contenteditable="true" class="auto-date"></span></div>
+                        <div><span class="font-semibold text-gray-800">{{ trans('client.date') }}:</span> <span class="auto-date"></span></div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4 header-logos">
                     <div class="flex flex-col justify-center items-center mt-1">
-                        <span contenteditable="true" class="text-[8px] text-gray-400 font-bold mb-0 tracking-wider whitespace-nowrap">{{ trans('client.powered_by') }}</span>
+                        <span class="text-[8px] text-gray-400 font-bold mb-0 tracking-wider whitespace-nowrap">{{ trans('client.powered_by') }}</span>
                         <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="شعار الشركة الأم" class="h-7 w-auto object-contain opacity-80">
                     </div>
                     <div class="h-10 border-r-2 border-gray-200"></div>
@@ -224,14 +211,14 @@
             <div class="compact-info-bar bg-gray-50 border border-gray-100 rounded-lg p-3 mb-4 flex flex-wrap justify-between items-center text-sm shadow-sm">
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.customer_name') }}</span>
-                    <span contenteditable="true" class="font-bold text-gray-800 text-[13px]">{{ $company->fullname }}</span>
+                    <span class="font-bold text-gray-800 text-[13px]">{{ $company->fullname }}</span>
                 </div>
 
                 <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.mobile_number') }}</span>
-                    <span contenteditable="true" class="font-semibold text-gray-800 text-[13px]" dir="ltr">{{ $company->phone }}</span>
+                    <span class="font-semibold text-gray-800 text-[13px]" dir="ltr">{{ $company->phone }}</span>
                 </div>
 
                 <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
@@ -241,21 +228,21 @@
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.payment_method') }}</span>
-                    <span contenteditable="true" class="font-bold text-blue-700 bg-blue-100/50 px-2 py-0.5 rounded text-[11px] mt-0.5">{{ trans('client.monthly_contract') }}</span>
+                    <span class="font-bold text-blue-700 bg-blue-100/50 px-2 py-0.5 rounded text-[11px] mt-0.5">{{ trans('client.monthly_contract') }}</span>
                 </div>
 
                 <div class="info-divider w-px h-8 bg-gray-200 hidden md:block"></div>
 
                 <div class="flex flex-col">
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">{{ trans('client.total_balance_due') }}</span>
-                    <span contenteditable="true" class="font-bold text-red-600 text-[14px] mt-0.5" id="header-total-due">{{$totalAmount}} {{ trans('client.sar') }}</span>
+                    <span class="font-bold text-red-600 text-[14px] mt-0.5" id="header-total-due">{{$totalAmount}} {{ trans('client.sar') }}</span>
                 </div>
             </div>
 
             <!-- جدول كشف الحساب -->
             <div class="mb-4 relative">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 contenteditable="true" class="text-base font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">{{ trans('client.statement_details') }}</h3>
+                    <h3 class="text-base font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">{{ trans('client.statement_details') }}</h3>
                 </div>
 
                 <div class="overflow-x-visible">
@@ -279,18 +266,18 @@
                                     $totalAmountCredit += $item->creditor - $item->debtor;
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition stat-row">
-                                    <td contenteditable="true" dir="ltr">
+                                    <td dir="ltr">
                                         @if(isset($item->url))
                                             <a href="{{ $item->url }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition font-bold">{{ $item->reference_id }}</a>
                                         @else
                                             {{ $item->reference_id }}
                                         @endif
                                     </td>
-                                    <td contenteditable="true" dir="ltr">{{ $item->note }}</td>
-                                    <td contenteditable="true" dir="ltr">{{ $item->date }}</td>
-                                    <td contenteditable="true">{{ $item->debtor }}</td>
-                                    <td contenteditable="true">{{ $item->creditor }}</td>
-                                    <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">{{ $totalAmountCredit ?? 0 }}</span></td>
+                                    <td dir="ltr">{{ $item->note }}</td>
+                                    <td dir="ltr">{{ $item->date }}</td>
+                                    <td>{{ $item->debtor }}</td>
+                                    <td>{{ $item->creditor }}</td>
+                                    <td class="font-bold text-gray-900 bg-gray-100"><span class="stat-final">{{ $totalAmountCredit ?? 0 }}</span></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -309,12 +296,12 @@
             <!-- معلومات الدفع -->
             <div class="flex justify-between gap-4 mt-6">
                 <div class="w-full bg-gray-50 border border-gray-200 p-3 rounded-lg">
-                    <h3 contenteditable="true" class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-400 inline-block pb-1">{{ trans('client.payment_details') }}</h3>
+                    <h3 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-400 inline-block pb-1">{{ trans('client.payment_details') }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-700">
-                        <div><strong class="text-gray-800">{{ trans('client.beneficiary') }}:</strong> <span contenteditable="true" class="font-bold">{{ trans('client.hofo_system_company') }} (HOFU SYSTEM COMPANY)</span></div>
-                        <div><strong class="text-gray-800">{{ trans('client.bank') }}:</strong> <span contenteditable="true" class="font-bold">بنك الرياض</span></div>
-                        <div><strong class="text-gray-800">{{ trans('client.current_account_number') }}:</strong> <span contenteditable="true" class="font-bold">2582503809940</span></div>
-                        <div><strong class="text-gray-800">{{ trans('client.iban') }}:</strong> <span contenteditable="true" class="font-bold" dir="ltr">SA30 2000 0002 5825 0380 9940</span></div>
+                        <div><strong class="text-gray-800">{{ trans('client.beneficiary') }}:</strong> <span class="font-bold">{{ trans('client.hofo_system_company') }} (HOFU SYSTEM COMPANY)</span></div>
+                        <div><strong class="text-gray-800">{{ trans('client.bank') }}:</strong> <span class="font-bold">بنك الرياض</span></div>
+                        <div><strong class="text-gray-800">{{ trans('client.current_account_number') }}:</strong> <span class="font-bold">2582503809940</span></div>
+                        <div><strong class="text-gray-800">{{ trans('client.iban') }}:</strong> <span class="font-bold" dir="ltr">SA30 2000 0002 5825 0380 9940</span></div>
                     </div>
                 </div>
             </div>
@@ -322,19 +309,19 @@
             <!-- التوقيع -->
             <div class="flex justify-between pt-6 mt-4 border-t-2 border-gray-100 signature-area">
                 <div class="w-1/2 text-center pr-2">
-                    <h4 contenteditable="true" class="font-bold text-gray-800 text-[11px] mb-1">{{ trans('client.stamp') }}</h4>
+                    <h4 class="font-bold text-gray-800 text-[11px] mb-1">{{ trans('client.stamp') }}</h4>
                     <div class="relative h-20 mt-6 w-1/2 mx-auto flex justify-center items-end border-b border-dashed border-gray-300 mb-1 stamp-container">
                         <img src="https://i.postimg.cc/cLmC5rHf/Adobe-Express-file.png" alt="ختم هوفو سيستم" class="h-36 w-auto absolute bottom-[-30px] pointer-events-none mix-blend-multiply opacity-90 -rotate-6 stamp-img">
                     </div>
-                    <p contenteditable="true" class="text-[10px] text-gray-500 mt-1">{{ trans('client.hofo_system_company') }}</p>
+                    <p class="text-[10px] text-gray-500 mt-1">{{ trans('client.hofo_system_company') }}</p>
                 </div>
 
                 <div class="w-1/2 text-center pl-2 border-r border-gray-100">
-                    <h4 contenteditable="true" class="font-bold text-gray-800 text-[11px] mb-1">{{ trans('client.customer_confirmation') }}</h4>
+                    <h4 class="font-bold text-gray-800 text-[11px] mb-1">{{ trans('client.customer_confirmation') }}</h4>
                     <div class="relative h-20 mt-6 w-1/2 mx-auto flex justify-center items-end border-b border-dashed border-gray-300 mb-1 stamp-container">
-                        <p contenteditable="true" class="text-[9px] text-gray-400 mb-1">{{ trans('client.acknowledge_balance_correctness') }}</p>
+                        <p class="text-[9px] text-gray-400 mb-1">{{ trans('client.acknowledge_balance_correctness') }}</p>
                     </div>
-                    <p contenteditable="true" class="text-[10px] text-gray-500 mt-1">{{ trans('client.name_and_signature') }}</p>
+                    <p class="text-[10px] text-gray-500 mt-1">{{ trans('client.name_and_signature') }}</p>
                 </div>
             </div>
 
@@ -367,11 +354,11 @@
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50 transition stat-row';
             newRow.innerHTML = `
-                <td contenteditable="true" dir="ltr">L000000000</td>
-                <td contenteditable="true" dir="ltr">DD/MM/YYYY</td>
-                <td contenteditable="true">0.00</td>
-                <td contenteditable="true">0.00%</td>
-                <td class="font-bold text-gray-900 bg-gray-100"><span contenteditable="true" class="stat-final">0.00</span></td>
+                <td dir="ltr">L000000000</td>
+                <td dir="ltr">DD/MM/YYYY</td>
+                <td>0.00</td>
+                <td>0.00%</td>
+                <td class="font-bold text-gray-900 bg-gray-100"><span class="stat-final">0.00</span></td>
                 <td class="no-print"><button class="delete-btn" onclick="removeStatementRow(this)" title="{{ trans('client.delete_row') }}">✖</button></td>
             `;
             tbody.appendChild(newRow);
@@ -415,13 +402,7 @@
 
             calculateStatementTotal();
 
-            document.addEventListener('paste', (e) => {
-                if (e.target.isContentEditable) {
-                    e.preventDefault();
-                    const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-                    document.execCommand('insertText', false, text);
-                }
-            });
+
         });
     </script>
 </body>

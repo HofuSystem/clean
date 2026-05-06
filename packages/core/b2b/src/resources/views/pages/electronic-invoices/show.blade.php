@@ -15,19 +15,6 @@
             print-color-adjust: exact;
         }
 
-        /* تصميم حقول الإدخال */
-        [contenteditable="true"] {
-            outline: none;
-            transition: all 0.2s;
-            border-radius: 4px;
-        }
-
-        [contenteditable="true"]:hover,
-        [contenteditable="true"]:focus {
-            background-color: #f0f9ff;
-            box-shadow: 0 0 0 2px #bae6fd;
-        }
-
         th,
         td {
             padding-top: 0.35rem;
@@ -108,11 +95,6 @@
             /* تعطيل السحب الجانبي لمنع تصغير محتوى الطباعة */
             .overflow-x-auto {
                 overflow: visible !important;
-            }
-
-            [contenteditable="true"] {
-                box-shadow: none !important;
-                background-color: transparent !important;
             }
 
             /* ضغط المسافات للطباعة */
@@ -287,7 +269,7 @@
             class="print-container max-w-4xl mx-auto bg-white p-6 md:p-10 shadow-2xl rounded-xl border-t-8 border-[#00AEEF] relative overflow-hidden">
             <div class="flex justify-between items-start border-b-2 border-gray-100 pb-3 mb-4">
                 <div class="text-right">
-                    <h2 contenteditable="true" id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">
+                    <h2 id="invoice-title" class="text-xl font-bold text-gray-800 mb-2">
                         @if($invoice->type == 'B2C')
                             SIMPLIFIED TAX INVOICE | فاتورة ضريبية مبسطة
                         @else
@@ -295,10 +277,9 @@
                         @endif
                     </h2>
                     <div class="flex gap-4 text-xs text-gray-600 justify-end font-medium whitespace-nowrap" dir="ltr">
-                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span
-                                contenteditable="true">{{ $invoice->invoice_number }}</span></div>
+                        <div><span class="font-semibold text-[#00AEEF]">Invoice No:</span> <span>{{ $invoice->invoice_number }}</span></div>
                         <div><span class="text-gray-300">|</span></div>
-                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span contenteditable="true"
+                        <div><span class="font-semibold text-[#00AEEF]">Date:</span> <span
                                 class="auto-date">{{ $invoice->created_at->format('d M Y') }}</span></div>
                     </div>
                 </div>
@@ -306,7 +287,7 @@
                     {!! $qrCodeImage !!}
                     <div class="h-10 border-r-2 border-gray-200"></div>
                     <div class="flex flex-col justify-center items-center mt-1">
-                        <span contenteditable="true"
+                        <span
                             class="text-[8px] text-gray-400 font-bold mb-0 tracking-wider whitespace-nowrap">مدعوم
                             من</span>
                         <img src="https://i.postimg.cc/x1YqjNZQ/lwqww-hwfw-(1)-(1).png" alt="هوفو سيستم"
@@ -465,7 +446,7 @@
             </div>
 
             <div class="mb-4 relative">
-                <h3 contenteditable="true"
+                <h3
                     class="text-base font-bold text-gray-800 mb-2 border-b-2 border-[#00AEEF] inline-block pb-1">تفاصيل
                     الفاتورة | Invoice Details</h3>
                 <div class="overflow-x-visible">
@@ -504,18 +485,18 @@
                                         class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
                                         <td class="px-2 text-right font-bold text-gray-400">{{ $index + 1 }}</td>
                                         <td class="px-2 text-right font-semibold leading-tight">
-                                            <div contenteditable="true">{{ $item->product?->translate('ar')->name . ' ' .$item->product?->translate('en')->name }}</div>
+                                            <div>{{ $item->product?->translate('ar')->name . ' ' .$item->product?->translate('en')->name }}</div>
                                             <div class="text-gray-400 text-[10px]">{{ $item->product?->translate('en')->name ??$item->product?->sku ?? '' }}</div>
                                         </td>
                                         <td class="px-2 text-center text-gray-500">
-                                            <span contenteditable="true" class="qty font-semibold">{{ $item->quantity }}</span>
+                                            <span class="qty font-semibold">{{ $item->quantity }}</span>
                                         </td>
                                         <td class="px-2 text-center">
-                                            <span contenteditable="true" class="base-price font-semibold">{{number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
+                                            <span class="base-price font-semibold">{{number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
                                             <span class="text-[10px]">ر.س</span>
                                         </td>
                                         <td class="px-2 text-center text-red-500">
-                                            <span contenteditable="true" class="discount font-semibold">{{number_format($tax * $item->quantity, 2, '.', '')}}</span> ر.س
+                                            <span class="discount font-semibold">{{number_format($tax * $item->quantity, 2, '.', '')}}</span> ر.س
                                         </td>
                                         <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
                                             <span class="final-price text-base">{{ number_format($price * $item->quantity, 2, '.', '') }}</span>
@@ -584,17 +565,17 @@
                                         class="inv-row border-b border-gray-200 hover:bg-gray-50 transition bg-gray-50/50">
                                         <td class="px-2 text-right font-bold text-gray-400">1</td>
                                         <td class="px-2 text-right font-semibold leading-tight">
-                                            <div contenteditable="true">{{ $orderDetailsText  }}</div>
+                                            <div>{{ $orderDetailsText  }}</div>
                                         </td>
                                         <td class="px-2 text-center text-gray-500">
-                                            <span contenteditable="true" class="qty font-semibold">1</span>
+                                            <span class="qty font-semibold">1</span>
                                         </td>
                                         <td class="px-2 text-center">
-                                            <span contenteditable="true" class="base-price font-semibold">-{{ number_format($invoice->subtotal - ($invoice->subtotal *0.15), 2, '.', '') }}</span>
+                                            <span class="base-price font-semibold">-{{ number_format($invoice->subtotal - ($invoice->subtotal *0.15), 2, '.', '') }}</span>
                                             <span class="text-[10px]">ر.س</span>
                                         </td>
                                         <td class="px-2 text-center text-red-500">
-                                            <span contenteditable="true" class="discount font-semibold">{{number_format($invoice->subtotal *0.15, 2, '.', '')}}</span> ر.س
+                                            <span class="discount font-semibold">{{number_format($invoice->subtotal *0.15, 2, '.', '')}}</span> ر.س
                                         </td>
                                         <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
                                             <span class="final-price text-base"> {{ number_format($invoice->subtotal, 2, '.', '') }}</span>
@@ -607,17 +588,17 @@
                                         class="inv-row border-b border-gray-200 hover:bg-gray-50 transition bg-gray-50/50">
                                         <td class="px-2 text-right font-bold text-gray-400">#</td>
                                         <td class="px-2 text-right font-semibold leading-tight">
-                                            <div contenteditable="true">{{ __('discount value',[],'ar')  }}</div>
+                                            <div>{{ __('discount value',[],'ar')  }}</div>
                                         </td>
                                         <td class="px-2 text-center text-gray-500">
-                                            <span contenteditable="true" class="qty font-semibold">1</span>
+                                            <span class="qty font-semibold">1</span>
                                         </td>
                                         <td class="px-2 text-center">
-                                            <span contenteditable="true" class="base-price font-semibold">-{{ number_format($invoice->total_coupon, 2, '.', '') }}</span>
+                                            <span class="base-price font-semibold">-{{ number_format($invoice->total_coupon, 2, '.', '') }}</span>
                                             <span class="text-[10px]">ر.س</span>
                                         </td>
                                         <td class="px-2 text-center text-red-500">
-                                            <span contenteditable="true" class="discount font-semibold">{{number_format(0, 2, '.', '')}}</span> ر.س
+                                            <span class="discount font-semibold">{{number_format(0, 2, '.', '')}}</span> ر.س
                                         </td>
                                         <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
                                             <span class="final-price text-base">- {{ number_format($invoice->total_coupon, 2, '.', '') }}</span>
