@@ -592,6 +592,38 @@
                         </div>
                     </div>
                     <!-- Basic modal -->
+                    <div class="modal fade text-left" id="updateWashType" role="dialog" aria-labelledby="updateWashTypeLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary">
+                                    <h5 class="modal-title text-white" id="updateWashTypeLabel">{{ trans('update wash type') }}
+                                    </h5>
+                                    <button class="btn btn-danger" type="button" class="close" data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="card row">
+                                    <div class="card-body row">
+                                        <div class="form-group col-12">
+                                            <label for="new_wash_type">{{ trans('new wash type') }}</label>
+                                            <select name="new_wash_type" id="new_wash_type" class="form-control">
+                                                <option value="lab">{{ trans('lab') }}</option>
+                                                <option value="washer">{{ trans('washer') }}</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-12 my-2">
+                                            <button class="btn btn-primary" id="updateWashTypeBtn"
+                                                action="{{ route('dashboard.orders.item.edit', ['id' => $order->id, 'itemId' => '%s']) }}">{{ trans('update wash type') }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Basic modal -->
                     <div class="modal fade text-left" id="addItem" role="dialog" aria-labelledby="myModalLabel120"
                         aria-hidden="true">
                         <div class="modal-dialog modal-fullscreen modal-dialog-centered modal-dialog-scrollable"
@@ -1754,6 +1786,67 @@
                     },
                 });
 
+            });
+            $(document).on('click', '.edit-wash-type', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                let washType = $(this).data('wash-type');
+                $('#updateWashTypeBtn').data('id', id);
+                $('[name=new_wash_type]').val(washType);
+                $("#updateWashType").modal('show');
+            });
+            $(document).on('click', '#updateWashTypeBtn', function(e) {
+                e.preventDefault();
+                let url = $('#updateWashTypeBtn').attr('action');
+                let id = $('#updateWashTypeBtn').data('id');
+                let quantity = $('.edit-quantity[data-id="' + id + '"]').data("quantity");
+                let width = $('.edit-size.btn[data-id="' + id + '"]').data("width");
+                let height = $('.edit-size.btn[data-id="' + id + '"]').data("height");
+                let washType = $('#new_wash_type').val();
+                url = url.replace('%s', id);
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        quantity: quantity,
+                        width: width,
+                        height: height,
+                        wash_type: washType,
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        $("#updateWashType").modal('hide');
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-success",
+                            }
+                        }).then(function(result) {
+                            window.location.reload();
+                        })
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        response = JSON.parse(jqXHR.responseText);
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-success",
+                            }
+                        })
+                        $.each(response.errors, function(key, array) {
+                            $.each(array, function(index, error) {
+                                toastr.error(error, key);
+                            });
+                        });
+                    },
+                });
             });
             $(document).on('click', '#order-items-final-delete', function(e) {
                 e.preventDefault();
