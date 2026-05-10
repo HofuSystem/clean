@@ -26,7 +26,8 @@ class UpdateItemRequest extends FormRequest
         return [
             'quantity'  =>  'required|numeric',
             'width'     =>  'numeric',
-            'height'    =>  'numeric'
+            'height'    =>  'numeric',
+            'wash_type' =>  'nullable|string'
         ];
     }
 }

@@ -421,11 +421,11 @@ class OrdersService
         }
         $this->reCalcOrder($orderId);
     }
-    public function updateItem($orderId, $itemId, $quantity, $height, $width)
+    public function updateItem($orderId, $itemId, $quantity, $height, $width, $wash_type = null)
     {
         $orderItem    = OrderItem::withTrashed()->where('order_id', $orderId)->where('id', $itemId)->firstOrFail();
         $product      = $orderItem->product;
-        if ($quantity == $orderItem->quantity and $height == $orderItem->height and $width == $orderItem->width) {
+        if ($quantity == $orderItem->quantity and $height == $orderItem->height and $width == $orderItem->width and ($wash_type === null || $wash_type == $orderItem->wash_type)) {
             return;
         }
         if ($quantity < 1) {
@@ -441,14 +441,18 @@ class OrdersService
             ]);
         }
 
-        $orderItem->update([
+        $updateData = [
             'width'                 => $width,
             'height'                => $height,
             'quantity'              => $quantity,
             'update_by_admin'       => auth()->user()->email,
             'deleted_at'            => null,
             'final_delete'          => false,
-        ]);
+        ];
+        if ($wash_type !== null) {
+            $updateData['wash_type'] = $wash_type;
+        }
+        $orderItem->update($updateData);
         if (($quantityDiff != 0) and  json_decode($orderItem->product_data)->type == 'sales') {
             $product = Product::where('id', json_decode($orderItem->product_data)->id)->first();
             $product->update(['quantity' => $product->quantity - $quantityDiff]);

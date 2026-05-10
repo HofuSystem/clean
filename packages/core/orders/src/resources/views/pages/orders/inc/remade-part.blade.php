@@ -137,8 +137,14 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                 {{ $item?->product?->name ?? json_decode($item->product_data)->name }}
                             </td>
                             <td>
-                                {{ trans($item?->wash_type ?? (isset(json_decode($item->product_data)->wash_type) ?
-                                json_decode($item->product_data)->wash_type : '')) }}
+                                <span class="edit-wash-type text-success" data-id="{!! $item->id !!}"
+                                    data-wash-type="{!! $item?->wash_type ?? (isset(json_decode($item->product_data)->wash_type) ? json_decode($item->product_data)->wash_type : '') !!}">
+                                    {{ trans($item?->wash_type ?? (isset(json_decode($item->product_data)->wash_type) ?
+                                    json_decode($item->product_data)->wash_type : '')) }}
+                                    @isset($editMode)
+                                    <i class="fas fa-edit"></i>
+                                    @endisset
+                                </span>
                             </td>
 
                             <td>{{ $item?->product?->sku ?? (isset(json_decode($item->product_data)->sku) ?

@@ -324,7 +324,7 @@ class OrdersController extends Controller
     {
         try {
             DB::beginTransaction();
-            $this->ordersService->updateItem($orderId,$itemId,$request->quantity,$request->height,$request->width);
+            $this->ordersService->updateItem($orderId,$itemId,$request->quantity,$request->height,$request->width,$request->wash_type);
             $order         =   Order::findOrFail($orderId);
             $orderItems    =   $order->items()->withTrashed()->get();
             $products      =   Product::where('status', 'active')->get();
