@@ -5,7 +5,7 @@ namespace Core\B2B\Controllers\FrontEnd;
 use App\Http\Controllers\Controller;
 use Core\B2B\Requests\FrontEnd\LoginRequest;
 use Core\B2B\Requests\FrontEnd\RegisterRequest;
-use Core\B2B\Models\Role;
+use Core\Users\Models\Role;
 use Core\Users\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
