@@ -3,6 +3,7 @@
 namespace Core\Orders\DataResources\Api\Client\Order;
 
 use Carbon\Carbon;
+use Core\Coupons\DataResources\GiftApiResource;
 use Core\Info\DataResources\Api\CityResource;
 use Core\Info\DataResources\Api\DistrictResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,6 +21,7 @@ class OrderWithOutItemsResource extends JsonResource
         $technical = $this->orderRepresentatives->where('type','technical')->first();
         $couponMinmum = json_decode($this->coupon_data)?->order_minimum ?? ($this->coupon?->minimum_price ?? 0);
         $orderWentBelowCopounLevel = $couponMinmum > $this->order_price;
+        $hasGfit = isset($this?->coupon?->gift);
         return [
             'id'            => $this->id ,
             'reference_id'  => $this->reference_id ,
@@ -50,6 +52,8 @@ class OrderWithOutItemsResource extends JsonResource
             'points_amount_used'    => $this->points_amount_used,
             'has_been_refunded'     => $this->has_been_refunded,
             'order_transactions'    => OrderTransactionsResource::collection($this->whenLoaded('transactions')),
+            'has_gift'              => $hasGfit,
+            'gift'                  => $hasGfit ? GiftApiResource::make($this->coupon?->gift) : null,
         ];
     }
 }

@@ -285,6 +285,10 @@ class Coupon extends CoreModel implements TranslatableContract
     {
         return $this->hasMany(Order::class,'coupon_id','id');
     }
+     public function gift()
+    {
+        return $this->hasOne(Gift::class,'coupon_id','id');
+    }
 
     //end relations
 
