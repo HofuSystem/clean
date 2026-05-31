@@ -207,9 +207,6 @@ class UsersController extends Controller
     public function export(Request $request)
     {
         try {
-            set_time_limit(300);
-            ini_set('memory_limit', '256M');
-
             // Accept a custom timestamp from the frontend to synchronize the filename
             $timestamp = $request->get('timestamp', now()->format('Y-m-d_H-i-s'));
             $filename = 'exports/users_export_' . $timestamp . '.csv';
@@ -219,10 +216,22 @@ class UsersController extends Controller
                 \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('exports');
             }
 
-            // Stream-write directly to disk — constant memory usage with optimized 1500 chunk size
-            (new UsersExport(app()->getLocale(), 1500))->store($filename, 'public');
+            $locale = app()->getLocale();
 
-            return $this->returnData(trans('Export completed successfully'), [
+            // Run the heavy export process AFTER the response is sent to the browser
+            // This prevents the 504 Gateway Timeout since the browser gets the JSON immediately
+            app()->terminating(function () use ($filename, $locale) {
+                set_time_limit(0);
+                ini_set('memory_limit', '1024M');
+                try {
+                    // Stream-write directly to disk — constant memory usage with optimized 1500 chunk size
+                    (new UsersExport($locale, 1500))->store($filename, 'public');
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            });
+
+            return $this->returnData(trans('Export process started successfully. The file will be available shortly.'), [
                 'url'      => asset('storage/' . $filename),
                 'filename' => $filename,
             ]);

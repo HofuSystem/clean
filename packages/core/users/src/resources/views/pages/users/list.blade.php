@@ -565,25 +565,33 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.url) {
                     // Update modal title to success
-                    var completedTitle = '{{ app()->getLocale() == "ar" ? "اكتمل التصدير" : "Export Completed" }}';
+                    var completedTitle = '{{ app()->getLocale() == "ar" ? "جاري تجهيز الملف" : "Preparing File" }}';
                     $('#exportChunksModal .modal-title').html('<i class="fas fa-check-circle me-2"></i>' + completedTitle);
                     
-                    var successHeader = '{{ app()->getLocale() == "ar" ? "تم تصدير البيانات بنجاح!" : "Export completed successfully!" }}';
-                    var successText = '{{ app()->getLocale() == "ar" ? "الملف الخاص بك جاهز للتحميل الآن." : "Your file is ready for download." }}';
-                    var downloadText = '{{ app()->getLocale() == "ar" ? "تحميل الملف الآن" : "Download Now" }}';
+                    var successHeader = '{{ app()->getLocale() == "ar" ? "تم بدء عملية التصدير بنجاح!" : "Export process started successfully!" }}';
+                    var successText = '{{ app()->getLocale() == "ar" ? "يتم الآن إنشاء الملف في الخلفية. قد يستغرق ذلك بضع دقائق بناءً على حجم البيانات. يرجى الاحتفاظ بالرابط أدناه للتحميل لاحقاً." : "The file is being generated in the background. This may take a few minutes depending on data size. Please keep the link below to download it later." }}';
+                    var downloadText = '{{ app()->getLocale() == "ar" ? "محاولة التحميل (قد لا يكون جاهزاً بعد)" : "Try Download (Might not be ready)" }}';
                     var closeText = '{{ app()->getLocale() == "ar" ? "إغلاق" : "Close" }}';
 
                     $('#export-processing').html(
                         '<div class="py-2">' +
                             '<div class="mb-4 text-center">' +
                                 '<div class="mb-3">' +
-                                    '<i class="fas fa-file-excel text-success fa-4x"></i>' +
+                                    '<i class="fas fa-cogs text-success fa-4x"></i>' +
                                 '</div>' +
                                 '<h4 class="text-dark fw-bolder">' + successHeader + '</h4>' +
                                 '<p class="text-muted px-5">' + successText + '</p>' +
                             '</div>' +
-                            '<div class="d-grid gap-2">' +
-                                '<a href="' + response.url + '" target="_blank" class="btn btn-success btn-lg">' +
+                            '<div class="form-group mb-4 px-4">' +
+                                '<div class="input-group">' +
+                                    '<input type="text" id="final-download-url" class="form-control bg-light text-center" value="' + response.url + '" readonly>' +
+                                    '<button class="btn btn-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById(\'final-download-url\').value); toastr.success(\'{{ app()->getLocale() == "ar" ? "تم النسخ" : "Copied!" }}\');">' +
+                                        '<i class="fas fa-copy me-1"></i> {{ app()->getLocale() == "ar" ? "نسخ الرابط" : "Copy Link" }}' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="d-grid gap-2 px-4">' +
+                                '<a href="' + response.url + '" target="_blank" class="btn btn-outline-success btn-lg">' +
                                     '<i class="fas fa-download me-2"></i>' + downloadText +
                                 '</a>' +
                                 '<button type="button" class="btn btn-light" data-bs-dismiss="modal">' + closeText + '</button>' +
