@@ -6,7 +6,7 @@
         </a>
     </div>
 
-    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+    <div class="navbar-nav-right d-flex align-items-center justify-content-end flex-grow-1" id="navbar-collapse">
         <!-- Search -->
         <div class="navbar-nav align-items-center">
             @can('dashboard.clear_system_cache')
@@ -31,7 +31,7 @@
         </div>
         <!-- /Search -->
 
-        <ul class="navbar-nav flex-row align-items-center ms-auto">
+        <ul class="navbar-nav flex-row align-items-center" style="margin-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}: auto !important;">
             <!-- Language -->
             <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                 <a class="nav-link dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
