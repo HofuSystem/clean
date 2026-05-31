@@ -45,11 +45,14 @@ class UsersExport
             mkdir($dir, 0755, true);
         }
 
+        // Use a temporary file during generation so users don't download partial files
+        $tmpPath = $fullPath . '.tmp';
+        
         // Open file handle for writing
-        $handle = fopen($fullPath, 'w');
+        $handle = fopen($tmpPath, 'w');
 
         if ($handle === false) {
-            throw new \RuntimeException("Cannot open file for writing: {$fullPath}");
+            throw new \RuntimeException("Cannot open file for writing: {$tmpPath}");
         }
 
         // Write UTF-8 BOM so Excel opens the CSV with correct encoding
@@ -78,6 +81,9 @@ class UsersExport
 
         fclose($handle);
 
+        // Rename the temporary file to the final filename when complete
+        rename($tmpPath, $fullPath);
+
         return $fullPath;
     }
 
@@ -105,6 +111,8 @@ class UsersExport
                 'users.created_at',
                 'city_translations.name as city_name',
                 'district_translations.name as district_name',
+                DB::raw('(SELECT MAX(o.created_at) FROM orders o WHERE o.client_id = users.id) as latest_order_at'),
+                DB::raw('(SELECT COUNT(*) FROM orders o WHERE o.client_id = users.id AND o.status IN ("finished","delivered")) as orders_count')
             ])
             ->whereNull('users.deleted_at')
             ->orderBy('users.id');
@@ -120,9 +128,12 @@ class UsersExport
             trans('full name'),
             trans('email'),
             trans('phone'),
+            trans('orders count'),
             trans('city'),
             trans('district'),
             trans('register date'),
+            trans('last order date'),
+            trans('class'),
         ];
     }
 
@@ -136,9 +147,12 @@ class UsersExport
             $user->fullname,
             $user->email,
             $user->phone,
-            $user->city_name    ?? '',
+            $user->orders_count ?? 0,
+            $user->city_name ?? '',
             $user->district_name ?? '',
             $user->created_at,
+            $user->latest_order_at ?? '',
+            \Core\Orders\Helpers\OrderHelper::getCustomerTier($user->orders_count ?? 0),
         ];
     }
 }

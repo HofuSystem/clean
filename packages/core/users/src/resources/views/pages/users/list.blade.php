@@ -576,11 +576,11 @@ $(document).ready(function () {
                     $('#export-processing').html(
                         '<div class="py-2">' +
                             '<div class="mb-4 text-center">' +
-                                '<div class="mb-3">' +
-                                    '<i class="fas fa-cogs text-success fa-4x"></i>' +
+                                '<div class="mb-3" id="export-status-icon-container">' +
+                                    '<i class="fas fa-cogs text-success fa-4x fa-spin" id="export-status-icon"></i>' +
                                 '</div>' +
-                                '<h4 class="text-dark fw-bolder">' + successHeader + '</h4>' +
-                                '<p class="text-muted px-5">' + successText + '</p>' +
+                                '<h4 class="text-dark fw-bolder" id="export-status-header">' + successHeader + '</h4>' +
+                                '<p class="text-muted px-5" id="export-status-text">' + successText + '</p>' +
                             '</div>' +
                             '<div class="form-group mb-4 px-4">' +
                                 '<div class="input-group">' +
@@ -590,14 +590,51 @@ $(document).ready(function () {
                                     '</button>' +
                                 '</div>' +
                             '</div>' +
-                            '<div class="d-grid gap-2 px-4">' +
-                                '<a href="' + response.url + '" target="_blank" class="btn btn-outline-success btn-lg">' +
-                                    '<i class="fas fa-download me-2"></i>' + downloadText +
-                                '</a>' +
+                            '<div class="d-grid gap-2 px-4" id="export-actions-container">' +
+                                '<button type="button" class="btn btn-outline-secondary btn-lg" disabled>' +
+                                    '<i class="fas fa-spinner fa-spin me-2"></i> {{ app()->getLocale() == "ar" ? "جاري تجهيز الملف..." : "Preparing file..." }}' +
+                                '</button>' +
                                 '<button type="button" class="btn btn-light" data-bs-dismiss="modal">' + closeText + '</button>' +
                             '</div>' +
                         '</div>'
                     );
+
+                    // Poll the file URL to check if it's fully generated
+                    var checkInterval = setInterval(function() {
+                        fetch(response.url, { method: 'HEAD', cache: 'no-store' })
+                            .then(function(res) {
+                                if (res.ok) {
+                                    clearInterval(checkInterval);
+                                    
+                                    // Update UI to show completion
+                                    var readyHeader = '{{ app()->getLocale() == "ar" ? "الملف جاهز للتحميل الآن!" : "File is ready for download!" }}';
+                                    var readyText = '{{ app()->getLocale() == "ar" ? "تم الانتهاء من تجهيز كافة البيانات، يمكنك تحميل الملف النهائي الآن." : "All data has been processed, you can download the final file now." }}';
+                                    var readyDownloadText = '{{ app()->getLocale() == "ar" ? "تحميل الملف" : "Download File" }}';
+
+                                    $('#export-status-icon').removeClass('fa-cogs fa-spin').addClass('fa-file-excel text-success');
+                                    $('#export-status-header').text(readyHeader);
+                                    $('#export-status-text').text(readyText).removeClass('text-muted').addClass('text-success fw-bold');
+                                    
+                                    $('#export-actions-container').html(
+                                        '<a href="' + response.url + '" target="_blank" class="btn btn-success btn-lg">' +
+                                            '<i class="fas fa-download me-2"></i>' + readyDownloadText +
+                                        '</a>' +
+                                        '<button type="button" class="btn btn-light" data-bs-dismiss="modal">' + closeText + '</button>'
+                                    );
+
+                                    if (window.toastr) {
+                                        toastr.success(readyHeader);
+                                    }
+                                }
+                            }).catch(function(err) {
+                                // Ignore network errors during polling (e.g. 404)
+                            });
+                    }, 3000);
+
+                    // Stop polling if modal is closed (optional, but good for performance if they close it)
+                    $('#exportChunksModal').on('hidden.bs.modal', function () {
+                        clearInterval(checkInterval);
+                    });
                 }
 
                 if (window.toastr) {
