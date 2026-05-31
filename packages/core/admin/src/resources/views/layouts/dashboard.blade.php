@@ -161,6 +161,19 @@
 
 
     <script src="{{ asset('control') }}/assets/vendor/js/helpers.js"></script>
+    <script>
+        // Force TemplateCustomizer to match Laravel locale direction
+        (function() {
+            var currentTemplate = document.documentElement.getAttribute('data-template');
+            var isRtl = '{{ app()->getLocale() == "ar" ? "true" : "false" }}';
+            var direction = '{{ app()->getLocale() == "ar" ? "rtl" : "ltr" }}';
+            
+            if (currentTemplate) {
+                localStorage.setItem('templateCustomizer-' + currentTemplate + '--Rtl', isRtl);
+                localStorage.setItem('templateCustomizer-' + currentTemplate + '--TextDir', direction);
+            }
+        })();
+    </script>
     <script src="{{ asset('control') }}/assets/vendor/js/template-customizer.js"></script>
     <script src="{{ asset('control') }}/assets/js/config.js"></script>
     <script src="{{ asset('control') }}/assets/vendor/js/menu.js"></script>
