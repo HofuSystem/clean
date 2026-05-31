@@ -349,6 +349,83 @@
     </div>
     <!--end::Content-->
     @include('notification::inc.notifyModal')
+
+    {{-- ===== Export Modal ===== --}}
+    <div class="modal fade" id="exportChunksModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white">
+                        <i class="fas fa-file-excel me-2"></i>@lang('Export All Users')
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="export-info">
+                        <p class="fs-4">@lang('Total Users'): <span id="export-total-count" class="fw-bolder">...</span></p>
+                        <p class="text-muted">@lang('This will generate a single Excel file in the background.')</p>
+                        <button type="button" id="start-export-btn" class="btn btn-primary btn-lg w-100 mt-3">
+                            <i class="fas fa-play me-2"></i>@lang('Start Export')
+                        </button>
+                    </div>
+                    <div id="export-processing" class="d-none py-3">
+                        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <h5 class="text-primary fw-bolder">
+                            @if(app()->getLocale() == 'ar')
+                                جاري تصدير البيانات حالياً...
+                            @else
+                                Exporting in progress...
+                            @endif
+                        </h5>
+                        
+                        <div class="alert alert-dismissible bg-light-warning d-flex flex-column flex-sm-row p-5 mb-10 text-start mt-4">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning me-4 mb-5 mb-sm-0"></i>
+                            <div class="d-flex flex-column text-dark">
+                                <h4 class="fw-bold">
+                                    @if(app()->getLocale() == 'ar')
+                                        نصيحة للبيانات الكبيرة:
+                                    @else
+                                        Tip for large data:
+                                    @endif
+                                </h4>
+                                <span>
+                                    @if(app()->getLocale() == 'ar')
+                                        قد تستغرق العملية حوالي دقيقة. يمكنك نسخ رابط التحميل المباشر أدناه وإغلاق هذه الصفحة بأمان؛ وسيكون الملف متاحاً عبر الرابط بمجرد انتهاء التصدير!
+                                    @else
+                                        The process may take about a minute. You can safely copy the direct download link below and close this page; the file will be available via the link as soon as the export completes!
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-bold text-gray-700">
+                                @if(app()->getLocale() == 'ar')
+                                    رابط التحميل الدائم للملف:
+                                @else
+                                    Permanent file download link:
+                                @endif
+                            </label>
+                            <div class="input-group">
+                                <input type="text" id="predicted-download-url" class="form-control bg-light" readonly>
+                                <button class="btn btn-secondary" type="button" id="copy-predicted-url-btn">
+                                    <i class="fas fa-copy me-1"></i> 
+                                    @if(app()->getLocale() == 'ar')
+                                        نسخ الرابط
+                                    @else
+                                        Copy Link
+                                    @endif
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('css')
 @endpush
@@ -413,50 +490,16 @@
                     ids.push(checkboxValue);
                 });
                 ids = JSON.stringify(ids);
-
-                $('#notifyModal [name=for_data]').val(ids)
-
+                $('#notifyModal [name=for_data]').val(ids);
             });
 
         });
     </script>
 @endpush
 
-{{-- ===== Export Modal ===== --}}
-<div class="modal fade" id="exportChunksModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h5 class="modal-title text-white">
-                    <i class="fas fa-file-excel me-2"></i>@lang('Export All Users')
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div id="export-info">
-                    <p class="fs-4">@lang('Total Users'): <span id="export-total-count" class="fw-bolder">...</span></p>
-                    <p class="text-muted">@lang('This will generate a single Excel file in the background.')</p>
-                    <button type="button" id="start-export-btn" class="btn btn-primary btn-lg w-100 mt-3">
-                        <i class="fas fa-play me-2"></i>@lang('Start Export')
-                    </button>
-                </div>
-                <div id="export-processing" class="d-none py-4">
-                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                    <h5 class="text-primary">@lang('Export Started!')</h5>
-                    <p class="text-muted">@lang('The export is being processed in the background.')</p>
-                    <p class="small">@lang('You can close this modal. The file will be available in the storage folder once completed.')</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @push('js')
 <script>
-(function () {
+$(document).ready(function () {
     var chunksUrl  = '{{ route("dashboard.users.export-chunks") }}';
     var exportUrl  = '{{ route("dashboard.users.export") }}';
 
@@ -466,76 +509,106 @@
         $('#export-total-count').text('...');
         $('#exportChunksModal').modal('show');
 
+        // Reset modal title
+        $('#exportChunksModal .modal-title').html('<i class="fas fa-file-excel me-2"></i>@lang("Export All Users")');
+
         $.getJSON(chunksUrl, function (data) {
             $('#export-total-count').text(data.total);
         });
     });
 
+    // Copy to clipboard helper
+    $('#copy-predicted-url-btn').on('click', function () {
+        var $btn = $(this);
+        var input = document.getElementById('predicted-download-url');
+        input.select();
+        input.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(input.value);
+
+        var successText = '{{ app()->getLocale() == "ar" ? "تم النسخ" : "Copied!" }}';
+        var defaultText = '{{ app()->getLocale() == "ar" ? "نسخ الرابط" : "Copy Link" }}';
+
+        $btn.removeClass('btn-secondary').addClass('btn-success').html('<i class="fas fa-check me-1"></i> ' + successText);
+        setTimeout(function () {
+            $btn.removeClass('btn-success').addClass('btn-secondary').html('<i class="fas fa-copy me-1"></i> ' + defaultText);
+        }, 2000);
+    });
+
     $('#start-export-btn').on('click', function () {
         var $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> @lang("Starting...")');
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> @lang("Exporting...")');
 
-        $.get(exportUrl, function (response) {
-            $('#export-info').addClass('d-none');
-            $('#export-processing').removeClass('d-none');
-            
-            if (response.url) {
-                var downloadLink = response.url;
-                // Update modal title to success
-                $('#exportChunksModal .modal-title').html('<i class="fas fa-check-circle me-2"></i>@lang("Export Successfully Started")');
-                
-                $('#export-processing').html(
-                    '<div class="py-2">' +
-                        '<div class="mb-4 text-center">' +
-                            '<div class="mb-3">' +
-                                '<i class="fas fa-file-excel text-success fa-4x"></i>' +
-                            '</div>' +
-                            '<h4 class="text-dark fw-bolder">@lang("Exporting all in one...")</h4>' +
-                            '<p class="text-muted px-5">@lang("Please copy the link below and try to access it in 5 minutes. The system needs time to process all records.")</p>' +
-                        '</div>' +
-                        '<div class="p-4 bg-light rounded border border-secondary border-dashed mb-4">' +
-                            '<label class="form-label fw-bold text-gray-700 mb-2">@lang("Permanent Download Link")</label>' +
-                            '<div class="input-group input-group-solid">' +
-                                '<input type="text" class="form-control" value="' + downloadLink + '" readonly id="export-url-input" style="background-color: #f5f8fa;">' +
-                                '<button class="btn btn-primary d-flex align-items-center" type="button" onclick="copyExportUrl()">' +
-                                    '<i class="fas fa-copy me-2"></i> @lang("Copy Link")' +
-                                '</button>' +
-                            '</div>' +
-                            '<div class="mt-2 text-center text-danger fw-bold">' +
-                                '<i class="fas fa-clock me-1"></i> @lang("Note: Try this link in 5 minutes")' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="d-grid gap-2">' +
-                            '<a href="' + downloadLink + '" target="_blank" class="btn btn-success btn-lg">' +
-                                '<i class="fas fa-download me-2"></i>@lang("Try Download Now")' +
-                            '</a>' +
-                            '<button type="button" class="btn btn-light" data-bs-dismiss="modal">@lang("Got it")</button>' +
-                        '</div>' +
-                    '</div>'
-                );
-            }
+        // Generate custom timestamp in format: YYYY-MM-DD_HH-mm-ss
+        var now = new Date();
+        var pad = function(num) { return (num < 10 ? '0' : '') + num; };
+        var timestamp = now.getFullYear() + '-' +
+                        pad(now.getMonth() + 1) + '-' +
+                        pad(now.getDate()) + '_' +
+                        pad(now.getHours()) + '-' +
+                        pad(now.getMinutes()) + '-' +
+                        pad(now.getSeconds());
 
-            if (window.toastr) {
-                toastr.success(response.message || '@lang("Export started successfully")');
+        // Pre-calculate the predicted download URL
+        var filename = 'users_export_' + timestamp + '.csv';
+        var predictedUrl = '{{ asset("storage/exports") }}/' + filename;
+
+        // Show the processing UI and pre-fill the download link immediately
+        $('#export-info').addClass('d-none');
+        $('#export-processing').removeClass('d-none');
+        $('#predicted-download-url').val(predictedUrl);
+
+        $.ajax({
+            url: exportUrl,
+            type: 'GET',
+            data: { timestamp: timestamp },
+            timeout: 300000, // 5 minutes timeout for large datasets
+            success: function (response) {
+                if (response.url) {
+                    // Update modal title to success
+                    var completedTitle = '{{ app()->getLocale() == "ar" ? "اكتمل التصدير" : "Export Completed" }}';
+                    $('#exportChunksModal .modal-title').html('<i class="fas fa-check-circle me-2"></i>' + completedTitle);
+                    
+                    var successHeader = '{{ app()->getLocale() == "ar" ? "تم تصدير البيانات بنجاح!" : "Export completed successfully!" }}';
+                    var successText = '{{ app()->getLocale() == "ar" ? "الملف الخاص بك جاهز للتحميل الآن." : "Your file is ready for download." }}';
+                    var downloadText = '{{ app()->getLocale() == "ar" ? "تحميل الملف الآن" : "Download Now" }}';
+                    var closeText = '{{ app()->getLocale() == "ar" ? "إغلاق" : "Close" }}';
+
+                    $('#export-processing').html(
+                        '<div class="py-2">' +
+                            '<div class="mb-4 text-center">' +
+                                '<div class="mb-3">' +
+                                    '<i class="fas fa-file-excel text-success fa-4x"></i>' +
+                                '</div>' +
+                                '<h4 class="text-dark fw-bolder">' + successHeader + '</h4>' +
+                                '<p class="text-muted px-5">' + successText + '</p>' +
+                            '</div>' +
+                            '<div class="d-grid gap-2">' +
+                                '<a href="' + response.url + '" target="_blank" class="btn btn-success btn-lg">' +
+                                    '<i class="fas fa-download me-2"></i>' + downloadText +
+                                '</a>' +
+                                '<button type="button" class="btn btn-light" data-bs-dismiss="modal">' + closeText + '</button>' +
+                            '</div>' +
+                        '</div>'
+                    );
+                }
+
+                if (window.toastr) {
+                    toastr.success(response.message || '@lang("Export completed successfully")');
+                }
+            },
+            error: function (xhr) {
+                $btn.prop('disabled', false).html('<i class="fas fa-play me-2"></i> @lang("Start Export")');
+                $('#export-info').removeClass('d-none');
+                $('#export-processing').addClass('d-none');
+                var msg = '@lang("Failed to start export. Please try again.")';
+                try {
+                    var resp = JSON.parse(xhr.responseText);
+                    if (resp.message) msg = resp.message;
+                } catch(e) {}
+                alert(msg);
             }
-        }).fail(function () {
-            $btn.prop('disabled', false).html('<i class="fas fa-play me-2"></i> @lang("Start Export")');
-            alert('@lang("Failed to start export. Please try again.")');
         });
     });
-}());
-
-function copyExportUrl() {
-    var copyText = document.getElementById("export-url-input");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(copyText.value);
-    
-    if (window.toastr) {
-        toastr.success('@lang("Link copied to clipboard")');
-    } else {
-        alert('@lang("Link copied to clipboard")');
-    }
-}
+});
 </script>
 @endpush

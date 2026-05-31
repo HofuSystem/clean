@@ -7,7 +7,7 @@ use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Facades\Excel;
+
 
 use Core\Comments\Requests\CommentRequest;
 use Core\Comments\DataResources\CommentResource;
@@ -206,20 +206,35 @@ class UsersController extends Controller
 
     public function export(Request $request)
     {
-        $filename = 'exports/users_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
-        // Ensure the directory exists
-        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('exports')) {
-            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('exports');
+        try {
+            set_time_limit(300);
+            ini_set('memory_limit', '256M');
+
+            // Accept a custom timestamp from the frontend to synchronize the filename
+            $timestamp = $request->get('timestamp', now()->format('Y-m-d_H-i-s'));
+            $filename = 'exports/users_export_' . $timestamp . '.csv';
+
+            // Ensure the directory exists
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('exports')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('exports');
+            }
+
+            // Stream-write directly to disk — constant memory usage
+            (new UsersExport(app()->getLocale()))->store($filename, 'public');
+
+            return $this->returnData(trans('Export completed successfully'), [
+                'url'      => asset('storage/' . $filename),
+                'filename' => $filename,
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+            return $this->returnErrorMessage(
+                trans('Export failed. Please try again later.'),
+                [],
+                [],
+                500
+            );
         }
-
-        // Trigger the queued export
-        (new UsersExport(app()->getLocale()))->store($filename, 'public');
-
-        return $this->returnData(trans('Export started in background.'), [
-            'url' => asset('storage/' . $filename),
-            'filename' => $filename
-        ]);
     }
     public function comment(CommentRequest $request,$id){
         try {

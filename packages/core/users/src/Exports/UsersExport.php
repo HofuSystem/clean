@@ -3,56 +3,100 @@
 namespace Core\Users\Exports;
 
 use Core\Users\Models\User;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
+use Illuminate\Support\Facades\Storage;
 
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\BeforeExport;
-use Maatwebsite\Excel\Events\BeforeWriting;
-use Maatwebsite\Excel\Events\BeforeSheet;
-use Laravel\Telescope\Telescope;
-
-class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading, WithEvents, WithCustomCsvSettings, ShouldQueue
+/**
+ * Memory-efficient Users CSV export using streaming (fputcsv).
+ *
+ * Instead of building a full spreadsheet in memory (PhpSpreadsheet),
+ * this class writes each row directly to disk via fputcsv + chunkById,
+ * keeping memory usage constant (~5-10 MB) regardless of dataset size.
+ */
+class UsersExport
 {
-    use Exportable;
+    protected string $locale;
+    protected int $chunkSize;
 
-    public function __construct(
-        protected $locale = null
-    ) {
-        $this->locale = $locale ?: app()->getLocale();
-        
-        // Ensure memory limit and Telescope are handled whenever this class is instantiated (including in jobs)
-        ini_set('memory_limit', '512M');
-        if (class_exists(Telescope::class)) {
-            Telescope::stopRecording();
-        }
+    public function __construct(?string $locale = null, int $chunkSize = 500)
+    {
+        $this->locale    = $locale ?: app()->getLocale();
+        $this->chunkSize = $chunkSize;
     }
 
-    public function query()
+    /**
+     * Export users to a CSV file on the given Storage disk.
+     *
+     * @param  string  $filename  Relative path on the disk (e.g. 'exports/users.csv')
+     * @param  string  $disk      Storage disk name (default: 'public')
+     * @return string  The full filesystem path of the generated file.
+     */
+    public function store(string $filename, string $disk = 'public'): string
+    {
+        // Disable query log to prevent memory leak from logged queries
+        DB::connection()->disableQueryLog();
+
+        // Resolve absolute path so we can open a raw file handle
+        $fullPath = Storage::disk($disk)->path($filename);
+
+        // Ensure the directory exists
+        $dir = dirname($fullPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        // Open file handle for writing
+        $handle = fopen($fullPath, 'w');
+
+        if ($handle === false) {
+            throw new \RuntimeException("Cannot open file for writing: {$fullPath}");
+        }
+
+        // Write UTF-8 BOM so Excel opens the CSV with correct encoding
+        fwrite($handle, "\xEF\xBB\xBF");
+
+        // Write header row
+        fputcsv($handle, $this->headings());
+
+        // Stream data in chunks using chunkById for stable pagination
+        // Must specify 'users.id' to avoid ambiguity from JOINed tables
+        $this->buildQuery()
+            ->chunkById($this->chunkSize, function ($users) use ($handle) {
+                foreach ($users as $user) {
+                    fputcsv($handle, $this->mapRow($user));
+                }
+
+                // Free the chunk from memory immediately
+                unset($users);
+
+                // Flush PHP's output buffer to OS
+                fflush($handle);
+
+                // Reclaim any cyclic references
+                gc_collect_cycles();
+            }, 'users.id', 'id');
+
+        fclose($handle);
+
+        return $fullPath;
+    }
+
+    /**
+     * Build the base query with only the required columns.
+     * Uses raw JOINs to avoid Eloquent eager-loading overhead.
+     */
+    protected function buildQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return User::query()
             ->leftJoin('profiles', 'profiles.user_id', '=', 'users.id')
             ->leftJoin('city_translations', function ($join) {
                 $join->on('city_translations.city_id', '=', 'profiles.city_id')
-                    ->where('city_translations.locale', '=', $this->locale);
+                     ->where('city_translations.locale', '=', $this->locale);
             })
             ->leftJoin('district_translations', function ($join) {
                 $join->on('district_translations.district_id', '=', 'profiles.district_id')
-                    ->where('district_translations.locale', '=', $this->locale);
+                     ->where('district_translations.locale', '=', $this->locale);
             })
-            // Aggregate orders in a single join to avoid row-by-row subqueries
-            ->leftJoin(DB::raw("(
-                SELECT client_id, MAX(created_at) as latest_order_at, COUNT(*) as total_orders_count
-                FROM orders
-                WHERE status IN ('finished','delivered')
-                GROUP BY client_id
-            ) as order_stats"), 'order_stats.client_id', '=', 'users.id')
             ->select([
                 'users.id',
                 'users.fullname',
@@ -61,14 +105,18 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
                 'users.created_at',
                 'city_translations.name as city_name',
                 'district_translations.name as district_name',
-                'order_stats.latest_order_at',
-                'order_stats.total_orders_count as orders_count',
+                // Correlated subselects — lighter than a full subquery JOIN
+                DB::raw("(SELECT MAX(o.created_at) FROM orders o WHERE o.client_id = users.id AND o.status IN ('finished','delivered')) as latest_order_at"),
+                DB::raw("(SELECT COUNT(*) FROM orders o WHERE o.client_id = users.id AND o.status IN ('finished','delivered')) as orders_count"),
             ])
             ->whereNull('users.deleted_at')
             ->orderBy('users.id');
     }
 
-    public function headings(): array
+    /**
+     * CSV column headings.
+     */
+    protected function headings(): array
     {
         return [
             trans('id'),
@@ -83,54 +131,21 @@ class UsersExport implements FromQuery, WithHeadings, WithMapping, WithChunkRead
         ];
     }
 
-    public function map($model): array
+    /**
+     * Map a single Eloquent model to a flat row array.
+     */
+    protected function mapRow($user): array
     {
         return [
-            $model->id,
-            $model->fullname,
-            $model->email,
-            $model->phone,
-            $model->orders_count,
-            $model->city_name,
-            $model->district_name,
-            $model->created_at,
-            $model->latest_order_at,
-        ];
-    }
-
-    public function chunkSize(): int
-    {
-        return 1000;
-    }
-
-    public function getCsvSettings(): array
-    {
-        return [
-            'use_bom' => true, // Ensure Excel handles UTF-8 characters correctly
-        ];
-    }
-
-    public function registerEvents(): array
-    {
-        return [
-            BeforeExport::class => function (BeforeExport $event) {
-                ini_set('memory_limit', '512M');
-                
-                // Disable DB query log to save memory
-                DB::connection()->disableQueryLog();
-                
-                if (class_exists(Telescope::class)) {
-                    Telescope::stopRecording();
-                }
-            },
-            BeforeWriting::class => function (BeforeWriting $event) {
-                ini_set('memory_limit', '512M');
-                gc_collect_cycles();
-            },
-            BeforeSheet::class => function (BeforeSheet $event) {
-                ini_set('memory_limit', '512M');
-                gc_collect_cycles();
-            },
+            $user->id,
+            $user->fullname,
+            $user->email,
+            $user->phone,
+            $user->orders_count ?? 0,
+            $user->city_name    ?? '',
+            $user->district_name ?? '',
+            $user->created_at,
+            $user->latest_order_at ?? '',
         ];
     }
 }
