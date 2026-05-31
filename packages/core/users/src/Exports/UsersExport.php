@@ -152,7 +152,7 @@ class UsersExport
             $user->district_name ?? '',
             $user->created_at,
             $user->latest_order_at ?? '',
-            \Core\Orders\Helpers\OrderHelper::getCustomerTier($user->orders_count ?? 0),
+            \Core\Orders\Helpers\OrderHelper::getCustomerTier($user->orders_count ?? 0)['type'] ?? '',
         ];
     }
 }

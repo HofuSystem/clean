@@ -629,7 +629,7 @@ $(document).ready(function () {
                             }).catch(function(err) {
                                 // Ignore network errors during polling (e.g. 404)
                             });
-                    }, 3000);
+                    }, 10000);
 
                     // Stop polling if modal is closed (optional, but good for performance if they close it)
                     $('#exportChunksModal').on('hidden.bs.modal', function () {
