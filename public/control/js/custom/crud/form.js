@@ -67,7 +67,11 @@ const fullToolbar = [
       }
     }
     let url = $(this).attr('action');
-    let type = $(this).data('mode') == "edit" ? 'PUT' : 'POST';
+    let isEdit = $(this).data('mode') == "edit";
+    let type = 'POST'; // Always use POST to avoid 403 Forbidden on Apache
+    if (isEdit) {
+      data['_method'] = 'PUT'; // Laravel method spoofing
+    }
     $.ajax({
       type: type,
       url: url,
@@ -471,7 +475,8 @@ const fullToolbar = [
         });
       } else {
         let url = updateUrl;
-        let type = 'PUT';
+        let type = 'POST';
+        data['_method'] = 'PUT';
         $.ajax({
           type: type,
           url: url,
@@ -610,9 +615,9 @@ const fullToolbar = [
 
     if (url.length) {
       $.ajax({
-        type: "DELETE",
+        type: "POST",
         url: url,
-        data: {},
+        data: { _method: 'DELETE' },
         dataType: "json",
         success: function (response) {
           $('#' + modelID).modal('hide');
