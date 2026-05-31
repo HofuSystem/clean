@@ -58,36 +58,16 @@ class UsersExport
         // Write header row
         fputcsv($handle, $this->headings());
 
-        // Stream data in larger chunks (1000) for faster processing with low query overhead
+        // Stream data in chunks (1500) for fast processing with constant low memory usage
         $this->buildQuery()
             ->chunkById($this->chunkSize, function ($users) use ($handle) {
-                // Collect user IDs for the current chunk
-                $userIds = $users->pluck('id')->toArray();
-
-                // Fetch orders statistics in a single quick query for this chunk
-                $ordersStats = DB::table('orders')
-                    ->select('client_id')
-                    ->selectRaw('COUNT(*) as total_orders')
-                    ->selectRaw('MAX(created_at) as last_order_at')
-                    ->whereIn('client_id', $userIds)
-                    ->whereIn('status', ['finished', 'delivered'])
-                    ->groupBy('client_id')
-                    ->get()
-                    ->keyBy('client_id');
-
                 // Map and write each row
                 foreach ($users as $user) {
-                    $stats = $ordersStats->get($user->id);
-                    $user->orders_count = $stats ? $stats->total_orders : 0;
-                    $user->latest_order_at = $stats ? $stats->last_order_at : '';
-
                     fputcsv($handle, $this->mapRow($user));
                 }
 
                 // Free memory
                 unset($users);
-                unset($ordersStats);
-                unset($userIds);
 
                 // Flush PHP's output buffer to OS
                 fflush($handle);
@@ -140,11 +120,9 @@ class UsersExport
             trans('full name'),
             trans('email'),
             trans('phone'),
-            trans('orders count'),
             trans('city'),
             trans('district'),
             trans('register date'),
-            trans('last order date'),
         ];
     }
 
@@ -158,11 +136,9 @@ class UsersExport
             $user->fullname,
             $user->email,
             $user->phone,
-            $user->orders_count ?? 0,
             $user->city_name    ?? '',
             $user->district_name ?? '',
             $user->created_at,
-            $user->latest_order_at ?? '',
         ];
     }
 }
