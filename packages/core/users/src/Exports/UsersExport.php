@@ -58,21 +58,41 @@ class UsersExport
         // Write header row
         fputcsv($handle, $this->headings());
 
-        // Stream data in chunks using chunkById for stable pagination
-        // Must specify 'users.id' to avoid ambiguity from JOINed tables
+        // Stream data in larger chunks (1000) for faster processing with low query overhead
         $this->buildQuery()
             ->chunkById($this->chunkSize, function ($users) use ($handle) {
+                // Collect user IDs for the current chunk
+                $userIds = $users->pluck('id')->toArray();
+
+                // Fetch orders statistics in a single quick query for this chunk
+                $ordersStats = DB::table('orders')
+                    ->select('client_id')
+                    ->selectRaw('COUNT(*) as total_orders')
+                    ->selectRaw('MAX(created_at) as last_order_at')
+                    ->whereIn('client_id', $userIds)
+                    ->whereIn('status', ['finished', 'delivered'])
+                    ->groupBy('client_id')
+                    ->get()
+                    ->keyBy('client_id');
+
+                // Map and write each row
                 foreach ($users as $user) {
+                    $stats = $ordersStats->get($user->id);
+                    $user->orders_count = $stats ? $stats->total_orders : 0;
+                    $user->latest_order_at = $stats ? $stats->last_order_at : '';
+
                     fputcsv($handle, $this->mapRow($user));
                 }
 
-                // Free the chunk from memory immediately
+                // Free memory
                 unset($users);
+                unset($ordersStats);
+                unset($userIds);
 
                 // Flush PHP's output buffer to OS
                 fflush($handle);
 
-                // Reclaim any cyclic references
+                // Reclaim cycles
                 gc_collect_cycles();
             }, 'users.id', 'id');
 
@@ -105,9 +125,6 @@ class UsersExport
                 'users.created_at',
                 'city_translations.name as city_name',
                 'district_translations.name as district_name',
-                // Correlated subselects — lighter than a full subquery JOIN
-                DB::raw("(SELECT MAX(o.created_at) FROM orders o WHERE o.client_id = users.id AND o.status IN ('finished','delivered')) as latest_order_at"),
-                DB::raw("(SELECT COUNT(*) FROM orders o WHERE o.client_id = users.id AND o.status IN ('finished','delivered')) as orders_count"),
             ])
             ->whereNull('users.deleted_at')
             ->orderBy('users.id');

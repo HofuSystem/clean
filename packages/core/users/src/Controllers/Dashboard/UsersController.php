@@ -219,8 +219,8 @@ class UsersController extends Controller
                 \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('exports');
             }
 
-            // Stream-write directly to disk — constant memory usage
-            (new UsersExport(app()->getLocale()))->store($filename, 'public');
+            // Stream-write directly to disk — constant memory usage with optimized 1500 chunk size
+            (new UsersExport(app()->getLocale(), 1500))->store($filename, 'public');
 
             return $this->returnData(trans('Export completed successfully'), [
                 'url'      => asset('storage/' . $filename),
