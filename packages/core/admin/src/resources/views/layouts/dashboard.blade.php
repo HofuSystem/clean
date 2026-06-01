@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="{{ config('app.locale') }}" class="light-style layout-navbar-fixed layout-menu-fixed"
-    dir="{{ config('app.currentLocaleDir') ?? 'ltr' }}" data-theme="theme-default"
+    dir="ltr" data-theme="theme-default"
     data-assets-path="{{ asset('control') }}/assets/" data-template="vertical-menu-template">
 
 <head>
@@ -161,19 +161,7 @@
 
 
     <script src="{{ asset('control') }}/assets/vendor/js/helpers.js"></script>
-    <script>
-        // Force TemplateCustomizer to match Laravel locale direction
-        (function() {
-            var currentTemplate = document.documentElement.getAttribute('data-template');
-            var isRtl = '{{ app()->getLocale() == "ar" ? "true" : "false" }}';
-            var direction = '{{ app()->getLocale() == "ar" ? "rtl" : "ltr" }}';
-            
-            if (currentTemplate) {
-                localStorage.setItem('templateCustomizer-' + currentTemplate + '--Rtl', isRtl);
-                localStorage.setItem('templateCustomizer-' + currentTemplate + '--TextDir', direction);
-            }
-        })();
-    </script>
+    
     <script src="{{ asset('control') }}/assets/vendor/js/template-customizer.js"></script>
     <script src="{{ asset('control') }}/assets/js/config.js"></script>
     <script src="{{ asset('control') }}/assets/vendor/js/menu.js"></script>
