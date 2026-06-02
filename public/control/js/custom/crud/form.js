@@ -53,6 +53,34 @@ const fullToolbar = [
     ['clean']
   ];
 
+  function disableSubmitButton(form) {
+    let submitBtn = form.find('button[type="submit"], input[type="submit"]');
+    submitBtn.prop('disabled', true);
+    submitBtn.each(function () {
+      let btn = $(this);
+      if (btn.is('button')) {
+        btn.data('original-html', btn.html());
+        btn.html('<i class="fas fa-spinner fa-spin me-2"></i>' + btn.html());
+      } else if (btn.is('input')) {
+        btn.data('original-value', btn.val());
+        btn.val('Loading... ' + btn.val());
+      }
+    });
+  }
+
+  function enableSubmitButton(form) {
+    let submitBtn = form.find('button[type="submit"], input[type="submit"]');
+    submitBtn.prop('disabled', false);
+    submitBtn.each(function () {
+      let btn = $(this);
+      if (btn.is('button') && btn.data('original-html') !== undefined) {
+        btn.html(btn.data('original-html'));
+      } else if (btn.is('input') && btn.data('original-value') !== undefined) {
+        btn.val(btn.data('original-value'));
+      }
+    });
+  }
+
   //save
   $(document).on('submit', '#operation-form,.operation-form', function (e) {
     e.preventDefault();
@@ -79,7 +107,8 @@ const fullToolbar = [
       dataType: "json",
       beforeSend: function () {
         // Code to run before the request is sent
-        $('.loader').addClass('show')
+        $('.loader').addClass('show');
+        disableSubmitButton(form);
       },
       success: function (response) {
         Swal.fire({
@@ -115,7 +144,8 @@ const fullToolbar = [
         });
       },
       complete: function () {
-        $('.loader').removeClass('show')
+        $('.loader').removeClass('show');
+        enableSubmitButton(form);
       }
     });
   });
@@ -427,7 +457,8 @@ const fullToolbar = [
           dataType: "json",
           beforeSend: function () {
             // Code to run before the request is sent
-            $('.loader').addClass('show')
+            $('.loader').addClass('show');
+            disableSubmitButton(form);
           },
           success: function (response) {
             modal.modal('hide');
@@ -470,7 +501,8 @@ const fullToolbar = [
             });
           },
           complete: function () {
-            $('.loader').removeClass('show')
+            $('.loader').removeClass('show');
+            enableSubmitButton(form);
           }
         });
       } else {
@@ -484,7 +516,8 @@ const fullToolbar = [
           dataType: "json",
           beforeSend: function () {
             // Code to run before the request is sent
-            $('.loader').addClass('show')
+            $('.loader').addClass('show');
+            disableSubmitButton(form);
           },
           success: function (response) {
             modal.modal('hide');
@@ -527,7 +560,8 @@ const fullToolbar = [
             });
           },
           complete: function () {
-            $('.loader').removeClass('show')
+            $('.loader').removeClass('show');
+            enableSubmitButton(form);
           }
         });
       }
