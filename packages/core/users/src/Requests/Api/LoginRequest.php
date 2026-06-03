@@ -24,13 +24,14 @@ class LoginRequest extends FormRequest
      */
     public function rules()
     {
-        $rules =  [
-          'phone'           =>['required','regex:/^(05|5)[5|0|3|6|4|9|1|8|7][0-9]{7}$/'],
-          'device_token'    => 'nullable',
-          'type'            => 'nullable|in:ios,android,huawei',
+        $rules = [
+            'phone' => ['required', 'regex:/^(05|5)[5|0|3|6|4|9|1|8|7][0-9]{7}$/'],
+            'device_token' => 'nullable',
+            'type' => 'nullable|in:ios,android,huawei',
+            'temp_name' => 'nullable|string|max:255',
         ];
         $loginMethod = SettingsService::getDataBaseSetting('login_using');
-        if($loginMethod == 'password'){
+        if ($loginMethod == 'password') {
             $rules['password'] = ['required'];
         }
         return $rules;

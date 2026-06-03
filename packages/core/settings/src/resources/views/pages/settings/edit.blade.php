@@ -141,6 +141,12 @@
                                         aria-controls="pills-maidscheduled"
                                         aria-selected="false">{{ trans('maid scheduled') }}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-tabs-settings-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-tabs-settings" type="button" role="tab"
+                                        aria-controls="pills-tabs-settings"
+                                        aria-selected="false">{{ trans('tabs settings') }}</button>
+                                </li>
 
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
@@ -1338,6 +1344,51 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-tabs-settings" role="tabpanel"
+                                    aria-labelledby="pills-tabs-settings-tab" tabindex="0">
+                                    <div class="row">
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="clothes_tab">{{ trans('clothes tab') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="clothes_tab" value="0">
+                                                <input class="form-check-input" type="checkbox" name="clothes_tab" id="clothes_tab" value="1"
+                                                    @checked(($settings['clothes_tab'] ?? '1') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="maid_tab">{{ trans('maid tab') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="maid_tab" value="0">
+                                                <input class="form-check-input" type="checkbox" name="maid_tab" id="maid_tab" value="1"
+                                                    @checked(($settings['maid_tab'] ?? '1') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="flowers_tab">{{ trans('flowers tab') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="flowers_tab" value="0">
+                                                <input class="form-check-input" type="checkbox" name="flowers_tab" id="flowers_tab" value="1"
+                                                    @checked(($settings['flowers_tab'] ?? '1') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4 mt-3">
+                                            <label class="form-check-label d-block mb-2" for="service_tab">{{ trans('service tab') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="service_tab" value="0">
+                                                <input class="form-check-input" type="checkbox" name="service_tab" id="service_tab" value="1"
+                                                    @checked(($settings['service_tab'] ?? '1') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4 mt-3">
+                                            <label class="form-check-label d-block mb-2" for="sales_tab">{{ trans('sales tab') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="sales_tab" value="0">
+                                                <input class="form-check-input" type="checkbox" name="sales_tab" id="sales_tab" value="1"
+                                                    @checked(($settings['sales_tab'] ?? '1') == '1') />
                                             </div>
                                         </div>
                                     </div>

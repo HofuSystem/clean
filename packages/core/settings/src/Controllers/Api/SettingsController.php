@@ -79,6 +79,11 @@ class SettingsController extends Controller
                     'furniture' => SettingsService::getDataBaseSetting('furniture_hours'),
                 ],
                 "maid_scheduled"         => SettingsService::getDataBaseSetting('maid_scheduled') ?? [],
+                "clothes_tab"            => (SettingsService::getDataBaseSetting('clothes_tab') ?? '1') == '1',
+                "maid_tab"               => (SettingsService::getDataBaseSetting('maid_tab') ?? '1') == '1',
+                "flowers_tab"            => (SettingsService::getDataBaseSetting('flowers_tab') ?? '1') == '1',
+                "service_tab"            => (SettingsService::getDataBaseSetting('service_tab') ?? '1') == '1',
+                "sales_tab"              => (SettingsService::getDataBaseSetting('sales_tab') ?? '1') == '1',
             ]
         ];
         return $this->returnData(trans('appSettings'), $data);

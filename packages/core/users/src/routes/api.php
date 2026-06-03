@@ -27,7 +27,7 @@ Route::group([
     Route::post('/login_new', [AuthenticationController::class, 'loginNew']);
     Route::post('/verify', [AuthenticationController::class, 'verify']);
     Route::post('/send_code', [AuthenticationController::class, 'sendCode']);
-
+    Route::post('/check_profile', [AuthenticationController::class, 'checkProfile']);
 });
 
 Route::group([
@@ -49,6 +49,7 @@ Route::group([
     Route::get('/referral', [AuthenticationController::class, 'referral']);
     Route::post('/referral/update', [AuthenticationController::class, 'referralUpdate']);
     Route::post('/edit_profile', [AuthenticationController::class, 'editProfile']);
+    Route::post('/update_location', [AuthenticationController::class, 'updateLocation']);
     Route::post('/update_qr_code', [AuthenticationController::class, 'updateQrCode']);
     Route::post('/logout', [AuthenticationController::class, 'logout']);
 

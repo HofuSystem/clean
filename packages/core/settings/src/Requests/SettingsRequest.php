@@ -122,6 +122,11 @@ class SettingsRequest extends FormRequest
 			"maid_scheduled" => ['nullable', 'array'],
 			"maid_scheduled.*.from" => ['required', 'string'],
 			"maid_scheduled.*.to" => ['required', 'string'],
+			"clothes_tab" => ['nullable', 'in:0,1'],
+			"maid_tab" => ['nullable', 'in:0,1'],
+			"flowers_tab" => ['nullable', 'in:0,1'],
+			"service_tab" => ['nullable', 'in:0,1'],
+			"sales_tab" => ['nullable', 'in:0,1'],
 		];
 
 	}

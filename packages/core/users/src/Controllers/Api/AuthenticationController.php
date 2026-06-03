@@ -11,6 +11,8 @@ use Core\Settings\Traits\ApiResponse;
 use Core\Users\DataResources\SimpleUserRecourse;
 use Core\Users\DataResources\UserProfileResource;
 use Core\B2B\Models\Contract;
+use Core\Info\Models\City;
+use Core\Info\Models\District;
 use Core\Users\Models\Device;
 use Core\Users\Models\Point;
 use Core\Users\Models\User;
@@ -19,7 +21,9 @@ use Core\Users\Requests\Api\EditProfileRequest;
 use Core\Users\Requests\Api\LoginRequest;
 use Core\Users\Requests\Api\ReferralUpdateRequest;
 use Core\Users\Requests\Api\ResendCodeRequest;
+use Core\Users\Requests\Api\UpdateLocationRequest;
 use Core\Users\Requests\Api\UpdateQrCodeRequest;
+use Google\Service\CloudBuild\EmptyDirVolumeSource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +31,9 @@ use Illuminate\Support\Facades\Hash;
 class AuthenticationController extends Controller
 {
     use ApiResponse;
-    public function __construct(protected TelegramNotificationService $telegramNotificationService) {}
+    public function __construct(protected TelegramNotificationService $telegramNotificationService)
+    {
+    }
 
     public function login(LoginRequest $request)
     {
@@ -35,25 +41,26 @@ class AuthenticationController extends Controller
         if (!$user) {
 
             $userData = [
-                'password'          =>  $request->password,
-                'phone'             =>  $request->phone,
-                'ip'                =>  $request->ip(),
-                'is_active'         =>  false,
-                'verified_code'     =>  null,
-                'phone_verified_at' =>  now(),
-                'last_login_at'     =>  now(),
-                'referral_code'     =>  $this->generate_unique_code(8, '\\Core\\Users\\Models\\User', 'referral_code', 'alpha_numbers', 'lower')
+                'password' => $request->password,
+                'phone' => $request->phone,
+                'temp_name' => $request->temp_name,
+                'ip' => $request->ip(),
+                'is_active' => false,
+                'verified_code' => null,
+                'phone_verified_at' => now(),
+                'last_login_at' => now(),
+                'referral_code' => $this->generate_unique_code(8, '\\Core\\Users\\Models\\User', 'referral_code', 'alpha_numbers', 'lower')
             ];
 
             $user = User::create($userData);
             $user->syncRoles(['client']);
-            $pointPerRegister       = SettingsService::getDataBaseSetting('register_points');
+            $pointPerRegister = SettingsService::getDataBaseSetting('register_points');
             if ($pointPerRegister) {
                 Point::create([
-                    'title'     => "register gift points",
-                    'amount'    => $pointPerRegister,
+                    'title' => "register gift points",
+                    'amount' => $pointPerRegister,
                     'operation' => 'deposit',
-                    'user_id'   => $user->id,
+                    'user_id' => $user->id,
                 ]);
             }
             $this->telegramNotificationService->sendMessage("@cleanstationsupport", $this->telegramNotificationService->formatClientNewInAppMessage($user));
@@ -63,6 +70,9 @@ class AuthenticationController extends Controller
             }
             if ($user->is_ban) {
                 return $this->returnErrorMessage(trans('banned message'), [], [], 422);
+            }
+            if (empty($user->temp_name) && $request->temp_name) {
+                $user->update(['temp_name' => $request->temp_name]);
             }
         }
         $loginMethod = SettingsService::getDataBaseSetting('login_using');
@@ -75,17 +85,17 @@ class AuthenticationController extends Controller
                 $code = random_int(1111, 9999); // more secure than mt_rand
             }
 
-            $notifyTypes    = SettingsService::getDataBaseSetting('notify_login_using');
+            $notifyTypes = SettingsService::getDataBaseSetting('notify_login_using');
             if ($notifyTypes and !empty($notifyTypes)) {
                 $message = trans('verified_code_is : ') . $code;
-                $title   = 'verify message';
+                $title = 'verify message';
                 Notification::create([
-                    'types'     => json_encode($notifyTypes),
-                    'for'       => 'users',
-                    'for_data'  => json_encode([$user->id]),
-                    'payload'   => json_encode([]),
-                    'title'     => $title,
-                    'body'      => $message,
+                    'types' => json_encode($notifyTypes),
+                    'for' => 'users',
+                    'for_data' => json_encode([$user->id]),
+                    'payload' => json_encode([]),
+                    'title' => $title,
+                    'body' => $message,
                     'sender_id' => null,
                 ]);
             }
@@ -124,7 +134,11 @@ class AuthenticationController extends Controller
 
 
         $user->update(['is_active' => 1, 'verified_code' => null, 'phone_verified_at' => now(), 'last_login_at' => now()]);
-
+        if (empty($user->fullname) and !empty($user->temp_name)) {
+            $user->update([
+                'fullname' => $user->temp_name,
+            ]);
+        }
         Device::updateOrCreate([
             'user_id' => $user->id,
             'type' => $request->type,
@@ -141,7 +155,7 @@ class AuthenticationController extends Controller
                         $contractExpirationDate = $contact->unlimited_days ? null : now()->addDays($contact->number_of_days);
                         $contractNote = $json['title'] ?? null;
                         $operatorId = $operator->id;
-                        if ($operatorId != $user->id and  $operatorId != null and $operatorId != $user->operator_id) {
+                        if ($operatorId != $user->id and $operatorId != null and $operatorId != $user->operator_id) {
                             $user->update([
                                 'contract_note' => $contractNote,
                                 'contract_expiration_date' => $contractExpirationDate,
@@ -167,18 +181,18 @@ class AuthenticationController extends Controller
             if ($request->phone == '0598190263') {
                 $code = 1234;
             } else {
-                $notifyTypes    = SettingsService::getDataBaseSetting('notify_login_using');
+                $notifyTypes = SettingsService::getDataBaseSetting('notify_login_using');
                 if ($notifyTypes and !empty($notifyTypes)) {
-                    $code    = mt_rand(1111, 9999); // random code
+                    $code = mt_rand(1111, 9999); // random code
                     $message = trans('verified_code_is : ') . $code;
-                    $title   = 'verify message';
+                    $title = 'verify message';
                     Notification::create([
-                        'types'     => json_encode($notifyTypes),
-                        'for'       => 'users',
-                        'for_data'  => json_encode([$user->id]),
-                        'payload'   => json_encode([]),
-                        'title'     => $title,
-                        'body'      => $message,
+                        'types' => json_encode($notifyTypes),
+                        'for' => 'users',
+                        'for_data' => json_encode([$user->id]),
+                        'payload' => json_encode([]),
+                        'title' => $title,
+                        'body' => $message,
                         'sender_id' => null,
                     ]);
                 }
@@ -207,23 +221,23 @@ class AuthenticationController extends Controller
     }
     public function referral()
     {
-        $user                           = auth()->user();
-        $data                           = [];
-        $data['referral_code']          = $user->referral_code;
+        $user = auth()->user();
+        $data = [];
+        $data['referral_code'] = $user->referral_code;
         $data['earned_referral_points'] = $user->earned_referral_points;
         $data['earned_referral_riyals'] = $user->earned_referral_riyals;
-        $data['referrals_count']        = $user->myReferrals->count();
-        $data['referrals']              = SimpleUserRecourse::collection($user->myReferrals);
-        $data['image_en']               = SettingsService::getDataBaseSettingImage('referral_image_en');
-        $data['image_ar']               = SettingsService::getDataBaseSettingImage('referral_image_ar');
+        $data['referrals_count'] = $user->myReferrals->count();
+        $data['referrals'] = SimpleUserRecourse::collection($user->myReferrals);
+        $data['image_en'] = SettingsService::getDataBaseSettingImage('referral_image_en');
+        $data['image_ar'] = SettingsService::getDataBaseSettingImage('referral_image_ar');
         return $this->returnData('user referral', ['data' => $data]);
     }
     public function referralUpdate(ReferralUpdateRequest $request)
     {
         try {
             \DB::beginTransaction();
-            $user           = auth()->user();
-            $referralUser   = User::where('referral_code', $request->referral_code)->first();
+            $user = auth()->user();
+            $referralUser = User::where('referral_code', $request->referral_code)->first();
             if (!$referralUser) {
                 throw new \RuntimeException(trans('the referral code is incorrect'));
             }
@@ -235,7 +249,7 @@ class AuthenticationController extends Controller
             }
 
             $user->update([
-                'register_by_id'            => $referralUser->id,
+                'register_by_id' => $referralUser->id,
             ]);
 
             \DB::commit();
@@ -255,9 +269,9 @@ class AuthenticationController extends Controller
     {
         try {
             \DB::beginTransaction();
-            $user          = auth()->user();
-            $profileData   = ['district_id', 'city_id', 'other_city_name', 'lat', 'lng'];
-            $userData      = Arr::except($request->validated(), $profileData);
+            $user = auth()->user();
+            $profileData = ['district_id', 'city_id', 'other_city_name', 'lat', 'lng'];
+            $userData = Arr::except($request->validated(), $profileData);
             if (isset($userData['date_of_birth'])) {
                 $userData['date_of_birth'] = ToolHelper::convertArabicNumbers($userData['date_of_birth']);
             }
@@ -281,12 +295,12 @@ class AuthenticationController extends Controller
                     ->doesntExist();
                 if ($userDonotHaveNotifications && $welcomeNotificationTitle && $welcomeNotificationBody) {
                     Notification::create([
-                        'types'    => json_encode(['apps']),
-                        'for'      => 'users',
+                        'types' => json_encode(['apps']),
+                        'for' => 'users',
                         'for_data' => json_encode([$user->id]),
-                        'title'    => $welcomeNotificationTitle,
-                        'body'     => $welcomeNotificationBody,
-                        'media'    => null,
+                        'title' => $welcomeNotificationTitle,
+                        'body' => $welcomeNotificationBody,
+                        'media' => null,
                     ]);
                 }
             }
@@ -303,7 +317,7 @@ class AuthenticationController extends Controller
     {
         try {
             \DB::beginTransaction();
-            $user          = auth()->user();
+            $user = auth()->user();
             if ($request->secretKey) {
                 $json = json_decode(base64_decode($request->secretKey), true);
                 if (isset($json['user_id'])) {
@@ -314,7 +328,7 @@ class AuthenticationController extends Controller
                             $contractExpirationDate = $contact->unlimited_days ? null : now()->addDays($contact->number_of_days);
                             $contractNote = $json['title'] ?? null;
                             $operatorId = $operator->id;
-                            if ($operatorId != $user->id and  $operatorId != null and $operatorId != $user->operator_id) {
+                            if ($operatorId != $user->id and $operatorId != null and $operatorId != $user->operator_id) {
                                 $user->update([
                                     'contract_note' => $contractNote,
                                     'contract_expiration_date' => $contractExpirationDate,
@@ -365,4 +379,115 @@ class AuthenticationController extends Controller
         }
         return $generate_random_code;
     }
+
+    public function checkProfile(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required',
+        ]);
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            return $this->returnData(trans('profile checked'), [
+                'has_name' => false,
+                'has_ciyt' => false,
+            ]);
+        }
+
+        $has_name = !empty($user->fullname);
+        $has_city = isset($user?->profile?->city);
+
+        return $this->returnData(trans('profile checked'), [
+            'has_name' => (bool) $has_name,
+            'has_city' => (bool) $has_city
+        ]);
+    }
+
+    public function updateLocation(UpdateLocationRequest $request)
+    {
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return $this->returnErrorMessage(trans('user not found'), [], [], 404);
+        }
+
+        $cityId = $request->city_id ?? $request->city;
+        $districtId = $request->district_id ?? $request->district;
+
+        if ($cityId && $districtId) {
+        
+            $profileData = [
+                'city_id' => $cityId,
+                'district_id' => $districtId,
+            ];
+            if ($user->profile) {
+                $user->profile->update($profileData);
+            } else {
+                $user->profile()->create($profileData);
+            }
+
+            return $this->returnData(trans('profile updated'), ['data' => new UserProfileResource($user->fresh())]);
+        }
+
+        $lat = $request->lat ?? $request->latitude;
+        $lng = $request->lng ?? $request->longitude;
+
+        if ($lat && $lng) {
+            $matchingDistrict = null;
+            $districts = District::with('mapPoints')->get();
+            foreach ($districts as $district) {
+                $polygonPoints = [];
+                foreach ($district->mapPoints as $point) {
+                    $polygonPoints[] = [
+                        'lat' => (double) $point->lat,
+                        'lng' => (double) $point->lng,
+                    ];
+                }
+                if (count($polygonPoints) >= 3 && $this->pointInPolygon($lat, $lng, $polygonPoints)) {
+                    $matchingDistrict = $district;
+                    break;
+                }
+            }
+
+            if ($matchingDistrict) {
+                $profileData = [
+                    'city_id' => $matchingDistrict->city_id,
+                    'district_id' => $matchingDistrict->id,
+                    'lat' => $lat,
+                    'lng' => $lng,
+                ];
+
+                if ($user->profile) {
+                    $user->profile->update($profileData);
+                } else {
+                    $user->profile()->create($profileData);
+                }
+
+                return $this->returnData(trans('profile updated'), ['data' => new UserProfileResource($user->fresh())]);
+            }
+        }
+
+        return $this->returnData(trans('profile not updated'), ['data' => new UserProfileResource($user->fresh())]);
+    }
+
+    private function pointInPolygon($lat, $lng, $polygon)
+    {
+        $inside = false;
+        $numPoints = count($polygon);
+        for ($i = 0, $j = $numPoints - 1; $i < $numPoints; $j = $i++) {
+            $xi = $polygon[$i]['lat'];
+            $yi = $polygon[$i]['lng'];
+            $xj = $polygon[$j]['lat'];
+            $yj = $polygon[$j]['lng'];
+
+            $intersect = (($yi > $lng) != ($yj > $lng))
+                && ($lat < ($xj - $xi) * ($lng - $yi) / ($yj - $yi) + $xi);
+            if ($intersect) {
+                $inside = !$inside;
+            }
+        }
+
+        return $inside;
+    }
 }
+

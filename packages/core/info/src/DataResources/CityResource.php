@@ -20,8 +20,8 @@ class CityResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'name_ar' => CityTranslation::where('locale','ar')->where('city_id',$this->id)->first()->name,
-            'name_en' => CityTranslation::where('locale','en')->where('city_id',$this->id)->first()->name,
+            'name_ar' => CityTranslation::where('locale','ar')->where('city_id',$this->id)->first()?->name,
+            'name_en' => CityTranslation::where('locale','en')->where('city_id',$this->id)->first()?->name,
             'image' => MediaCenterHelper::getImagesUrl($this->image),
             'status' => $this->status,
         ];
