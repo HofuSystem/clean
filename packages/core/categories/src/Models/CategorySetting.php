@@ -16,9 +16,9 @@ use App\Observers\GlobalModelObserver;
 class CategorySetting extends CoreModel implements TranslatableContract{
     use Translatable;
 	protected $table             = 'category_settings';
-	protected $fillable          = ['slug', 'category_id', 'addon_price','cost' ,'discount_percent', 'parent_id', 'status', 'creator_id', 'updater_id'];
+	protected $fillable          = ['slug', 'category_id', 'addon_price','cost' ,'discount_percent', 'parent_id', 'status', 'color', 'icon', 'creator_id', 'updater_id'];
     protected $guarded           = [];
-    public $translatedAttributes = ["name"];
+    public $translatedAttributes = ["name", "description"];
 
     //start Scopes
     function scopeSearch($query,$type = null){
@@ -124,6 +124,18 @@ class CategorySetting extends CoreModel implements TranslatableContract{
 
     public function getItemDataAttribute(){
         return $this->getItemData('category-settings');
+    }
+    public function getPriceAttribute()
+    {
+        $price = $this->addon_price;
+        $cityId = auth('api')->user()?->profile?->city_id ?? request('city_id');
+        if ($cityId) {
+            $cityPrice = $this->addonPrices()->where('city_id', $cityId)->first();
+            if ($cityPrice) {
+                $price = $cityPrice->price;
+            }
+        }
+        return \Core\Settings\Helpers\ToolHelper::getPriceBasedOnCurrentWeekDay($price);
     }
     //end Attributes
 

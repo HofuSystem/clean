@@ -69,6 +69,11 @@ class OrderDetailsResource extends JsonResource
             'coupon_minimum'                => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,
             'note'                          => $this->note,
+            'order_for'                     => $this->order_for,
+            'recipient_name'                => $this->recipient_name,
+            'recipient_phone'               => $this->recipient_phone,
+            'request_address'               => $this->request_address,
+            'hide_identity'                 => $this->hide_identity,
 
             'paid'                  => (float)$this->paid,
             'card_amount_used'      => $this->card_amount_used,

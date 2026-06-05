@@ -16,8 +16,12 @@ use App\Observers\GlobalModelObserver;
 class OrderItem extends CoreModel {
     
 	protected $table             = 'order_items';
-	protected $fillable          = ['order_id', 'product_id', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete'];
+	protected $fillable          = ['order_id', 'product_id', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete', 'customizations'];
     protected $guarded           = [];
+    protected $casts = [
+        'customizations' => 'array',
+    ];
+
     
 
     //start Scopes
@@ -119,9 +123,17 @@ class OrderItem extends CoreModel {
         return $this->getItemData('order-items');
     }
     public function getTotalPriceAttribute(){
+        $customizations = is_string($this->customizations) ? json_decode($this->customizations, true) : $this->customizations;
+        $customizationsPriceSum = 0;
+        if (!empty($customizations) && is_array($customizations)) {
+            foreach ($customizations as $cust) {
+                $customizationsPriceSum += $cust['price'] ?? 0;
+            }
+        }
+        $unitPrice = $this->product_price + $customizationsPriceSum;
         return (isset($this->width) and $this->width and isset($this->height) and $this->height) 
-        ? ($this->width * $this->height * $this->quantity * $this->product_price) 
-        : ($this->quantity * $this->product_price);
+        ? ($this->width * $this->height * $this->quantity * $unitPrice) 
+        : ($this->quantity * $unitPrice);
     }
     public function getTotalCostAttribute(){
         return (isset($this->width) and $this->width and isset($this->height) and $this->height) 

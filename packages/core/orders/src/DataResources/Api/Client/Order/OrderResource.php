@@ -62,6 +62,11 @@ class OrderResource extends JsonResource
             'coupon_discount_code'      =>  $this->coupon ? $this->coupon?->code : json_decode($this->coupon_data,true)['code'] ?? null,
             'coupon_discount_type'      =>  $this->coupon ? $this->coupon?->type : json_decode($this->coupon_data,true)['type'] ?? null,
             'note'                      =>  $this->note,
+            'order_for'                 =>  $this->order_for,
+            'recipient_name'            =>  $this->recipient_name,
+            'recipient_phone'           =>  $this->recipient_phone,
+            'request_address'           =>  $this->request_address,
+            'hide_identity'             =>  $this->hide_identity,
 
             'paid'                  => (double)$this->paid,
             'card_amount_used'      => $this->card_amount_used,

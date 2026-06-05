@@ -84,6 +84,7 @@
 
                                     </div>
 
+
                                 </div>
                                 <div class="tab-pane fade " id="name-ar" role="tabpanel" aria-labelledby="ar-tab">
 
@@ -95,6 +96,8 @@
 
                                     </div>
 
+                                   
+
                                 </div>
                             </div>
                         </div>
@@ -104,11 +107,7 @@
                             <input type="text" name="slug" class="form-control" id="slug"
                                 placeholder="{{ trans('Enter slug') }}" value="{{ old('slug', $item->slug ?? null) }}">
                         </div>
-                        <div class="form-group mb-3 col-md-12">
-                            <label class="" for="discount_percent">{{ trans('discount percent') }}</label>
-                            <input type="number" step="0.01" name="discount_percent" class="form-control" id="discount_percent"
-                                placeholder="{{ trans('Enter discount percent') }}" value="{{ old('discount_percent', $item->discount_percent ?? null) }}">
-                        </div>
+                       
                         <div class="form-group mb-3 col-md-12">
                             <label class="required" for="category_id">{{ trans('service') }}</label>
                             <select class="custom-select  form-select advance-select" name="category_id"
@@ -158,6 +157,10 @@
                                                     {{ trans('name ( en )') }}</th>
                                                 <th scope="col" data-name="translations.ar.name" data-type="text">
                                                     {{ trans('name ( ar )') }}</th>
+                                                <th scope="col" data-name="translations.en.description" data-type="text">
+                                                    {{ trans('description ( en )') }}</th>
+                                                <th scope="col" data-name="translations.ar.description" data-type="text">
+                                                    {{ trans('description ( ar )') }}</th>
 
                                                 <th scope="col" data-name="addon_price" data-type="number">
                                                     {{ trans('addon price') }}</th>
@@ -165,6 +168,10 @@
                                                     {{ trans('discount percent') }}</th>
                                                 <th scope="col" data-name="cost" data-type="number">
                                                     {{ trans('cost') }}</th>
+                                                <th scope="col" data-name="color" data-type="color">
+                                                    {{ trans('color') }}</th>
+                                                <th scope="col" data-name="icon" data-type="mediacenter">
+                                                    {{ trans('icon') }}</th>
                                                 <th scope="col" data-name="status" data-type="select">
                                                     {{ trans('status') }}</th>
                                                 <th scope="col" data-name="actions" data-type="actions">
@@ -179,9 +186,22 @@
 
                                                 <td>{{ $sItem?->translate('en')?->name }}</td>
                                                 <td>{{ $sItem?->translate('ar')?->name }}</td>
+                                                <td>{{ $sItem?->translate('en')?->description }}</td>
+                                                <td>{{ $sItem?->translate('ar')?->description }}</td>
                                                 <td>{{ $sItem->addon_price }}</td>
                                                 <td>{{ $sItem->discount_percent }}</td>
                                                 <td>{{ $sItem->cost }}</td>
+                                                <td>
+                                                    @if($sItem->color)
+                                                        <div style="width: 25px; height: 25px; border-radius: 50%; background-color: {{ $sItem->color }}; display: inline-block; vertical-align: middle; border: 1px solid #ddd; margin-right: 5px;"></div>
+                                                        <span>{{ $sItem->color }}</span>
+                                                    @else
+                                                        --
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {!! \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesHtml($sItem->icon) !!}
+                                                </td>
                                                 <td>{{ $sItem->status }}</td>
                                                 <td class="options">{!! $sItem->itemsActions !!}</td>
                                             </tr>
@@ -338,6 +358,12 @@
 
                                                     </div>
 
+                                                    <div class="form-group mb-3 col-md-12">
+                                                        <label class="" for="description">{{ trans('description') }}</label>
+                                                        <textarea name="translations[en][description]" class="form-control" rows="3"
+                                                            placeholder="{{ trans('Enter description') }}"></textarea>
+                                                    </div>
+
                                                 </div>
                                                 <div class="tab-pane fade " id="items-name-ar" role="tabpanel"
                                                     aria-labelledby="ar-tab">
@@ -348,6 +374,12 @@
                                                             class="form-control "
                                                             placeholder="{{ trans('Enter name') }} " value="">
 
+                                                    </div>
+
+                                                    <div class="form-group mb-3 col-md-12">
+                                                        <label class="" for="description">{{ trans('description') }}</label>
+                                                        <textarea name="translations[ar][description]" class="form-control" rows="3"
+                                                            placeholder="{{ trans('Enter description') }}"></textarea>
                                                     </div>
 
                                                 </div>
@@ -406,6 +438,27 @@
 
                                         </div>
 
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="" for="color">{{ trans('color') }}</label>
+                                            <div class="input-group">
+                                                <input type="text" name="color" class="form-control color-text-input"
+                                                    placeholder="{{ trans('e.g., #000000') }}" value="">
+                                                <input type="color" class="form-control form-control-color color-picker-input"
+                                                    style="max-width: 60px; padding: 2px;" value="#000000">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label class="" for="icon">{{ trans('icon') }}</label>
+                                            <div class="media-center-group form-control" data-max="1" data-type="image">
+                                                <input type="text" hidden="hidden" class="form-control" name="icon"
+                                                    value="">
+                                                <button type="button" class="btn btn-secondary media-center-load"
+                                                    style="margin-top: 10px;"><i class="fa fa-file-upload"></i></button>
+                                                <div class="input-gallery"></div>
+                                            </div>
+                                        </div>
+
                                         <div class="col-lg-9 ml-lg-auto">
                                             <button type="submit" class="btn btn-primary font-weight-bold mr-2">{{
                                                 trans('save') }}</button>
@@ -459,4 +512,23 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/1.0.5/jquery.tablednd.js"></script>
 <script src="{{ asset('control') }}/js/custom/crud/form.js"></script>
+<script>
+$(document).ready(function() {
+    $(document).on('input', '.color-picker-input', function() {
+        let pickerVal = $(this).val();
+        let textInput = $(this).closest('.input-group').find('.color-text-input');
+        textInput.val(pickerVal).trigger('change');
+    });
+
+    $(document).on('input change', '.color-text-input', function() {
+        let textVal = $(this).val();
+        let pickerInput = $(this).closest('.input-group').find('.color-picker-input');
+        if (/^#[0-9A-F]{6}$/i.test(textVal)) {
+            pickerInput.val(textVal);
+        } else if (!textVal) {
+            pickerInput.val('#000000');
+        }
+    });
+});
+</script>
 @endpush

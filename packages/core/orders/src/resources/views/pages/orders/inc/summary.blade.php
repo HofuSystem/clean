@@ -84,6 +84,36 @@
                         <th scope="row" class="p-2">{{ trans('category') }}</th>
                         <td class="p-2">{{ trans($order->type) }}</td>
                     </tr>
+                    @if($order->order_for)
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('Order For') }}</th>
+                        <td class="p-2">{{ trans($order->order_for) }}</td>
+                    </tr>
+                    @endif
+                    @if($order->recipient_name)
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('Recipient Name') }}</th>
+                        <td class="p-2">{{ $order->recipient_name }}</td>
+                    </tr>
+                    @endif
+                    @if($order->recipient_phone)
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('Recipient Phone') }}</th>
+                        <td class="p-2">{{ $order->recipient_phone }}</td>
+                    </tr>
+                    @endif
+                    @if($order->request_address !== null && $order->order_for === 'other')
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('Request Address From Recipient') }}</th>
+                        <td class="p-2">{{ $order->request_address ? trans('yes') : trans('no') }}</td>
+                    </tr>
+                    @endif
+                    @if($order->hide_identity !== null && $order->order_for === 'other')
+                    <tr>
+                        <th scope="row" class="p-2 text-info">{{ trans('Hide Sender Identity') }}</th>
+                        <td class="p-2">{{ $order->hide_identity ? trans('yes') : trans('no') }}</td>
+                    </tr>
+                    @endif
                     <tr>
                         <th scope="row" class="p-2">{{ trans('total price') }}</th>
                         <td class="p-2">{{ number_format($order->total_price, 2) }}</td>

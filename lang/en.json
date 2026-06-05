@@ -1,4 +1,9 @@
 {
+    "display as": "Display As",
+    "select display as": "Select Display As",
+    "main": "Main",
+    "addon": "Addon",
+    "color": "Color",
     "bank account number": "Bank Account Number",
     "financial record saved": "Financial record saved",
     "financial record deleted": "Financial record deleted",

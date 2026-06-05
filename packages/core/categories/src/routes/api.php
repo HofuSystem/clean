@@ -16,8 +16,8 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 */
 
 Route::group([
-    'middleware'=>['auth:sanctum','active'] 
-],function(){
+    'middleware' => ['auth:sanctum', 'active']
+], function () {
 
     //all client routes
     Route::group([
@@ -27,7 +27,7 @@ Route::group([
         Route::get('details/{id}', [CategoriesController::class, 'details']);
         Route::get('package_details/{id}', [CategoriesController::class, 'packageDetails']);
     });
-    
+
     //all client routes
     Route::group([
         'prefix' => 'services',
@@ -35,29 +35,37 @@ Route::group([
         Route::get('index', [CategoriesController::class, 'servicesIndex']);
         Route::get('details/{id}', [CategoriesController::class, 'servicesDetails']);
     });
-    
+
     //all client routes
     Route::group([
         'prefix' => 'home-maid',
     ], function () {
         Route::get('index', [CategoriesController::class, 'homeMaidIndex']);
         Route::get('details/{id}', [CategoriesController::class, 'homeMaidDetails']);
-    
+
         Route::get('flexible_order_details', [CategoriesController::class, 'flexibleOrderDetails']);
         Route::get('scheduled_order_details', [CategoriesController::class, 'scheduledOrderDetails']);
         Route::get('monthly_packages_order_details', [CategoriesController::class, 'monthlyPackagesOrderDetails']);
         Route::get('sale_order_details/{sale_id}', [CategoriesController::class, 'saleOrderDetails']);
     });
-    
+
     Route::group(['prefix' => 'car-host', 'as' => 'car-host.'], function () {
         Route::get('index', [CategoriesController::class, 'hostIndex']);
         Route::get('details/{service_id}', [CategoriesController::class, 'hostDetails']);
-    
+
         Route::get('host_order_details/{service_id}', [CategoriesController::class, 'hostOrderDetails']);
         Route::get('care_order_details/{service_id}', [CategoriesController::class, 'careOrderDetails']);
         Route::get('selfcare_order_details/{service_id}', [CategoriesController::class, 'selfCareOrderDetails']);
         Route::get('sale_order_details/{sale_id}', [CategoriesController::class, 'saleHostOrderDetails']);
     });
 
-});    
+    Route::group([
+        'prefix' => 'flowers-and-gifts',
+    ], function () {
+        Route::get('index', [CategoriesController::class, 'flowersAndGiftsIndex']);
+        Route::get('products', [CategoriesController::class, 'flowersAndGiftsProducts']);
+        Route::get('products/{id}', [CategoriesController::class, 'flowersAndGiftsProductDetails']);
+    });
+
+});
 

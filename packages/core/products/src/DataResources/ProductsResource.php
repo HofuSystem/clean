@@ -22,6 +22,7 @@ class ProductsResource extends JsonResource
             "name"              => DashboardDataTableFormatter::text($this->name),
             "image"             => DashboardDataTableFormatter::mediaCenter($this->image),
             "type"              => DashboardDataTableFormatter::text($this->type),
+            "display_as"        => DashboardDataTableFormatter::text($this->display_as),
             "wash_type"         => DashboardDataTableFormatter::text($this->wash_type),
             "sku"               => DashboardDataTableFormatter::text($this->sku),
             "category_id"       => DashboardDataTableFormatter::relations($this->category,"name","dashboard.categories.show"),

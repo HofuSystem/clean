@@ -43,6 +43,7 @@ class ProductsRequest extends FormRequest
 			 "prices.*.price"           =>  ['required','numeric'], 
 			 "quantity"                 =>  ['nullable','numeric'], 
 			 "status"                   =>  ['required','in:active,not-active'], 
+			 "display_as"               =>  ['required','in:main,addon'], 
 			]; 
 
     }

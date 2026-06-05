@@ -38,7 +38,7 @@ class CreateProductsRequest extends FormRequest
 			 "version.*.sub_category_id"    =>  ['nullable','exists:categories,id'], 
 			 "version.*.sku"                =>  ['required','unique:products,sku','string'], 
 			 "version.*.price"              =>  ['required','numeric'], 
-			 "quantity"             		=>  ['nullable','required_if:type,sales','numeric'], 
+			 "quantity"             		=>  ['nullable','numeric'], 
 			 "price"             			=>  ['nullable','required_if:type,sales','required_if:type,services','numeric'], 
 			 "status"                		=>  ['required','in:active,not-active'], 
 			]; 

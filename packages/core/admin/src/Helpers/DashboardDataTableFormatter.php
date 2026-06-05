@@ -37,12 +37,18 @@ class DashboardDataTableFormatter{
         return $images;
     }
     public static function text($value){
-       // Remove HTML tags
+        if(!is_string($value)){
+            return $value;
+        }elseif(!isset($value) || empty($value) || $value === 0){
+            return "--";
+        }
+        // Remove HTML tags
         $value = strip_tags($value);
         // Truncate the string to 50 characters
         if (mb_strlen($value, 'UTF-8') > 50) {
             $value = mb_substr($value, 0, 50, 'UTF-8') . '..';
         }
+ 
         return $value;
     }
     public static function checkbox($value){

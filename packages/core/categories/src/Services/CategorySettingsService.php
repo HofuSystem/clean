@@ -27,9 +27,18 @@ class CategorySettingsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData         = array_filter($data,fn($key) => in_array($key, ['category_id','addon_price','cost','discount_percent','parent_id','status','translations']),ARRAY_FILTER_USE_KEY);
-        $slug               = \Str::slug($data['translations']['en']['name']);
-        $slug               = ToolHelper::generateUniqueSlug(CategorySetting::class,$slug,$id);
+        $recordData         = array_filter($data,fn($key) => in_array($key, ['category_id','addon_price','cost','discount_percent','parent_id','status','color','icon','translations']),ARRAY_FILTER_USE_KEY);
+        $slug = null;
+        if ($id) {
+            $existingRecord = CategorySetting::find($id);
+            if ($existingRecord && $existingRecord->slug) {
+                $slug = $existingRecord->slug;
+            }
+        }
+        if (!$slug) {
+            $slug = \Str::slug($data['translations']['en']['name'] ?? '');
+            $slug = ToolHelper::generateUniqueSlug(CategorySetting::class,$slug,$id);
+        }
         $recordData['slug'] = $slug;
         $record             = CategorySetting::updateOrCreate(['id' => $id],$recordData);
         

@@ -1,4 +1,9 @@
 {
+    "display as": "عرض كـ",
+    "select display as": "اختر طريقة العرض",
+    "main": "أساسي",
+    "addon": "إضافي",
+    "color": "اللون",
     "bank account number": "رقم الحساب البنكي",
     "Print Credit Note": "طباعة إشعار دائن",
     "Back to Statement": "العودة لكشف الحساب",
@@ -3200,5 +3205,12 @@
     "This will generate a single Excel file in the background.": "سيتم إنشاء ملف اكسيل واحد في الخلفية.",
     "Start Export": "بدء التصدير",
     "Link copied to clipboard": "تم نسخ الرابط إلى الحافظة",
-    "discount value": "قيمة الخصم"
+    "discount value": "قيمة الخصم",
+    "Customizations": "تخصيصات",
+    "Order For":"طلب من",
+    "Recipient": "مستلم",
+    "Recipient Name": "اسم المستلم",
+    "Recipient Phone": "جوال المستلم",
+    "Request Address From Recipient": "طلب العنوان من المستلم",
+    "Hide Sender Identity": "إخفاء هوية المرسل"
 }

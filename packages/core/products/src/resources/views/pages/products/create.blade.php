@@ -64,12 +64,20 @@
                                 </select>
 
                             </div>
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group mb-3 col-md-12" id="wash-type-div">
                                 <label class="required" for="wash_type">{{ trans('wash type') }}</label>
                                 <select class="custom-select  form-select advance-select" name="wash_type" id="wash_type">
                                     <option value="">{{ trans('select wash type') }}</option>
                                     <option value="lab" @selected(isset($item) and $item->wash_type == 'lab')>{{ trans('lab') }}</option>
                                     <option value="washer" @selected(isset($item) and $item->wash_type == 'washer')>{{ trans('washer') }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <label class="required" for="display_as">{{ trans('display as') }}</label>
+                                <select class="custom-select  form-select advance-select" name="display_as" id="display_as">
+                                    <option value="">{{ trans('select display as') }}</option>
+                                    <option value="main" @selected(isset($item) and $item->display_as == 'main')>{{ trans('main') }}</option>
+                                    <option value="addon" @selected(isset($item) and $item->display_as == 'addon')>{{ trans('addon') }}</option>
                                 </select>
                             </div>
                             <div class="col-12 mt-5">
@@ -165,7 +173,7 @@
                                     <div class="input-gallery"></div>
                                 </div>
                             </div>
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group mb-3 col-md-6">
                                 <label class="required" for="category_id">{{ trans('category') }}</label>
                                 <select class="custom-select  form-select advance-select" name="category_id"
                                     id="category_id">
@@ -173,6 +181,20 @@
                                     <option value="">{{ trans('select category') }}</option>
                                     @foreach ($categories ?? [] as $sItem)
                                         <option data-type="{{ $sItem->type }}" data-id="{{ $sItem->id }}" @selected(isset($item) and $item->category_id == $sItem->id)
+                                            value="{{ $sItem->id }}">{{ $sItem->name }}</option>
+                                    @endforeach
+
+                                </select>
+
+                            </div>
+                            <div class="form-group mb-3 col-md-6" id="sub-div" style="display: none;">
+                                <label class="" for="sub_category_id">{{ trans('sub category') }}</label>
+                                <select class="custom-select form-select advance-select sub-category-select" name="sub_category_id"
+                                    id="sub_category_id">
+
+                                    <option value="">{{ trans('select sub category') }}</option>
+                                    @foreach ($subCategories ?? [] as $sItem)
+                                        <option data-parent-id="{{ $sItem->parent_id }}" data-id="{{ $sItem->id }}"
                                             value="{{ $sItem->id }}">{{ $sItem->name }}</option>
                                     @endforeach
 
@@ -200,8 +222,8 @@
                                     <tfoot>
                                         <tr>
                                             <td>
-                                                <select class="custom-select  form-select advance-select"
-                                                    name="sub_category_id" id="sub_category_id">
+                                                <select class="custom-select  form-select advance-select sub-category-select"
+                                                    name="sub_category_id">
 
                                                     <option value="">{{ trans('select sub category') }}</option>
                                                     @foreach ($subCategories ?? [] as $sItem)
@@ -328,22 +350,22 @@
         $(document).ready(function() {
             //when category change change hied the sub category that doeds not belong to this category
             // Store all subcategory options when the document is ready
-            var allSubCategories = $('#sub_category_id option').clone();
+            var allSubCategories = $('.sub-category-select option').clone();
             var allCategories = $('#category_id option').clone();
-            $('#sub_category_id,#category_id').empty();
+            $('.sub-category-select,#category_id').empty();
             // When the category changes
             $('#type').change(function() {
-                $('#desc-div,#vars-div,#quantity-div,#price-div,#cost-div').hide();
+                $('#desc-div,#vars-div,#quantity-div,#price-div,#cost-div,#sub-div,#wash-type-div').hide();
 
                 var type        = $(this).val();
                 var $Category   = $('#category_id');
                 if(type =="clothes"){
-                    $('#images-div,#vars-div').show();
+                    $('#images-div,#vars-div,#wash-type-div').show();
                 }else  if(type =="sales"){
-                    $('#desc-div,#price-div,#cost-div,#quantity-div').show();
+                    $('#desc-div,#price-div,#cost-div,#sub-div').show();
 
                 }else  if(type =="services"){
-                    $('#price-div,#cost-div').show();
+                    $('#price-div,#cost-div,#wash-type-div').show();
 
                 }
                 // Clear the current options
@@ -363,7 +385,7 @@
             });
             $('#category_id').change(function() {
                 var category_id = $(this).val();
-                var $subCategory = $('#sub_category_id');
+                var $subCategory = $('.sub-category-select');
                 // Clear the current options
                 $subCategory.empty();
 

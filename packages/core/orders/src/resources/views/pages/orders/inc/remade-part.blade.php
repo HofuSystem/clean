@@ -135,6 +135,23 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             </td>
                             <td>
                                 {{ $item?->product?->name ?? json_decode($item->product_data)->name }}
+                                @php
+                                    $customizations = is_string($item->customizations) ? json_decode($item->customizations, true) : $item->customizations;
+                                @endphp
+                                @if(!empty($customizations) && is_array($customizations))
+                                    <div class="mt-2 text-start small border-top pt-1 text-muted">
+                                        <div class="fw-bold">{{ trans('Customizations') }}:</div>
+                                        @foreach($customizations as $cust)
+                                            <div class="ms-2">
+                                                • {{ app()->getLocale() == 'ar' ? ($cust['setting_name_ar'] ?: $cust['setting_name_en']) : ($cust['setting_name_en'] ?: $cust['setting_name_ar']) }}:
+                                                <span class="text-dark">{{ app()->getLocale() == 'ar' ? ($cust['option_name_ar'] ?: $cust['option_name_en']) : ($cust['option_name_en'] ?: $cust['option_name_ar']) }}</span>
+                                                @if(!empty($cust['price']))
+                                                    <span class="text-success small fw-bold">(+{{ $cust['price'] }} {{ trans('SAR') }})</span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <span class="edit-wash-type text-success" data-id="{!! $item->id !!}"

@@ -241,6 +241,8 @@
                                     <th class="text-center p-0" data-name="addon_price">@lang("addon price")</th>
                                     <th class="text-center p-0" data-name="cost">@lang("cost")</th>
                                     <th class="text-center p-0" data-name="parent_id">@lang("parent")</th>
+                                    <th class="text-center p-0" data-name="color">@lang("color")</th>
+                                    <th class="text-center p-0" data-name="icon">@lang("icon")</th>
                                     <th class="text-center p-0" data-name="status">@lang("status")</th>
                                     <th class="text-center p-0" data-name="category_settings">@lang("service settings")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>

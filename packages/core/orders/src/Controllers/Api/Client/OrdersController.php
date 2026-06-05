@@ -97,7 +97,7 @@ class OrdersController extends Controller
         } catch (ValidationException $e) {
             DB::rollback();
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail', 'data' => null,], 422);
-        } catch (\Throwable $e) {
+         } catch (\Throwable $e) {
             DB::rollback();
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail', 'data' => null,], 422);

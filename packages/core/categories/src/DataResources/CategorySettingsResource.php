@@ -26,6 +26,8 @@ class CategorySettingsResource extends JsonResource
             "cost"              => DashboardDataTableFormatter::text($this->cost),
             "parent_id"         => DashboardDataTableFormatter::relations($this->parent,"name","dashboard.category-settings.show"),
             "status"            => DashboardDataTableFormatter::text(trans($this->status)),
+            "color"             => $this->color ? '<div style="width: 15px; height: 15px; border-radius: 50%; background-color: ' . $this->color . '; display: inline-block; vertical-align: middle; border: 1px solid #ddd; margin-right: 5px;"></div> <span>' . $this->color . '</span>' : '--',
+            "icon"              => DashboardDataTableFormatter::mediaCenter($this->icon),
             "category_settings" => DashboardDataTableFormatter::relations($this->categorySettings,"name","dashboard.category-settings.show"),
             "actions"           => $this->actions,
             "select_switch"     => $this->select_switch,

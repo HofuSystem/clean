@@ -30,6 +30,7 @@ class OrderItemResource extends JsonResource
             'is_deleted'            => $this->deleted_at != null,
             'is_added'              => $this->add_by_admin != null,
             'is_updated'            => $this->update_by_admin != null,
+            'customizations'        => $this->customizations,
         ];
         if($this->width and $this->height){
             $data['carpet_size'] = $this->width * $this->height;

@@ -75,9 +75,19 @@ class Order extends CoreModel
         'has_been_refunded',
         'lab_cost',
         'washer_cost',
-        'wash_type'
+        'wash_type',
+        'order_for',
+        'recipient_name',
+        'recipient_phone',
+        'request_address',
+        'hide_identity'
     ];
     protected $guarded           = [];
+    protected $casts = [
+        'request_address' => 'boolean',
+        'hide_identity'   => 'boolean',
+    ];
+
 
 
     //start Scopes

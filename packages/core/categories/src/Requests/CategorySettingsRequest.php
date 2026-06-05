@@ -31,6 +31,8 @@ class CategorySettingsRequest extends FormRequest
       return [ 
 			 "translations.en.name"                               	=>  ['required','string'], 
 			 "translations.ar.name"                               	=>  ['required','string'], 
+			 "translations.en.description"                        	=>  ['nullable','string'], 
+			 "translations.ar.description"                        	=>  ['nullable','string'], 
 			 "category_id"                                        	=>  ['required','exists:categories,id'], 
 			 "addon_price"                                        	=>  ['nullable','numeric'], 
 			 "discount_percent"                               	    =>  ['nullable','numeric'], 
@@ -41,9 +43,13 @@ class CategorySettingsRequest extends FormRequest
 			 "addon_prices.*.price"                               	=>  ['required','numeric'], 
 			 "parent_id"                                          	=>  ['nullable','exists:category_settings,id'], 
 			 "status"                                             	=>  ['required','in:active,not-active'], 
+			 "color"                                             	=>  ['nullable','string','max:255'], 
+			 "icon"                                             	=>  ['nullable','string','max:255'], 
 			 "category_settings"                                  	=>  ['nullable','array'], 
 			 "category_settings.*.translations.en.name"           	=>  ['required','string'], 
 			 "category_settings.*.translations.ar.name"           	=>  ['required','string'], 
+			 "category_settings.*.translations.en.description"    	=>  ['nullable','string'], 
+			 "category_settings.*.translations.ar.description"    	=>  ['nullable','string'], 
 			 "category_settings.*.category_id"                    	=>  ['required','exists:categories,id'], 
 			 "category_settings.*.cost"                    			=>  ['nullable','numeric'], 
 			 "category_settings.*.discount_percent"               	=>  ['nullable','numeric'], 
@@ -54,6 +60,8 @@ class CategorySettingsRequest extends FormRequest
 			 "category_settings.*.addon_prices.*.price"           	=>  ['required','numeric'], 
 			 "category_settings.*.addon_prices.*.cost"           	=>  ['required','numeric'], 
 			 "category_settings.*.status"                         	=>  ['required','in:active,not-active'], 
+			 "category_settings.*.color"                         	=>  ['nullable','string','max:255'], 
+			 "category_settings.*.icon"                         	=>  ['nullable','string','max:255'], 
 			]; 
 
     }

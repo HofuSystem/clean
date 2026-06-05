@@ -39,7 +39,7 @@ class ProductsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations', 'wash_type']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations', 'wash_type', 'display_as']),ARRAY_FILTER_USE_KEY);
         $record     = Product::updateOrCreate(['id' => $id],$recordData);
 
         if(!isset($id)){

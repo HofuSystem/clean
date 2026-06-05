@@ -334,6 +334,9 @@ const fullToolbar = [
         case "checkbox":
           newTd = $('<td>').html(checkboxRender(valueOfElement['name'], value));
           break;
+        case "color":
+          newTd = $('<td>').html(colorRender(value));
+          break;
         case "time":
           newTd = $('<td>').html(timeRender(value));
           break;
@@ -757,6 +760,12 @@ const fullToolbar = [
       return `${hours}:${minutes} ${period}`;
 
     }
+  }
+  function colorRender(color) {
+    if (!color) {
+      return "--";
+    }
+    return `<div style="width: 25px; height: 25px; border-radius: 50%; background-color: ${color}; display: inline-block; vertical-align: middle; border: 1px solid #ddd; margin-right: 5px;"></div> <span>${color}</span>`;
   }
   $(document).ready(function () {
     $('.advance-select').each(function (index, element) {

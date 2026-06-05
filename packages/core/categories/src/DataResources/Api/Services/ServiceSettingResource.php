@@ -2,6 +2,7 @@
 
 namespace Core\Categories\DataResources\Api\Services;
 
+use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Settings\Helpers\ToolHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,8 +26,12 @@ class ServiceSettingResource extends JsonResource
         return [
             'id'            => $this->id ,
             'name'          => $this->name ,
+            'slug'          => $this->slug ,
+            'icon'          => isset($this->icon) ? MediaCenterHelper::getImageUrl($this->icon) : null ,
+            'color'         => $this->color ,
             'price'         => ToolHelper::getPriceBasedOnCurrentWeekDay($price),
             'cost'          => $cost,
+            'sub_settings'  => ServiceSettingResource::collection($this->categorySettings),
         ];
     }
 }

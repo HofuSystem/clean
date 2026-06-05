@@ -69,12 +69,20 @@
                                 </select>
 
                             </div>
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group mb-3 col-md-12" id="wash-type-div">
                                 <label class="required" for="wash_type">{{ trans('wash type') }}</label>
                                 <select class="custom-select  form-select advance-select" name="wash_type" id="wash_type">
                                     <option value="">{{ trans('select wash type') }}</option>
                                     <option value="lab" @selected(isset($item) and $item->wash_type == 'lab')>{{ trans('lab') }}</option>
                                     <option value="washer" @selected(isset($item) and $item->wash_type == 'washer')>{{ trans('washer') }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <label class="required" for="display_as">{{ trans('display as') }}</label>
+                                <select class="custom-select  form-select advance-select" name="display_as" id="display_as">
+                                    <option value="">{{ trans('select display as') }}</option>
+                                    <option value="main" @selected(isset($item) and $item->display_as == 'main')>{{ trans('main') }}</option>
+                                    <option value="addon" @selected(isset($item) and $item->display_as == 'addon')>{{ trans('addon') }}</option>
                                 </select>
                             </div>
                             <div class="col-12 mt-5">
@@ -416,15 +424,18 @@
             var allCategories       = $('#category_id option').clone();
             // When the category changes
             $('#type').change(function() {
-                $('#desc-div,#sub-div,#quantity-div,#sku-div').hide();
+                $('#desc-div,#sub-div,#quantity-div,#sku-div,#wash-type-div').hide();
 
                 var type            = $(this).val();
                 var $Category       = $('#category_id');
                 var $CategoryValue  = $('#category_id').val();
                 if(type =="clothes"){
-                    $('#images-div,#sub-div,#sku-div').show();
+                    $('#images-div,#sub-div,#sku-div,#wash-type-div').show();
                 }else  if(type =="sales"){
-                    $('#desc-div,#quantity-div').show();
+                    $('#desc-div,#sub-div').show();
+
+                }else  if(type =="services"){
+                    $('#wash-type-div').show();
 
                 }
                 // Clear the current options

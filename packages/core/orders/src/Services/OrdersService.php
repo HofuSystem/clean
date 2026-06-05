@@ -734,6 +734,8 @@ class OrdersService
             $reference_id = 'H' . rand(100000000, 999999999);
         } else if ($data['type'] == 'maidflex' || $data['type'] == 'maidscheduled' || $data['type'] == 'maidPackage' || $data['type'] == 'maidoffer') {
             $reference_id = 'C' . rand(100000000, 999999999);
+        } else if ($data['type'] == 'sales') {
+            $reference_id = 'G' . rand(100000000, 999999999);
         }
         if($data['type'] == 'maidflex' || $data['type'] == 'maidscheduled'){
             if(!isset($data['nationality_id'])){
@@ -1014,6 +1016,27 @@ class OrdersService
             $productData = ProductsService::getProductData($order->company,$order->b2b_type,$order->client?->profile?->city_id,$product);
             $price = $productData['price'];
             $cost = $productData['cost'];
+            $processedCustomizations = null;
+            $customizationsPriceSum = 0;
+            if (!empty($item['customizations']) && is_array($item['customizations'])) {
+                $processedCustomizations = [];
+                foreach ($item['customizations'] as $customization) {
+                    $setting = CategorySetting::find($customization['setting_id'] ?? null);
+                    $option  = CategorySetting::find($customization['options_id'] ?? null);
+                 
+                    
+                    $processedCustomizations[] = [
+                        'setting_id'      => $customization['setting_id'] ?? null,
+                        'setting_name_en' => $setting?->translate('en')?->name ?? '',
+                        'setting_name_ar' => $setting?->translate('ar')?->name ?? '',
+                        'options_id'      => $customization['options_id'] ?? null,
+                        'option_name_en'  => $option?->translate('en')?->name ?? '',
+                        'option_name_ar'  => $option?->translate('ar')?->name ?? '',
+                        'price'           => $option?->price,
+                    ];
+                }
+            }
+            $price += $customizationsPriceSum;
             $order->items()->create([
                 'order_id'             =>  $order->id,
                 'product_id'           =>  $product->id,
@@ -1025,6 +1048,7 @@ class OrdersService
                 'product_data'         =>  $product->toJson(),
                 'is_picked'            =>  false,
                 'is_delivered'         =>  false,
+                'customizations'       =>  $processedCustomizations,
             ]);
             if ($product->type == 'sales') {
                 $product->update(['quantity' => $product->quantity - $item['quantity']]);
