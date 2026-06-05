@@ -10,6 +10,7 @@ use Core\Categories\DataResources\Api\CategoryDetails\PackageDetailsResource;
 use Core\Categories\DataResources\Api\CategoryDetails\ServicesDetailsResource;
 use Core\Categories\DataResources\Api\CategoryTimeResource;
 use Core\Categories\DataResources\Api\ClothesCategoryResource;
+use Core\Categories\DataResources\Api\SampleCategoryResource;
 use Core\Categories\DataResources\Api\ServiceCategorySaleResource;
 use Core\Categories\DataResources\Api\Services\CareHostServiceResource;
 use Core\Categories\DataResources\Api\Services\CareOrderDetailsResource;
@@ -516,9 +517,9 @@ class CategoriesController extends Controller
                 ->get();
 
             $data = [
-                'category' => CategoriesResource::make($category),
+                'category' => SampleCategoryResource::make($category),
                 'sliders' => SliderResource::collection($sliders),
-                'sub_categories' => CategoriesResource::collection($subCategories),
+                'sub_categories' => SampleCategoryResource::collection($subCategories),
             ];
 
             return $this->returnData(trans('flowers and gifts loaded'), ['data' => $data]);

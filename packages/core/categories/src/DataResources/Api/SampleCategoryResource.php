@@ -26,6 +26,7 @@ class SampleCategoryResource extends JsonResource
         return [
             'id'                => $this->id,
             'type'              => $this->type,
+            'slug'              => $this->slug,
             'name'              => $this->name,
             'availability'      => ['is_available'=> $isAvailable,'message'=>$message],
             'image'             => MediaCenterHelper::getImagesUrl($this->image) ,
