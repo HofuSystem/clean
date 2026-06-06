@@ -32,7 +32,7 @@ class ProductsRequest extends FormRequest
 			 "translations.en.name"     =>  ['required','string'], 
 			 "translations.ar.name"     =>  ['required','string'], 
 			 "type"                     =>  ['required','in:clothes,sales,services'], 
-			 "sku"                      =>  ['required','unique:products,sku,'.$this->id,'string'], 
+			 "sku"                      =>  ['nullable','unique:products,sku,'.$this->id,'string'], 
 			 "is_package"               =>  ['nullable','boolean'], 
 			 "category_id"              =>  ['required','exists:categories,id'], 
 			 "sub_category_id"          =>  ['nullable','exists:categories,id'], 
