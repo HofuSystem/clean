@@ -38,6 +38,7 @@ Route::group([
     Route::group(['prefix' => 'orders'], function () {
         Route::get("", [OrdersController::class, 'myOrders']);
         Route::post("update-order", [OrdersController::class, 'updateOrder']);
+        Route::post("update-order-flowers", [OrdersController::class, 'updateOrderFlowers']);
         Route::post("", [OrdersController::class, 'createOrder']);
         Route::get("{id}", [OrdersController::class, 'myOrder']);
         Route::post("update_status/{id}", [OrdersController::class, 'updateStatus']);

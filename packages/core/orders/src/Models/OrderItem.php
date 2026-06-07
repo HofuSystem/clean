@@ -16,7 +16,7 @@ use App\Observers\GlobalModelObserver;
 class OrderItem extends CoreModel {
     
 	protected $table             = 'order_items';
-	protected $fillable          = ['order_id', 'product_id', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete', 'customizations'];
+	protected $fillable          = ['order_id', 'product_id', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete', 'customizations', 'card_note'];
     protected $guarded           = [];
     protected $casts = [
         'customizations' => 'array',

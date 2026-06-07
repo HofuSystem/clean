@@ -90,6 +90,7 @@ class CreateOrderRequest extends FormRequest
       'products.*.customizations'                  => 'nullable|array',
       'products.*.customizations.*.setting_id'     => 'required|exists:category_settings,id',
       'products.*.customizations.*.options_id'     => 'required|exists:category_settings,id',
+      'products.*.card_note'                       => 'nullable|string',
 
       'order_for'                     => 'nullable|string|in:me,other',
       'recipient_name'                => 'nullable|required_if:order_for,other|string|max:255',

@@ -1049,6 +1049,7 @@ class OrdersService
                 'is_picked'            =>  false,
                 'is_delivered'         =>  false,
                 'customizations'       =>  $processedCustomizations,
+                'card_note'            =>  $item['card_note'] ?? null,
             ]);
             if ($product->type == 'sales') {
                 $product->update(['quantity' => $product->quantity - $item['quantity']]);

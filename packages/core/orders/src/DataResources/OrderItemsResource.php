@@ -28,6 +28,7 @@ class OrderItemsResource extends JsonResource
             "update_by_admin" => DashboardDataTableFormatter::text($this->update_by_admin),
             "is_picked"       => DashboardDataTableFormatter::checkbox($this->is_picked),
             "is_delivered"    => DashboardDataTableFormatter::checkbox($this->is_delivered),
+            "card_note"       => DashboardDataTableFormatter::text($this->card_note),
             "actions"         => $this->actions,
             "select_switch"   => $this->select_switch,
            
