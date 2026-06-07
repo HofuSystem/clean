@@ -201,7 +201,7 @@ class OrdersController extends Controller
                     $districtQuery->whereNull('district_id')
                         ->when(is_int($address->district_id), function ($districtQuery) use ($address) {
                             $districtQuery->OrWhere('district_id', $address->district_id);
-                        });
+                    });
                 })
                 ->orderBy('price', 'desc')
                 ->first();
@@ -213,7 +213,7 @@ class OrdersController extends Controller
                 $deliveryCharge = 0;
             }
 
-            $deliveryDates = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type), $category->id, $address);
+            $deliveryDates = CategoryDateTimesService::getDateTimes('sales', $category->id, $address);
             $deliveryDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $deliveryDates);
 
 
