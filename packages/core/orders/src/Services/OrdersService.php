@@ -854,8 +854,8 @@ class OrdersService
         $data['coupon_data']  = isset($data['coupon_id']) ?  $coupon?->toJson() : json_encode([]);
         $data['status']       = $data['status'] ?? 'pending';
         $data  = array_merge($data, [
-            'city_id'            => $branch?->city_id      ?? $address?->city_id      ?? auth('api')->user()->city_id,
-            'district_id'        => $branch?->district_id  ?? $address?->district_id  ?? auth('api')->user()->district_id,
+            'city_id'            => $data['city_id'] ?? $branch?->city_id ?? $address?->city_id ?? auth('api')->user()?->city_id,
+            'district_id'        => $data['district_id'] ?? $branch?->district_id ?? $address?->district_id ?? auth('api')->user()?->district_id,
             'client_id'          => $user->id,
             'order_status_times' => [$data['status'] => date("Y-m-d H:i")],
             'is_admin_accepted'  => true,

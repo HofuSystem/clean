@@ -112,6 +112,8 @@ class CreateOrderRequest extends FormRequest
       'days_per_week_names'           => 'nullable',
       'days_per_month_dates'          => 'nullable',
       'online_payment_method'         => 'nullable',
+      'city_id'                       => 'nullable|numeric|exists:cities,id',
+      'district_id'                   => 'nullable|numeric|exists:districts,id',
     ];
     if($this->pay_type == 'card' && $this->status != 'pending_payment'){
       $data['transaction_id'] .= '|required';
