@@ -37,14 +37,15 @@ class OrdersController extends Controller
     public function __construct(protected OrdersService $ordersService, protected CategoryDateTimesService $categoryDateTimesService, protected MyFatoorahService $myfatoorahService)
     {
     }
-
     public function myOrders(Request $request)
     {
         try {
             $orders = Order::with(['orderRepresentatives'])
-                ->when($request->type == 'clothes', function ($clothesOrderQuery) {
-                    $clothesOrderQuery->with('items.product')->whereIn('type', ['clothes', 'fastorder', 'sales']);
-                })->when($request->type != 'clothes', function ($notClothesOrderQuery) {
+                ->when($request->type == 'sales', function ($clothesOrderQuery) {
+                    $clothesOrderQuery->with('items.product')->whereIn('type', ['sales']);
+                })->when($request->type == 'clothes', function ($clothesOrderQuery) {
+                    $clothesOrderQuery->with('items.product')->whereIn('type', ['clothes', 'fastorder']);
+                })->when(($request->type != 'clothes' && $request->type != 'sales'), function ($notClothesOrderQuery) {
                     $notClothesOrderQuery->with('moreDatas')->whereNotIn('type', ['clothes', 'fastorder', 'sales']);
                 })
                 ->where('client_id', $request->user()->id)
@@ -70,7 +71,10 @@ class OrdersController extends Controller
                 'transactions',
                 'client.profile',
                 'orderRepresentatives',
-                'moreDatas'
+                'moreDatas',
+                'city',
+                'distinct',
+                'coupon',
             ])
                 ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
                 ->findorFail($id);
@@ -84,7 +88,6 @@ class OrdersController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
     }
-
     public function createOrder(CreateOrderRequest $request)
     {
         try {
@@ -172,7 +175,6 @@ class OrdersController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail', 'data' => null,], 422);
         }
     }
-
     public function updateOrderFlowers(UpdateOrderFlowersRequest $request)
     {
         try {
@@ -234,7 +236,6 @@ class OrdersController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail', 'data' => null,], 422);
         }
     }
-
     public function payFastOrder(PayFastOrderRequest $request, $orderId)
     {
         try {
