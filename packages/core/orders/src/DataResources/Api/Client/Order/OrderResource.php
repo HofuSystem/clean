@@ -35,7 +35,7 @@ class OrderResource extends JsonResource
             'status'                => $this->status,
             'order_items'           => OrderItemResource::collection($this->items()->withTrashed()->where('final_delete', false)->get()),
             'city'                  => new CityResource($this->whenLoaded('city')),
-            'district'              => new DistrictResource($this->whenLoaded('distinct')),
+            'district'              => new DistrictResource($this->whenLoaded('district')),
             'created_at'            => $this->created_at?->format('d-m-Y'),
             'category'              => $this->items()->where('final_delete', false)->first()?->product()->first()?->category?->name ?? '',
             'category_type'         => $this->type,

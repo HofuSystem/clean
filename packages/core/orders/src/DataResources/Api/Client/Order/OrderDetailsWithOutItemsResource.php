@@ -42,7 +42,7 @@ class OrderDetailsWithOutItemsResource extends JsonResource
             'type'                      => $this->type ,
             'status'                    => $this->status ,
             'city'                      => new CityResource($this->whenLoaded('city')),
-            'district'                  => new DistrictResource($this->whenLoaded('distinct')),
+            'district'                  => new DistrictResource($this->whenLoaded('district')),
 
             'client'                    => $this->b2b_type == 'company' ? new SimpleCompaniesResource($this->company) : new SimpleUserResource($this->client),
 

@@ -35,7 +35,7 @@ class OrderDetailsResource extends JsonResource
             'status'                        =>  $this->status,
             'order_items'                   =>  OrderItemResource::collection($this->items()->withTrashed()->where('final_delete', false)->get()),
             'city'                          =>  new CityResource($this->whenLoaded('city')),
-            'district'                      =>  new DistrictResource($this->whenLoaded('distinct')),
+            'district'                      =>  new DistrictResource($this->whenLoaded('district')),
 
             'day'                           => $delivery ? Carbon::parse($delivery?->date)->format('l')       : Carbon::parse($receiver?->date)->format('l'),
             'date'                          => $delivery ? Carbon::parse($delivery?->date)->format('Y-m-d')   : Carbon::parse($receiver?->date)->format('Y-m-d'),

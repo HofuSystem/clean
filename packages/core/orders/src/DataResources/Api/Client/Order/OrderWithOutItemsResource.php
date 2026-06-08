@@ -28,7 +28,7 @@ class OrderWithOutItemsResource extends JsonResource
             'type'          => $this->type,
             'status'        => $this->status,
             'city'          =>  new CityResource($this->whenLoaded('city')),
-            'district'      =>  new DistrictResource($this->whenLoaded('distinct')),
+            'district'      =>  new DistrictResource($this->whenLoaded('district')),
             'created_at'    => $this->created_at?->format('d-m-Y'),
             'category_type' => $this->type,
             'day'           => $technical?->date ? Carbon::parse($technical?->date)->format('l')          : null,
