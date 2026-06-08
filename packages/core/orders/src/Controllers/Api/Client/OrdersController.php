@@ -73,8 +73,7 @@ class OrdersController extends Controller
                 'orderRepresentatives',
                 'moreDatas',
                 'city',
-                'distinct',
-                'coupon',
+                'district'
             ])
                 ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
                 ->findorFail($id);
