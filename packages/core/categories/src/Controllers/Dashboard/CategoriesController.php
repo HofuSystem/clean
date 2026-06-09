@@ -95,7 +95,6 @@ class CategoriesController extends Controller
     public function storeOrUpdate(CategoriesRequest $request, $id = null){
         try {
             $type           = in_array($request->segment(2) , ['categories','sub-categories','services','sub-services']) ?  $request->segment(2) :  $request->segment(3);
-
             DB::beginTransaction();
             $record             = $this->categoriesService->storeOrUpdate($request->all(),$id);
             $record->deleteUrl  = route('dashboard.'.$type.'.delete',$record->id);
@@ -107,7 +106,7 @@ class CategoriesController extends Controller
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
         } catch (\Throwable $e) {
             DB::rollback();
-            report($e);
+            dd($e);
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }

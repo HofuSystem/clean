@@ -1890,7 +1890,7 @@
     "gift_intro_label": "Introduction",
     "gift_intro_desc": "Short text shown to the user on the gift.",
     "gift_status_label": "Gift Status",
-    "gift_status_desc": "Active gifts are visible and can be applied.",
+    "gift_status_desc": "Active gifts can be applied.",
     "gift_from_label": "Start Date",
     "gift_from_desc": "The date from which the gift becomes available.",
     "gift_to_label": "End Date",
@@ -1918,5 +1918,7 @@
     "gift_max_value_label": "Max Discount Cap",
     "gift_max_value_desc": "Maximum discount allowed for percentage type.",
     "gift_btn_text_label": "Button Text",
-    "gift_btn_text_desc": "The text displayed on the action button in the gift."
+    "gift_btn_text_desc": "The text displayed on the action button in the gift.",
+    "gift_shown_label": "Shown in app",
+    "gift_shown_desc": "Whether to show or hide the gift in the app."
 }

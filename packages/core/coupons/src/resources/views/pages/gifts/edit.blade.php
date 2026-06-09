@@ -104,6 +104,15 @@
                             </div>
 
                             <div class="form-group mb-3 col-md-4">
+                                <label class="required" for="shown">{{ trans('gift_shown_label') }}</label>
+                                <select class="form-select advance-select" name="shown" id="shown">
+                                    <option value="1" @selected(($item->shown ?? 1) == 1)>{{ trans('Show') }}</option>
+                                    <option value="0" @selected(isset($item) && $item->shown == 0)>{{ trans('Hide') }}</option>
+                                </select>
+                                <div class="text-muted fs-7">{{ trans('gift_shown_desc') }}</div>
+                            </div>
+
+                            <div class="form-group mb-3 col-md-4">
                                 <label for="from">{{ trans('gift_from_label') }}</label>
                                 <input type="date" name="from" class="form-control" value="{{ $item->from ?? '' }}">
                                 <div class="text-muted fs-7">{{ trans('gift_from_desc') }}</div>

@@ -75,8 +75,10 @@ const fullToolbar = [
       let btn = $(this);
       if (btn.is('button') && btn.data('original-html') !== undefined) {
         btn.html(btn.data('original-html'));
+        btn.removeData('original-html');
       } else if (btn.is('input') && btn.data('original-value') !== undefined) {
         btn.val(btn.data('original-value'));
+        btn.removeData('original-value');
       }
     });
   }
@@ -127,7 +129,13 @@ const fullToolbar = [
       },
       error: function (jqXHR, textStatus, errorThrown) {
         // Code to run if the request fails
-        response = JSON.parse(jqXHR.responseText);
+        enableSubmitButton(form);
+        let response = {};
+        try {
+          response = JSON.parse(jqXHR.responseText);
+        } catch (e) {
+          response = { message: 'Something went wrong. Please try again.' };
+        }
         Swal.fire({
           text: response.message,
           icon: "error",
@@ -137,11 +145,13 @@ const fullToolbar = [
             confirmButton: "btn fw-bold btn-success",
           }
         })
-        $.each(response.errors, function (key, array) {
-          $.each(array, function (index, error) {
-            toastr.error(error, key);
+        if (response.errors) {
+          $.each(response.errors, function (key, array) {
+            $.each(array, function (index, error) {
+              toastr.error(error, key);
+            });
           });
-        });
+        }
       },
       complete: function () {
         $('.loader').removeClass('show');
@@ -210,6 +220,9 @@ const fullToolbar = [
       }
       // Handle other input types (text, select, textarea)
       else {
+        if (input.is('select') && input.prop('multiple') && Array.isArray(value)) {
+          value = value.filter(v => v !== null && v !== undefined && v !== '');
+        }
         setNestedValue(formData, keys, value);
       }
     });
@@ -487,7 +500,13 @@ const fullToolbar = [
           },
           error: function (jqXHR, textStatus, errorThrown) {
             // Code to run if the request fails
-            response = JSON.parse(jqXHR.responseText);
+            enableSubmitButton(form);
+            let response = {};
+            try {
+              response = JSON.parse(jqXHR.responseText);
+            } catch (e) {
+              response = { message: 'Something went wrong. Please try again.' };
+            }
             Swal.fire({
               text: response.message,
               icon: "error",
@@ -497,11 +516,13 @@ const fullToolbar = [
                 confirmButton: "btn fw-bold btn-success",
               }
             })
-            $.each(response.errors, function (key, array) {
-              $.each(array, function (index, error) {
-                toastr.error(error, key);
+            if (response.errors) {
+              $.each(response.errors, function (key, array) {
+                $.each(array, function (index, error) {
+                  toastr.error(error, key);
+                });
               });
-            });
+            }
           },
           complete: function () {
             $('.loader').removeClass('show');
@@ -546,7 +567,13 @@ const fullToolbar = [
           },
           error: function (jqXHR, textStatus, errorThrown) {
             // Code to run if the request fails
-            response = JSON.parse(jqXHR.responseText);
+            enableSubmitButton(form);
+            let response = {};
+            try {
+              response = JSON.parse(jqXHR.responseText);
+            } catch (e) {
+              response = { message: 'Something went wrong. Please try again.' };
+            }
             Swal.fire({
               text: response.message,
               icon: "error",
@@ -556,11 +583,13 @@ const fullToolbar = [
                 confirmButton: "btn fw-bold btn-success",
               }
             })
-            $.each(response.errors, function (key, array) {
-              $.each(array, function (index, error) {
-                toastr.error(error, key);
+            if (response.errors) {
+              $.each(response.errors, function (key, array) {
+                $.each(array, function (index, error) {
+                  toastr.error(error, key);
+                });
               });
-            });
+            }
           },
           complete: function () {
             $('.loader').removeClass('show');

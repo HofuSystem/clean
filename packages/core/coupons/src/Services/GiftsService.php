@@ -14,7 +14,7 @@ class GiftsService
     public function storeOrUpdate(array $data = [], $id = null)
     {
         $recordData = array_filter($data, fn($key) => in_array($key, [
-            'status', 'from', 'to', 'coupon_code', 'order_type', 
+            'status', 'shown', 'from', 'to', 'coupon_code', 'order_type', 
             'register_from', 'register_to', 'orders_from', 'orders_to', 
             'orders_min', 'orders_max', 'translations',
             'type', 'value', 'max_value'
@@ -90,7 +90,8 @@ class GiftsService
         $userId         = $user->id;
         $userCreatedAt  = $user->created_at;
 
-        return Gift::where(function ($query) use ($now) {
+        return Gift::where('shown', true)
+            ->where(function ($query) use ($now) {
                 $query->whereNull('from')->orWhere('from', '<=', $now);
             })
             ->where(function ($query) use ($now) {
@@ -160,7 +161,8 @@ class GiftsService
         $userId         = $user->id;
         $userCreatedAt  = $user->created_at;
 
-        return $user->gifts()->where(function ($query) use ($now) {
+        return $user->gifts()->where('shown', true)
+            ->where(function ($query) use ($now) {
                 $query->whereNull('from')->orWhere('from', '<=', $now);
             })
             ->where(function ($query) use ($now) {

@@ -18,6 +18,7 @@ class GiftApiResource extends JsonResource
             "intro"          => $this->intro,
             "btn_text"       => $this->btn_text,
             "status"         => $this->status,
+            "shown"          => (bool) $this->shown,
             "coupon_code"    => $this->coupon_code,
             "order_type"     => $this->order_type ? explode(',',$this->order_type) : [],
             "coupon_id"      => $this->coupon_id,

@@ -30,6 +30,7 @@ class GiftsRequest extends FormRequest
             "translations.en.description" => ['nullable', 'string'],
             "translations.ar.description" => ['nullable', 'string'],
             "status"                      => ['required', 'in:active,not-active'],
+            "shown"                       => ['nullable', 'boolean'],
             "from"                        => ['nullable', 'date'],
             "to"                          => ['nullable', 'date'],
             "coupon_code"                 => ['nullable', 'string'],

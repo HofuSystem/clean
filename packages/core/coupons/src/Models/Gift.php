@@ -20,6 +20,7 @@ class Gift extends CoreModel implements TranslatableContract
     protected $table = 'gifts';
     protected $fillable = [
         'status',
+        'shown',
         'from',
         'to',
         'coupon_code',
@@ -36,6 +37,10 @@ class Gift extends CoreModel implements TranslatableContract
         'coupon_id',
         'creator_id',
         'updater_id'
+    ];
+
+    protected $casts = [
+        'shown' => 'boolean',
     ];
 
     public $translatedAttributes = ['title', 'intro', 'btn_text', 'label', 'description'];
