@@ -565,17 +565,19 @@ class CategoriesController extends Controller
         try {
             $product = Product::active()->findOrFail($id);
 
-            $targetCategoryId = $product->sub_category_id ?: $product->category_id;
-
-            $categorySettings = CategorySetting::with([
-                'translations',
-                'categorySettings' => function ($q) {
-                    $q->active()->with('translations');
-                }
-            ])
-                ->where('category_id', $targetCategoryId)
+            $productSettings = $product->productSettings()
                 ->whereNull('parent_id')
                 ->active()
+                ->with([
+                    'translations',
+                    'productSettings' => function ($q) use ($product) {
+                        $q->active()
+                            ->whereHas('products', function ($pq) use ($product) {
+                                $pq->where('products.id', $product->id);
+                            })
+                            ->with('translations');
+                    }
+                ])
                 ->get();
 
             $addons = Product::active()
@@ -589,7 +591,7 @@ class CategoriesController extends Controller
 
             $data = [
                 'product' => new SimpleProductResource($product),
-                'category_settings' => ServiceSettingResource::collection($categorySettings),
+                'category_settings' => \Core\Products\DataResources\Api\ProductServiceSettingResource::collection($productSettings),
                 'addons' => SimpleProductResource::collection($addons),
             ];
 

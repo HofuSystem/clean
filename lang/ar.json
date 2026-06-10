@@ -3214,5 +3214,16 @@
     "Recipient Name": "اسم المستلم",
     "Recipient Phone": "جوال المستلم",
     "Request Address From Recipient": "طلب العنوان من المستلم",
-    "Hide Sender Identity": "إخفاء هوية المرسل"
+    "Hide Sender Identity": "إخفاء هوية المرسل",
+    "Product Settings Management": "إدارة إعدادات المنتج",
+    "Select Global Setting": "اختر الإعداد العام",
+    "Select Setting": "اختر الإعداد",
+    "Select Options": "اختر الخيارات",
+    "Save Setting & Options": "حفظ الإعداد والخيارات",
+    "Setting Name": "اسم الإعداد",
+    "Selected Options": "الخيارات المحددة",
+    "You will remove this setting and all its selected options from the product.": "سيتم إزالة هذا الإعداد وجميع الخيارات المحددة له من المنتج.",
+    "Yes, delete it!": "نعم، احذفه!",
+    "Cancel": "إلغاء",
+    "No options available for this setting": "لا توجد خيارات متاحة لهذا الإعداد"
 }

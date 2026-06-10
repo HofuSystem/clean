@@ -55,11 +55,11 @@ class ProductsService
         return $record;
     }
 
-    public function get(int $id){
+    public function get(int|string $id){
         return  Product::findOrFail($id);
     }
 
-    public function delete(int $id,$final = false){
+    public function delete(int|string $id,$final = false){
         $record             = Product::findOrFail($id);
         if($final){
             $record->forceDelete();
@@ -93,7 +93,7 @@ class ProductsService
         }
         return $items;
     }
-    public function comment(int $id,string $content,int | null $parent_id){
+    public function comment(int|string $id,string $content,int | null $parent_id){
        return $this->commentingService->comment(
          Product::class,
          $id,
@@ -108,7 +108,7 @@ class ProductsService
     public function trashCount(){
         return Product::onlyTrashed()->count();
     }
-    public function restore(int $id){
+    public function restore(int|string $id){
         $record = Product::onlyTrashed()->findOrFail($id);
         $record->restore();
         return $record;

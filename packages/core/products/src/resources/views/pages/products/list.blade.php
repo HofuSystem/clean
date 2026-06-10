@@ -145,9 +145,9 @@
                             <select class="custom-select filter-input form-select advance-select" name="upper_type"
                                 id="upper_type">
                                 <option value=""> @lang('select type')</option>
-                                <option value="clothes" @selected('clothes' == request('type'))>{{ trans('clothes') }}</option>
-                                <option value="sales" @selected('sales' == request('type'))>{{ trans('sales') }}</option>
-                                <option value="services" @selected('services' == request('type'))>{{ trans('services') }}</option>
+                                <option value="clothes" @selected('clothes' == request('filters.type', request('type')))>{{ trans('clothes') }}</option>
+                                <option value="sales" @selected('sales' == request('filters.type', request('type')))>{{ trans('sales') }}</option>
+                                <option value="services" @selected('services' == request('filters.type', request('type')))>{{ trans('services') }}</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
@@ -157,7 +157,7 @@
 
                                 <option value=""> @lang('select categories')</option>
                                 @foreach ($categories as $item)
-                                    <option data-type="{{ $item->type }}" value="{{ $item->id }}" @selected($item->id == request('category_id'))>
+                                    <option data-type="{{ $item->type }}" value="{{ $item->id }}" @selected($item->id == request('filters.category_id', request('category_id')))>
                                         @lang($item->name)</option>
                                 @endforeach
 
@@ -193,20 +193,20 @@
                                     <div class="col-md-6 mb-1">
                                         <label for="name"> @lang('name') </label>
                                         <input type="text" name="name" class="form-control filter-input"
-                                            placeholder="@lang('search for name') " value="{{ request('name') }}">
+                                            placeholder="@lang('search for name') " value="{{ request('filters.name', request('name')) }}">
                                     </div>
                                     <div class="col-md-6 mb-1">
                                         <label for="type">@lang('type')</label>
                                         <select class="custom-select filter-input form-select advance-select"
                                             name="type" id="type">
                                             <option value=""> @lang('select type')</option>
-                                            <option value="clothes" @selected('clothes' == request('type'))>{{ trans('clothes') }}
+                                            <option value="clothes" @selected('clothes' == request('filters.type', request('type')))>{{ trans('clothes') }}
                                             </option>
-                                            <option value="sales" @selected('sales' == request('type'))>{{ trans('sales') }}
+                                            <option value="sales" @selected('sales' == request('filters.type', request('type')))>{{ trans('sales') }}
                                             </option>
-                                            <option value="services" @selected('services' == request('type'))>{{ trans('services') }}
+                                            <option value="services" @selected('services' == request('filters.type', request('type')))>{{ trans('services') }}
                                             </option>
-                                            <option value="packages" @selected('packages' == request('packages'))>{{ trans('packages') }}
+                                            <option value="packages" @selected('packages' == request('filters.type', request('packages')))>{{ trans('packages') }}
                                             </option>
                                         </select>
                                     </div>
@@ -218,7 +218,7 @@
 
                                             <option value=""> @lang('select categories')</option>
                                             @foreach ($categories as $item)
-                                                <option data-type="{{ $item->type }}" value="{{ $item->id }}" @selected($item->id == request('category_id'))>
+                                                <option data-type="{{ $item->type }}" value="{{ $item->id }}" @selected($item->id == request('filters.category_id', request('category_id')))>
                                                     @lang($item->name)</option>
                                             @endforeach
 
@@ -232,7 +232,7 @@
 
                                             <option value=""> @lang('select subCategories')</option>
                                             @foreach ($subCategories as $item)
-                                                <option data-parent-id="{{ $item->parent_id }}" value="{{ $item->id }}" @selected($item->id == request('sub_category_id'))>
+                                                <option data-parent-id="{{ $item->parent_id }}" value="{{ $item->id }}" @selected($item->id == request('filters.sub_category_id', request('sub_category_id')))>
                                                     @lang($item->name)</option>
                                             @endforeach
 
@@ -247,9 +247,9 @@
                                         <select class="custom-select filter-input form-select advance-select"
                                             name="status" id="status">
                                             <option value=""> @lang('select status')</option>
-                                            <option value="active" @selected('active' == request('status'))>{{ trans('active') }}
+                                            <option value="active" @selected('active' == request('filters.status', request('status')))>{{ trans('active') }}
                                             </option>
-                                            <option value="not-active" @selected('not-active' == request('status'))>
+                                            <option value="not-active" @selected('not-active' == request('filters.status', request('status')))>
                                                 {{ trans('not-active') }}</option>
                                         </select>
                                     </div>
@@ -258,13 +258,13 @@
                                         <label for="created_at"> @lang('Create Date from') </label>
                                         <input type="datetime-local" name="from_created_at"
                                             class="form-control filter-input" placeholder="@lang('search for Create Date') "
-                                            value="{{ request('created_at') }}">
+                                            value="{{ request('filters.created_at', request('created_at')) }}">
                                     </div>
                                     <div class="col-md-6 mb-1">
                                         <label for="created_at"> @lang('Create Date to') </label>
                                         <input type="datetime-local" name="to_created_at"
                                             class="form-control filter-input" placeholder="@lang('search for Create Date') "
-                                            value="{{ request('created_at') }}">
+                                            value="{{ request('filters.created_at', request('created_at')) }}">
                                     </div>
 
                                     <!--begin::Actions-->

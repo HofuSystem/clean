@@ -173,6 +173,59 @@
   {
     "url": null,
     "route": null,
+    "permission": null,
+    "icon": "fa fa-leaf",
+    "type": null,
+    "title": {
+      "en": "Flowers",
+      "ar": "الزهور"
+    },
+    "sub": [
+      {
+        "url": null,
+        "route": "dashboard.products.index",
+        "routeArray": {
+          "filters": {
+            "type": "sales"
+          }
+        },
+        "type": null,
+        "icon": null,
+        "title": {
+          "en": "Sales Products",
+          "ar": "منتجات البيع"
+        }
+      },
+      {
+        "url": null,
+        "route": "dashboard.categories.index",
+        "routeArray": {
+          "filters": {
+            "type": "sales"
+          }
+        },
+        "type": null,
+        "icon": null,
+        "title": {
+          "en": "Sales Products Categories",
+          "ar": "تصنيفات منتجات البيع"
+        }
+      },
+      {
+        "url": null,
+        "route": "dashboard.product-settings.index",
+        "type": null,
+        "icon": null,
+        "title": {
+          "en": "Products Settings",
+          "ar": "إعدادات المنتجات"
+        }
+      }
+    ]
+  },
+  {
+    "url": null,
+    "route": null,
     "permission": "dashboard.services.index",
     "icon": "fa fa-align-justify",
     "type": null,

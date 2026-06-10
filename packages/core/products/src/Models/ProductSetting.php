@@ -1,0 +1,151 @@
+<?php
+
+namespace Core\Products\Models;
+
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Core\Products\Observers\ProductSettingObserver;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
+use Core\Settings\Models\CoreModel;
+use Carbon\Carbon;
+use App\Observers\GlobalModelObserver;
+use Core\Categories\Models\Price;
+
+#[ObservedBy([ProductSettingObserver::class])]
+#[ObservedBy([GlobalModelObserver::class])]
+class ProductSetting extends CoreModel implements TranslatableContract
+{
+    use Translatable;
+
+    protected $table             = 'product_settings';
+    protected $fillable          = ['slug', 'addon_price', 'cost', 'discount_percent', 'parent_id', 'status', 'color', 'icon', 'creator_id', 'updater_id'];
+    protected $guarded           = [];
+    public $translatedAttributes = ["name", "description"];
+
+    //start Scopes
+    public function scopeSearch($query, $type = null)
+    {
+        //filter text on slug
+        if ((request()->has("filters.slug")) and !empty(request("filters.slug"))) {
+            $query->where("slug", "LIKE", "%" . request("filters.slug") . "%");
+        }
+        
+        //filter text on name
+        if ((request()->has("filters.name")) and !empty(request("filters.name"))) {
+            $query->whereTranslationLike("name", "%" . request("filters.name") . "%");
+        }
+        
+        //filter select on product
+        if ((request()->has("filters.product_id")) and !empty(request("filters.product_id"))) {
+            $query->whereRelation("products", "id", request("filters.product_id"));
+        }
+        
+        //filter by number on addon_price
+        if ((request()->has("filters.addon_price")) and !empty(request("filters.addon_price"))) {
+            $query->where("addon_price", request("filters.addon_price"));
+        }
+        
+        //filter select on parent
+        if ((request()->has("filters.parent_id")) and !empty(request("filters.parent_id"))) {
+            $query->whereRelation("parent", "id", request("filters.parent_id"));
+        }
+        
+        //filter select on status
+        if ((request()->has("filters.status")) and !empty(request("filters.status"))) {
+            $query->where("status", request("filters.status"));
+        }
+        
+        //filter date on created_at
+        if ((request()->has("filters.from_created_at")) and !empty(request("filters.from_created_at"))) {
+            $query->whereDate("created_at", ">=", Carbon::parse(request("filters.from_created_at")));
+        }
+
+        if ((request()->has("filters.to_created_at")) and !empty(request("filters.to_created_at"))) {
+            $query->whereDate("created_at", "<=", Carbon::parse(request("filters.to_created_at")));
+        }
+        
+        //filter date on updated_at
+        if ((request()->has("filters.from_updated_at")) and !empty(request("filters.from_updated_at"))) {
+            $query->whereDate("updated_at", ">=", Carbon::parse(request("filters.from_updated_at")));
+        }
+
+        if ((request()->has("filters.to_updated_at")) and !empty(request("filters.to_updated_at"))) {
+            $query->whereDate("updated_at", "<=", Carbon::parse(request("filters.to_updated_at")));
+        }
+
+        $query->when($type == 'product-settings', function ($settingsQuery) {
+            $settingsQuery->whereNull('parent_id')->where(function ($settingsQuery) {
+                $settingsQuery->whereNull('addon_price')->orWhere('addon_price', 0);
+            });
+        })
+        ->when($type == 'product-sub-settings', function ($subProductsSettingsQuery) {
+            $subProductsSettingsQuery->whereNotNull('parent_id');
+        })
+        ->when($type == 'additional-features', function ($servicesFeaturesQuery) {
+            $servicesFeaturesQuery->whereNull('parent_id')->whereNotNull('addon_price')->where('addon_price', '>', 0);
+        });
+
+        if (request()->has('trash') and request()->trash == 1) {
+            $query->onlyTrashed();
+        }
+    }
+    //end Scopes
+
+    //start relations
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_product_setting', 'product_setting_id', 'product_id');
+    }
+
+    public function addonPrices()
+    {
+        return $this->morphMany(Price::class, 'priceable');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(ProductSetting::class, 'parent_id', 'id');
+    }
+
+    public function productSettings()
+    {
+        return $this->hasMany(ProductSetting::class, 'parent_id', 'id');
+    }
+    //end relations
+
+    //start Attributes
+    public function getActionsAttribute()
+    {
+        $type = in_array(request()->segment(2), ['product-settings', 'product-sub-settings', 'additional-features']) ? request()->segment(2) : request()->segment(3);
+        return $this->getActions($type);
+    }
+
+    public function getItemsActionsAttribute()
+    {
+        return $this->getItemsActions('product-settings');
+    }
+
+    public function getShowActionsAttribute()
+    {
+        return $this->getShowActions('product-settings');
+    }
+
+    public function getItemDataAttribute()
+    {
+        return $this->getItemData('product-settings');
+    }
+
+    public function getPriceAttribute()
+    {
+        $price = $this->addon_price;
+        $cityId = auth('api')->user()?->profile?->city_id ?? request('city_id');
+        if ($cityId) {
+            $cityPrice = $this->addonPrices()->where('city_id', $cityId)->first();
+            if ($cityPrice) {
+                $price = $cityPrice->price;
+            }
+        }
+        return \Core\Settings\Helpers\ToolHelper::getPriceBasedOnCurrentWeekDay($price);
+    }
+    //end Attributes
+}

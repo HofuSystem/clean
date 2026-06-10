@@ -161,6 +161,11 @@ class Product extends CoreModel implements TranslatableContract{
         return $this->hasMany(ContractsCustomerPrice::class, 'product_id');
     }
 
+    public function productSettings()
+    {
+        return $this->belongsToMany(ProductSetting::class, 'product_product_setting', 'product_id', 'product_setting_id');
+    }
+
     //end relations
 
     //start Attributes

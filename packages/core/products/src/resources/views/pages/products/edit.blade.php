@@ -303,6 +303,107 @@
 
                             </div>
 
+                            <div class="form-group mb-3 col-md-12" id="product-settings-management-div" style="{{ (isset($item) && $item->type == 'sales') ? '' : 'display: none;' }}">
+                                <div class="mt-4 p-4 border rounded bg-light">
+                                    <h3 class="text-dark mb-3"><i class="fas fa-cog text-primary me-2"></i>{{ trans('Product Settings Management') }}</h3>
+                                    
+                                    @if (isset($item))
+                                        <!-- Add setting form -->
+                                        <div class="row mb-4 bg-white p-3 rounded border">
+                                            <div class="col-md-6 form-group">
+                                                <label class="form-label font-weight-bold mb-2" for="global-setting-select">{{ trans('Select Global Setting') }}</label>
+                                                <select id="global-setting-select" class="form-select form-control select2">
+                                                    <option value="">{{ trans('Select Setting') }}</option>
+                                                    @foreach ($globalSettings as $gSetting)
+                                                        <option value="{{ $gSetting->id }}" data-options="{{ json_encode($gSetting->productSettings->map(fn($opt) => ['id' => $opt->id, 'name' => $opt->name])) }}">
+                                                            {{ $gSetting->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-6 form-group mt-3 mt-md-0" id="options-selection-container" style="display: none;">
+                                                <label class="form-label font-weight-bold mb-2">{{ trans('Select Options') }}</label>
+                                                <div id="options-checkboxes" class="d-flex flex-wrap gap-3 p-3 border rounded bg-light">
+                                                    <!-- Dynamic checkboxes will be inserted here -->
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-12 mt-3 text-end">
+                                                <button type="button" id="btn-associate-setting" class="btn btn-primary btn-sm" style="display: none;">
+                                                    <i class="fas fa-save me-1"></i> {{ trans('Save Setting & Options') }}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Associated settings table -->
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover text-center align-middle border">
+                                                <thead class="table-primary text-white text-capitalize">
+                                                    <tr>
+                                                        <th>{{ trans('Setting Name') }}</th>
+                                                        <th>{{ trans('Selected Options') }}</th>
+                                                        <th>{{ trans('Actions') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                     @php
+                                                         $associatedSettings = $item->productSettings()
+                                                             ->whereNull('parent_id')
+                                                             ->active()
+                                                             ->with([
+                                                                 'translations',
+                                                                 'productSettings' => function ($q) use ($item) {
+                                                                     $q->active()
+                                                                         ->whereHas('products', function ($pq) use ($item) {
+                                                                             $pq->where('products.id', $item->id);
+                                                                         })
+                                                                         ->with('translations');
+                                                                 }
+                                                             ])
+                                                             ->get();
+                                                     @endphp
+                                                    @forelse ($associatedSettings as $assocSetting)
+                                                        <tr data-setting-id="{{ $assocSetting->id }}">
+                                                            <td class="font-weight-bold">{{ $assocSetting->name }}</td>
+                                                            <td>
+                                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                                    @forelse ($assocSetting->productSettings as $opt)
+                                                                        <span class="badge bg-success text-white p-2 m-1">
+                                                                            {{ $opt->name }} 
+                                                                            @if($opt->addon_price > 0)
+                                                                                (+{{ $opt->addon_price }} {{ trans('SAR') }})
+                                                                            @endif
+                                                                        </span>
+                                                                    @empty
+                                                                        <span class="text-muted">{{ trans('No options selected') }}</span>
+                                                                    @endforelse
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-sm btn-icon btn-danger remove-associated-setting" 
+                                                                        data-url="{{ route('dashboard.products.delete-setting', ['id' => $item->id, 'setting_id' => $assocSetting->id]) }}"
+                                                                        title="{{ trans('Delete') }}">
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="3" class="text-muted py-3">{{ trans('No settings associated with this product yet') }}</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-warning py-3 text-center">
+                                            <i class="fas fa-exclamation-triangle me-2"></i> {{ trans('Please save the product first to manage its settings') }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
                         </div>
                         <div class="card-footer">
                             <div class="row">
@@ -398,6 +499,155 @@
                         </div>
                     </div>
 
+                    <div class="modal fade" id="product-settingsModal" aria-hidden="true"
+                        aria-labelledby="product-settingsModalLabel"
+                        data-store="{{ route('dashboard.product-settings.create') }}">
+                        <div class="modal-dialog modal-fullscreen">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="product-settingsModalLabel">
+                                        {{ trans('options moadl') }}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="modal-form items-modal-form">
+                                        <div class="row">
+
+                                            <div class="col-12 mt-5">
+                                                <ul class="nav nav-tabs" id="settingLanguageTabs" role="tablist">
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active " id="items-product-settings-name-en-tab"
+                                                            data-bs-toggle="tab" data-bs-target="#items-product-settings-name-en"
+                                                            type="button" role="tab" aria-controls="items-product-settings-name-en"
+                                                            aria-selected="true">{{ trans('English') }}</button>
+                                                    </li>
+
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link  " id="items-product-settings-name-ar-tab"
+                                                            data-bs-toggle="tab" data-bs-target="#items-product-settings-name-ar"
+                                                            type="button" role="tab" aria-controls="items-product-settings-name-ar"
+                                                            aria-selected="false">{{ trans('العربية') }}</button>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content mt-3" id="settingLanguageTabsContent">
+                                                    <div class="tab-pane fade show active" id="items-product-settings-name-en"
+                                                        role="tabpanel" aria-labelledby="items-product-settings-name-en-tab">
+
+                                                        <div class="form-group mb-3 col-md-12">
+                                                            <label class="required" for="name">{{ trans('name') }}</label>
+                                                            <input type="text" name="translations[en][name]"
+                                                                class="form-control "
+                                                                placeholder="{{ trans('Enter name') }} " value="">
+                                                        </div>
+
+                                                        <div class="form-group mb-3 col-md-12">
+                                                            <label class="" for="description">{{ trans('description') }}</label>
+                                                            <textarea name="translations[en][description]" class="form-control" rows="3"
+                                                                placeholder="{{ trans('Enter description') }}"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane fade " id="items-product-settings-name-ar" role="tabpanel"
+                                                        aria-labelledby="items-product-settings-name-ar-tab">
+
+                                                        <div class="form-group mb-3 col-md-12">
+                                                            <label class="required" for="name">{{ trans('name') }}</label>
+                                                            <input type="text" name="translations[ar][name]"
+                                                                class="form-control "
+                                                                placeholder="{{ trans('Enter name') }} " value="">
+                                                        </div>
+
+                                                        <div class="form-group mb-3 col-md-12">
+                                                            <label class="" for="description">{{ trans('description') }}</label>
+                                                            <textarea name="translations[ar][description]" class="form-control" rows="3"
+                                                                placeholder="{{ trans('Enter description') }}"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-6">
+                                                <label class="required" for="addon_price">{{ trans('addon price') }}</label>
+                                                <input type="number" name="addon_price" class="form-control "
+                                                    placeholder="{{ trans('Enter addon price') }} " value="">
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-6">
+                                                <label class="required" for="cost">{{ trans('cost') }}</label>
+                                                <input type="number" name="cost" class="form-control "
+                                                    placeholder="{{ trans('Enter cost') }} " value="">
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-12">
+                                                <label class="" for="discount_percent">{{ trans('discount percent') }}</label>
+                                                <input type="number" step="0.01" name="discount_percent" class="form-control "
+                                                    placeholder="{{ trans('Enter discount percent') }} " value="">
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-12">
+                                                <label class="required" for="status">{{ trans('status') }}</label>
+                                                <select class="custom-select form-select advance-select" name="status"
+                                                    id="parent_id-status">
+                                                    <option value="">{{ trans('select status') }}</option>
+                                                    <option value="active">{{ trans('active') }}</option>
+                                                    <option value="not-active">{{ trans('not-active') }}</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-12">
+                                                <label class="" for="color">{{ trans('color') }}</label>
+                                                <div class="input-group">
+                                                    <input type="text" name="color" class="form-control color-text-input"
+                                                        placeholder="{{ trans('e.g., #000000') }}" value="">
+                                                    <input type="color" class="form-control form-control-color color-picker-input"
+                                                        style="max-width: 60px; padding: 2px;" value="#000000">
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3 col-md-12">
+                                                <label class="" for="icon">{{ trans('icon') }}</label>
+                                                <div class="media-center-group form-control" data-max="1" data-type="image">
+                                                    <input type="text" hidden="hidden" class="form-control" name="icon"
+                                                        value="">
+                                                    <button type="button" class="btn btn-secondary media-center-load"
+                                                        style="margin-top: 10px;"><i class="fa fa-file-upload"></i></button>
+                                                    <div class="input-gallery"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-9 ml-lg-auto">
+                                                <button type="submit" class="btn btn-primary font-weight-bold mr-2">{{
+                                                    trans('save') }}</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="product-settingsDeleteModel" tabindex="-1"
+                        aria-labelledby="product-settingsDeleteModelLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="product-settingsDeleteModelLabel">
+                                        {{ trans('Delete ProductSetting') }} <span></span></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ trans('Are you sure you want to delete the ProductSetting') }} <span></span>?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{
+                                        trans('Close') }}</button>
+                                    <button type="button" class="btn btn-danger items-final-delete">{{ trans('Delete')
+                                        }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
                 <!--end::Card-->
@@ -424,7 +674,7 @@
             var allCategories       = $('#category_id option').clone();
             // When the category changes
             $('#type').change(function() {
-                $('#desc-div,#sub-div,#quantity-div,#sku-div,#wash-type-div').hide();
+                $('#desc-div,#sub-div,#quantity-div,#sku-div,#wash-type-div,#product-settings-management-div').hide();
 
                 var type            = $(this).val();
                 var $Category       = $('#category_id');
@@ -432,7 +682,7 @@
                 if(type =="clothes"){
                     $('#images-div,#sub-div,#sku-div,#wash-type-div').show();
                 }else  if(type =="sales"){
-                    $('#desc-div,#sub-div').show();
+                    $('#desc-div,#sub-div,#product-settings-management-div').show();
 
                 }else  if(type =="services"){
                     $('#wash-type-div').show();
@@ -473,6 +723,153 @@
 
             });
             $('#type').change()
+
+            // Product settings management logic
+            const associatedIds = @json(isset($item) ? $item->productSettings->pluck('id')->toArray() : []);
+            const settingSelect = document.getElementById('global-setting-select');
+            const optionsContainer = document.getElementById('options-selection-container');
+            const optionsCheckboxes = document.getElementById('options-checkboxes');
+            const btnAssociate = document.getElementById('btn-associate-setting');
+
+            if (settingSelect) {
+                $(settingSelect).on('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    if (!selectedOption || !selectedOption.value) {
+                        optionsContainer.style.display = 'none';
+                        btnAssociate.style.display = 'none';
+                        return;
+                    }
+
+                    const optionsData = JSON.parse(selectedOption.getAttribute('data-options') || '[]');
+                    optionsCheckboxes.innerHTML = '';
+
+                    if (optionsData.length === 0) {
+                        optionsCheckboxes.innerHTML = '<span class="text-muted">{{ trans("No options available for this setting") }}</span>';
+                    } else {
+                        optionsData.forEach(opt => {
+                            const isChecked = associatedIds.includes(opt.id) ? 'checked' : '';
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'form-check form-check-inline mx-2 my-1';
+                            wrapper.innerHTML = `
+                                <input class="form-check-input option-checkbox" type="checkbox" name="options[]" value="${opt.id}" id="opt-${opt.id}" ${isChecked}>
+                                <label class="form-check-label" for="opt-${opt.id}">
+                                    ${opt.name}
+                                </label>
+                            `;
+                            optionsCheckboxes.appendChild(wrapper);
+                        });
+                    }
+
+                    optionsContainer.style.display = 'block';
+                    btnAssociate.style.display = 'inline-block';
+                });
+            }
+
+            if (btnAssociate) {
+                btnAssociate.addEventListener('click', function() {
+                    const productId = "{{ $item->id ?? '' }}";
+                    if (!productId) return;
+
+                    const settingId = settingSelect.value;
+                    const checkedCheckboxes = document.querySelectorAll('.option-checkbox:checked');
+                    const optionIds = Array.from(checkedCheckboxes).map(cb => cb.value);
+
+                    // Send AJAX request
+                    fetch(`{{ route('dashboard.products.associate-settings', ['id' => $item->id ?? 0]) }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            setting_id: settingId,
+                            option_ids: optionIds
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status || data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message || 'Saved',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Something went wrong'
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while saving'
+                        });
+                    });
+                });
+            }
+
+            // Delete handler
+            document.querySelectorAll('.remove-associated-setting').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    Swal.fire({
+                        title: '{{ trans("Are you sure?") }}',
+                        text: '{{ trans("You will remove this setting and all its selected options from the product.") }}',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: '{{ trans("Yes, delete it!") }}',
+                        cancelButtonText: '{{ trans("Cancel") }}'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(url, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status || data.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: data.message || 'Deleted',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.message || 'Something went wrong'
+                                    });
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'An error occurred while deleting'
+                                });
+                            });
+                        }
+                    });
+                });
+            });
         });
     </script>
 @endpush

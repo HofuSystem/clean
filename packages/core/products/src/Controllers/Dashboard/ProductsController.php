@@ -82,8 +82,22 @@ class ProductsController extends Controller
 		$subCategories = $this->categoriesService->selectable('id','name');
 		$cities = $this->citiesService->selectable('id','name');
 
+        $globalSettings = \Core\Products\Models\ProductSetting::whereNull('parent_id')
+            ->active()
+            ->with(['translations', 'productSettings' => function($q) {
+                $q->active()->with('translations');
+            }])
+            ->get();
 
-        return view('products::pages.products.edit', compact('item','title','screen','categories','subCategories','cities') );
+        if ($item) {
+            $item->load([
+                'productSettings' => function ($q) {
+                    $q->active()->with(['translations', 'parent']);
+                }
+            ]);
+        }
+
+        return view('products::pages.products.edit', compact('item','title','screen','categories','subCategories','cities','globalSettings') );
     }
 
     public function storeOrUpdate(ProductsRequest $request, $id = null){
@@ -206,11 +220,76 @@ class ProductsController extends Controller
 
         return view('products::pages.products.best_sales', compact('title','screen') );
     }
-
     public function salesExport(Request $request)
     {
         $filename = $request->headersOnly ? 'best-sale-products-template.xlsx' : 'best-sale-products.xlsx';
         return Excel::download(new ProductsExport($request->headersOnly,$request->cols), $filename);
     }
 
+    public function associateSettings(Request $request, $id)
+    {
+        $request->validate([
+            'setting_id' => 'required|exists:product_settings,id',
+            'option_ids' => 'nullable|array',
+            'option_ids.*' => 'exists:product_settings,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $product = $this->productsService->get($id);
+            $parentSettingId = $request->setting_id;
+            $optionIds = $request->input('option_ids', []);
+
+            // All IDs to associate for this setting (parent + options)
+            $allIdsToAssociate = array_merge([$parentSettingId], $optionIds);
+
+            // Get all possible option IDs for this parent setting
+            $allPossibleOptionIds = \Core\Products\Models\ProductSetting::where('parent_id', $parentSettingId)
+                ->pluck('id')
+                ->toArray();
+
+            // All possible setting/option IDs for this parent hierarchy
+            $allHierarchyIds = array_merge([$parentSettingId], $allPossibleOptionIds);
+
+            // Detach any settings/options from this hierarchy that are not currently chosen
+            $product->productSettings()->detach(array_diff($allHierarchyIds, $allIdsToAssociate));
+
+            // Sync/attach the chosen setting and options without detaching other hierarchies
+            $product->productSettings()->syncWithoutDetaching($allIdsToAssociate);
+
+            DB::commit();
+            return $this->returnSuccessMessage(trans('Product settings saved successfully'));
+        } catch (\Throwable $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
+        }
+    }
+
+    public function deleteSetting(Request $request, $id, $settingId)
+    {
+        try {
+            DB::beginTransaction();
+
+            $product = $this->productsService->get($id);
+
+            // Get all option IDs for this parent setting
+            $allOptionIds = \Core\Products\Models\ProductSetting::where('parent_id', $settingId)
+                ->pluck('id')
+                ->toArray();
+
+            // All IDs to detach (parent + options)
+            $allIdsToDetach = array_merge([$settingId], $allOptionIds);
+
+            $product->productSettings()->detach($allIdsToDetach);
+
+            DB::commit();
+            return $this->returnSuccessMessage(trans('Product setting removed successfully'));
+        } catch (\Throwable $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
+        }
+    }
 }
