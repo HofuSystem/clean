@@ -971,8 +971,6 @@ class ImportSallaProductsSeeder extends Seeder
                 $product = Product::create($attributes);
             }
 
-            // Sync settings to the product
-            $product->productSettings()->sync($allSettingIds);
         }
     }
 }
