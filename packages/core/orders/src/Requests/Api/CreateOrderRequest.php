@@ -88,8 +88,8 @@ class CreateOrderRequest extends FormRequest
       'products.*.width'              => 'nullable|required_if:products.product_type,carpet',
       'products.*.height'             => 'nullable|required_if:products.product_type,carpet',
       'products.*.customizations'                  => 'nullable|array',
-      'products.*.customizations.*.setting_id'     => 'required|exists:category_settings,id',
-      'products.*.customizations.*.options_id'     => 'required|exists:category_settings,id',
+      'products.*.customizations.*.setting_id'     => 'nullable|exists:product_settings,id',
+      'products.*.customizations.*.options_id'     => 'nullable|exists:product_settings,id',
       'products.*.card_note'                       => 'nullable|string',
 
       'order_for'                     => 'nullable|string|in:me,other',

@@ -46,6 +46,7 @@ use Core\Products\Models\Product;
 use Core\Categories\Models\CategorySetting;
 use Core\Products\DataResources\Api\SimpleProductResource;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
+use Core\Products\DataResources\Api\ProductServiceSettingResource;
 
 class CategoriesController extends Controller
 {
@@ -591,7 +592,7 @@ class CategoriesController extends Controller
 
             $data = [
                 'product' => new SimpleProductResource($product),
-                'category_settings' => \Core\Products\DataResources\Api\ProductServiceSettingResource::collection($productSettings),
+                'category_settings' => ProductServiceSettingResource::collection($productSettings),
                 'addons' => SimpleProductResource::collection($addons),
             ];
 

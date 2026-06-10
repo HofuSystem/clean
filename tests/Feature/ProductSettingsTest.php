@@ -101,6 +101,7 @@ class ProductSettingsTest extends TestCase
             'data' => [
                 'product',
                 'category_settings',
+                'customizations',
                 'addons',
             ],
             'status'
@@ -114,6 +115,12 @@ class ProductSettingsTest extends TestCase
         $this->assertCount(1, $subSettings);
         $this->assertEquals('Test Setting Child Option EN', $subSettings[0]['name']);
         $this->assertEquals(20, $subSettings[0]['price']);
+
+        // Assert customizations match
+        $customizationsData = $response->json('data.customizations');
+        $this->assertCount(1, $customizationsData);
+        $this->assertEquals('Test Setting Parent EN', $customizationsData[0]['name']);
+        $this->assertEquals('Test Setting Child Option EN', $customizationsData[0]['sub_settings'][0]['name']);
     }
 
     public function test_products_service_get_accepts_integer_and_string_id()
@@ -356,5 +363,126 @@ class ProductSettingsTest extends TestCase
             'product_id' => $product->id,
             'product_setting_id' => $globalOption->id,
         ]);
+    }
+
+    public function test_sales_order_creation_with_product_settings()
+    {
+        // 1. Create a user and assign role 'client'
+        $user = User::create([
+            'fullname' => 'Client User',
+            'email' => 'client-' . uniqid() . '@example.com',
+            'phone' => '123' . rand(111111, 999999),
+            'password' => 'secret123',
+            'is_active' => true,
+        ]);
+
+        $clientRoleWeb = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'client', 'guard_name' => 'web']);
+        $clientRoleApi = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'client', 'guard_name' => 'api']);
+        $user->assignRole($clientRoleWeb);
+        $user->assignRole($clientRoleApi);
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        // 2. Create a category of type sales
+        $category = Category::create([
+            'slug' => 'flowers-cat-' . uniqid(),
+            'status' => 'active',
+            'delivery_price' => 0,
+            'image' => 'category_test.png',
+            'type' => 'sales',
+            'en' => ['name' => 'Flowers Category EN'],
+            'ar' => ['name' => 'Flowers Category AR'],
+        ]);
+
+        // 3. Create a product of type sales
+        $product = Product::create([
+            'category_id' => $category->id,
+            'slug' => 'flower-bouquet-' . uniqid(),
+            'status' => 'active',
+            'price' => 100,
+            'cost' => 50,
+            'quantity' => 10,
+            'wash_type' => 'washer',
+            'image' => 'product_test.png',
+            'type' => 'sales',
+            'en' => [
+                'name' => 'Flower Bouquet EN',
+                'desc' => 'Flower Description EN',
+            ],
+            'ar' => [
+                'name' => 'Flower Bouquet AR',
+                'desc' => 'Flower Description AR',
+            ],
+        ]);
+
+        // 4. Create product settings
+        $parentSetting = ProductSetting::create([
+            'slug' => 'gift-wrapping',
+            'status' => 'active',
+            'en' => ['name' => 'Gift wrapping EN'],
+            'ar' => ['name' => 'Gift wrapping AR'],
+        ]);
+
+        $childSetting = ProductSetting::create([
+            'slug' => 'premium-wrap',
+            'parent_id' => $parentSetting->id,
+            'addon_price' => 25,
+            'status' => 'active',
+            'en' => ['name' => 'Premium Wrap Option EN'],
+            'ar' => ['name' => 'Premium Wrap Option AR'],
+        ]);
+
+        $product->productSettings()->attach([$parentSetting->id, $childSetting->id]);
+
+        // Authenticate
+        $this->actingAs($user, 'sanctum');
+        auth('api')->setUser($user);
+
+        // 5. POST to create order API
+        $orderData = [
+            'type' => 'sales',
+            'desc' => 'Flowers Order',
+            'receiving_date' => now()->format('Y-m-d'),
+            'receiving_time' => '10:00',
+            'receiving_to_time' => '12:00',
+            'pay_type' => 'cash',
+            'order_price' => 125,
+            'total_price' => 125,
+            'wallet_used' => false,
+            'wallet_balance' => 0,
+            'total_after_wallet' => 125,
+            'products' => [
+                [
+                    'id' => $product->id,
+                    'quantity' => 1,
+                    'customizations' => [
+                        [
+                            'setting_id' => $parentSetting->id,
+                            'options_id' => $childSetting->id,
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        $response = $this->postJson('/api/client/orders', $orderData);
+
+        // Assert order creation is successful
+        $response->assertStatus(200);
+
+        // Verify order items and customizations in database
+        $order = \Core\Orders\Models\Order::where('client_id', $user->id)->first();
+        $this->assertNotNull($order);
+        $this->assertCount(1, $order->items);
+
+        $item = $order->items->first();
+        $this->assertEquals($product->id, $item->product_id);
+        
+        $customizations = $item->customizations;
+        $this->assertCount(1, $customizations);
+        $this->assertEquals($parentSetting->id, $customizations[0]['setting_id']);
+        $this->assertEquals($childSetting->id, $customizations[0]['options_id']);
+        $this->assertEquals('Premium Wrap Option EN', $customizations[0]['option_name_en']);
+        $this->assertEquals(25, $customizations[0]['price']);
+        $this->assertEquals(125, $item->total_price);
     }
 }

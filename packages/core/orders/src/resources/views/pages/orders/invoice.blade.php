@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>فاتورة  |  Invoice</title>
+    <title>فاتورة | Invoice</title>
     <style>
         @font-face {
             font-family: 'Cairo';
@@ -363,6 +363,7 @@
                 margin: 0 12px;
             }
         }
+
         .text-danger {
             color: #dc3545 !important;
         }
@@ -435,8 +436,9 @@
                             <span class="suben">{{ $item->product_name_en ?? '' }}</span>
 
                             @if($item->width and $item->height)
-                            <br>
-                                <span class="suben" dir="ltr">Size: {{ $item->width." M" }} × {{ $item->height." M" }} = {{ $item->width * $item->height }} M²</span>
+                                <br>
+                                <span class="suben" dir="ltr">Size: {{ $item->width . " M" }} × {{ $item->height . " M" }} =
+                                    {{ $item->width * $item->height }} M²</span>
                             @endif
                         </td>
                         <td>{{ $item->product?->subcategory?->translate('en')?->name . ' | ' . $item->product?->subcategory?->translate('ar')?->name ?? '' }}
@@ -445,7 +447,8 @@
                         <td>{{ $item->quantity }}</td>
                         <td>
                             {{ number_format($item->product_price * $item->quantity * ($item->width ?? 1) * ($item->height ?? 1), 2) }}
-                            ر.س</td>
+                            ر.س
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
@@ -479,9 +482,9 @@
                     <div class="row">
                         <div class="label text-danger">
                             الخصم | Discount
-                           
+
                         </div>
-                            
+
                         <div class="val text-danger">-{{ number_format($order->total_coupon ?? 0, 2) }} ر.س</div>
                     </div>
                 @endif
@@ -507,12 +510,12 @@
             // After printing, show the button again (for browsers that support onafterprint)
             if (btn) {
                 if ('onafterprint' in window) {
-                    window.onafterprint = function() {
+                    window.onafterprint = function () {
                         btn.style.display = '';
                     };
                 } else {
                     // Fallback: show after a short delay
-                    setTimeout(function() {
+                    setTimeout(function () {
                         btn.style.display = '';
                     }, 1000);
                 }

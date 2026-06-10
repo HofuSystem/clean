@@ -20,6 +20,7 @@ use Core\Orders\Models\OrderItem;
 use Core\Orders\Models\OrderReport;
 use Core\Orders\Models\OrderRepresentative;
 use Core\Products\Models\Product;
+use Core\Products\Models\ProductSetting;
 use Core\Settings\Helpers\ToolHelper;
 use Core\Settings\Models\Setting;
 use Core\Settings\Services\SettingsService;
@@ -1021,8 +1022,9 @@ class OrdersService
             if (!empty($item['customizations']) && is_array($item['customizations'])) {
                 $processedCustomizations = [];
                 foreach ($item['customizations'] as $customization) {
-                    $setting = CategorySetting::find($customization['setting_id'] ?? null);
-                    $option  = CategorySetting::find($customization['options_id'] ?? null);
+                    $setting = ProductSetting::find($customization['setting_id'] ?? null);
+                    $option  = ProductSetting::find($customization['options_id'] ?? null);
+                   
                  
                     
                     $processedCustomizations[] = [
