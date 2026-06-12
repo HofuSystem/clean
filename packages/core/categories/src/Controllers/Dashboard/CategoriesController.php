@@ -26,25 +26,29 @@ class CategoriesController extends Controller
     public function __construct(protected CategoriesService $categoriesService,protected CitiesService $citiesService,protected CategorySettingsService $categorySettingsService){}
 
     public function index(Request $request){
+        $isSales = $request->routeIs('dashboard.categories.sales');
+        if ($isSales) {
+            $request->merge(['filters' => ['type' => 'sales']]);
+        }
         $type           = in_array($request->segment(2) , ['categories','sub-categories','services','sub-services']) ?  $request->segment(2) :  $request->segment(3);
         if($type == 'categories'){
-            $types   = ['clothes','sales','services'];
+            $types   = $isSales ? ['sales'] : ['clothes','services'];
         }else if($type == 'sub-categories'){
-            $types   = ['clothes','sales','services'];
+            $types   = $isSales ? ['sales'] : ['clothes','services'];
         }else if($type == 'services'){
             $types   = ['maid','host'];
         }else if($type == 'sub-services'){
             $types   = ['maid','host'];
         }
-        $title          = trans($type.' index');
+        $title          = $isSales ? trans('Sales Categories index') : trans($type.' index');
         $screen         = $type.'-index';
-        $total          = $this->categoriesService->totalCount($type);
-        $trash          = $this->categoriesService->trashCount($type);
+        $total          = $this->categoriesService->totalCount($type, $isSales);
+        $trash          = $this->categoriesService->trashCount($type, $isSales);
 		$parents        = $this->categoriesService->selectable('id','name');
 		$cities         = $this->citiesService->selectable('id','name');
 		$categories     = $this->categoriesService->selectable('id','name');
 
-        return view('categories::pages.categories.list', compact('title','screen','type','types','parents','cities','categories',"total","trash"));
+        return view('categories::pages.categories.list', compact('title','screen','type','types','parents','cities','categories',"total","trash", "isSales"));
     }
 
 
@@ -159,8 +163,12 @@ class CategoriesController extends Controller
 
     public function dataTable(Request $request){
         try {
+            $isSales = $request->routeIs('dashboard.categories.sales');
+            if ($isSales) {
+                $request->merge(['filters' => ['type' => 'sales']]);
+            }
             $type           = in_array($request->segment(2) , ['categories','sub-categories','services','sub-services']) ?  $request->segment(2) :  $request->segment(3);
-            $data             = $this->categoriesService->dataTable($request->draw,$type);
+            $data             = $this->categoriesService->dataTable($request->draw,$type, $isSales);
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);

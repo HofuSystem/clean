@@ -34,6 +34,9 @@ Route::group(
             Route::group(['middleware' => ['auth','active','checkPermission']], function () {
 
                 Route::group(['prefix' => 'categories', 'as' => 'categories.' ], function () {
+                    Route::get('sales', [CategoriesController::class,'index'])->name('sales');
+                    Route::post('sales', [CategoriesController::class,'dataTable'])->name('sales');
+
                     Route::get('', [CategoriesController::class,'index'])->name('index');
                     Route::post('', [CategoriesController::class,'dataTable'])->name('index');
                     Route::get('create', [CategoriesController::class,'createOrEdit'])->name('create');

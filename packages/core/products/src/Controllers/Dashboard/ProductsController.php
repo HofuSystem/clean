@@ -25,16 +25,20 @@ class ProductsController extends Controller
     use ApiResponse;
     public function __construct(protected ProductsService $productsService,protected CategoriesService $categoriesService,protected CitiesService $citiesService){}
 
-    public function index(){
-        $title      = trans('Product index');
+    public function index(Request $request){
+        $isSales = $request->routeIs('dashboard.products.sales');
+        if ($isSales) {
+            $request->merge(['filters' => ['type' => 'sales']]);
+        }
+        $title      = $isSales ? trans('Sales Product index') : trans('Product index');
         $screen     = 'products-index';
-        $total      = $this->productsService->totalCount();
-        $trash      = $this->productsService->trashCount();
+        $total      = $this->productsService->totalCount($isSales ? 'sales' : 'non-sales');
+        $trash      = $this->productsService->trashCount($isSales ? 'sales' : 'non-sales');
 		$cities = $this->citiesService->selectable('id','name');
-		$categories     = $this->categoriesService->selectable('id','name',[['parent_id',null]],true);
-		$subCategories  = $this->categoriesService->selectable('id','name',[['parent_id','!=',null]],true);
+		$categories     = $this->categoriesService->selectable('id','name',[['parent_id',null]],true, $isSales ? ['sales'] : []);
+		$subCategories  = $this->categoriesService->selectable('id','name',[['parent_id','!=',null]],true, $isSales ? ['sales'] : []);
 
-        return view('products::pages.products.list', compact('title','screen','categories','subCategories','cities',"total","trash"));
+        return view('products::pages.products.list', compact('title','screen','categories','subCategories','cities',"total","trash", "isSales"));
     }
     public function create(Request $request){
         $item           =  null;
@@ -47,7 +51,6 @@ class ProductsController extends Controller
         return view('products::pages.products.create', compact('item','title','screen','cities','categories','subCategories') );
     }
     public function store(CreateProductsRequest $request){
-
         try {
             DB::beginTransaction();
             $data = $request->except('version');
@@ -68,7 +71,7 @@ class ProductsController extends Controller
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
         } catch (\Throwable $e) {
             DB::rollback();
-            report($e);
+            dd($e);
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
 
@@ -146,7 +149,11 @@ class ProductsController extends Controller
 
     public function dataTable(Request $request){
         try {
-            $data             = $this->productsService->dataTable($request->draw);
+            $isSales = $request->routeIs('dashboard.products.sales');
+            if ($isSales) {
+                $request->merge(['filters' => ['type' => 'sales']]);
+            }
+            $data             = $this->productsService->dataTable($request->draw, $isSales ? 'sales' : 'non-sales');
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
