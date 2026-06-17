@@ -587,6 +587,12 @@ class OrdersService
             ], [
                 'representative_id' => $repId
             ]);
+            $order  = Order::where('id', $orderId)->first();
+            if($order->status == "pending" and $order->type == 'sales' and $type == 'delivery'){
+                $order->update([
+                    'status'    => 'order_has_been_delivered_to_admin',
+                ]);
+           }
         }
     }
     public function assignOperators(int $operatorId, array $orderIds)

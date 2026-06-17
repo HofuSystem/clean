@@ -114,6 +114,9 @@ class OrdersController extends Controller
         ){
             $allowedRepresentatives[] = 'delivery';
         }
+        if($order->type == 'sales'){
+            $allowedRepresentatives = ['delivery'];
+        }
         $orderHistories             = $order->histories;
         return view('orders::pages.orders.edit', compact('order','title','screen','customerOrdersCount','customerTire','editMode','users','operators','allowedRepresentatives','orderItems','subCategories','categories','comments','products','items','reportReasons','hasSize','coupons','orderHistories') );
     }
