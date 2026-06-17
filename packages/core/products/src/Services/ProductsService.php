@@ -69,11 +69,11 @@ class ProductsService
         return true;
     }
 
-    public function dataTable($draw){
+    public function dataTable($draw, $type = null){
 
-        $recordsTotal       = Product::count();
-        $recordsFiltered    = Product::search()->count();
-        $records            = Product::with(['category','subCategory'])->search()->dataTable()->get();
+        $recordsTotal       = Product::when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->count();
+        $recordsFiltered    = Product::when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->search()->count();
+        $records            = Product::with(['category','subCategory'])->when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->search()->dataTable()->get();
         return [
             'draw'              => $draw,
             'recordsTotal'      => $recordsTotal,
@@ -101,12 +101,12 @@ class ProductsService
          request()->user()->id,
          $parent_id
        );
+     }
+    public function totalCount($type = null){
+        return Product::when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->count();
     }
-    public function totalCount(){
-        return Product::count();
-    }
-    public function trashCount(){
-        return Product::onlyTrashed()->count();
+    public function trashCount($type = null){
+        return Product::onlyTrashed()->when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->count();
     }
     public function restore(int|string $id){
         $record = Product::onlyTrashed()->findOrFail($id);

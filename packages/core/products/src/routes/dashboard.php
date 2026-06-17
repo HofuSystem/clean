@@ -30,6 +30,9 @@ Route::group(
                     Route::get('best_sales', [ProductsController::class, 'bestSales'])->name('best_sales');
                     Route::get('best_sales/export', [ProductsController::class,'salesExport'])->name('salesExport');
 
+                    Route::get('sales', [ProductsController::class,'index'])->name('sales');
+                    Route::post('sales', [ProductsController::class,'dataTable'])->name('sales');
+
                     Route::get('', [ProductsController::class,'index'])->name('index');
                     Route::post('', [ProductsController::class,'dataTable'])->name('index');
                     Route::get('create', [ProductsController::class,'create'])->name('create');

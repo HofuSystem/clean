@@ -181,7 +181,11 @@
                                         <div class="col-md-6 mb-1">
                                             <label for="type">@lang("type")</label>
                                             <select class="custom-select filter-input form-select advance-select" name="type" id="type">
-                                                <option value=""> @lang("select type")</option><option value="clothes" @selected("clothes" == request("type")) >{{trans("clothes")}}</option><option value="sales" @selected("sales" == request("type")) >{{trans("sales")}}</option><option value="services" @selected("services" == request("type")) >{{trans("services")}}</option><option value="maid" @selected("maid" == request("type")) >{{trans("maid")}}</option><option value="host" @selected("host" == request("type")) >{{trans("host")}}</option>
+                                                @if(isset($isSales) && $isSales)
+                                                    <option value="sales" selected>{{trans("sales")}}</option>
+                                                @else
+                                                    <option value=""> @lang("select type")</option><option value="clothes" @selected("clothes" == request("type")) >{{trans("clothes")}}</option><option value="services" @selected("services" == request("type")) >{{trans("services")}}</option><option value="maid" @selected("maid" == request("type")) >{{trans("maid")}}</option><option value="host" @selected("host" == request("type")) >{{trans("host")}}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     
@@ -252,7 +256,7 @@
                 <div class="card-body pt-0 table-responsive table-responsive">
                     <!--begin::Table-->
                     <table class="table align-middle text-center table-row-dashed fs-6 gy-5" id="view-datatable"
-                        data-load="{{ route('dashboard.'.$type.'.index',['trash' => request()->trash]) }}">
+                        data-load="{{ route(Route::currentRouteName(),['trash' => request()->trash]) }}">
                         <!--begin::Table head-->
                         <thead class="table-primary">
                             <!--begin::Table row-->

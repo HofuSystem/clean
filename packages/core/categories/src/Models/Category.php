@@ -24,7 +24,7 @@ class Category extends CoreModel implements TranslatableContract{
     public $translatedAttributes = ["name","intro","desc","meta_title","meta_description"];
 
     //start Scopes
-    function scopeSearch($query,$type = null){
+    function scopeSearch($query,$type = null, $isSales = false){
 
         //filter text on  name
         if((request()->has("filters.name")) and !empty(request("filters.name"))){
@@ -83,11 +83,13 @@ class Category extends CoreModel implements TranslatableContract{
         if((request()->has("filters.to_updated_at")) and !empty(request("filters.to_updated_at"))){
             $query->whereDate("updated_at","<=",Carbon::parse(request("filters.to_updated_at")));
         }
-        $query->when($type == 'categories',function($categoriesQuery){
-            $categoriesQuery->whereIn('type',['clothes','sales','services'])->whereNull('parent_id');
+        $query->when($type == 'categories',function($categoriesQuery) use ($isSales){
+            $allowedTypes = $isSales ? ['sales'] : ['clothes','services'];
+            $categoriesQuery->whereIn('type', $allowedTypes)->whereNull('parent_id');
         })
-        ->when($type == 'sub-categories',function($subCategoriesQuery){
-            $subCategoriesQuery->whereIn('type',['clothes','sales','services'])->whereNotNull('parent_id');
+        ->when($type == 'sub-categories',function($subCategoriesQuery) use ($isSales){
+            $allowedTypes = $isSales ? ['sales'] : ['clothes','services'];
+            $subCategoriesQuery->whereIn('type', $allowedTypes)->whereNotNull('parent_id');
         })
         ->when($type == 'services',function($servicesQuery){
             $servicesQuery->whereIn('type',['maid','host'])->whereNull('parent_id');

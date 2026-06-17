@@ -104,13 +104,13 @@ class CategoriesService
         return true;
     }
 
-    public function dataTable($draw,$type){
+    public function dataTable($draw,$type, $isSales = false){
 
-        $recordsTotal       = Category::count();
-        $recordsFiltered    = Category::search($type)->count();
+        $recordsTotal       = Category::search($type, $isSales)->count();
+        $recordsFiltered    = Category::search($type, $isSales)->count();
         $records            = Category::select(['id','image','type','delivery_price','sort','is_package','status','parent_id'])
         ->with(['parent','cities'])
-        ->search($type)
+        ->search($type, $isSales)
         ->dataTable()->get();
 
         return [
@@ -155,11 +155,11 @@ class CategoriesService
          $parent_id
        );
     }
-    public function totalCount($type = null){
-        return Category::search($type)->count();
+    public function totalCount($type = null, $isSales = false){
+        return Category::search($type, $isSales)->count();
     }
-    public function trashCount($type = null){
-        return Category::search($type)->onlyTrashed()->count();
+    public function trashCount($type = null, $isSales = false){
+        return Category::search($type, $isSales)->onlyTrashed()->count();
     }
 
     //create date times
