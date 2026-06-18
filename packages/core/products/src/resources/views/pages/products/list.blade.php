@@ -429,7 +429,6 @@
             $('#upper_category_id').change(function() {
                 let category_id = $(this).val();
                 if (category_id) {
-                    $('.filter-input:not(#category_id)').val('').trigger('');
                     $('#category_id').val(category_id).trigger('change');
                     $('.sub-navs , .all-subs').hide()
                     $('.nav-link').removeClass('active');
@@ -443,7 +442,6 @@
                     $(`.sub-navs[data-parent-id=${category_id}]`).show()
 
                 } else {
-                    $('.filter-input').val('').trigger('');
                     $('#category_id').val("").trigger('change');
 
                 }
@@ -452,15 +450,12 @@
             })
             $('.sub-navs').click(function() {
                 let sub_category_id = $(this).data('id');
-                $('.filter-input:not(#category_id)').val('').trigger('');
-                $('#sub_category_id').val(sub_category_id).trigger('change');
+                $('#sub_category_id').val(sub_category_id).trigger('change.select2');
                 $('[data-kt-user-table-filter="filter"]').click()
 
             })
             $('.all-subs').click(function() {
-                let sub_category_id = $(this).data('id');
-                $('.filter-input:not(#category_id)').val('').trigger('');
-                $('#sub_category_id').val("").trigger('change');
+                $('#sub_category_id').val("").trigger('change.select2');
                 $('[data-kt-user-table-filter="filter"]').click()
 
             })

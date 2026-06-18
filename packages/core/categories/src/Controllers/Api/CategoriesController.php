@@ -593,6 +593,7 @@ class CategoriesController extends Controller
             $data = [
                 'product' => new SimpleProductResource($product),
                 'category_settings' => ProductServiceSettingResource::collection($productSettings),
+                'customizations' => ProductServiceSettingResource::collection($productSettings),
                 'addons' => SimpleProductResource::collection($addons),
             ];
 

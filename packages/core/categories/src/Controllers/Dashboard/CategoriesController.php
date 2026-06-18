@@ -28,7 +28,9 @@ class CategoriesController extends Controller
     public function index(Request $request){
         $isSales = $request->routeIs('dashboard.categories.sales');
         if ($isSales) {
-            $request->merge(['filters' => ['type' => 'sales']]);
+            $filters = $request->input('filters', []);
+            $filters['type'] = 'sales';
+            $request->merge(['filters' => $filters]);
         }
         $type           = in_array($request->segment(2) , ['categories','sub-categories','services','sub-services']) ?  $request->segment(2) :  $request->segment(3);
         if($type == 'categories'){
@@ -165,7 +167,9 @@ class CategoriesController extends Controller
         try {
             $isSales = $request->routeIs('dashboard.categories.sales');
             if ($isSales) {
-                $request->merge(['filters' => ['type' => 'sales']]);
+                $filters = $request->input('filters', []);
+                $filters['type'] = 'sales';
+                $request->merge(['filters' => $filters]);
             }
             $type           = in_array($request->segment(2) , ['categories','sub-categories','services','sub-services']) ?  $request->segment(2) :  $request->segment(3);
             $data             = $this->categoriesService->dataTable($request->draw,$type, $isSales);

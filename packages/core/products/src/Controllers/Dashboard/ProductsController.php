@@ -28,7 +28,9 @@ class ProductsController extends Controller
     public function index(Request $request){
         $isSales = $request->routeIs('dashboard.products.sales');
         if ($isSales) {
-            $request->merge(['filters' => ['type' => 'sales']]);
+            $filters = $request->input('filters', []);
+            $filters['type'] = 'sales';
+            $request->merge(['filters' => $filters]);
         }
         $title      = $isSales ? trans('Sales Product index') : trans('Product index');
         $screen     = 'products-index';
@@ -151,7 +153,9 @@ class ProductsController extends Controller
         try {
             $isSales = $request->routeIs('dashboard.products.sales');
             if ($isSales) {
-                $request->merge(['filters' => ['type' => 'sales']]);
+                $filters = $request->input('filters', []);
+                $filters['type'] = 'sales';
+                $request->merge(['filters' => $filters]);
             }
             $data             = $this->productsService->dataTable($request->draw, $isSales ? 'sales' : 'non-sales');
             return $this->returnData(trans('data founded'),$data);

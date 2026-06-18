@@ -134,10 +134,87 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                 @endif
                             </td>
                             <td>
-                                {{ $item?->product?->name ?? json_decode($item->product_data)->name }}
                                 @php
+                                    $productObj = $item->product ?? json_decode($item->product_data);
+                                    $currentLocale = app()->getLocale();
+
+                                    // Resolve Product Name
+                                    $pName = '';
+                                    if ($item->product) {
+                                        $pName = $item->product->name;
+                                    } elseif (isset($productObj->name)) {
+                                        $pName = $productObj->name;
+                                    } elseif (isset($productObj->translations)) {
+                                        $translations = (array) $productObj->translations;
+                                        foreach ($translations as $translation) {
+                                            $transArr = (array) $translation;
+                                            if (($transArr['locale'] ?? '') == $currentLocale) {
+                                                $pName = $transArr['name'] ?? '';
+                                                break;
+                                            }
+                                        }
+                                        if (empty($pName) && !empty($translations)) {
+                                            $firstTrans = (array) reset($translations);
+                                            $pName = $firstTrans['name'] ?? '';
+                                        }
+                                    }
+                                    if (empty($pName)) {
+                                        $pName = 'Product #' . ($item->product_id ?? '');
+                                    }
+
+                                    // Resolve Product Description
+                                    $pDesc = '';
+                                    if ($item->product) {
+                                        $pDesc = $item->product->desc;
+                                    } elseif (isset($productObj->desc)) {
+                                        $pDesc = $productObj->desc;
+                                    } elseif (isset($productObj->translations)) {
+                                        $translations = (array) $productObj->translations;
+                                        foreach ($translations as $translation) {
+                                            $transArr = (array) $translation;
+                                            if (($transArr['locale'] ?? '') == $currentLocale) {
+                                                $pDesc = $transArr['desc'] ?? '';
+                                                break;
+                                            }
+                                        }
+                                        if (empty($pDesc) && !empty($translations)) {
+                                            $firstTrans = (array) reset($translations);
+                                            $pDesc = $firstTrans['desc'] ?? '';
+                                        }
+                                    }
+                                    
+                                    // Resolve Image
+                                    $pImage = '';
+                                    if (!empty($productObj->image)) {
+                                        $pImage = Core\MediaCenter\Helpers\MediaCenterHelper::getImageUrl($productObj->image);
+                                    }
+                                    
+                                    if (empty($pImage)) {
+                                        $pImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="%2394a3b8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
+                                    }
+                                    
+                                    $pDescClean = e(strip_tags($pDesc));
                                     $customizations = is_string($item->customizations) ? json_decode($item->customizations, true) : $item->customizations;
                                 @endphp
+
+                                <div class="d-flex align-items-center text-start gap-2" style="gap: 10px;">
+                                    <div class="product-thumbnail-container" style="flex-shrink: 0;">
+                                        <img src="{{ $pImage }}" 
+                                             alt="{{ $pName }}" 
+                                             class="product-click-thumbnail" 
+                                             data-name="{{ $pName }}" 
+                                             data-image="{{ $pImage }}" 
+                                             data-desc="{{ $pDescClean }}"
+                                             style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: transform 0.2s ease, box-shadow 0.2s ease;"
+                                             onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)';"
+                                             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+                                        >
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold">{{ $pName }}</span>
+                                    </div>
+                                </div>
+
                                 @if(!empty($customizations) && is_array($customizations))
                                     <div class="mt-2 text-start small border-top pt-1 text-muted">
                                         <div class="fw-bold">{{ trans('Customizations') }}:</div>
@@ -562,3 +639,119 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
 
                     </div>
 </div>
+
+<!-- Product Detail Modal -->
+<div class="modal fade" id="productDetailInfoModal" tabindex="-1" aria-labelledby="productDetailInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+            <div class="modal-header bg-primary text-white border-0 py-3 px-4">
+                <h5 class="modal-title fw-bold text-white" id="productDetailInfoModalLabel">Product Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="mb-4 d-inline-block" style="border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; width: 100%; max-width: 280px; height: 200px; display: inline-flex; align-items: center; justify-content: center;">
+                    <img id="productDetailModalImage" src="" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                <div class="text-start mt-2">
+                    <h6 class="fw-bold text-dark mb-2">{{ trans('description') }}</h6>
+                    <p id="productDetailModalDesc" class="text-muted" style="line-height: 1.5; font-size: 0.9rem; white-space: pre-line; min-height: 50px;"></p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light py-2 px-4">
+                <button type="button" class="btn btn-secondary px-4 btn-sm" style="border-radius: 6px;" data-bs-dismiss="modal">{{ trans('Close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script to handle clicking the thumbnail -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to attach click listeners
+        function initProductImagePopups() {
+            document.querySelectorAll('.product-click-thumbnail').forEach(function (thumb) {
+                // Prevent duplicate listener attachment
+                if (thumb.dataset.popupInitialized) return;
+                thumb.dataset.popupInitialized = 'true';
+
+                thumb.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var name = this.getAttribute('data-name') || '';
+                    var image = this.getAttribute('data-image') || '';
+                    var desc = this.getAttribute('data-desc') || '{{ trans('no-description') }}';
+
+                    // Set values in the modal
+                    document.getElementById('productDetailInfoModalLabel').textContent = name;
+                    document.getElementById('productDetailModalImage').src = image;
+                    document.getElementById('productDetailModalImage').alt = name;
+                    document.getElementById('productDetailModalDesc').textContent = desc || '{{ trans('no-description') }}';
+
+                    // Open modal dynamically, supporting both Bootstrap 5 and Bootstrap 4, or CSS fallback
+                    var modalEl = document.getElementById('productDetailInfoModal');
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modalInstance.show();
+                    } else if (typeof jQuery !== 'undefined' && typeof jQuery.fn.modal !== 'undefined') {
+                        jQuery(modalEl).modal('show');
+                    } else {
+                        // Fallback to custom CSS presentation
+                        modalEl.style.display = 'block';
+                        modalEl.style.opacity = '1';
+                        modalEl.classList.add('show');
+                        
+                        // Create or show backdrop
+                        var backdrop = document.getElementById('custom-modal-backdrop');
+                        if (!backdrop) {
+                            backdrop = document.createElement('div');
+                            backdrop.id = 'custom-modal-backdrop';
+                            backdrop.style.position = 'fixed';
+                            backdrop.style.top = '0';
+                            backdrop.style.left = '0';
+                            backdrop.style.width = '100vw';
+                            backdrop.style.height = '100vh';
+                            backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                            backdrop.style.zIndex = '1050';
+                            document.body.appendChild(backdrop);
+                        }
+                        backdrop.style.display = 'block';
+                    }
+                });
+            });
+        }
+
+        initProductImagePopups();
+
+        // Setup listeners for dismiss buttons (specifically for fallback method)
+        document.querySelectorAll('#productDetailInfoModal [data-bs-dismiss="modal"], #productDetailInfoModal [data-dismiss="modal"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var modalEl = document.getElementById('productDetailInfoModal');
+                modalEl.style.display = 'none';
+                modalEl.classList.remove('show');
+                var backdrop = document.getElementById('custom-modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+            });
+        });
+
+        // Close fallback modal if backdrop is clicked
+        window.addEventListener('click', function (e) {
+            var modalEl = document.getElementById('productDetailInfoModal');
+            var backdrop = document.getElementById('custom-modal-backdrop');
+            if (e.target === backdrop) {
+                modalEl.style.display = 'none';
+                modalEl.classList.remove('show');
+                backdrop.style.display = 'none';
+            }
+        });
+
+        // Re-initialize when AJAX updates table or content if applicable
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).ajaxComplete(function () {
+                initProductImagePopups();
+            });
+        }
+    });
+</script>
