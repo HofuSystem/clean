@@ -22,7 +22,9 @@ class OrderResource extends JsonResource
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
         $driverStatus = in_array($this->status, ['pending', 'receiving_driver_accepted', 'order_has_been_delivered_to_admin']) ? 'receiver' : 'delivery';
-       
+        if($this->type =='sales'){
+            $driverStatus = 'delivery';
+        }
         $location = null;
         if($driverStatus == 'delivery'){
             $location = $delivery?->address?->city?->name . ' - ' . $delivery?->address?->district?->name . ' - ' . $delivery?->address?->location;

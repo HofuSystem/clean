@@ -34,17 +34,20 @@ class OrderDetailsResource extends JsonResource
         }
 
         $driverStatus = in_array($this->status, ['pending', 'receiving_driver_accepted', 'order_has_been_delivered_to_admin']) ? 'receiver' : 'delivery';
+        if($this->type =='sales'){
+            $driverStatus = 'delivery';
+        }
         $lat = null;
         $lng = null;
         $location = null;
         if($driverStatus == 'delivery'){
-            $lat = $delivery->lat;
-            $lng = $delivery->lng;
+            $lat = $delivery?->lat;
+            $lng = $delivery?->lng;
             $location = $delivery?->address?->city?->name . ' - ' . $delivery?->address?->district?->name . ' - ' . $delivery?->address?->location;
         }
         if($driverStatus == 'receiver'){
-            $lat = $receiver->lat;
-            $lng = $receiver->lng;
+            $lat = $receiver?->lat;
+            $lng = $receiver?->lng;
             $location = $receiver?->address?->city?->name . ' - ' . $receiver?->address?->district?->name . ' - ' . $receiver?->address?->location;
         }
 
