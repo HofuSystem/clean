@@ -21,7 +21,7 @@ use Core\B2B\Models\ContractsCustomerPrice;
 class Product extends CoreModel implements TranslatableContract{
     use Translatable;
 	protected $table             = 'products';
-	protected $fillable          = [ 'image', 'type', 'sku', 'is_package', 'category_id', 'sub_category_id', 'price','cost', 'quantity', 'status', 'creator_id', 'updater_id', 'wash_type', 'display_as'];
+	protected $fillable          = [ 'image', 'type', 'sku', 'is_package', 'category_id', 'sub_category_id', 'price','cost', 'quantity', 'status', 'creator_id', 'updater_id', 'wash_type', 'display_as', 'points'];
     protected $guarded           = [];
     public $translatedAttributes = ["name","desc"];
 

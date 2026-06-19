@@ -212,6 +212,7 @@
                                             <th scope="col">{{ trans('sub category') }}</th>
                                             <th scope="col">{{ trans('sku') }}</th>
                                             <th scope="col">{{ trans('price') }}</th>
+                                            <th scope="col">{{ trans('points') }}</th>
                                             <th scope="col">{{ trans('cost') }}</th>
                                             <th scope="col">{{ trans('action') }}</th>
                                         </tr>
@@ -243,6 +244,10 @@
                                                     placeholder="{{ trans('Enter price') }} " step="any" min="0">
                                             </td>
                                             <td>
+                                                <input type="number" name="points" class="form-control"
+                                                    placeholder="{{ trans('Enter points') }} " step="any" min="0">
+                                            </td>
+                                            <td>
                                                 <input type="number" name="cost" class="form-control "
                                                     placeholder="{{ trans('Enter cost') }} " step="any" min="0">
                                             </td>
@@ -265,6 +270,12 @@
                                 <input type="number" name="price" class="form-control "
                                     placeholder="{{ trans('Enter price') }} " step="any" min="0"
                                     value="{{ old('price', $item->price ?? null) }}">
+                            </div>
+                            <div class="form-group mb-3 col-md-12" id="points-div">
+                                <label class="required" for="points">{{ trans('points') }}</label>
+                                <input type="number" name="points" class="form-control "
+                                    placeholder="{{ trans('Enter points') }} " step="any" min="0"
+                                    value="{{ old('points', $item->points ?? null) }}">
                             </div>
                             <div class="form-group mb-3 col-md-12" id="cost-div">
                                 <label class="required" for="cost">{{ trans('cost') }}</label>
@@ -355,17 +366,17 @@
             $('.sub-category-select,#category_id').empty();
             // When the category changes
             $('#type').change(function() {
-                $('#desc-div,#vars-div,#quantity-div,#price-div,#cost-div,#sub-div,#wash-type-div').hide();
+                $('#desc-div,#vars-div,#quantity-div,#price-div,#points-div,#cost-div,#sub-div,#wash-type-div').hide();
 
                 var type        = $(this).val();
                 var $Category   = $('#category_id');
                 if(type =="clothes"){
                     $('#images-div,#vars-div,#wash-type-div').show();
                 }else  if(type =="sales"){
-                    $('#desc-div,#price-div,#cost-div,#sub-div').show();
+                    $('#desc-div,#price-div,#points-div,#cost-div,#sub-div').show();
 
                 }else  if(type =="services"){
-                    $('#price-div,#cost-div,#wash-type-div').show();
+                    $('#price-div,#points-div,#cost-div,#wash-type-div').show();
 
                 }
                 // Clear the current options
@@ -407,13 +418,18 @@
                 let subCategoryText = $("tfoot select[name='sub_category_id'] option:selected").text();
                 let sku             = $("tfoot input[name='sku']").val();
                 let price           = $("tfoot input[name='price']").val();
+                let points          = $("tfoot input[name='points']").val();
                 let cost            = $("tfoot input[name='cost']").val();
-                let data            = {sub_category_id:subCategory,sku:sku,price:price,cost:cost}
+                if (!points) {
+                    points = price;
+                }
+                let data            = {sub_category_id:subCategory,sku:sku,price:price,points:points,cost:cost}
                 if (sku && price) {
                     let newRow = `<tr data-data='${JSON.stringify(data)}'>
                         <td>${subCategoryText}</td>
                         <td>${sku}</td>
                         <td>${price}</td>
+                        <td>${points}</td>
                         <td>${cost}</td>
                         <td>
                             <button class="btn btn-danger btn-delete">Delete</button>
@@ -425,6 +441,7 @@
                     // Clear input fields
                     $("tfoot input[name='sku']").val("");
                     $("tfoot input[name='price']").val("");
+                    $("tfoot input[name='points']").val("");
                     $("tfoot input[name='cost']").val("");
                 } else {
                     toastr.error("{{ trans('Please enter SKU and price and cost.') }}");
@@ -435,6 +452,16 @@
             $(document).on("click", ".btn-delete", function () {
                 $(this).closest("tr").remove();
             });
+
+            // Auto copy price to points
+            $(document).on('input', 'input[name="price"]', function() {
+                let priceVal = $(this).val();
+                let pointsInput = $(this).closest('.card-body, tfoot').find('input[name="points"]');
+                if (pointsInput.length) {
+                    pointsInput.val(priceVal);
+                }
+            });
+
             $('#type').change();
         });
     </script>

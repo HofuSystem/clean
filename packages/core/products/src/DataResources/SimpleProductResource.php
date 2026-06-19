@@ -8,6 +8,7 @@ use Core\Products\Models\ProductTranslation;
 use Core\Products\Services\ProductsService;
 use Core\Settings\Helpers\ToolHelper;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Core\Products\DataResources\Api\ProductServiceSettingResource;
 
 class SimpleProductResource extends JsonResource
 {
@@ -22,6 +23,22 @@ class SimpleProductResource extends JsonResource
         $user = auth('api')->user();
         ProductsService::setCurrentContract($user->company);
         $data = ProductsService::getProductData($user->company,'client',$user?->profile?->city_id,$this->resource);
+
+        $productSettings = $this->productSettings()
+            ->whereNull('parent_id')
+            ->active()
+            ->with([
+                'translations',
+                'productSettings' => function ($q) {
+                    $q->active()
+                        ->whereHas('products', function ($pq) {
+                            $pq->where('products.id', $this->id);
+                        })
+                        ->with('translations');
+                }
+            ])
+            ->get();
+
         return [
             'id'                => $this->id ,
             'name'              => $this->name ,
@@ -29,6 +46,7 @@ class SimpleProductResource extends JsonResource
             'name_en'           => $this->translate('en')->name,
             'image'             => MediaCenterHelper::getImagesUrl($this->image)  ,
             'price'             => $data['price'],
+            'points'            => (double)$this->points,
             'cost'              => $data['cost'],
             'desc'              => (string)$this->desc  ,
             'desc_ar'           => $this->translate('ar')->desc,
@@ -40,6 +58,7 @@ class SimpleProductResource extends JsonResource
             'sub_category'      => $this->subCategory?->name,
             'sub_category_ar'   => $this->subCategory?->translate('ar')->name,
             'sub_category_en'   => $this->subCategory?->translate('en')->name,
+            'customizations'    => ProductServiceSettingResource::collection($productSettings),
         ];
     }
 }

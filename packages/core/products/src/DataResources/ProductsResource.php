@@ -28,6 +28,7 @@ class ProductsResource extends JsonResource
             "category_id"       => DashboardDataTableFormatter::relations($this->category,"name","dashboard.categories.show"),
             "sub_category_id"   => DashboardDataTableFormatter::relations($this->subCategory,"name","dashboard.categories.show"),
             "price"             => ToolHelper::getPriceBasedOnCurrentWeekDay($this->price),
+            "points"            => DashboardDataTableFormatter::text($this->points),
             "cost"              => DashboardDataTableFormatter::text($this->cost),
             "quantity"          => DashboardDataTableFormatter::text($this->quantity),
             "status"            => DashboardDataTableFormatter::text($this->status),

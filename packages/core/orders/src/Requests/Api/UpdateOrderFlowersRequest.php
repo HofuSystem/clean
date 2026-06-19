@@ -30,8 +30,8 @@ class UpdateOrderFlowersRequest extends FormRequest
   {
     return [
       'order_total' => ['nullable', 'numeric'],
-      'city_id' => ['required', 'nullable', 'numeric', 'exists:cities,id'],
-      'district_id' => ['required', 'nullable', 'numeric', 'exists:districts,id'],
+      'city_id' => ['required', 'numeric', 'exists:cities,id'],
+      'district_id' => ['nullable', 'numeric', 'exists:districts,id'],
     ];
   }
 

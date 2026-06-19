@@ -30,6 +30,7 @@ class ProductCardResource extends JsonResource
             'image'             => MediaCenterHelper::getImagesUrl($this->image),
             'name'              => $this->name,
             'price'             => $data['price'],
+            'points'            => (double)$this->points,
             'cost'              => $data['cost'],
             'type'              => $this->type,
             'category'          => $this->category?->name,

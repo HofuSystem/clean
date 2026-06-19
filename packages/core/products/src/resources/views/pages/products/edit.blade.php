@@ -237,6 +237,13 @@
 
                             </div>
                             <div class="form-group mb-3 col-md-6">
+                                <label class="required" for="points">{{ trans('points') }}</label>
+                                <input type="number" name="points" class="form-control "
+                                    placeholder="{{ trans('Enter points') }} "
+                                    value="{{ old('points', $item->points ?? null) }}" step="any">
+
+                            </div>
+                            <div class="form-group mb-3 col-md-6">
                                   <label class="required" for="cost">{{ trans('cost') }}</label>
                                 <input type="number" name="cost" class="form-control "
                                     placeholder="{{ trans('Enter cost') }} "
@@ -722,6 +729,15 @@
                 $subCategory.val($subCategoryValue).trigger('change');
 
             });
+            // Auto copy price to points
+            $(document).on('input', 'input[name="price"]', function() {
+                let priceVal = $(this).val();
+                let pointsInput = $(this).closest('.card-body, tfoot').find('input[name="points"]');
+                if (pointsInput.length) {
+                    pointsInput.val(priceVal);
+                }
+            });
+
             $('#type').change()
 
             // Product settings management logic

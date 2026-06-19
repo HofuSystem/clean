@@ -179,7 +179,7 @@ class OrdersController extends Controller
         try {
             $address = (object) [
                 'city_id' => $request->city_id,
-                'district_id' => null
+                'district_id' => $request->district_id
             ];
 
             //get free delivery order min value

@@ -38,8 +38,10 @@ class CreateProductsRequest extends FormRequest
 			 "version.*.sub_category_id"    =>  ['nullable','exists:categories,id'], 
 			 "version.*.sku"                =>  ['required','unique:products,sku','string'], 
 			 "version.*.price"              =>  ['required','numeric'], 
+			 "version.*.points"             =>  ['required','numeric'], 
 			 "quantity"             		=>  ['nullable','numeric'], 
 			 "price"             			=>  ['nullable','required_if:type,sales','required_if:type,services','numeric'], 
+			 "points"             			=>  ['nullable','required_if:type,sales','required_if:type,services','numeric'], 
 			 "status"                		=>  ['required','in:active,not-active'], 
 			]; 
 
@@ -70,10 +72,14 @@ class CreateProductsRequest extends FormRequest
             'version.*.sku.unique'                => __('This SKU is already used. Please choose a unique code for each version.'),
             'version.*.price.required'             => __('Price is required for each version.'),
             'version.*.price.numeric'             => __('Price for each version must be a valid number.'),
+            'version.*.points.required'           => __('Points are required for each version.'),
+            'version.*.points.numeric'            => __('Points for each version must be a valid number.'),
             'quantity.required_if'                => __('Quantity is required when product type is sales.'),
             'quantity.numeric'                    => __('Quantity must be a number.'),
             'price.required_if'                    => __('Price is required when product type is sales or services.'),
             'price.numeric'                       => __('Price must be a valid number.'),
+            'points.required_if'                  => __('Points are required when product type is sales or services.'),
+            'points.numeric'                      => __('Points must be a valid number.'),
             'status.required'                      => __('Product status (active / not active) is required.'),
             'status.in'                           => __('Status must be either active or not-active.'),
         ];

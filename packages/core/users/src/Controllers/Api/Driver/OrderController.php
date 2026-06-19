@@ -368,11 +368,34 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
-        $pointsPerSpentRiyal       = SettingsService::getDataBaseSetting('points_per_spent_riyal');
-        if ($pointsPerSpentRiyal) {
+        $order->loadMissing('items.product');
+        $totalPoints = 0;
+        if ($order->items && $order->items->count() > 0) {
+            foreach ($order->items as $item) {
+                $productPoints = 0;
+                if ($item->product) {
+                    $productPoints = $item->product->points;
+                } else {
+                    $productData = is_string($item->product_data) ? json_decode($item->product_data) : $item->product_data;
+                    $productPoints = $productData->points ?? 0;
+                }
+                if (isset($item->width) && $item->width && isset($item->height) && $item->height) {
+                    $totalPoints += ($item->width * $item->height * $item->quantity * $productPoints);
+                } else {
+                    $totalPoints += ($item->quantity * $productPoints);
+                }
+            }
+            $totalPoints = round($totalPoints);
+        } else {
+            $pointsPerSpentRiyal = SettingsService::getDataBaseSetting('points_per_spent_riyal');
+            if ($pointsPerSpentRiyal) {
+                $totalPoints = round($order->order_price * $pointsPerSpentRiyal);
+            }
+        }
+        if ($totalPoints > 0) {
             Point::create([
                 'title'     => "for order : " . $order->reference_id,
-                'amount'    => round($order->order_price * $pointsPerSpentRiyal),
+                'amount'    => $totalPoints,
                 'operation' => 'deposit',
                 'user_id'   => $order->client_id,
             ]);
@@ -384,11 +407,11 @@ class OrderController extends Controller
                     'key'       => "order",
                     'key_id'    => $order->id,
                     'status'    => $order->status,
-                    'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => round($order->order_price * $pointsPerSpentRiyal)], 'ar'),
-                    'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => round($order->order_price * $pointsPerSpentRiyal), 'technical_name' => auth('api')->user()->fullname], 'ar'),
+                    'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], 'ar'),
+                    'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints, 'technical_name' => auth('api')->user()->fullname], 'ar'),
                 ]),
-                'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => round($order->order_price * $pointsPerSpentRiyal)], 'ar'),
-                'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => round($order->order_price * $pointsPerSpentRiyal), 'technical_name' => auth('api')->user()->fullname], 'ar'),
+                'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], 'ar'),
+                'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints, 'technical_name' => auth('api')->user()->fullname], 'ar'),
                 'sender_id' => auth('api')->user()->id,
                 'order_id'  => $order->id,
             ]);
