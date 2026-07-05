@@ -264,6 +264,7 @@
                                     <th class="text-center p-0" data-name="update_by_admin">@lang("update by admin")</th>
                                     <th class="text-center p-0" data-name="is_picked">@lang("is picked")</th>
                                     <th class="text-center p-0" data-name="is_delivered">@lang("is delivered")</th>
+                                    <th class="text-center p-0" data-name="card_note">@lang("card note")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
 
                             </tr>

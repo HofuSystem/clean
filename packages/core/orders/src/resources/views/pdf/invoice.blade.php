@@ -130,7 +130,15 @@
         <tbody>
             @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->product?->name }}</td>
+                    <td>
+                        {{ $item->product?->name }}
+                        @if(!empty($item->card_note))
+                            <br>
+                            <span style="font-size: 11px; color: #007bff; font-style: italic;">
+                                {{ trans('card note') }}: {{ $item->card_note }}
+                            </span>
+                        @endif
+                    </td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ number_format($item->product_price, 2) }} ر.س</td>
                     <td>{{ number_format($item->total_price, 2) }} ر.س</td>

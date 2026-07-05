@@ -229,6 +229,13 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                         @endforeach
                                     </div>
                                 @endif
+
+                                @if(!empty($item->card_note))
+                                    <div class="mt-2 text-start small border-top pt-1">
+                                        <span class="fw-bold text-primary"><i class="fas fa-sticky-note me-1 text-primary"></i>{{ trans('card note') }}:</span>
+                                        <span class="text-dark fw-bold ms-1" style="font-style: italic;">"{{ $item->card_note }}"</span>
+                                    </div>
+                                @endif
                             </td>
                             <td>
                                 <span class="edit-wash-type text-success" data-id="{!! $item->id !!}"

@@ -3225,5 +3225,6 @@
     "You will remove this setting and all its selected options from the product.": "سيتم إزالة هذا الإعداد وجميع الخيارات المحددة له من المنتج.",
     "Yes, delete it!": "نعم، احذفه!",
     "Cancel": "إلغاء",
-    "No options available for this setting": "لا توجد خيارات متاحة لهذا الإعداد"
+    "No options available for this setting": "لا توجد خيارات متاحة لهذا الإعداد",
+    "card note": "ملاحظة كرت الإهداء"
 }

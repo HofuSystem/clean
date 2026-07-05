@@ -1920,5 +1920,6 @@
     "gift_btn_text_label": "Button Text",
     "gift_btn_text_desc": "The text displayed on the action button in the gift.",
     "gift_shown_label": "Shown in app",
-    "gift_shown_desc": "Whether to show or hide the gift in the app."
+    "gift_shown_desc": "Whether to show or hide the gift in the app.",
+    "card note": "Card Note"
 }

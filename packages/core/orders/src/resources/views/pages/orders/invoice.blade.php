@@ -440,6 +440,12 @@
                                 <span class="suben" dir="ltr">Size: {{ $item->width . " M" }} × {{ $item->height . " M" }} =
                                     {{ $item->width * $item->height }} M²</span>
                             @endif
+                            @if(!empty($item->card_note))
+                                <br>
+                                <span class="suben" style="display: block; font-style: italic; color: #0f4da8;">
+                                    {{ trans('card note') }}: {{ $item->card_note }}
+                                </span>
+                            @endif
                         </td>
                         <td>{{ $item->product?->subcategory?->translate('en')?->name . ' | ' . $item->product?->subcategory?->translate('ar')?->name ?? '' }}
                         </td>
