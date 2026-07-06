@@ -463,7 +463,7 @@ class HomeController extends Controller
  
             $monthData = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'receiver')
+                    $query->where('type', 'delivery')
                         ->whereBetween('date', [$startDate, $endDate]);
                 })
                 ->testAccounts(false)
