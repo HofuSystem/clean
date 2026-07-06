@@ -111,10 +111,10 @@
                                             <th class=" text-center py-2" data-name="delivery_time">
                                                 @lang('delivery time')</th>
 
-                                            <th class=" text-center py-2" data-name="technical_date">
+                                            <!-- <th class=" text-center py-2" data-name="technical_date">
                                                 @lang('technical date')</th>
                                             <th class=" text-center py-2" data-name="technical_time">
-                                                @lang('technical time')</th>
+                                                @lang('technical time')</th> -->
 
                                             <th class="orderable text-center" data-name="total_price">
                                                 @lang('total price')
@@ -174,11 +174,11 @@
                                                 @lang('delivery date')</th>
                                             <th class=" text-center py-2" data-name="delivery_time">
                                                 @lang('delivery time')</th>
-
+                                            <!-- 
                                             <th class=" text-center py-2" data-name="technical_date">
                                                 @lang('technical date')</th>
                                             <th class=" text-center py-2" data-name="technical_time">
-                                                @lang('technical time')</th>
+                                                @lang('technical time')</th> -->
 
                                             <th class="orderable text-center" data-name="total_price">
                                                 @lang('total price')
@@ -638,10 +638,10 @@
                                                 @lang('client')</th>
                                             <th class="orderable text-center" data-name="phone">
                                                 @lang('phone')</th>
-                                            <th class=" text-center py-2" data-name="receiver_date">
-                                                @lang('receiver date')</th>
-                                            <th class=" text-center py-2" data-name="receiver_time">
-                                                @lang('receiver time')</th>
+                                            <th class=" text-center py-2" data-name="delivery_date">
+                                                @lang('delivery date')</th>
+                                            <th class=" text-center py-2" data-name="delivery_time">
+                                                @lang('delivery time')</th>
                                             <th class="orderable text-center" data-name="status">
                                                 @lang('status')</th>
                                             <th class="orderable text-center" data-name="total_price">
