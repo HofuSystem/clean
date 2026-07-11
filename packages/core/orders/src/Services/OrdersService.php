@@ -35,7 +35,7 @@ use Core\Products\Services\ProductsService;
 use Core\B2B\Models\Contract;
 use Core\PaymentGateways\Services\MyFatoorahService;
 use Illuminate\Validation\ValidationException;
-
+use Core\Financials\Services\InvoiceService;
 
 class OrdersService
 {

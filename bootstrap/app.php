@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             // Skip specific URLs
-            if (request()->fullUrl() == "https://cleanstation.app/storage/storage/system/user.png") {
+            if (app()->bound('request') && request()->fullUrl() == "https://cleanstation.app/storage/storage/system/user.png") {
                 return;
             }
 
@@ -39,7 +39,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 $telegramService->sendMessage('@itcleanstation', $formattedMessage);
             } catch (\Throwable $telegramError) {
                 // Silently fail to prevent infinite loops
-                \Illuminate\Support\Facades\Log::error('Failed to send telegram notification: ' . $telegramError->getMessage());
+                if (!app()->runningInConsole()) {
+                    \Illuminate\Support\Facades\Log::error('Failed to send telegram notification: ' . $telegramError->getMessage());
+                } else {
+                    echo "Original Exception: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
+                }
             }
         });
 
@@ -60,6 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \Core\Wallet\Console\Commands\HandleExpiredWalletTransaction::class,
         \Core\Users\Commands\HandleExpiredPoints::class,
         \Core\Users\Commands\HandleExpiredContract::class,
+        \Core\Users\Commands\DeleteNamelessUsers::class,
         \Core\Orders\Commands\OrderIsPendingPaymentForTenMinutes::class,
         \Core\Orders\Commands\OrderIsLateForPickup::class,
         \Core\Orders\Commands\OrderIsLateForDelivery::class,
@@ -69,8 +74,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \Core\Orders\Commands\OrderStartsDeliveryInOneHour::class,
         \Core\Orders\Commands\DailySummaryOffAddedOrRemovedItems::class,
         \Core\Orders\Commands\CreateScheduledOrders::class,
-        \Core\Orders\Commands\GenerateInvoicesForFinishedOrders::class,
-        \Core\Orders\Commands\UpdateInvoicesTotals::class,
+        \Core\Financials\Commands\GenerateInvoicesForFinishedOrders::class,
+        \Core\Financials\Commands\UpdateInvoicesTotals::class,
         \Core\Orders\Commands\UpdateOrdersWashTypes::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {

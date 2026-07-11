@@ -25,9 +25,10 @@ class UpdateLocationRequest extends FormRequest
     {
         return [
             'city_id'     => 'nullable|required_without_all:lat,lng|exists:cities,id',
-            'district_id' => 'nullable|required_without_all:lat,lng|exists:districts,id',
-            'lat'         => 'nullable|required_without_all:city_id,district_id|numeric',
-            'lng'         => 'nullable|required_without_all:city_id,district_id|numeric',
+            'district_id' => 'nullable|exists:districts,id',
+            'district_name' => 'nullable|string',
+            'lat'           => 'nullable|required_without_all:city_id,district_id|numeric',
+            'lng'           => 'nullable|required_without_all:city_id,district_id|numeric',
         ];
     }
 

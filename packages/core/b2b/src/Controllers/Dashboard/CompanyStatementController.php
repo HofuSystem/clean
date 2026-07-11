@@ -4,13 +4,13 @@ namespace Core\B2B\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
-use Core\B2B\Models\B2BFinancial;
+use Core\Financials\Models\Financial;
 use Core\B2B\Models\Company;
-use Core\B2B\Requests\B2BFinancialsRequest;
-use Core\B2B\Services\B2BFinancialsService;
+use Core\Financials\Requests\FinancialsRequest;
+use Core\Financials\Services\FinancialsService;
 use Core\B2B\Exports\CompanyStatementCsvExport;
-use Core\Orders\Models\Invoice;
-use Core\Orders\Services\ZatcaService;
+use Core\Financials\Models\Invoice;
+use Core\Financials\Services\ZatcaService;
 use Core\Settings\Services\SettingsService;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class CompanyStatementController extends Controller
     use ApiResponse;
 
     public function __construct(
-        protected B2BFinancialsService $financialsService,
+        protected FinancialsService $financialsService,
         protected ZatcaService $zatcaService
         )
     {
@@ -40,7 +40,7 @@ class CompanyStatementController extends Controller
             $q->latest()->first();
         }])->findOrFail($companyId);
 
-        $query = B2BFinancial::where('company_id', $companyId)->orderBy('collection_date', 'asc')->orderBy('created_at', 'asc');
+        $query = Financial::where('company_id', $companyId)->orderBy('collection_date', 'asc')->orderBy('created_at', 'asc');
 
        
 
@@ -169,7 +169,7 @@ class CompanyStatementController extends Controller
     /**
      * Helper to store financial record.
      */
-    protected function storeFinancial(B2BFinancialsRequest $request, $companyId, $type = null)
+    protected function storeFinancial(FinancialsRequest $request, $companyId, $type = null)
     {
         try {
             DB::beginTransaction();
@@ -197,7 +197,7 @@ class CompanyStatementController extends Controller
     /**
      * Action to add an Owed financial record.
      */
-    public function addOwed(B2BFinancialsRequest $request, $companyId)
+    public function addOwed(FinancialsRequest $request, $companyId)
     {
         return $this->storeFinancial($request, $companyId, 'owed');
     }
@@ -205,7 +205,7 @@ class CompanyStatementController extends Controller
     /**
      * Action to add a Paid financial record.
      */
-    public function addPaid(B2BFinancialsRequest $request, $companyId)
+    public function addPaid(FinancialsRequest $request, $companyId)
     {
         return $this->storeFinancial($request, $companyId, 'paid');
     }
@@ -224,7 +224,7 @@ class CompanyStatementController extends Controller
      */
     public function printCreditNote($companyId, $financialId)
     {
-        $financial = B2BFinancial::with('company')->findOrFail($financialId);
+        $financial = Financial::with('company')->findOrFail($financialId);
 
         if ($financial->type !== 'owed') {
             abort(404);

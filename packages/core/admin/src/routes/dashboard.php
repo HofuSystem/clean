@@ -7,11 +7,10 @@ use Core\Admin\Controllers\Dashboard\UsersAnalysisController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Core\Admin\Controllers\Dashboard\CmsPageDetailsController;
-use Core\Admin\Controllers\Dashboard\OrderInvociesController;
 use Core\Admin\Controllers\Dashboard\RouteRecordsController;
 use Core\Admin\Controllers\Dashboard\RoutesRecordsController;
-use Core\Admin\Controllers\Dashboard\DetailedAnalysisController;
-use Core\Admin\Controllers\Dashboard\FixedCostController;
+
+
 use Core\Admin\Controllers\Dashboard\ActivityLogController;
 use Core\Admin\Controllers\Dashboard\OrderQuantitiesReportController;
 
@@ -43,10 +42,8 @@ Route::group(
                 
                 //users analysis route
                 Route::get('users-analysis', [UsersAnalysisController::class, 'index'])->name('users-analysis');
-                Route::get('detailed-analysis', [DetailedAnalysisController::class, 'index'])->name('detailed-analysis');
-                Route::post('detailed-analysis/fixed-cost', [DetailedAnalysisController::class, 'storeFixedCost'])->name('detailed-analysis.store-fixed-cost');
-                Route::get('detailed-analysis/order-transactions', [DetailedAnalysisController::class, 'getOrderTransactions'])->name('detailed-analysis.order-transactions');
-                Route::get('detailed-analysis/order-transactions/export', [DetailedAnalysisController::class, 'exportOrderTransactions'])->name('detailed-analysis.order-transactions.export');
+
+
 
                 // Order Quantities Report
                 Route::group(['prefix' => 'order-quantities-report', 'as' => 'order-quantities-report.'], function () {
@@ -88,17 +85,7 @@ Route::group(
                     Route::put('{id}/restore', [RoutesRecordsController::class, 'restore'])->name('restore');
                 });
 
-                // Fixed Costs Routes
-                Route::group(['prefix' => 'fixed-costs', 'as' => 'fixed-costs.'], function () {
-                    Route::get('', [FixedCostController::class, 'index'])->name('index');
-                    Route::get('create', [FixedCostController::class, 'create'])->name('create');
-                    Route::post('', [FixedCostController::class, 'store'])->name('store');
-                    Route::get('{fixedCost}', [FixedCostController::class, 'show'])->name('show');
-                    Route::get('{fixedCost}/edit', [FixedCostController::class, 'edit'])->name('edit');
-                    Route::put('{fixedCost}', [FixedCostController::class, 'update'])->name('update');
-                    Route::delete('{fixedCost}', [FixedCostController::class, 'destroy'])->name('destroy');
-                    Route::put('{fixedCost}/restore', [FixedCostController::class, 'restore'])->name('restore');
-                });
+
 
                 // Activity Log Routes
                 Route::group(['prefix' => 'activity-log', 'as' => 'activity-log.'], function () {

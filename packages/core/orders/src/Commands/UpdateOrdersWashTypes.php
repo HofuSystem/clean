@@ -2,7 +2,7 @@
 
 namespace Core\Orders\Commands;
 
-use Core\Orders\Models\Invoice;
+use Core\Financials\Models\Invoice;
 use Core\Orders\Models\Order;
 use Core\Orders\Models\OrderItem;
 use Core\Products\Models\Product;

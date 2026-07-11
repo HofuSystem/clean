@@ -4,7 +4,7 @@ namespace Core\Orders\Observers;
 
 use Core\Notification\Services\TelegramNotificationService;
 use Core\Orders\Models\Order;
-use Core\Orders\Services\InvoiceService;
+use Core\Financials\Services\InvoiceService;
 use Core\Orders\Services\OrderHistoryService;
 
 class OrderObserver

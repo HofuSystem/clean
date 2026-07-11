@@ -670,7 +670,7 @@ class EntitiesTableSeeder extends Seeder
             'package' => 'orders',
             'orderable' => 'no',
             'orderable_key' => 'invoice_num',
-            'model' => 'Core\Orders\Models\OrderInvoice',
+            'model' => 'Core\Financials\Models\OrderInvoice',
             'migration' => '',
             'table_filters' => '["invoice_num","order_id","user_id"]',
             'table_fields' => '["invoice_num","order_id","user_id"]',

@@ -1,0 +1,21 @@
+{
+    "name": "core/financials",
+    "description": "Financials package for core",
+    "version": "1.0.0",
+    "type": "library",
+    "require": {
+        "php": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Core\\Financials\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Core\\Financials\\Providers\\FinancialsServiceProvider"
+            ]
+        }
+    }
+}

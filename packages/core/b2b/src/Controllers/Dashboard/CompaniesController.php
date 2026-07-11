@@ -4,7 +4,7 @@ namespace Core\B2B\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Core\B2B\Models\CompanyEmployee;
-use Core\B2B\Models\B2BFinancial;
+use Core\Financials\Models\Financial;
 use Core\B2B\Models\Contract;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -91,7 +91,7 @@ class CompaniesController extends Controller
             'category.translations',
             'subCategory.translations'
         ]);
-        $financials = B2BFinancial::where('company_id', $item?->id)->get();
+        $financials = Financial::where('company_id', $item?->id)->get();
 
         return view('b2b::pages.companies.edit', compact('item', 'title', 'screen', 'cities', 'users', 'permissions', 'contract', 'employees', 'products', 'financials'));
     }

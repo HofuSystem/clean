@@ -188,6 +188,11 @@ class User extends Authenticatable
     {
         return $query->where('is_active', true);
     }
+    public function scopeHasName($query)
+    {
+        return $query->whereNotNull($this->getTable() . '.fullname')
+            ->where($this->getTable() . '.fullname', '!=', '');
+    }
     public function scopeUnderMyControl($query)
     {
         if (request()->is('dashboard*') && Auth::check()) {

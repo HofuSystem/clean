@@ -12,6 +12,7 @@ Schedule::command('app:send-feed-back')->hourly();
 Schedule::command('app:handle-expired-wallet-transaction')->dailyAt('00:00');
 Schedule::command('app:handle-expired-points')->dailyAt('00:00');
 Schedule::command('app:handle-expired-contract')->dailyAt('23:59');
+Schedule::command('app:delete-nameless-users')->everyFiveMinutes();
 Schedule::command('app:order-is-pending-payment-for-ten-minutes')->everyMinute();
 
 Schedule::command('app:order-starts-pickup-in-one-hour')->everyMinute();

@@ -2,8 +2,8 @@
 
 namespace Core\B2B\Exports;
 
-use Core\B2B\Models\B2BFinancial;
-use Core\Orders\Models\Invoice;
+use Core\Financials\Models\Financial;
+use Core\Financials\Models\Invoice;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -29,7 +29,7 @@ class CompanyStatementCsvExport implements FromArray, WithHeadings, WithStyles, 
         $companyId = $this->companyId;
         $request = $this->request;
 
-        $query = B2BFinancial::where('company_id', $companyId)->orderBy('collection_date', 'asc')->orderBy('created_at', 'asc');
+        $query = Financial::where('company_id', $companyId)->orderBy('collection_date', 'asc')->orderBy('created_at', 'asc');
         if ($request->from_date) $query->whereDate('collection_date', '>=', $request->from_date);
         if ($request->to_date) $query->whereDate('collection_date', '<=', $request->to_date);
 

@@ -763,12 +763,12 @@
 </div>
 
 <!--– Financials Modal –-->
-<div class="modal fade" id="b2b-financialsModal" aria-hidden="true" aria-labelledby="b2b-financialsModalLabel"
-    data-store="{{ route('dashboard.b2b-financials.create') }}">
+<div class="modal fade" id="financialsModal" aria-hidden="true" aria-labelledby="financialsModalLabel"
+    data-store="{{ route('dashboard.financials.create') }}">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="b2b-financialsModalLabel">{{ trans('Financial Record') }}</h1>
+                <h1 class="modal-title fs-5" id="financialsModalLabel">{{ trans('Financial Record') }}</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -803,7 +803,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="b2b-financialsDeleteModel" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="financialsDeleteModel" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content text-center">
             <div class="modal-body"><button type="button" class="btn-close mb-5" data-bs-dismiss="modal"></button>

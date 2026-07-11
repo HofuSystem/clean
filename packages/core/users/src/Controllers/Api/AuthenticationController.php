@@ -3,6 +3,7 @@
 namespace Core\Users\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Core\Info\Models\MapPoint;
 use Core\Notification\Models\Notification;
 use Core\Notification\Services\TelegramNotificationService;
 use Core\Settings\Helpers\ToolHelper;
@@ -414,12 +415,39 @@ class AuthenticationController extends Controller
         $cityId = $request->city_id ?? $request->city;
         $districtId = $request->district_id ?? $request->district;
 
-        if ($cityId && $districtId) {
+        if ($cityId) {
         
             $profileData = [
                 'city_id' => $cityId,
-                'district_id' => $districtId,
             ];
+            if ($districtId) {
+                $profileData['district_id'] = $districtId;
+            } else if ($request->district_name) {
+               $dbDistrict = District::whereTranslationLike("name","%".$request->district_name."%")
+               ->where("city_id",$cityId)->first();
+               if ($dbDistrict) {
+                   $profileData['district_id'] = $dbDistrict->id;
+               }else {
+                $dbDistrict = District::create([
+                    'slug' => $this->generate_unique_code(10, District::class),
+                    'city_id' => $cityId,
+                    'translations'=> [
+                        'name'=>[
+                            'en' => $request->district_name,
+                            'ar' => $request->district_name,
+                        ]
+                    ]
+                ]);
+                $lat = $request->lat ?? $request->latitude;
+                $lng = $request->lng ?? $request->longitude;
+                MapPoint::firstOrCreate([
+                    'district_id' => $dbDistrict->id,
+                    'lat' => $lat,
+                    'lng' => $lng,
+                ]);
+                $profileData['district_id'] = $dbDistrict->id;
+               }
+            }
             if ($user->profile) {
                 $user->profile->update($profileData);
             } else {

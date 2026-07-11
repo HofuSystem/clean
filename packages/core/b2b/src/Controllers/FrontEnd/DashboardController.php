@@ -3,7 +3,7 @@
 namespace Core\B2B\Controllers\FrontEnd;
 
 use Core\B2B\DataResources\B2BOrderResource;
-use Core\B2B\Models\B2BFinancial;
+use Core\Financials\Models\Financial;
 use Core\B2B\Models\Company;
 use Core\B2B\Models\CompanyBranch;
 use Core\B2B\Requests\FrontEnd\UserProfileRequest;
@@ -21,7 +21,7 @@ use Core\Info\Models\City;
 use Core\Info\Models\District;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Orders\Helpers\OrderHelper;
-use Core\Orders\Models\Invoice;
+use Core\Financials\Models\Invoice;
 use Core\Orders\Models\OrderItem;
 use Core\Settings\Models\Setting;
 use Core\Users\Models\User;
@@ -282,7 +282,7 @@ class DashboardController extends Controller
 
         $invoices = $invoiceQuery->get();
 
-        $financials = B2BFinancial::query()
+        $financials = Financial::query()
             ->where('company_id', $companyId)
             ->whereYear('collection_date', $year)
             ->whereMonth('collection_date', $month)

@@ -42,6 +42,7 @@ class UsersController extends Controller
 
         // Single query to get total and trash counts together
         $counts = \Core\Users\Models\User::withoutGlobalScopes()
+            ->hasName()
             ->selectRaw('SUM(CASE WHEN deleted_at IS NULL THEN 1 ELSE 0 END) as total, SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) as trash')
             ->first();
         $total = $counts->total ?? 0;
@@ -49,10 +50,10 @@ class UsersController extends Controller
 
         $rolesWithUserCounts = Role::withCount([
             'users as users_count' => function($query) {
-                $query->whereNull('deleted_at');
+                $query->whereNull('deleted_at')->hasName();
             },
             'users as users_trash_count' => function($query) {
-                $query->withoutGlobalScopes()->whereNotNull('deleted_at');
+                $query->withoutGlobalScopes()->whereNotNull('deleted_at')->hasName();
             }
         ])->get(['id', 'name', 'users_count', 'users_trash_count']);
 
@@ -200,7 +201,7 @@ class UsersController extends Controller
      */
     public function exportChunks(Request $request)
     {
-        $total = \Core\Users\Models\User::whereNull('deleted_at')->count();
+        $total = \Core\Users\Models\User::whereNull('deleted_at')->hasName()->count();
         return response()->json(compact('total'));
     }
 
@@ -274,7 +275,7 @@ class UsersController extends Controller
     }
     public function search(Request $request){
         $query = $request->get('q');
-        $users = \Core\Users\Models\User::where(function($q) use ($query) {
+        $users = \Core\Users\Models\User::hasName()->where(function($q) use ($query) {
                 $q->where('fullname', 'LIKE', "%{$query}%")
                   ->orWhere('phone', 'LIKE', "%{$query}%")
                   ->orWhere('email', 'LIKE', "%{$query}%");

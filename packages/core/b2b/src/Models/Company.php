@@ -54,7 +54,7 @@ class Company extends CoreModel
 
     public function financials()
     {
-        return $this->hasMany(B2BFinancial::class, 'company_id', 'id');
+        return $this->hasMany(\Core\Financials\Models\Financial::class, 'company_id', 'id');
     }
 
     public function contracts()

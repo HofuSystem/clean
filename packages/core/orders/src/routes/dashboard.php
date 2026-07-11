@@ -10,8 +10,6 @@ use Core\Orders\Controllers\Dashboard\OrderRepresentativesController;
 use Core\Orders\Controllers\Dashboard\OrderTypesOfDatasController;
 use Core\Orders\Controllers\Dashboard\ReportReasonsController;
 use Core\Orders\Controllers\Dashboard\OrderReportsController;
-use Core\Orders\Controllers\Dashboard\OrderInvociesController;
-use Core\Orders\Controllers\Dashboard\OrderInvoicesController;
 use Core\Orders\Controllers\Dashboard\DeliveryPricesController;
 use Core\Orders\Controllers\Dashboard\OrderSchedulesController;
 use Core\Orders\Controllers\Dashboard\OrderTransactionsController;
