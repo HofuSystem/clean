@@ -19,6 +19,7 @@ use Core\Settings\Services\SettingsService;
 use Core\Wallet\Models\WalletTransaction;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
+use Core\Financials\Models\Invoice;
 
 #[ObservedBy([OrderObserver::class])]
 #[ObservedBy([GlobalModelObserver::class])]

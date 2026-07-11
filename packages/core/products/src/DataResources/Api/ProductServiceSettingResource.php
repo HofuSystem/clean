@@ -27,6 +27,7 @@ class ProductServiceSettingResource extends JsonResource
         return [
             'id'            => $this->id ,
             'name'          => $this->name ,
+            'description'   => $this->description ?? null ,
             'slug'          => $this->slug ,
             'icon'          => isset($this->icon) ? MediaCenterHelper::getImageUrl($this->icon) : null ,
             'color'         => $this->color ,

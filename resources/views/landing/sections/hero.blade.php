@@ -190,3 +190,140 @@
     </style>
 </section>
 @endif
+
+<!-- Gifts & Flowers Section -->
+@if(LaravelLocalization::getCurrentLocale() === 'ar')
+<section id="gifts-premium-section" class="max-w-4xl mx-auto relative mt-16 mb-16 px-4 overflow-hidden">
+    
+    <!-- الكرات المضيئة في الخلفية -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- الحاوية الزجاجية الرئيسية -->
+    <div class="glass-container p-6 md:p-10">
+
+        <!-- الترويسة -->
+        <div class="text-center mt-6 mb-10 relative z-10">
+            <!-- شارة جديدة -->
+            <div class="inline-block bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-sky-200">
+                <span>✨ خدمة جديدة كلياً</span>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 mb-4 leading-tight flex flex-wrap justify-center items-center gap-1.5">
+                <span>جديد كلين ستيشن |</span>
+                <span class="text-gradient">نهتم بما ترتديه.. ونعتني بما تهديه!</span>
+            </h2>
+            <p class="text-slate-500 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                أطلقنا قسمنا الجديد والمستقل كلياً المخصص للهدايا والورود. نسق هديتك لتصل لمن تحب بكل رقي وأناقة، تماماً كما نعتني بملابسك.
+            </p>
+        </div>
+
+        <!-- الكروت (شبكة مصغرة) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 relative z-10">
+            
+            <!-- الكرت الأول: باقات الورد -->
+            <div class="premium-card flex items-center p-3 gap-4 group">
+                <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=80&w=400" alt="Rose Bouquet" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-pink-500 font-bold mb-1 tracking-wider uppercase">طبيعية وساحرة</div>
+                    <h3 class="font-bold text-base md:text-lg text-slate-800 mb-1">باقات الورود</h3>
+                    <p class="text-slate-500 text-xs leading-snug">تنسيقات من أجود الورود، مصممة بحب لتنقل مشاعرك.</p>
+                </div>
+            </div>
+
+            <!-- الكرت الثاني: فازات ورد (صورة عالية الجودة وموثوقة) -->
+            <div class="premium-card flex items-center p-3 gap-4 group">
+                <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=400" alt="Rose Vases" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-sky-500 font-bold mb-1 tracking-wider uppercase">أناقة تدوم</div>
+                    <h3 class="font-bold text-base md:text-lg text-slate-800 mb-1">فازات ورد فاخرة</h3>
+                    <p class="text-slate-500 text-xs leading-snug">فازات مصممة بعناية تجمع بين سحر الورود وأناقة التقديم.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- زر الطلب (تحميل التطبيق مباشرة عبر رابط الفرع الذكي) -->
+        <div class="text-center relative z-10">
+            <a href="https://cleanstation.app.link/download" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <span>اطلب هديتك عبر التطبيق</span>
+            </a>
+        </div>
+
+    </div>
+</section>
+@else
+<section id="gifts-premium-section" class="max-w-4xl mx-auto relative mt-16 mb-16 px-4 overflow-hidden">
+    
+    <!-- Blobs in the background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <!-- Main Glass Container -->
+    <div class="glass-container p-6 md:p-10 text-left">
+        
+        <!-- Header -->
+        <div class="text-center mt-6 mb-10 relative z-10">
+            <!-- Badge -->
+            <div class="inline-block bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-sky-200">
+                <span>✨ Brand New Service</span>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 mb-4 leading-tight flex flex-wrap justify-center items-center gap-1.5">
+                <span>New at Clean Station |</span>
+                <span class="text-gradient">We care for what you wear.. and what you gift!</span>
+            </h2>
+            <p class="text-slate-500 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                We launched our completely independent new section dedicated to gifts and roses. Arrange your gift to reach your loved ones with ultimate elegance.
+            </p>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 relative z-10">
+            
+            <!-- Card 1: Rose Bouquets -->
+            <div class="premium-card flex items-center p-3 gap-4 group">
+                <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=80&w=400" alt="Rose Bouquet" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-pink-500 font-bold mb-1 tracking-wider uppercase">Natural & Charming</div>
+                    <h3 class="font-bold text-base md:text-lg text-slate-800 mb-1">Rose Bouquets</h3>
+                    <p class="text-slate-500 text-xs leading-snug">Arrangements of the finest roses to convey your feelings.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Luxury Rose Vases -->
+            <div class="premium-card flex items-center p-3 gap-4 group">
+                <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=400" alt="Rose Vases" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-sky-500 font-bold mb-1 tracking-wider uppercase">Lasting Elegance</div>
+                    <h3 class="font-bold text-base md:text-lg text-slate-800 mb-1">Luxury Rose Vases</h3>
+                    <p class="text-slate-500 text-xs leading-snug">Carefully designed vases combining roses and elegance.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Call to Action Button -->
+        <div class="text-center relative z-10">
+            <a href="https://cleanstation.app.link/download" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <span>Order Your Gift via App</span>
+            </a>
+        </div>
+
+    </div>
+</section>
+@endif
