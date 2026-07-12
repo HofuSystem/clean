@@ -7,15 +7,24 @@
     {{-- Unified Lazy-Loaded Tracking Pixels (GTM, GA, Snap, TikTok, Linktree) --}}
     {{-- ============================================================ --}}
     <script>
+        // 1. Google Tag Manager & Google Analytics stubs
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         
+        // 2. Facebook/Meta Pixel stub (GTM template requires fbq defined globally)
+        window.fbq = window.fbq || function() {
+            (fbq.q = fbq.q || []).push(arguments);
+        };
+        fbq.q = fbq.q || [];
+
+        // 3. Snap Pixel stub
         window.snaptr = function() {
             snaptr.handleRequest ? snaptr.handleRequest.apply(snaptr, arguments) : snaptr.queue.push(arguments);
         };
         snaptr.queue = [];
 
+        // 4. TikTok Pixel stub (Robust environment configuration to prevent setting '_env' of undefined)
         window.ttq = window.ttq || [];
         ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
         ttq.setAndDefer = function(t, e) {
@@ -28,7 +37,94 @@
             for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
             return e;
         };
+        var raw_i = {};
+        var proxy_i = new Proxy(raw_i, {
+            get: function(target, prop) {
+                if (!(prop in target)) {
+                    target[prop] = [];
+                    target[prop]._u = "https://analytics.tiktok.com/i18n/pixel/events.js";
+                }
+                return target[prop];
+            }
+        });
 
+        Object.defineProperty(ttq, '_i', {
+            get: function() { return proxy_i; },
+            set: function(val) {
+                if (val && typeof val === 'object') {
+                    for (var key in val) {
+                        if (val.hasOwnProperty(key)) {
+                            raw_i[key] = val[key];
+                        }
+                    }
+                }
+            },
+            configurable: true,
+            enumerable: true
+        });
+
+        var raw_o = {};
+        Object.defineProperty(ttq, '_o', {
+            get: function() { return raw_o; },
+            set: function(val) {
+                if (val && typeof val === 'object') {
+                    for (var key in val) {
+                        if (val.hasOwnProperty(key)) {
+                            raw_o[key] = val[key];
+                        }
+                    }
+                }
+            },
+            configurable: true,
+            enumerable: true
+        });
+
+        var raw_t = {};
+        Object.defineProperty(ttq, '_t', {
+            get: function() { return raw_t; },
+            set: function(val) {
+                if (val && typeof val === 'object') {
+                    for (var key in val) {
+                        if (val.hasOwnProperty(key)) {
+                            raw_t[key] = val[key];
+                        }
+                    }
+                }
+            },
+            configurable: true,
+            enumerable: true
+        });
+
+        // Pre-populate default pixel timestamp and options
+        var defaultPixelId = 'CKPTFQ3C77U1BIIGBE10';
+        raw_t[defaultPixelId] = +new Date();
+        raw_o[defaultPixelId] = {};
+
+        var ttqPixelsToLoad = [];
+        ttq.load = function(e, n) {
+            ttq._i[e] = [];
+            ttq._i[e]._u = "https://analytics.tiktok.com/i18n/pixel/events.js";
+            ttq._t[e] = +new Date();
+            ttq._o[e] = n || {};
+            if (ttqPixelsToLoad.indexOf(e) === -1) {
+                ttqPixelsToLoad.push(e);
+            }
+            if (window.trackingActive) {
+                injectTikTokScript(e);
+            }
+        };
+
+        function injectTikTokScript(e) {
+            var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
+            var scr = document.createElement("script");
+            scr.type = "text/javascript";
+            scr.async = true;
+            scr.src = i + "?sdkid=" + e + "&lib=ttq";
+            var firstScr = document.getElementsByTagName("script")[0];
+            firstScr.parentNode.insertBefore(scr, firstScr);
+        }
+
+        // 5. Linktree stub
         window.lti = window.lti || function() {
             (lti.q = lti.q || []).push(arguments);
         };
@@ -39,6 +135,7 @@
             function initTracking() {
                 if (trackingLoaded) return;
                 trackingLoaded = true;
+                window.trackingActive = true;
 
                 // 1. Google Tag Manager
                 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -59,16 +156,12 @@
                 snaptr('track', 'PAGE_VIEW');
 
                 // 3. TikTok Pixel
-                ttq.load = function(e, n) {
-                    var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
-                    ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = i, ttq._t = ttq._t || {}, ttq._t[e] = +new Date,
-                        ttq._o = ttq._o || {}, ttq._o[e] = n || {};
-                    var scr = document.createElement("script");
-                    scr.type = "text/javascript", scr.async = !0, scr.src = i + "?sdkid=" + e + "&lib=ttq";
-                    var firstScr = document.getElementsByTagName("script")[0];
-                    firstScr.parentNode.insertBefore(scr, firstScr);
-                };
-                ttq.load('CKPTFQ3C77U1BIIGBE10');
+                for (var k = 0; k < ttqPixelsToLoad.length; k++) {
+                    injectTikTokScript(ttqPixelsToLoad[k]);
+                }
+                if (ttqPixelsToLoad.length === 0) {
+                    ttq.load('CKPTFQ3C77U1BIIGBE10');
+                }
                 ttq.page();
 
                 // 4. Linktree
