@@ -4,35 +4,118 @@
 
 <head>
     {{-- ============================================================ --}}
-    {{-- Google Tag Manager - MUST be first script in <head>         --}}
+    {{-- Unified Lazy-Loaded Tracking Pixels (GTM, GA, Snap, TikTok, Linktree) --}}
     {{-- ============================================================ --}}
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-WQTQ9CV');</script>
-    {{-- End Google Tag Manager --}}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        window.snaptr = function() {
+            snaptr.handleRequest ? snaptr.handleRequest.apply(snaptr, arguments) : snaptr.queue.push(arguments);
+        };
+        snaptr.queue = [];
+
+        window.ttq = window.ttq || [];
+        ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
+        ttq.setAndDefer = function(t, e) {
+            t[e] = function() {
+                t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+            }
+        };
+        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+        ttq.instance = function(t) {
+            for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
+            return e;
+        };
+
+        window.lti = window.lti || function() {
+            (lti.q = lti.q || []).push(arguments);
+        };
+        lti.l = 1 * new Date();
+
+        (function() {
+            var trackingLoaded = false;
+            function initTracking() {
+                if (trackingLoaded) return;
+                trackingLoaded = true;
+
+                // 1. Google Tag Manager
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','GTM-WQTQ9CV');
+
+                // 2. Snap Pixel
+                var snapScript = document.createElement('script');
+                snapScript.async = true;
+                snapScript.src = 'https://sc-static.net/scevent.min.js';
+                var firstScript = document.getElementsByTagName('script')[0];
+                firstScript.parentNode.insertBefore(snapScript, firstScript);
+                snaptr('init', '3da29568-b309-48dd-86d1-84323f2e2699', {
+                    'user_email': '__INSERT_USER_EMAIL__'
+                });
+                snaptr('track', 'PAGE_VIEW');
+
+                // 3. TikTok Pixel
+                ttq.load = function(e, n) {
+                    var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
+                    ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = i, ttq._t = ttq._t || {}, ttq._t[e] = +new Date,
+                        ttq._o = ttq._o || {}, ttq._o[e] = n || {};
+                    var scr = document.createElement("script");
+                    scr.type = "text/javascript", scr.async = !0, scr.src = i + "?sdkid=" + e + "&lib=ttq";
+                    var firstScr = document.getElementsByTagName("script")[0];
+                    firstScr.parentNode.insertBefore(scr, firstScr);
+                };
+                ttq.load('CKPTFQ3C77U1BIIGBE10');
+                ttq.page();
+
+                // 4. Linktree
+                var ltScript = document.createElement('script');
+                ltScript.async = true;
+                ltScript.src = 'https://assets.production.linktr.ee/ltpixel/ltpix.min.js?t=' + 864e5 * Math.ceil(new Date / 864e5);
+                var firstScrLt = document.getElementsByTagName('script')[0];
+                firstScrLt.parentNode.insertBefore(ltScript, firstScrLt);
+                lti('init', 'LTU-446620bc-c895-4910-b5de-3b2053381f18');
+                lti('pageloaded');
+
+                // 5. Google Analytics (gtag.js)
+                var gaScript1 = document.createElement('script');
+                gaScript1.async = true;
+                gaScript1.src = 'https://www.googletagmanager.com/gtag/js?id=G-X8KY7HG0VB';
+                var firstScrGa = document.getElementsByTagName('script')[0];
+                firstScrGa.parentNode.insertBefore(gaScript1, firstScrGa);
+                gtag('config', 'G-X8KY7HG0VB');
+
+                var gaScript2 = document.createElement('script');
+                gaScript2.async = true;
+                gaScript2.src = 'https://www.googletagmanager.com/gtag/js?id=G-JM4ZEBBXSJ';
+                firstScrGa.parentNode.insertBefore(gaScript2, firstScrGa);
+                gtag('config', 'G-JM4ZEBBXSJ');
+            }
+
+            var trackingTimeout = setTimeout(initTracking, 4000);
+            window.addEventListener('scroll', initTracking, { passive: true });
+            window.addEventListener('touchstart', initTracking, { passive: true });
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ config('app.icon') }}">
 
     @php
-        if (request()->routeIs('home')) {
-            if (LaravelLocalization::getCurrentLocale() === 'ar') {
-                $actualDesc = "تطبيق كلين ستيشن لخدمات غسيل الملابس بالرياض مع استلام وتوصيل مجاني من الباب للباب وضمان غسيل منفصل 100% لكل عميل. نوفر أفضل خدمات دراي كلين، غسيل السجاد، والمفروشات، والأحذية، بالإضافة لقسم مستقل خاص بالهدايا والورود الطبيعية الفاخرة.";
-                $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
-            } else {
-                $actualDesc = "Clean Station App offers premium laundry & dry cleaning in Riyadh with free door-to-door pickup & delivery and a 100% separate washing guarantee. We provide top carpet, upholstery, and shoe cleaning services, plus an independent section for luxury gifts & flowers.";
-                $actualKeywords = "laundry near me, laundry app Riyadh, dry cleaning Riyadh, separate washing Riyadh, free laundry pickup, carpet cleaning Riyadh, shoe cleaning Riyadh, gift delivery Riyadh, flower delivery Riyadh, online laundry Riyadh, best laundry Riyadh, premium flower boutique Riyadh, express laundry Riyadh, door to door laundry Riyadh, dry cleaner near me Riyadh";
-            }
+        $actualDesc = $metaDescription ?? '';
+        if (LaravelLocalization::getCurrentLocale() === 'ar') {
+            $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
         } else {
-            $actualDesc = $metaDescription ?? '';
-            if (LaravelLocalization::getCurrentLocale() === 'ar') {
-                $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
-            } else {
-                $actualKeywords = "laundry near me, laundry app Riyadh, dry cleaning Riyadh, separate washing Riyadh, free laundry pickup, carpet cleaning Riyadh, shoe cleaning Riyadh, gift delivery Riyadh, flower delivery Riyadh, online laundry Riyadh, best laundry Riyadh, premium flower boutique Riyadh, express laundry Riyadh, door to door laundry Riyadh, dry cleaner near me Riyadh";
-            }
+            $actualKeywords = "laundry near me, laundry app Riyadh, dry cleaning Riyadh, separate washing Riyadh, free laundry pickup, carpet cleaning Riyadh, shoe cleaning Riyadh, gift delivery Riyadh, flower delivery Riyadh, online laundry Riyadh, best laundry Riyadh, premium flower boutique Riyadh, express laundry Riyadh, door to door laundry Riyadh, dry cleaner near me Riyadh";
+        }
+        
+        $pathSuffix = preg_replace('/^\/(ar|en)\b/', '', request()->getPathInfo());
+        if ($pathSuffix === '') {
+            $pathSuffix = '/';
         }
     @endphp
 
@@ -44,9 +127,9 @@
     {{-- ============================================================ --}}
     {{-- Hreflang – bilingual site (AR default, EN alternate)        --}}
     {{-- ============================================================ --}}
-    <link rel="alternate" hreflang="ar" href="https://cleanstation.app/ar{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
-    <link rel="alternate" hreflang="en" href="https://cleanstation.app/en{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
-    <link rel="alternate" hreflang="x-default" href="https://cleanstation.app/ar{{ request()->getPathInfo() !== '/' ? str_replace('/ar', '', str_replace('/en', '', request()->getPathInfo())) : '/' }}" />
+    <link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+    <link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+    <link rel="alternate" hreflang="x-default" href="https://cleanstation.app{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
 
     {{-- ============================================================ --}}
     {{-- Open Graph & Twitter Card (Social Sharing Meta)             --}}
@@ -75,39 +158,43 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            800: '#075985',
-                            900: '#0c4a6e'
+    @if(config('app.env') === 'local')
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            brand: {
+                                50: '#f0f9ff',
+                                100: '#e0f2fe',
+                                200: '#bae6fd',
+                                500: '#0ea5e9',
+                                600: '#0284c7',
+                                800: '#075985',
+                                900: '#0c4a6e'
+                            },
+                            accent: {
+                                500: '#f59e0b'
+                            },
+                            dark: {
+                                900: '#111827'
+                            }
                         },
-                        accent: {
-                            500: '#f59e0b'
+                        fontFamily: {
+                            sans: ['Tajawal', 'sans-serif'],
+                            en: ['Cairo', 'sans-serif']
                         },
-                        dark: {
-                            900: '#111827'
+                        screens: {
+                            'xs': '475px'
                         }
-                    },
-                    fontFamily: {
-                        sans: ['Tajawal', 'sans-serif'],
-                        en: ['Cairo', 'sans-serif']
-                    },
-                    screens: {
-                        'xs': '475px'
                     }
                 }
             }
-        }
-    </script>
+        </script>
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
     <style>
         /* Mobile Optimization */
         html,
@@ -464,113 +551,7 @@
             padding-right: 0;
         }
     </style>
-    <!-- Begin Linktree conversion tracking code -->
-    <script>
-        (function(l, i, n, k, t, r, ee) {
-            l[t] = l[t] || function() {
-                    (l[t].q = l[t].q || []).push(arguments)
-                },
-                l[t].l = 1 * new Date();
-            r = i.createElement(n);
-            ee = i.getElementsByTagName(n)[0];
-            r.async = 1;
-            r.src = k;
-            ee.parentNode.insertBefore(r, ee)
-        })
-        (window, document, 'script', 'https://assets.production.linktr.ee/ltpixel/ltpix.min.js?t=' + 864e5 * Math.ceil(
-            new Date / 864e5), 'lti')
-    </script>
-    <script>
-        lti('init', 'LTU-446620bc-c895-4910-b5de-3b2053381f18')
-        lti('pageloaded')
-    </script>
-    <!-- End Linktree conversion tracking code -->
-
-    <!-- Snap Pixel Code -->
-    <script>
-        (function(e, t, n) {
-            if (e.snaptr) return;
-            var a = e.snaptr = function() {
-                a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments)
-            };
-            a.queue = [];
-            var s = 'script';
-            r = t.createElement(s);
-            r.async = !0;
-            r.src = n;
-            var u = t.getElementsByTagName(s)[0];
-            u.parentNode.insertBefore(r, u);
-        })(window, document,
-            'https://sc-static.net/scevent.min.js');
-
-        snaptr('init', '3da29568-b309-48dd-86d1-84323f2e2699', {
-            'user_email': '__INSERT_USER_EMAIL__'
-        });
-
-        snaptr('track', 'PAGE_VIEW');
-    </script>
-    <!-- End Snap Pixel Code -->
-
-    <!-- Tiktok Pixel Code -->
-    <script>
-        ! function(w, d, t) {
-            w.TiktokAnalyticsObject = t;
-            var ttq = w[t] = w[t] || [];
-            ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias",
-                "group", "enableCookie", "disableCookie"
-            ], ttq.setAndDefer = function(t, e) {
-                t[e] = function() {
-                    t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
-                }
-            };
-            for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
-            ttq.instance = function(t) {
-                for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]);
-                return e
-            }, ttq.load = function(e, n) {
-                var i = "https://analytics.tiktok.com/i18n/pixel/events.js";
-                ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = i, ttq._t = ttq._t || {}, ttq._t[e] = +new Date,
-                    ttq._o = ttq._o || {}, ttq._o[e] = n || {};
-                n = document.createElement("script");
-                n.type = "text/javascript", n.async = !0, n.src = i + "?sdkid=" + e + "&lib=" + t;
-                e = document.getElementsByTagName("script")[0];
-                e.parentNode.insertBefore(n, e)
-            };
-
-            ttq.load('CKPTFQ3C77U1BIIGBE10');
-            ttq.page();
-        }(window, document, 'ttq');
-    </script>
-    <!-- End Tiktok Pixel Code -->
-
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X8KY7HG0VB"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'G-X8KY7HG0VB');
-    </script>
-    <!--End Google tag (gtag.js) -->
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JM4ZEBBXSJ"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'G-JM4ZEBBXSJ');
-    </script>
-    <!--End Google tag (gtag.js) -->
+    <!-- Unified Lazy-Loaded Tracking Pixels: Moved to head -->
 
 
     {{-- ============================================================ --}}
@@ -578,135 +559,293 @@
     {{-- ============================================================ --}}
 
     @if(request()->routeIs('home'))
-        {{-- 1. DryCleaningOrLaundry – Local Business (Home page - SEO optimized) --}}
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "DryCleaningOrLaundry",
-          "name": "كلين ستيشن - Clean Station",
-          "image": "https://cleanstation.app/assets/images/social-share-cover.jpg",
-          "@id": "https://cleanstation.app/",
-          "url": "https://cleanstation.app/",
-          "telephone": "+966559098685",
-          "priceRange": "$$",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "الرياض",
-            "addressRegion": "منطقة الرياض",
-            "addressCountry": "SA"
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "reviewCount": "12500"
-          },
-          "makesOffer": [
+        @if(LaravelLocalization::getCurrentLocale() === 'ar')
+            {{-- Arabic JSON-LD Schema --}}
+            <script type="application/ld+json">
             {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "غسيل ملابس ودراي كلين بالرياض / Laundry & Dry Cleaning",
-                "description": "أفضل خدمات غسيل الملابس الفاخرة واليومية وكوي الملابس بدقة واحترافية عالية مع مواد تعقيم خاصة."
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "غسيل منفصل 100% لكل عميل / 100% Separate Washing Guarantee",
-                "description": "نضمن خصوصية ونظافة تامة عبر غسيل ملابس كل عميل في غسالة مستقلة ومنفصلة تماماً عن ملابس الآخرين."
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "استلام وتسليم مجاني من الباب للباب / Free Door-to-Door Pickup & Delivery",
-                "description": "خدمة استلام وتسليم مجانية وسريعة وهادئة من عتبة بابك لجميع أحياء مدينة الرياض."
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "غسيل السجاد والمفروشات والبطانيات / Carpet & Blanket Cleaning",
-                "description": "غسيل وتنظيف السجاد والبطانيات والمفروشات بأحدث أجهزة الغسيل والتعقيم المخصصة."
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "تنظيف وتلميع الأحذية / Shoe Cleaning & Care",
-                "description": "خدمات غسيل وتجديد وتعقيم الأحذية والشنط الرياضية والجلدية باحترافية."
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "تنسيق وإرسال الهدايا والورود الطبيعية / Flowers & Gift Delivery (قسم مستقل)",
-                "description": "قسم مستقل كلياً لتنسيق باقات الورد الطبيعي الطازج وفازات الورد الفاخرة وتوصيلها كهدية لمن تحب بالرياض."
-              }
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://cleanstation.app/#organization",
+                  "name": "كلين ستيشن",
+                  "alternateName": "Clean Station",
+                  "url": "https://cleanstation.app",
+                  "logo": "https://cleanstation.app/assets/images/logo.png",
+                  "areaServed": { "@type": "City", "name": "Riyadh" },
+                  "makesOffer": [
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "تطبيق غسيل ملابس بالرياض",
+                        "serviceType": "Laundry App",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "غسيل وكوي الملابس",
+                        "serviceType": "Laundry and Ironing",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "دراي كلين بالرياض",
+                        "serviceType": "Dry Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "استلام وتوصيل منزلي",
+                        "serviceType": "Pickup and Delivery",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "غسيل بطانيات ومفروشات بالرياض",
+                        "serviceType": "Blanket and Bedding Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "غسيل سجاد وموكيت بالرياض",
+                        "serviceType": "Carpet and Rug Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "تنظيف وتلميع الأحذية",
+                        "serviceType": "Shoe Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "طلب الورود والهدايا بالرياض",
+                        "serviceType": "Flowers and Gifts Ordering",
+                        "areaServed": "Riyadh",
+                        "description": "الورود والهدايا خدمة مستقلة لطلب الورود والهدايا من داخل تطبيق كلين ستيشن، ويمكن طلبها بدون طلب غسيل."
+                      }
+                    }
+                  ]
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://cleanstation.app/#website",
+                  "url": "https://cleanstation.app",
+                  "name": "كلين ستيشن",
+                  "alternateName": "Clean Station",
+                  "inLanguage": "ar-SA",
+                  "publisher": { "@id": "https://cleanstation.app/#organization" }
+                },
+                {
+                  "@type": "MobileApplication",
+                  "@id": "https://cleanstation.app/#mobileapplication",
+                  "name": "كلين ستيشن",
+                  "alternateName": "Clean Station",
+                  "operatingSystem": "iOS, Android",
+                  "applicationCategory": "LifestyleApplication",
+                  "url": "https://cleanstation.app.link/download",
+                  "installUrl": "https://cleanstation.app.link/download",
+                  "downloadUrl": "https://cleanstation.app.link/download",
+                  "description": "تطبيق كلين ستيشن يقدم خدمات الغسيل، الكوي، الدراي كلين، البطانيات، السجاد، الاستلام والتوصيل، والخدمة المنزلية لطلب الورود والهدايا داخل الرياض.",
+                  "areaServed": { "@type": "City", "name": "Riyadh" },
+                  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
+                }
+              ]
             }
-          ]
-        }
-        </script>
+            </script>
 
-        {{-- 2. FAQPage – Frequently Asked Questions (Home page) --}}
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
+            {{-- FAQPage Arabic --}}
+            <script type="application/ld+json">
             {
-              "@type": "Question",
-              "name": "هل خدمة الاستلام والتسليم متوفرة في كل أحياء الرياض؟ / Is door-to-door delivery available in all Riyadh?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "نعم، نغطي جميع أحياء مدينة الرياض ونوفر خدمة الاستلام والتسليم لراحتكم مجاناً. / Yes, we cover all neighborhoods in Riyadh with free pickup & delivery."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "ما معنى غسيل منفصل 100% لكل عميل؟ / What does 100% separate washing mean?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "معناه أن ملابسك تُغسل وتُجفف في غسالة مستقلة تماماً خاصة بك، ولا تُخلط أبداً مع ملابس أي عميل آخر لضمان أعلى درجات النظافة والتعقيم والصحة العامة. / It means your laundry is washed and dried in an independent machine dedicated solely to you, never mixed with other clients' clothes."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "هل يمكنني طلب باقات الورد والهدايا بشكل مستقل؟ / Can I order gifts & flowers independently?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "نعم، تم إطلاق قسم الهدايا والورود بشكل مستقل تماماً في تطبيق كلين ستيشن، حيث يمكنك اختيار وتنسيق باقتك وإرسالها لمن تحب كهدية مفاجئة مباشرة. / Yes, you can order premium roses and gifts completely independently from the laundry service and send them directly to your loved ones."
-              }
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "inLanguage": "ar-SA",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "هل تطبيق كلين ستيشن يوفر خدمات غسيل ملابس في الرياض؟",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "نعم، يوفر تطبيق كلين ستيشن خدمات غسيل ملابس في الرياض تشمل الغسيل، الكوي، الدراي كلين، البطانيات، السجاد، والاستلام والتوصيل المنزلي."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "هل يمكن طلب الورود والهدايا بدون طلب غسيل؟",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "نعم، الورود والهدايا خدمة مستقلة داخل تطبيق كلين ستيشن، ويمكن طلبها بدون طلب غسيل."
+                  }
+                }
+              ]
             }
-          ]
-        }
-        </script>
+            </script>
+        @else
+            {{-- English JSON-LD Schema --}}
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://cleanstation.app/#organization",
+                  "name": "Clean Station",
+                  "alternateName": "كلين ستيشن",
+                  "url": "https://cleanstation.app",
+                  "logo": "https://cleanstation.app/assets/images/logo.png",
+                  "areaServed": { "@type": "City", "name": "Riyadh" },
+                  "makesOffer": [
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Laundry App in Riyadh",
+                        "serviceType": "Laundry App",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Laundry and Ironing",
+                        "serviceType": "Laundry and Ironing",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Dry Cleaning in Riyadh",
+                        "serviceType": "Dry Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Doorstep Pickup and Delivery",
+                        "serviceType": "Pickup and Delivery",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Blanket and Bedding Cleaning",
+                        "serviceType": "Blanket and Bedding Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Carpet and Rug Cleaning",
+                        "serviceType": "Carpet and Rug Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Shoe Cleaning",
+                        "serviceType": "Shoe Cleaning",
+                        "areaServed": "Riyadh"
+                      }
+                    },
+                    {
+                      "@type": "Offer",
+                      "itemOffered": {
+                        "@type": "Service",
+                        "name": "Flowers and Gifts Ordering in Riyadh",
+                        "serviceType": "Flowers and Gifts Ordering",
+                        "areaServed": "Riyadh",
+                        "description": "A separate flowers and gifts ordering service inside the Clean Station app. It can be ordered without placing a laundry order."
+                      }
+                    }
+                  ]
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://cleanstation.app/#website",
+                  "url": "https://cleanstation.app",
+                  "name": "Clean Station",
+                  "alternateName": "كلين ستيشن",
+                  "inLanguage": "en-SA",
+                  "publisher": { "@id": "https://cleanstation.app/#organization" }
+                },
+                {
+                  "@type": "MobileApplication",
+                  "@id": "https://cleanstation.app/#mobileapplication",
+                  "name": "Clean Station",
+                  "alternateName": "كلين ستيشن",
+                  "operatingSystem": "iOS, Android",
+                  "applicationCategory": "LifestyleApplication",
+                  "url": "https://cleanstation.app.link/download",
+                  "installUrl": "https://cleanstation.app.link/download",
+                  "downloadUrl": "https://cleanstation.app.link/download",
+                  "description": "Clean Station app offers laundry, ironing, dry cleaning, blanket cleaning, carpet cleaning, doorstep pickup and delivery, plus a separate flowers and gifts ordering service in Riyadh.",
+                  "areaServed": { "@type": "City", "name": "Riyadh" },
+                  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
+                }
+              ]
+            }
+            </script>
 
-        {{-- 3. SoftwareApplication – Mobile App (Home page) --}}
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Clean Station App",
-          "operatingSystem": "iOS, Android",
-          "applicationCategory": "LifestyleApplication",
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "12000"
-          },
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "SAR"
-          }
-        }
-        </script>
+            {{-- FAQPage English --}}
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "inLanguage": "en-SA",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Is Clean Station a laundry app in Riyadh?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Clean Station is a laundry and services app in Riyadh offering laundry, ironing, dry cleaning, blanket cleaning, carpet cleaning, and doorstep pickup and delivery."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Can flowers and gifts be ordered without a laundry order?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, flowers and gifts are a separate service inside the Clean Station app and can be ordered without placing a laundry order."
+                  }
+                }
+              ]
+            }
+            </script>
+        @endif
     @endif
 
     <script>

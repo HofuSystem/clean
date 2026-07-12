@@ -69,7 +69,7 @@
             <div class="relative order-1 lg:order-2 flex justify-center perspective-1000 mt-8 lg:mt-0" data-aos="zoom-in">
                 <div class="relative w-[260px] md:w-[300px] h-[540px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
                     @if($section->image_url)
-                        <img src="{{ $section->image_url }}" class="w-full h-full object-cover">
+                        <img src="{{ $section->image_url }}" width="300" height="600" fetchpriority="high" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">{{ trans('app screen') }}</div>
                     @endif

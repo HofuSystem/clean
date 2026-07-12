@@ -8,7 +8,7 @@
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="order-2 lg:order-1 flex justify-center" data-aos="fade-right">
                 <div class="relative w-[300px] bg-gray-800 rounded-[3rem] border-[8px] border-gray-700 shadow-2xl overflow-hidden transform hover:rotate-1 transition duration-500">
-                    <img id="app-feature-screen" src="{{ $defaultFeatureImage }}" alt="" class="w-full h-full object-cover transition-opacity duration-300">
+                    <img id="app-feature-screen" src="{{ $defaultFeatureImage }}" width="300" height="600" loading="lazy" alt="" class="w-full h-full object-cover transition-opacity duration-300">
                 </div>
             </div>
             <div class="order-1 lg:order-2 text-center lg:text-start" data-aos="fade-left">
