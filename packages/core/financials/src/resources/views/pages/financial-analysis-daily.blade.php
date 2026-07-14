@@ -132,11 +132,7 @@
                                         <th class="text-center">{{ trans('Cash Amount') }}</th>
                                         <th class="text-center">{{ trans('Average per Delivery') }}</th>
                                         <th class="text-center">{{ trans('Complaints') }}</th>
-                                        <th class="text-center">{{ trans('Compensations') }}</th>
-                                        <th class="text-center">{{ trans('Ad Cost') }}</th>
-                                        <th class="text-center">{{ trans('Operating Expenses') }}</th>
-                                        <th class="text-center">{{ trans('Bank Balance') }}</th>
-                                        <th class="text-center">{{ trans('Note') }}</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -162,31 +158,7 @@
                                             <td class="text-center text-secondary">{{ number_format($day['raw_cash_ops_amount'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center">{{ number_format($day['raw_avg_delivery_revenue'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center text-danger">{{ number_format($day['raw_complaints_count']) }}</td>
-                                            <td class="text-center text-danger fw-bold">{{ number_format($day['raw_compensations_amount'], 2) }} {{ trans('SAR') }}</td>
-                                            
-                                            <!-- Editable Ad Cost -->
-                                            <td class="text-center p-1">
-                                                <input type="number" step="0.01" class="form-control form-control-sm border-0 bg-transparent daily-input" 
-                                                       data-date="{{ $day['date'] }}" data-field="ad_cost" value="{{ $day['ad_cost'] }}">
-                                            </td>
-                                            
-                                            <!-- Editable Operating Expenses -->
-                                            <td class="text-center p-1">
-                                                <input type="number" step="0.01" class="form-control form-control-sm border-0 bg-transparent daily-input" 
-                                                       data-date="{{ $day['date'] }}" data-field="operating_expenses" value="{{ $day['operating_expenses'] }}">
-                                            </td>
-                                            
-                                            <!-- Editable Bank Balance -->
-                                            <td class="text-center p-1">
-                                                <input type="number" step="0.01" class="form-control form-control-sm border-0 bg-transparent daily-input" 
-                                                       data-date="{{ $day['date'] }}" data-field="bank_balance" value="{{ $day['bank_balance'] }}">
-                                            </td>
-                                            
-                                            <!-- Editable Note -->
-                                            <td class="text-center p-1">
-                                                <input type="text" class="form-control form-control-sm border-0 bg-transparent daily-input" 
-                                                       data-date="{{ $day['date'] }}" data-field="note" value="{{ $day['note'] }}" style="min-width: 150px;">
-                                            </td>
+                                          
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -233,11 +205,9 @@
                                         <td class="text-center text-secondary">{{ number_format($totalCashOpsAmount, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center">{{ number_format($totalAvgDeliveryRevenue, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center text-danger">{{ number_format($totalComplaints) }}</td>
-                                        <td class="text-center text-danger">{{ number_format($totalCompensations, 2) }} {{ trans('SAR') }}</td>
-                                        <td class="text-center text-danger" id="total_ad_cost">{{ number_format($totalAdCost, 2) }} {{ trans('SAR') }}</td>
-                                        <td class="text-center text-danger" id="total_ops_expenses">{{ number_format($totalOpsExpenses, 2) }} {{ trans('SAR') }}</td>
-                                        <td class="text-center text-info" id="total_bank_balance">{{ number_format($totalBankBalance, 2) }} {{ trans('SAR') }}</td>
-                                        <td></td>
+                                        
+                                    </tr>
+                                </tbody>
                                     </tr>
                                 </tfoot>
                             </table>

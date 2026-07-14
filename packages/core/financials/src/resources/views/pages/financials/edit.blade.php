@@ -65,8 +65,8 @@
                                 <label class="required" for="type">{{ trans("Type") }}</label>
                                 <select class="custom-select form-select advance-select" name="type" id="type" required>
                                     <option value="">{{ trans("select type") }}</option>
-                                    <option value="owed" @selected(isset($item) && $item->type == 'owed')>@lang('Owed')</option>
-                                    <option value="paid" @selected(isset($item) && $item->type == 'paid')>@lang('Paid')</option>
+                                    <option value="owed" @selected(isset($item) && $item->type == 'owed')>@lang('Add Owed (Credit)')</option>
+                                    <option value="paid" @selected(isset($item) && $item->type == 'paid')>@lang('Add Paid (Debit)')</option>
                                 </select>
                             </div>
 

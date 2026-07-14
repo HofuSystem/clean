@@ -237,6 +237,7 @@
                         <th>{{ trans('Net Sales') }}</th>
                         <th>{{ trans('Output VAT') }}</th>
                         <th>{{ trans('Adjustments / CN') }}</th>
+                        <th>{{ trans('Purchases / Input VAT') }}</th>
                         <th>{{ trans('Net Authority') }}</th>
                         <th>{{ trans('Due Date') }}</th>
                     </tr>
@@ -252,10 +253,13 @@
                                 <td>{{ number_format($data['b2c_sales'], 2) }}</td>
                                 <td><span class="text-primary fw-bold">{{ number_format($data['b2c_vat'], 2) }}</span></td>
                                 <td rowspan="2" class="align-middle bg-white border-start border-end">
-                                    <div class="text-danger fw-bold">{{ number_format(0, 2) }}</div>
+                                    <div class="text-danger fw-bold">{{ number_format($data['adj_vat'] ?? 0, 2) }}</div>
+                                </td>
+                                <td rowspan="2" class="align-middle bg-white border-start border-end">
+                                    <div class="text-success fw-bold">{{ number_format($data['purchases_vat'] ?? 0, 2) }}</div>
                                 </td>
                                 <td rowspan="2" class="align-middle bg-zatca-light fw-bold fs-5 text-warning border-start border-end">
-                                    {{ number_format($data['net_vat'], 2) }}
+                                    {{ number_format($data['net_vat'] - ($data['adj_vat'] ?? 0) - ($data['purchases_vat'] ?? 0), 2) }}
                                 </td>
                                 <td rowspan="3" class="align-middle border-start">{{ $data['due_date'] }}</td>
                             </tr>
@@ -270,13 +274,14 @@
                                 <td class="text-start">{{ trans('Total') }}</td>
                                 <td>{{ number_format($data['b2c_sales'] + $data['b2b_sales'], 2) }}</td>
                                 <td>{{ number_format($data['b2c_vat'] + $data['b2b_vat'], 2) }}</td>
-                                <td>{{ number_format(0, 2) }}</td>
-                                <td class="bg-zatca-light text-warning">{{ number_format($data['net_vat'], 2) }}</td>
+                                <td>{{ number_format($data['adj_vat'] ?? 0, 2) }}</td>
+                                <td class="text-success">{{ number_format($data['purchases_vat'] ?? 0, 2) }}</td>
+                                <td class="bg-zatca-light text-warning">{{ number_format($data['net_vat'] - ($data['adj_vat'] ?? 0) - ($data['purchases_vat'] ?? 0), 2) }}</td>
                             </tr>
                         @else
                             <tr class="text-muted opacity-50">
                                 <td>Q{{ $qNum }}</td>
-                                <td colspan="6" class="py-4">{{ trans('Data for this quarter is not yet available') }}</td>
+                                <td colspan="7" class="py-4">{{ trans('Data for this quarter is not yet available') }}</td>
                             </tr>
                         @endif
                     @endforeach
@@ -320,15 +325,15 @@
                     <td>{{ number_format(($summary['net_sales'] ?? 0) - ($summary['adj_amount'] ?? 0), 2) }}</td>
                     <td class="text-primary">{{ number_format(($summary['net_vat'] ?? 0) - ($summary['adj_vat'] ?? 0), 2) }}</td>
                 </tr>
-                <tr>
+                 <tr>
                     <td class="text-start fw-bold">4. {{ trans('Domestic Purchases Subject to 15% VAT') }}</td>
-                    <td>0.00</td>
-                    <td>0.00</td>
+                    <td>{{ number_format($summary['purchases_amount'] ?? 0, 2) }}</td>
+                    <td class="text-success">{{ number_format($summary['purchases_vat'] ?? 0, 2) }}</td>
                 </tr>
                 <tr class="bg-zatca-success-light">
                     <td class="text-start fw-bold text-success">5. {{ trans('Net Input VAT Deductible') }}</td>
                     <td>—</td>
-                    <td class="text-success">0.00</td>
+                    <td class="text-success">{{ number_format($summary['purchases_vat'] ?? 0, 2) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -338,7 +343,7 @@
             <div class="d-flex align-items-center gap-4">
                 <div class="text-end">
                     <div class="small opacity-50">{{ trans('Total Sum (SAR)') }}</div>
-                    <div class="fs-2 fw-bolder">{{ number_format(($summary['net_vat'] ?? 0) - ($summary['adj_vat'] ?? 0), 2) }}</div>
+                    <div class="fs-2 fw-bolder">{{ number_format(($summary['net_vat'] ?? 0) - ($summary['adj_vat'] ?? 0) - ($summary['purchases_vat'] ?? 0), 2) }}</div>
                 </div>
             </div>
         </div>

@@ -21,7 +21,7 @@ class PurchasesService
 
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $allowed = ['item_id', 'provider_id', 'value_before_tax', 'tax_value', 'value_after_tax', 'notes', 'attachment', 'collection_date'];
+        $allowed = ['item_id', 'provider_id', 'reference_id', 'value_before_tax', 'tax_value', 'value_after_tax', 'notes', 'attachment', 'collection_date'];
         if (request()->hasFile('attachment')) {
             $data['attachment'] = request()->file('attachment')->store('purchases', 'public');
         }

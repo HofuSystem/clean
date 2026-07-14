@@ -110,22 +110,25 @@
                                     placeholder="{{ trans("Enter notes") }} ">{{ $item->notes ?? '' }}</textarea>
                             </div>
 
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group mb-3 col-md-4">
                                 <label for="attachment">{{ trans("Attachment") }}</label>
-                                <input type="file" name="attachment" id="attachment" class="form-control">
-                                @if(isset($item) && $item->attachment)
-                                    <div class="mt-2">
-                                        <a href="{{ asset('storage/' . $item->attachment) }}" target="_blank" class="btn btn-sm btn-light-primary">
-                                            <i class="fas fa-paperclip"></i> @lang('View current attachment')
-                                        </a>
-                                    </div>
-                                @endif
+                                <div class="media-center-group form-control" data-max="1" data-type="file">
+                                    <input type="text" hidden="hidden" class="form-control" name="attachment" id="attachment" value="{{ old("attachment" , $item->attachment ?? null) }}">
+                                    <button type="button" class="btn btn-secondary media-center-load" style="margin-top: 10px;"><i class="fa fa-file-upload"></i></button>
+                                    <div class="input-gallery"></div>
+                                </div>
                             </div>
 
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group mb-3 col-md-4">
                                 <label for="collection_date">{{ trans("Collection Date") }}</label>
                                 <input type="date" name="collection_date" id="collection_date" class="form-control"
                                     value="{{ isset($item) && $item->collection_date ? $item->collection_date->format('Y-m-d') : '' }}">
+                            </div>
+
+                            <div class="form-group mb-3 col-md-4">
+                                <label for="reference_id">{{ trans("Reference ID") }}</label>
+                                <input type="text" name="reference_id" id="reference_id" class="form-control"
+                                    placeholder="{{ trans("Auto-generated if empty") }}" value="{{ $item->reference_id ?? '' }}">
                             </div>
 
                         </div>

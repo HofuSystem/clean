@@ -50,6 +50,7 @@
     "Net Output VAT Payable": "إجمالي ضريبة المبيعات المستحقة (Output)",
     "Domestic Purchases Subject to 15% VAT": "المشتريات المحلية الخاضعة للضريبة 15%",
     "Net Input VAT Deductible": "إجمالي ضريبة المشتريات القابلة للخصم (Input)",
+    "Purchases / Input VAT": "ضريبة المشتريات / المدخلات",
     "Net VAT Due to ZATCA Authority": "صافي الضريبة المستحقة الدفع لهيئة الزكاة (ZATCA)",
     "Audit Assistant": "مساعد الفحص الضريبي",
     "Consistency Match Detected": "تم التأكد من صحة البيانات",
@@ -3309,5 +3310,7 @@
     "Tax value is required": "قيمة الضريبة مطلوبة",
     "Value after tax is required": "القيمة بعد الضريبة مطلوبة",
     "Item is required": "الصنف مطلوب",
-    "Provider is required": "المورد مطلوب"
+    "Provider is required": "المورد مطلوب",
+    "Collection Date From": "تاريخ التحصيل من",
+    "Collection Date To": "تاريخ التحصيل إلى"
 }

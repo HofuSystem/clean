@@ -148,7 +148,11 @@
 
                                 <div class="p-1 row" data-kt-user-table-filter="form">
 
-                                    <div class="col-md-6 mb-1">
+                                    <div class="col-md-4 mb-2">
+                                        <label for="reference_id">@lang("Reference ID")</label>
+                                        <input type="text" class="form-control filter-input" name="reference_id" id="reference_id" placeholder="@lang('Reference ID')">
+                                    </div>
+                                    <div class="col-md-4 mb-2">
                                         <label for="item_id">@lang("item")</label>
                                         <select class="custom-select filter-input form-select advance-select" name="item_id" id="item_id">
                                             <option value=""> @lang("select item")</option>
@@ -157,7 +161,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-6 mb-1">
+                                    <div class="col-md-4 mb-2">
                                         <label for="provider_id">@lang("provider")</label>
                                         <select class="custom-select filter-input form-select advance-select" name="provider_id" id="provider_id">
                                             <option value=""> @lang("select provider")</option>
@@ -165,6 +169,14 @@
                                                 <option value="{{ $pItem->id }}" @selected($pItem->id  == request("provider_id")) >{{ $pItem->name }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label for="collection_date_from">@lang("Collection Date From")</label>
+                                        <input type="date" class="form-control filter-input" name="collection_date_from" id="collection_date_from">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label for="collection_date_to">@lang("Collection Date To")</label>
+                                        <input type="date" class="form-control filter-input" name="collection_date_to" id="collection_date_to">
                                     </div>
                                     
                                     <!--begin::Actions-->
@@ -202,6 +214,7 @@
                                     </div>
                                 </th>
                                 <th class="text-center p-0" data-name="id">@lang("id")</th>
+                                <th class="text-center p-0" data-name="reference_id">@lang("Reference ID")</th>
                                 <th class="text-center p-0" data-name="item">@lang("item")</th>
                                 <th class="text-center p-0" data-name="provider">@lang("provider")</th>
                                 <th class="text-center p-0" data-name="value_before_tax">@lang("value before tax")</th>

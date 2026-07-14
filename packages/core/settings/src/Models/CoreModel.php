@@ -28,10 +28,16 @@ class CoreModel extends Model
         if (request()->has('start') and request()->has('length') and request()->input('length') != -1) {
             $query->skip(request()->input('start'))->take(request()->input('length'));
         }
-        $orderColumn = request()->columns[request()->order[0]['column']]['data'] ?? null;
+        $orderColumn = null;
+        if (request()->has('order') && is_array(request()->order) && isset(request()->order[0]['column'])) {
+            $colIdx = request()->order[0]['column'];
+            if (request()->has('columns') && is_array(request()->columns) && isset(request()->columns[$colIdx]['data'])) {
+                $orderColumn = request()->columns[$colIdx]['data'];
+            }
+        }
         if (isset($orderColumn) ) {
             $orderBy    = $orderColumn;
-            $orderDir   = request()->order[0]['dir'];
+            $orderDir   = request()->order[0]['dir'] ?? 'asc';
             if (isset($this->translatedAttributes) and in_array($orderBy, $this->translatedAttributes)) {
                 $query->orderByTranslation($orderBy, $orderDir);
             } else {

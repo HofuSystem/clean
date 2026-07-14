@@ -23,12 +23,16 @@ class Financial extends CoreModel
     {
         static::creating(function ($model) {
             if (empty($model->reference_id)) {
-                $unique = false;
-                while (!$unique) {
-                    $ref = 'Fin-' . str_pad(mt_rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
-                    if (!static::where('reference_id', $ref)->exists()) {
-                        $model->reference_id = $ref;
-                        $unique = true;
+                if ($model->type === 'owed') {
+                    $model->reference_id = app(\Core\Financials\Services\FinancialsService::class)->getNextOwedRefrence();
+                } else {
+                    $unique = false;
+                    while (!$unique) {
+                        $ref = 'Fin-' . str_pad(mt_rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
+                        if (!static::where('reference_id', $ref)->exists()) {
+                            $model->reference_id = $ref;
+                            $unique = true;
+                        }
                     }
                 }
             }
@@ -55,6 +59,12 @@ class Financial extends CoreModel
         }
         if (request()->has('filters.user_id') && !empty(request('filters.user_id'))) {
             $query->where('user_id', request('filters.user_id'));
+        }
+        if (request()->filled('filters.collection_date_from')) {
+            $query->whereDate('collection_date', '>=', request('filters.collection_date_from'));
+        }
+        if (request()->filled('filters.collection_date_to')) {
+            $query->whereDate('collection_date', '<=', request('filters.collection_date_to'));
         }
     }
 

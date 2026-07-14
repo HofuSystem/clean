@@ -7,10 +7,20 @@ let imageDisplay = document.getElementById("image-display");
 let page = 1;
 let mediaChooseBtn = null;
 const fileHandler = (file, name, type) => {
-  if (type.split("/")[0] !== "image") {
-    //File Type Error
-    error.innerText = "Please upload an image file";
-    return false;
+  let modalType = $('#mediaModal').data('type');
+  if (modalType !== 'file') {
+    if (type.split("/")[0] !== "image") {
+      //File Type Error
+      error.innerText = "Please upload an image file";
+      return false;
+    }
+  } else {
+    let allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    let ext = name.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      error.innerText = "Please upload a PDF, Word, Excel, PowerPoint or Image file";
+      return false;
+    }
   }
   error.innerText = "";
   let reader = new FileReader();
@@ -26,7 +36,12 @@ const fileHandler = (file, name, type) => {
     progress_bar.setAttribute('class', 'progress-bar ')
     progress_bar.setAttribute('role', 'progressbar')
 
-    img.src = reader.result;
+    if (type.split("/")[0] !== "image") {
+      let ext = name.split('.').pop().toLowerCase();
+      img.src = '/control/icons/' + ext + '.png';
+    } else {
+      img.src = reader.result;
+    }
 
 
     progress.appendChild(progress_bar);
@@ -198,6 +213,11 @@ function loadMoreIMediaCenter() {
 }
 function getSrcFromValue(value){
   let url = media_center_links.url;
+  let ext = value.split('.').pop().toLowerCase();
+  let imageExtensions = ['gif', 'webp', 'jpg', 'jpeg', 'png', 'svg'];
+  if (!imageExtensions.includes(ext)) {
+    return '/control/icons/' + ext + '.png';
+  }
   return url+'/'+value;
 }
 
@@ -285,6 +305,17 @@ $('.media-center-load').click(function (e) {
   let type        = $(this).parents('.media-center-group').data('type');
   $('#mediaModal').data('type', type)
   $('#mediaModal').data('max', max)
+
+  if (type === 'file') {
+    $('#upload-button').attr('accept', '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*');
+    let labelText = $('#mediaModal').data('trans-files') || 'Choose Or Drop Files';
+    $('#upload-lable').html('<i class="text-white fa fa-file-upload"></i> ' + labelText);
+  } else {
+    $('#upload-button').attr('accept', 'image/*');
+    let labelText = $('#mediaModal').data('trans-photos') || 'Choose Or Drop Photos';
+    $('#upload-lable').html('<i class="text-white fa fa-file-upload"></i> ' + labelText);
+  }
+
   loadIMediaCenter();
   $('#mediaModal').modal('toggle');
 });

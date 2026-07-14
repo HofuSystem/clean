@@ -29,13 +29,31 @@ class PurchasesRequest extends FormRequest
     public function rules()
     {
         return [
+            'reference_id' => 'nullable|string|unique:purchases,reference_id,' . ($this->route('id') ?: 'NULL') . ',id',
             'item_id' => 'required|integer|exists:purchase_items,id',
             'provider_id' => 'required|integer|exists:purchase_providers,id',
             'value_before_tax' => 'required|numeric|min:0',
             'tax_value' => 'required|numeric|min:0',
             'value_after_tax' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
-            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'attachment' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (request()->hasFile('attachment')) {
+                        $file = request()->file('attachment');
+                        $ext = strtolower($file->getClientOriginalExtension());
+                        $allowed = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+                        if (!in_array($ext, $allowed)) {
+                            $fail(trans('The attachment must be a file of type: ') . implode(', ', $allowed) . '.');
+                        }
+                        if ($file->getSize() > 10240 * 1024) {
+                            $fail(trans('The attachment must not be greater than 10MB.'));
+                        }
+                    } elseif (!is_string($value)) {
+                        $fail(trans('The attachment must be a valid file or path.'));
+                    }
+                }
+            ],
             'collection_date' => 'nullable|date',
         ];
     }

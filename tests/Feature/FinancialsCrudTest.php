@@ -291,4 +291,25 @@ class FinancialsCrudTest extends TestCase
             'type' => 'paid',
         ]);
     }
+
+    public function test_financial_reference_id_generation()
+    {
+        $company = $this->createCompany();
+
+        // 1. Owed entry reference ID should start with CN-
+        $financialOwed = Financial::create([
+            'company_id' => $company->id,
+            'amount' => 150.00,
+            'type' => 'owed',
+        ]);
+        $this->assertStringStartsWith('CN-', $financialOwed->reference_id);
+
+        // 2. Paid entry reference ID should start with Fin-
+        $financialPaid = Financial::create([
+            'company_id' => $company->id,
+            'amount' => 200.00,
+            'type' => 'paid',
+        ]);
+        $this->assertStringStartsWith('Fin-', $financialPaid->reference_id);
+    }
 }

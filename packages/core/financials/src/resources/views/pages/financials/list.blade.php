@@ -41,39 +41,53 @@
                     <!--end::Card title-->
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar col-md-6 d-flex justify-content-end">
-                        <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
-                            <div class="d-flex">
-                                <!--begin::Stat-->
-                                <div class="border border-dashed border-success text-success rounded mx-1 p-2">
-                                    <a href="{{ route('dashboard.financials.index') }}">
-                                        <div class="fw-bolder fs-5 text-success">
-                                            {{ $total }}
-                                            <i class="fas fa-list-alt text-success ms-1"></i>
-                                            @lang('total')
-                                        </div>
+                        <!--begin::Toolbar-->
+                        <div data-kt-user-table-toolbar="base">
+                            <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
+                                <div class="d-flex">
+                                    <!--begin::Stat-->
+                                    <div class="border border-dashed border-success text-success rounded mx-1 p-2">
+                                        <a href="{{ route('dashboard.financials.index') }}">
+                                            <div class="fw-bolder fs-5 text-success">
+                                                {{ $total }}
+                                                <i class="fas fa-list-alt text-success ms-1"></i>
+                                                @lang('total')
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <!--end::Stat-->
+                                    <!--begin::Stat-->
+                                    <div class="border border-dashed border-danger text-danger rounded mx-1 p-2">
+                                        <a href="{{ route('dashboard.financials.index', ['trash' => 1]) }}">
+                                            <div class="fw-bolder fs-5 text-danger">
+                                                {{ $trash }}
+                                                <i class="fas fa-trash-alt text-danger ms-1"></i>
+                                                @lang('Trash')
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <!--end::Stat-->
+                                </div>
+                                <div class="d-flex">
+                                    <!--begin::Add-->
+                                    <a href="{{ route('dashboard.financials.create') }}" class="btn-operation">
+                                        <i class="fas fa-plus-circle me-1"></i>
+                                        <span>@lang('create new')</span>
                                     </a>
                                 </div>
-                                <!--end::Stat-->
-                                <!--begin::Stat-->
-                                <div class="border border-dashed border-danger text-danger rounded mx-1 p-2">
-                                    <a href="{{ route('dashboard.financials.index', ['trash' => 1]) }}">
-                                        <div class="fw-bolder fs-5 text-danger">
-                                            {{ $trash }}
-                                            <i class="fas fa-trash-alt text-danger ms-1"></i>
-                                            @lang('Trash')
-                                        </div>
-                                    </a>
-                                </div>
-                                <!--end::Stat-->
-                            </div>
-                            <div class="d-flex">
-                                <!--begin::Add-->
-                                <a href="{{ route('dashboard.financials.create') }}" class="btn-operation">
-                                    <i class="fas fa-plus-circle me-1"></i>
-                                    <span>@lang('create new')</span>
-                                </a>
                             </div>
                         </div>
+                        <!--end::Toolbar-->
+                        <!--begin::Group actions-->
+                        <div class="d-flex justify-content-end align-items-center d-none"
+                            data-kt-user-table-toolbar="selected">
+                            <div class="border border-warning border-dashed rounded text-warning p-2 mx-1">
+                                <span class="me-2" data-kt-user-table-select="selected_count"></span>@lang('Selected')
+                            </div>
+                            <button type="button" class="btn btn-primary"
+                                data-kt-user-table-select="delete_selected">@lang('Delete Selected')</button>
+                        </div>
+                        <!--end::Group actions-->
                     </div>
                     <!--end::Card toolbar-->
                 </div>
@@ -113,6 +127,14 @@
                                         <label for="reference_id" class="form-label">@lang("Reference ID")</label>
                                         <input type="text" class="form-control filter-input" name="reference_id" id="reference_id" placeholder="@lang('Reference ID')">
                                     </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="collection_date_from" class="form-label">@lang("Collection Date From")</label>
+                                        <input type="date" class="form-control filter-input" name="collection_date_from" id="collection_date_from">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="collection_date_to" class="form-label">@lang("Collection Date To")</label>
+                                        <input type="date" class="form-control filter-input" name="collection_date_to" id="collection_date_to">
+                                    </div>
                                     <!--begin::Actions-->
                                     <div class="d-flex justify-content-end mt-2">
                                         <button type="reset" class="btn btn-light btn-active-light-primary fw-bold me-2 px-6"
@@ -148,7 +170,6 @@
                                 <th class="text-center p-0" data-name="amount">@lang("Amount")</th>
                                 <th class="text-center p-0" data-name="type">@lang("Type")</th>
                                 <th class="text-center p-0" data-name="collection_date">@lang("Collection Date")</th>
-                                <th class="text-center p-0" data-name="created_at">@lang("Created At")</th>
                                 <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
                             </tr>
                         </thead>

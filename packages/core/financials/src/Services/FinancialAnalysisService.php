@@ -4,11 +4,15 @@ namespace Core\Financials\Services;
 
 use Core\Orders\Models\Order;
 use Core\Orders\Models\OrderReport;
+use Core\Orders\Models\OrderTransaction;
 use Core\Wallet\Models\WalletTransaction;
 use Core\Financials\Models\DailyFinancialReport;
+use Core\Financials\Models\Financial;
 
 class FinancialAnalysisService
 {
+    public $notValidStatuses = ['pending_payment', 'cancel_payment', 'failed_payment'];
+
     /**
      * Get detailed monthly financial analysis for a specific year, city, and company type.
      *
@@ -51,14 +55,27 @@ class FinancialAnalysisService
             // Determine profit color based on positive/negative profit
             $profitColor = $monthData->total_profit >= 0 ? '#03ad03' : '#cf1a02';
 
-            // Additional reporting fields
+            // Additional reporting fields — exclude not-valid statuses from all counts
             $newOrdersCount = Order::analysis($cityId, $startDate, $endDate, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
                 ->testAccounts(false)
                 ->count();
 
             $pickupsCount = Order::analysis($cityId, null, null, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
                     $query->where('type', 'receiver')
+                        ->whereBetween('date', [$startDate, $endDate]);
+                })
+                ->testAccounts(false)
+                ->count();
+
+
+
+            $deliveriesCount = Order::analysis($cityId, null, null, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
+                    $query->where('type', 'delivery')
                         ->whereBetween('date', [$startDate, $endDate]);
                 })
                 ->testAccounts(false)
@@ -69,41 +86,31 @@ class FinancialAnalysisService
                 ->testAccounts(false)
                 ->sum('total_price');
 
-            $onlineOpsCount = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'card')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
+            $onlineOpsQuery = OrderTransaction::where('type', 'card')
+                ->whereHas('order', function ($query) use ($cityId, $companyType, $startDate, $endDate) {
+                    $query->analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
+                        ->whereHas('orderRepresentatives', function ($q) use ($startDate, $endDate) {
+                            $q->where('type', 'delivery')
+                                ->whereBetween('date', [$startDate, $endDate]);
+                        })
+                        ->testAccounts(false);
+                });
 
-            $onlineOpsAmount = (float) Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'card')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->sum('total_price');
+            $onlineOpsCount = $onlineOpsQuery->count();
+            $onlineOpsAmount = (float) $onlineOpsQuery->sum('amount');
 
-            $cashOpsCount = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'cash')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
+            $cashOpsQuery = OrderTransaction::where('type', 'cash')
+                ->whereHas('order', function ($query) use ($cityId, $companyType, $startDate, $endDate) {
+                    $query->analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
+                        ->whereHas('orderRepresentatives', function ($q) use ($startDate, $endDate) {
+                            $q->where('type', 'delivery')
+                                ->whereBetween('date', [$startDate, $endDate]);
+                        })
+                        ->testAccounts(false);
+                });
 
-            $cashOpsAmount = (float) Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'cash')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->sum('total_price');
+            $cashOpsCount = $cashOpsQuery->count();
+            $cashOpsAmount = (float) $cashOpsQuery->sum('amount');
 
             $complaintsCount = OrderReport::whereBetween('created_at', [$startDate, $endDate])
                 ->whereHas('order', function ($query) use ($cityId, $companyType) {
@@ -121,22 +128,23 @@ class FinancialAnalysisService
                 })
                 ->count();
 
-            $compensationsAmount = (float) WalletTransaction::where('transaction_type', 'compensation_add')
-                ->where('status', 'accepted')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->whereHas('user', function ($query) use ($cityId, $companyType) {
-                    $query->when($cityId, function ($q) use ($cityId) {
-                        $q->whereHas('profile', function ($pq) use ($cityId) {
-                            $pq->where('city_id', $cityId);
+            $compensationsAmount = (float) Financial::where('type', 'owed')
+                ->whereBetween('collection_date', [$startDate, $endDate])
+                ->when($cityId, function ($query) use ($cityId) {
+                    $query->where(function ($q) use ($cityId) {
+                        $q->whereHas('user.profile', function ($sq) use ($cityId) {
+                            $sq->where('city_id', $cityId);
+                        })->orWhereHas('company', function ($sq) use ($cityId) {
+                            $sq->where('city_id', $cityId);
                         });
-                    })
-                    ->when($companyType, function ($q) use ($companyType) {
-                        if ($companyType == 'b2b') {
-                            $q->whereNotNull('company_id');
-                        } elseif ($companyType == 'b2c') {
-                            $q->whereNull('company_id');
-                        }
                     });
+                })
+                ->when($companyType, function ($query) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $query->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $query->whereNull('company_id');
+                    }
                 })
                 ->sum('amount');
 
@@ -160,7 +168,7 @@ class FinancialAnalysisService
                 // Raw numerical values for view calculations and footer aggregation
                 'new_orders_count' => $newOrdersCount,
                 'pickups_count' => $pickupsCount,
-                'deliveries_count' => $monthData->orders_count,
+                'deliveries_count' => $deliveriesCount,
                 'raw_revenue' => $rawRevenue,
                 'raw_cost' => $rawCost,
                 'raw_profit' => $rawProfit,
@@ -208,6 +216,22 @@ class FinancialAnalysisService
             $startDate = "$dayDate 00:00:00";
             $endDate = "$dayDate 23:59:59";
 
+            // Additional reporting fields
+            $newOrdersCount = Order::analysis($cityId, $startDate, $endDate, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->testAccounts(false)
+                ->count();
+
+
+            $pickupsCount = Order::analysis($cityId, null, null, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
+                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
+                    $query->where('type', 'receiver')
+                        ->whereBetween('date', [$startDate, $endDate]);
+                })
+                ->testAccounts(false)
+                ->count();
+
             // Deliveries query
             $dayData = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
@@ -232,59 +256,39 @@ class FinancialAnalysisService
             // Determine profit color based on positive/negative profit
             $profitColor = $dayData->total_profit >= 0 ? '#03ad03' : '#cf1a02';
 
-            // Additional reporting fields
-            $newOrdersCount = Order::analysis($cityId, $startDate, $endDate, null, $companyType)
-                ->testAccounts(false)
-                ->count();
 
             // Value of New Orders
             $newOrdersValue = (float) Order::analysis($cityId, $startDate, $endDate, null, $companyType)
+                ->whereNotIn('status', $this->notValidStatuses)
                 ->testAccounts(false)
                 ->sum('total_price');
 
-            $pickupsCount = Order::analysis($cityId, null, null, null, $companyType)
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'receiver')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
 
-            $onlineOpsCount = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'card')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
+            $onlineOpsQuery = OrderTransaction::where('type', 'card')
+                ->whereHas('order', function ($query) use ($cityId, $companyType, $startDate, $endDate) {
+                    $query->analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
+                        ->whereHas('orderRepresentatives', function ($q) use ($startDate, $endDate) {
+                            $q->where('type', 'delivery')
+                                ->whereBetween('date', [$startDate, $endDate]);
+                        })
+                        ->testAccounts(false);
+                });
 
-            $onlineOpsAmount = (float) Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'card')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->sum('total_price');
+            $onlineOpsCount = $onlineOpsQuery->count();
+            $onlineOpsAmount = (float) $onlineOpsQuery->sum('amount');
 
-            $cashOpsCount = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'cash')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
+            $cashOpsQuery = OrderTransaction::where('type', 'cash')
+                ->whereHas('order', function ($query) use ($cityId, $companyType, $startDate, $endDate) {
+                    $query->analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
+                        ->whereHas('orderRepresentatives', function ($q) use ($startDate, $endDate) {
+                            $q->where('type', 'delivery')
+                                ->whereBetween('date', [$startDate, $endDate]);
+                        })
+                        ->testAccounts(false);
+                });
 
-            $cashOpsAmount = (float) Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
-                ->where('pay_type', 'cash')
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->sum('total_price');
+            $cashOpsCount = $cashOpsQuery->count();
+            $cashOpsAmount = (float) $cashOpsQuery->sum('amount');
 
             $complaintsCount = OrderReport::whereBetween('created_at', [$startDate, $endDate])
                 ->whereHas('order', function ($query) use ($cityId, $companyType) {
@@ -302,22 +306,23 @@ class FinancialAnalysisService
                 })
                 ->count();
 
-            $compensationsAmount = (float) WalletTransaction::where('transaction_type', 'compensation_add')
-                ->where('status', 'accepted')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->whereHas('user', function ($query) use ($cityId, $companyType) {
-                    $query->when($cityId, function ($q) use ($cityId) {
-                        $q->whereHas('profile', function ($pq) use ($cityId) {
-                            $pq->where('city_id', $cityId);
+            $compensationsAmount = (float) Financial::where('type', 'owed')
+                ->whereBetween('collection_date', [$startDate, $endDate])
+                ->when($cityId, function ($query) use ($cityId) {
+                    $query->where(function ($q) use ($cityId) {
+                        $q->whereHas('user.profile', function ($sq) use ($cityId) {
+                            $sq->where('city_id', $cityId);
+                        })->orWhereHas('company', function ($sq) use ($cityId) {
+                            $sq->where('city_id', $cityId);
                         });
-                    })
-                    ->when($companyType, function ($q) use ($companyType) {
-                        if ($companyType == 'b2b') {
-                            $q->whereNotNull('company_id');
-                        } elseif ($companyType == 'b2c') {
-                            $q->whereNull('company_id');
-                        }
                     });
+                })
+                ->when($companyType, function ($query) use ($companyType) {
+                    if ($companyType == 'b2b') {
+                        $query->whereNotNull('company_id');
+                    } elseif ($companyType == 'b2c') {
+                        $query->whereNull('company_id');
+                    }
                 })
                 ->sum('amount');
 

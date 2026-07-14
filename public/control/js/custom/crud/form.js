@@ -88,24 +88,43 @@ const fullToolbar = [
     e.preventDefault();
 
     let form = $(this);
-    let data = getFormData($(this));
-    let itemsData = getItemsData(form);
     let mainMode = $(this).data('mode');
-    if (mainMode == 'new') {
-      for (let key in itemsData) {
-        data[key] = itemsData[key];
-      }
-    }
     let url = $(this).attr('action');
     let isEdit = $(this).data('mode') == "edit";
     let type = 'POST'; // Always use POST to avoid 403 Forbidden on Apache
-    if (isEdit) {
-      data['_method'] = 'PUT'; // Laravel method spoofing
+
+    let isMultipart = form.attr('enctype') === 'multipart/form-data' || form.find('input[type="file"]').length > 0;
+    let ajaxData;
+    let processData = true;
+    let contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+
+    if (isMultipart) {
+      ajaxData = new FormData(this);
+      if (isEdit) {
+        ajaxData.set('_method', 'PUT'); // Laravel method spoofing
+      }
+      processData = false;
+      contentType = false;
+    } else {
+      let data = getFormData($(this));
+      let itemsData = getItemsData(form);
+      if (mainMode == 'new') {
+        for (let key in itemsData) {
+          data[key] = itemsData[key];
+        }
+      }
+      if (isEdit) {
+        data['_method'] = 'PUT'; // Laravel method spoofing
+      }
+      ajaxData = data;
     }
+
     $.ajax({
       type: type,
       url: url,
-      data: data,
+      data: ajaxData,
+      processData: processData,
+      contentType: contentType,
       dataType: "json",
       beforeSend: function () {
         // Code to run before the request is sent
@@ -122,7 +141,10 @@ const fullToolbar = [
             confirmButton: "btn fw-bold btn-success",
           }
         }).then(function () {
-          if (mainMode == 'new') {
+          let redirectTo = form.attr('redirect-to');
+          if (redirectTo) {
+            window.location.href = redirectTo;
+          } else if (mainMode == 'new') {
             window.location.reload();
           }
         })

@@ -1,6 +1,7 @@
 
-    <!-- Modal -->
-    <div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true">
+    <div class="modal fade" id="mediaModal" tabindex="-1" aria-labelledby="mediaModalLabel" aria-hidden="true"
+         data-trans-photos="{{ trans('Choose Or Drop Photos') }}"
+         data-trans-files="{{ trans('Choose Or Drop Files') }}">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
