@@ -195,6 +195,15 @@
                                             placeholder="@lang('search for full name') " value="{{ request('fullname') }}">
                                     </div>
                                     <div class="col-md-6 mb-1">
+                                        <label for="has_name">@lang('Full Name Status')</label>
+                                        <select class="custom-select filter-input form-select advance-select"
+                                            name="has_name" id="has_name">
+                                            <option value="" @selected(request('has_name') === '')> @lang('All')</option>
+                                            <option value="1" @selected(request('has_name', '1') === '1')>@lang('With Full Name')</option>
+                                            <option value="0" @selected(request('has_name') === '0')>@lang('Without Full Name')</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-1">
                                         <label for="email"> @lang('email') </label>
                                         <input type="email" name="email" class="form-control filter-input"
                                             placeholder="@lang('search for email') " value="{{ request('email') }}">

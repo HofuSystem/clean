@@ -94,7 +94,6 @@ class UsersExport
     protected function buildQuery(): \Illuminate\Database\Eloquent\Builder
     {
         return User::query()
-            ->hasName()
             ->leftJoin('profiles', 'profiles.user_id', '=', 'users.id')
             ->leftJoin('city_translations', function ($join) {
                 $join->on('city_translations.city_id', '=', 'profiles.city_id')

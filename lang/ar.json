@@ -3312,5 +3312,8 @@
     "Item is required": "الصنف مطلوب",
     "Provider is required": "المورد مطلوب",
     "Collection Date From": "تاريخ التحصيل من",
-    "Collection Date To": "تاريخ التحصيل إلى"
+    "Collection Date To": "تاريخ التحصيل إلى",
+    "Full Name Status": "حالة الاسم الكامل",
+    "With Full Name": "بالاسم الكامل",
+    "Without Full Name": "بدون اسم كامل"
 }

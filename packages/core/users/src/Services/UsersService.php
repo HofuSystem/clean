@@ -102,18 +102,22 @@ class UsersService
 
 
     public function dataTable($draw){
-        $hasFilters = collect(request()->input('filters', []))->filter()->isNotEmpty()
+        $filters = request()->input('filters', []);
+        if (!request()->has('filters.has_name')) {
+            $filters['has_name'] = '1';
+        }
+
+        $hasFilters = collect($filters)->filter(fn($v) => $v !== '')->isNotEmpty()
                    || request()->input('trash')
                    || request()->input('forCompany');
 
         // Lightweight queries just for counts — no selects, no withs, no subqueries
-        $countQuery = User::underMyControl()->hasName();
+        $countQuery = User::underMyControl();
         $recordsTotal    = (clone $countQuery)->count();
         $recordsFiltered = $hasFilters ? (clone $countQuery)->search()->count() : $recordsTotal;
 
         // Actual data query — paginated, with relations only after LIMIT is applied by dataTable scope
         $records = User::underMyControl()
-            ->hasName()
             ->select([
                 'users.id',
                 'users.image',
@@ -164,10 +168,10 @@ class UsersService
        );
     }
     public function totalCount(){
-        return User::underMyControl()->hasName()->count();
+        return User::underMyControl()->count();
     }
     public function trashCount(){
-        return User::underMyControl()->onlyTrashed()->hasName()->count();
+        return User::underMyControl()->onlyTrashed()->count();
     }
     public function restore(int $id){
         $record = User::onlyTrashed()->findOrFail($id);
