@@ -22,9 +22,7 @@
                     <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
                         <span
                             class="bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block">{{ trans('featured') }}</span>
-                        <h3 class="text-2xl md:text-4xl font-bold text-white mb-2 leading-tight drop-shadow-lg"><span
-                                class="lang-ar">{{ $posts[0]->translate('ar')->title }}</span><span
-                                class="lang-en">{{ $posts[0]->translate('en')->title }}</span></h3>
+                        <h3 class="text-2xl md:text-4xl font-bold text-white mb-2 leading-tight drop-shadow-lg">{{ $posts[0]->title }}</h3>
                         <div class="text-gray-200 text-sm flex items-center gap-4">
                             <span><i class="fa-regular fa-calendar"></i>
                                 {{ $posts[0]->created_at->format('M d, Y') }}</span>
@@ -45,12 +43,9 @@
                                 </div>
                                 <h4
                                     class="text-xl font-bold text-gray-900 mb-3 group-hover:text-brand-600 transition-colors line-clamp-2">
-                                    <span class="lang-ar">{{ $post->translate('ar')->title }}</span><span
-                                        class="lang-en">{{ $post->translate('en')->title }}</span>
+                                    {{ $post->title }}
                                 </h4>
-                                <p class="text-gray-500 text-sm line-clamp-2 mb-4"><span
-                                        class="lang-ar">{!! Str::limit(strip_tags($post->translate('ar')->content), 80) !!}</span><span
-                                        class="lang-en">{!! Str::limit(strip_tags($post->translate('en')->content), 80) !!}</span></p>
+                                <p class="text-gray-500 text-sm line-clamp-2 mb-4">{!! Str::limit(strip_tags($post->content), 80) !!}</p>
                                 <div class="text-xs text-gray-400 mt-auto">{{ $post->created_at->diffForHumans() }}
                                 </div>
                             </div>
@@ -74,14 +69,11 @@
                     <div class="p-6">
                         <h4
                             class="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors">
-                            <span class="lang-ar">{{ $post->translate('ar')->title }}</span><span
-                                class="lang-en">{{ $post->translate('en')->title }}</span>
+                            {{ $post->title }}
                         </h4>
                         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
                             <span class="text-xs text-gray-400">{{ $post->created_at->format('M d') }}</span>
-                            <span class="text-brand-600 text-xs font-bold cursor-pointer hover:underline"><span
-                                    class="lang-ar">{{ trans('read more') }}</span><span
-                                    class="lang-en">{{ trans('read more') }}</span></span>
+                            <span class="text-brand-600 text-xs font-bold cursor-pointer hover:underline">{{ trans('read more') }}</span>
                         </div>
                     </div>
                 </a>
