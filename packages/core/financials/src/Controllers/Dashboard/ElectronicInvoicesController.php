@@ -7,6 +7,7 @@ use Core\Financials\Models\Invoice;
 use Core\Financials\Services\InvoiceService;
 use Core\Financials\Services\ZatcaService;
 use Core\Financials\Models\Financial;
+use Core\Financials\Models\Purchase;
 use Illuminate\Http\Request;
 use Core\Financials\DataResources\TaxableInvoicesResource;
 
@@ -173,6 +174,9 @@ class ElectronicInvoicesController extends Controller
                 ->whereBetween('collection_date', [$startDate, $endDate])
                 ->get();
             
+            // Purchases (Domestic Purchases)
+            $purchases = Purchase::whereBetween('collection_date', [$startDate, $endDate])->get();
+            
             $b2cSales = $b2c->sum('subtotal');
             $b2cVat = $b2c->sum('vat_amount');
             
@@ -181,6 +185,9 @@ class ElectronicInvoicesController extends Controller
             
             $adjAmount = $adjustments->sum('amount');
             $adjVat = $adjAmount * 0.15;
+            
+            $purchasesAmount = $purchases->sum('value_before_tax');
+            $purchasesVat = $purchases->sum('tax_value');
         
             
             return [
@@ -192,6 +199,8 @@ class ElectronicInvoicesController extends Controller
                 'adj_amount' => $adjAmount,
                 'adj_vat' => $adjVat,
                 'net_sales' => $b2cSales + $b2bSales,
+                'purchases_amount' => $purchasesAmount,
+                'purchases_vat' => $purchasesVat,
             ];
         };
 
@@ -221,8 +230,8 @@ class ElectronicInvoicesController extends Controller
         
         $currentQTotals = $getTotals($currentQStart, $currentQEnd);
         $systemTotals = [
-            'current_quarter_vat' => $currentQTotals['net_vat'],
-            'total_vat_overall' => Invoice::sum('vat_amount'),
+            'current_quarter_vat' => $currentQTotals['net_vat'] - ($currentQTotals['purchases_vat'] ?? 0),
+            'total_vat_overall' => Invoice::sum('vat_amount') - Purchase::sum('tax_value'),
             'total_b2b_sales' => Invoice::where('type', 'B2B')->sum('subtotal'),
             'total_b2c_sales' => Invoice::where('type', 'B2C')->sum('subtotal'),
         ];

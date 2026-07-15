@@ -49,6 +49,23 @@ class User extends Authenticatable
             $query->where("fullname", "LIKE", "%" . request("filters.fullname") . "%");
         }
 
+        // Filter by has_name status
+        $hasNameFilter = request("filters.has_name");
+        if (!request()->has("filters.has_name")) {
+            $hasNameFilter = "1";
+        }
+
+        if ($hasNameFilter !== "" && $hasNameFilter !== null) {
+            if ($hasNameFilter == "1") {
+                $query->hasName();
+            } elseif ($hasNameFilter == "0") {
+                $query->where(function ($q) {
+                    $q->whereNull($this->getTable() . '.fullname')
+                      ->orWhere($this->getTable() . '.fullname', '');
+                });
+            }
+        }
+
         //filter by email on  email
         if ((request()->has("filters.email")) and !empty(request("filters.email"))) {
             $query->where("email", "LIKE", "%" . request("filters.email") . "%");

@@ -44,10 +44,10 @@ var KTUsersList = function () {
                 processing: true,
                 serverSide: true,
                 order: [[1, 'desc']],
-                stateSave: true,
                 ajax: {
                     url: url,
                     type: 'POST',
+                    dataSrc: 'data',
                     data: function (data) {
                         data['search'] = searchValue;
                         data['filters'] = filtersValues;
@@ -56,8 +56,8 @@ var KTUsersList = function () {
                     error: function (xhr, error, thrown) {
                         // Handle AJAX errors
                         console.log(xhr, error, thrown);
-                        
-                        // alert('noq An error occurred: ' + error);
+                        // Stop the processing spinner on error
+                        if (datatable) { datatable.processing(false); }
                     }
 
                 },
@@ -325,6 +325,7 @@ var KTUsersList = function () {
         });
 
         // Deleted selected rows
+        if (deleteSelected) {
         deleteSelected.addEventListener('click', function () {
             // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
             Swal.fire({
@@ -383,7 +384,8 @@ var KTUsersList = function () {
                 }
             });
         });
-    }
+        } // end if (deleteSelected)
+    } // end initToggleToolbar
 
     // Toggle toolbars
     const toggleToolbars = () => {

@@ -138,6 +138,7 @@ class PurchasesCrudTest extends TestCase
         $purchase = Purchase::latest('id')->first();
         $this->assertNotNull($purchase->attachment);
         $this->assertEquals('2026-07-15', $purchase->collection_date->format('Y-m-d'));
+        $this->assertStringStartsWith('Pur-', $purchase->reference_id);
 
         Storage::disk('public')->assertExists($purchase->attachment);
 
@@ -150,7 +151,64 @@ class PurchasesCrudTest extends TestCase
             'value_after_tax' => 230.00,
             'notes' => 'New purchase with attachments',
             'collection_date' => '2026-07-15',
+            'reference_id' => $purchase->reference_id,
         ]);
+    }
+
+    public function test_admin_can_create_purchase_with_custom_reference_id()
+    {
+        $admin = $this->getAdminUser();
+        [$item, $provider] = $this->createDependentModels();
+
+        $customRef = 'Custom-Ref-123';
+
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.create'), [
+                'item_id' => $item->id,
+                'provider_id' => $provider->id,
+                'value_before_tax' => 200.00,
+                'tax_value' => 30.00,
+                'value_after_tax' => 230.00,
+                'notes' => 'New purchase with custom ref',
+                'reference_id' => $customRef,
+                'collection_date' => '2026-07-15',
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => true,
+        ]);
+
+        $purchase = Purchase::latest('id')->first();
+        $this->assertEquals($customRef, $purchase->reference_id);
+    }
+
+    public function test_admin_can_create_purchase_with_media_center_attachment_path()
+    {
+        $admin = $this->getAdminUser();
+        [$item, $provider] = $this->createDependentModels();
+
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.create'), [
+                'item_id' => $item->id,
+                'provider_id' => $provider->id,
+                'value_before_tax' => 200.00,
+                'tax_value' => 30.00,
+                'value_after_tax' => 230.00,
+                'notes' => 'New purchase with media center attachment',
+                'attachment' => 'files/test-document.pdf',
+                'collection_date' => '2026-07-15',
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => true,
+        ]);
+
+        $purchase = Purchase::latest('id')->first();
+        $this->assertEquals('files/test-document.pdf', $purchase->attachment);
     }
 
     public function test_admin_can_update_purchase_and_change_attachment()
@@ -258,5 +316,112 @@ class PurchasesCrudTest extends TestCase
             'id' => $purchase->id,
             'deleted_at' => null,
         ]);
+    }
+
+    public function test_admin_can_filter_purchases_by_item_provider_and_date()
+    {
+        $admin = $this->getAdminUser();
+        [$item1, $provider1] = $this->createDependentModels();
+        [$item2, $provider2] = $this->createDependentModels();
+
+        $purchase1 = Purchase::create([
+            'item_id' => $item1->id,
+            'provider_id' => $provider1->id,
+            'value_before_tax' => 100.00,
+            'tax_value' => 15.00,
+            'value_after_tax' => 115.00,
+            'collection_date' => '2026-07-15',
+        ]);
+
+        $purchase2 = Purchase::create([
+            'item_id' => $item2->id,
+            'provider_id' => $provider2->id,
+            'value_before_tax' => 200.00,
+            'tax_value' => 30.00,
+            'value_after_tax' => 230.00,
+            'collection_date' => '2026-07-20',
+        ]);
+
+        // Filter by item1
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.index'), [
+                'draw' => 1,
+                'filters' => [
+                    'item_id' => $item1->id,
+                ],
+            ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('recordsFiltered', 1);
+
+        // Filter by provider2
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.index'), [
+                'draw' => 1,
+                'filters' => [
+                    'provider_id' => $provider2->id,
+                ],
+            ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('recordsFiltered', 1);
+
+        // Filter by collection_date_from of purchase2
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.index'), [
+                'draw' => 1,
+                'filters' => [
+                    'collection_date_from' => '2026-07-18',
+                ],
+            ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('recordsFiltered', 1);
+
+        // Filter by collection_date range that only includes purchase1
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->postJson(route('dashboard.purchases.index'), [
+                'draw' => 1,
+                'filters' => [
+                    'collection_date_from' => '2026-07-15',
+                    'collection_date_to' => '2026-07-16',
+                ],
+            ]);
+        $response->assertStatus(200);
+        $response->assertJsonPath('recordsFiltered', 1);
+    }
+
+    public function test_admin_can_access_electronic_invoices_declaration_with_purchases()
+    {
+        $admin = $this->getAdminUser();
+        list($item, $provider) = $this->createDependentModels();
+
+        // Create a purchase with known amounts
+        $purchase = Purchase::create([
+            'item_id' => $item->id,
+            'provider_id' => $provider->id,
+            'value_before_tax' => 1000.00,
+            'tax_value' => 150.00,
+            'value_after_tax' => 1150.00,
+            'collection_date' => date('Y-m-d'),
+        ]);
+
+        $response = $this->actingAs($admin, 'web')
+            ->withoutMiddleware()
+            ->get(route('dashboard.electronic-invoices.declaration', ['year' => date('Y')]));
+
+        $response->assertStatus(200);
+        $viewData = $response->original->getData();
+        $summary = $viewData['summary'] ?? [];
+
+        $this->assertGreaterThanOrEqual(1000.00, $summary['purchases_amount'] ?? 0);
+        $this->assertGreaterThanOrEqual(150.00, $summary['purchases_vat'] ?? 0);
+
+        $quarters = $viewData['quarters'] ?? [];
+        $currentQ = ceil(date('n') / 3);
+        $this->assertNotNull($quarters[$currentQ]);
+        $this->assertGreaterThanOrEqual(1000.00, $quarters[$currentQ]['purchases_amount'] ?? 0);
+        $this->assertGreaterThanOrEqual(150.00, $quarters[$currentQ]['purchases_vat'] ?? 0);
     }
 }

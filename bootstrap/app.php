@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \Core\Wallet\Console\Commands\HandleExpiredWalletTransaction::class,
         \Core\Users\Commands\HandleExpiredPoints::class,
         \Core\Users\Commands\HandleExpiredContract::class,
-        \Core\Users\Commands\DeleteNamelessUsers::class,
+        \Core\Users\Commands\RestoreDeletedUsers::class,
         \Core\Orders\Commands\OrderIsPendingPaymentForTenMinutes::class,
         \Core\Orders\Commands\OrderIsLateForPickup::class,
         \Core\Orders\Commands\OrderIsLateForDelivery::class,

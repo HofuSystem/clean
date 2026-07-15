@@ -18,7 +18,7 @@ class FinancialsResource extends JsonResource
             'user'         => DashboardDataTableFormatter::text($this->user?->fullname),
             'reference_id' => DashboardDataTableFormatter::text($this->reference_id),
             'amount'       => DashboardDataTableFormatter::text($this->amount),
-            'type'         => DashboardDataTableFormatter::text($this->type),
+            'type'         => $this->type == 'owed' ? '<span class="text-danger fw-bolder">' . trans('Add Owed (Credit)') . '</span>' : '<span class="text-success fw-bolder">' . trans('Add Paid (Debit)') . '</span>',
             'collection_date' => DashboardDataTableFormatter::text($this->collection_date?->format('Y-m-d')),
             'note'         => DashboardDataTableFormatter::text($this->note),
             'created_at'   => DashboardDataTableFormatter::text($this->created_at?->format('Y-m-d')),

@@ -10,6 +10,7 @@ class PurchasesResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'reference_id' => $this->reference_id,
             'item_id' => $this->item_id,
             'item' => $this->item?->name,
             'provider_id' => $this->provider_id,
@@ -22,6 +23,7 @@ class PurchasesResource extends JsonResource
             'collection_date' => $this->collection_date?->format('Y-m-d'),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'actions' => $this->actions,
+            'select_switch'=> $this->select_switch,
         ];
     }
 }

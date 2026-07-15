@@ -35,11 +35,6 @@ class DailyFinancialExport implements FromArray, WithHeadings
                 $row['raw_cash_ops_amount'],
                 $row['raw_avg_delivery_revenue'],
                 $row['raw_complaints_count'],
-                $row['raw_compensations_amount'],
-                $row['ad_cost'],
-                $row['operating_expenses'],
-                $row['bank_balance'],
-                $row['note'],
             ];
         }
 
@@ -58,11 +53,7 @@ class DailyFinancialExport implements FromArray, WithHeadings
         $totalCashOps = collect($this->data)->sum('raw_cash_ops_count');
         $totalCashOpsAmount = collect($this->data)->sum('raw_cash_ops_amount');
         $totalComplaints = collect($this->data)->sum('raw_complaints_count');
-        $totalCompensations = collect($this->data)->sum('raw_compensations_amount');
-        
-        $totalAdCost = collect($this->data)->sum('ad_cost');
-        $totalOpsExpenses = collect($this->data)->sum('operating_expenses');
-        $totalBankBalance = collect($this->data)->sum('bank_balance');
+
 
         $totalProfitPercentage = $totalRevenue > 0 ? ($totalProfit / $totalRevenue * 100) : 0;
         $totalAvgDeliveryRevenue = $totalDeliveries > 0 ? ($totalRevenue / $totalDeliveries) : 0;
@@ -84,11 +75,6 @@ class DailyFinancialExport implements FromArray, WithHeadings
             $totalCashOpsAmount,
             $totalAvgDeliveryRevenue,
             $totalComplaints,
-            $totalCompensations,
-            $totalAdCost,
-            $totalOpsExpenses,
-            $totalBankBalance,
-            '',
         ];
 
         return $rows;
@@ -113,11 +99,6 @@ class DailyFinancialExport implements FromArray, WithHeadings
             trans('Cash Amount'),
             trans('Average per Delivery'),
             trans('Complaints'),
-            trans('Compensations'),
-            trans('Ad Cost'),
-            trans('Operating Expenses'),
-            trans('Bank Balance'),
-            trans('Note'),
         ];
     }
 }

@@ -13,6 +13,7 @@ class PurchaseItemsResource extends JsonResource
             'name' => $this->name,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'actions' => $this->actions,
+            'select_switch'=> $this->select_switch,
         ];
     }
 }

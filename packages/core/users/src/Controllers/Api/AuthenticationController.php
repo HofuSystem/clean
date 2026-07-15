@@ -429,14 +429,14 @@ class AuthenticationController extends Controller
                    $profileData['district_id'] = $dbDistrict->id;
                }else {
                 $dbDistrict = District::create([
-                    'slug' => $this->generate_unique_code(10, District::class),
+                    'slug' => $this->generate_unique_code(10, District::class, 'slug'),
                     'city_id' => $cityId,
-                    'translations'=> [
-                        'name'=>[
-                            'en' => $request->district_name,
-                            'ar' => $request->district_name,
-                        ]
-                    ]
+                    'en' => [
+                        'name' => $request->district_name,
+                    ],
+                    'ar' => [
+                        'name' => $request->district_name,
+                    ],
                 ]);
                 $lat = $request->lat ?? $request->latitude;
                 $lng = $request->lng ?? $request->longitude;

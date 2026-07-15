@@ -134,6 +134,24 @@ class MediaCenterHelper
                 $filePath       = 'thumbnails/' . $fileName;
                 $sizeInBytes    = filesize($path . $fileName);
                 break;
+            case 'file':
+                if (str_starts_with($file->getMimeType(), 'image/')) {
+                    $fileObj = Image::make($file);
+                    if ($fileObj->filesize() > 1024 * 1024) {
+                        $fileObj = self::compressImage($fileObj, $extension, $quality);
+                    }
+                    $path = storage_path('app/public/files/');
+                    if (!File::exists($path)) {
+                        File::makeDirectory($path, 0755, true, true);
+                    }
+                    $fileObj->save($path . $fileName);
+                    $filePath       = 'files/' . $fileName;
+                    $sizeInBytes    = filesize($path . $fileName);
+                } else {
+                    $filePath       = $file->storeAs('files', $fileName, $disk);
+                    $sizeInBytes    = $file->getSize();
+                }
+                break;
             default:
                 return null;
         }
@@ -256,9 +274,9 @@ class MediaCenterHelper
             return null;
         }
         $nameArray  = explode('.', $value);
-        $ext        = $nameArray[1] ?? null;
+        $ext        = strtolower(end($nameArray));
         if (!in_array($ext, self::$imageExtensions)) {
-            return url('assets/icons/' . $ext . '.png');
+            return url('control/icons/' . $ext . '.png');
         }
         return url("storage/" . $value);
     }
@@ -266,8 +284,8 @@ class MediaCenterHelper
     {
         if (str_contains($value, ',')) {
             $values  = explode(',', $value);
-            foreach ($values as $key => $value) {
-                $value[$key] = self::getUrl($value);
+            foreach ($values as $key => $val) {
+                $values[$key] = self::getUrl($val);
             }
             return $values;
         } else {
@@ -286,10 +304,10 @@ class MediaCenterHelper
 
         if (str_contains($value, ',')) {
             $values  = explode(',', $value);
-            foreach ($values as $key => $value) {
-                $values[$key] = self::getImageUrl($value);
+            foreach ($values as $key => $val) {
+                $values[$key] = self::getImageHtml($val);
             }
-            $values = implode($values);
+            $values = implode('', $values);
             return $values;
         } else {
             return self::getImageHtml($value);
@@ -299,8 +317,11 @@ class MediaCenterHelper
     {
         if(isset($value) and !empty($value)){
             $nameArray = explode('.', $value);
-            if (isset($nameArray[1]) and !in_array($nameArray[1], self::$imageExtensions)) {
-                return url('assets/icons/' . $nameArray[1] ?? null . '.png');
+            $ext        = strtolower(end($nameArray));
+            if (!in_array($ext, self::$imageExtensions)) {
+                $iconUrl = url('control/icons/' . $ext . '.png');
+                $fileUrl = url("storage/" . $value);
+                return "<a href=\"{$fileUrl}\" target=\"_blank\"><img src=\"{$iconUrl}\"/></a>";
             }
             $url = url("storage/" . $value);
 

@@ -21,32 +21,32 @@ class FinancialsController extends Controller
 
     public function index()
     {
-        $title      = trans('Financials');
-        $screen     = 'financials-index';
-        $total      = $this->financialsService->totalCount();
-        $trash      = $this->financialsService->trashCount();
-        $companies  = Company::underMyControl()->get(['id', 'fullname']);
-        $users      = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
+        $title = trans('Financials');
+        $screen = 'financials-index';
+        $total = $this->financialsService->totalCount();
+        $trash = $this->financialsService->trashCount();
+        $companies = Company::underMyControl()->get(['id', 'fullname']);
+        $users = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
 
         return view('financials::pages.financials.list', compact('title', 'screen', 'companies', 'users', 'total', 'trash'));
     }
 
     public function createOrEdit(Request $request, $id = null)
     {
-        $item       = isset($id) ? $this->financialsService->get($id) : null;
-        $screen     = isset($item) ? 'financials-edit' : 'financials-create';
-        $title      = isset($item) ? trans("Financial Edit") : trans("Financial Create");
-        $companies  = Company::underMyControl()->get(['id', 'fullname']);
-        $users      = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
+        $item = isset($id) ? $this->financialsService->get($id) : null;
+        $screen = isset($item) ? 'financials-edit' : 'financials-create';
+        $title = isset($item) ? trans("Financial Edit") : trans("Financial Create");
+        $companies = Company::underMyControl()->get(['id', 'fullname']);
+        $users = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
 
         return view('financials::pages.financials.edit', compact('item', 'title', 'screen', 'companies', 'users'));
     }
 
     public function show($id)
     {
-        $title      = trans('Financial details');
-        $screen     = 'financials-index';
-        $item       = $this->financialsService->get($id);
+        $title = trans('Financial details');
+        $screen = 'financials-index';
+        $item = $this->financialsService->get($id);
         return view('financials::pages.financials.show', compact('title', 'screen', 'item'));
     }
 
