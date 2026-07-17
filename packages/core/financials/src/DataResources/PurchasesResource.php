@@ -21,6 +21,7 @@ class PurchasesResource extends JsonResource
             'notes' => $this->notes,
             'attachment' => $this->attachment,
             'collection_date' => $this->collection_date?->format('Y-m-d'),
+            'bank_transfer_files' => $this->bank_transfer_files,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'actions' => $this->actions,
             'select_switch'=> $this->select_switch,

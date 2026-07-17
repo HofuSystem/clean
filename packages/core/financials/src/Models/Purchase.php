@@ -7,7 +7,7 @@ use Core\Settings\Models\CoreModel;
 class Purchase extends CoreModel
 {
     protected $table = 'purchases';
-    protected $fillable = ['item_id', 'provider_id', 'reference_id', 'value_before_tax', 'tax_value', 'value_after_tax', 'notes', 'attachment', 'collection_date', 'creator_id', 'updater_id'];
+    protected $fillable = ['item_id', 'provider_id', 'reference_id', 'value_before_tax', 'tax_value', 'value_after_tax', 'notes', 'attachment', 'collection_date', 'creator_id', 'updater_id', 'bank_transfer_files'];
     protected $guarded = [];
     protected $casts = [
         'collection_date' => 'date',

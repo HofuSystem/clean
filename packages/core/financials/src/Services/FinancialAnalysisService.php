@@ -11,7 +11,7 @@ use Core\Financials\Models\Financial;
 
 class FinancialAnalysisService
 {
-    public $notValidStatuses = ['pending_payment', 'cancel_payment', 'failed_payment'];
+    public $notValidStatuses = ['pending_payment', 'cancel_payment', 'failed_payment', 'canceled'];
 
     /**
      * Get detailed monthly financial analysis for a specific year, city, and company type.

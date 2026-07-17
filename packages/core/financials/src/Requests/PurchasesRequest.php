@@ -55,6 +55,7 @@ class PurchasesRequest extends FormRequest
                 }
             ],
             'collection_date' => 'nullable|date',
+            'bank_transfer_files' => 'nullable|string',
         ];
     }
 

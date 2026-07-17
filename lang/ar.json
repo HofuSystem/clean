@@ -3315,5 +3315,19 @@
     "Collection Date To": "تاريخ التحصيل إلى",
     "Full Name Status": "حالة الاسم الكامل",
     "With Full Name": "بالاسم الكامل",
-    "Without Full Name": "بدون اسم كامل"
+    "Without Full Name": "بدون اسم كامل",
+    "Attachment": "المرفق",
+    "Auto-generated if empty": "يتم التوليد تلقائياً إذا كان فارغاً",
+    "Bank Transfer": "حوالة بنكية",
+    "Bank Transfer Files (List of PDFs)": "ملفات الحوالة البنكية (قائمة ملفات PDF)",
+    "Basic Info": "البيانات الأساسية",
+    "Card": "بطاقة",
+    "Create Purchase Item": "إنشاء صنف مشتريات",
+    "Create Purchase Provider": "إنشاء مورد مشتريات",
+    "Enter item name": "أدخل اسم الصنف",
+    "Enter provider name": "أدخل اسم المورد",
+    "Financials & Details": "الماليات والتفاصيل",
+    "Item Name": "اسم الصنف",
+    "Provider Name": "اسم المورد",
+    "Attachments & Bank Transfer": "المرفقات والحوالة البنكية"
 }

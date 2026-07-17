@@ -330,7 +330,7 @@ class PurchasesCrudTest extends TestCase
             'value_before_tax' => 100.00,
             'tax_value' => 15.00,
             'value_after_tax' => 115.00,
-            'collection_date' => '2026-07-15',
+            'collection_date' => '2099-07-15',
         ]);
 
         $purchase2 = Purchase::create([
@@ -339,7 +339,7 @@ class PurchasesCrudTest extends TestCase
             'value_before_tax' => 200.00,
             'tax_value' => 30.00,
             'value_after_tax' => 230.00,
-            'collection_date' => '2026-07-20',
+            'collection_date' => '2099-07-20',
         ]);
 
         // Filter by item1
@@ -372,7 +372,7 @@ class PurchasesCrudTest extends TestCase
             ->postJson(route('dashboard.purchases.index'), [
                 'draw' => 1,
                 'filters' => [
-                    'collection_date_from' => '2026-07-18',
+                    'collection_date_from' => '2099-07-18',
                 ],
             ]);
         $response->assertStatus(200);
@@ -384,8 +384,8 @@ class PurchasesCrudTest extends TestCase
             ->postJson(route('dashboard.purchases.index'), [
                 'draw' => 1,
                 'filters' => [
-                    'collection_date_from' => '2026-07-15',
-                    'collection_date_to' => '2026-07-16',
+                    'collection_date_from' => '2099-07-15',
+                    'collection_date_to' => '2099-07-16',
                 ],
             ]);
         $response->assertStatus(200);
