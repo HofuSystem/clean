@@ -23,8 +23,8 @@
                 <div class="absolute inset-0 bg-gradient-to-b from-brand-500/10 to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity"></div>
                 <div class="relative z-10">
                     <i class="{{ $sector->icon }} text-3xl md:text-5xl text-gray-400 group-hover:text-brand-400 mb-4 transition-colors block transform group-hover:scale-110 duration-300"></i>
-                    <h4 class="font-bold text-lg text-white mb-2"><span class="lang-ar">{{ $sector->translate('ar')->title }}</span><span class="lang-en">{{ $sector->translate('en')->title }}</span></h4>
-                    <p class="text-xs text-gray-500 group-hover:text-gray-300"><span class="lang-ar">{{ $sector->translate('ar')->description }}</span><span class="lang-en">{{ $sector->translate('en')->description }}</span></p>
+                    <h4 class="font-bold text-lg text-white mb-2">{{ $sector->title }}</h4>
+                    <p class="text-xs text-gray-500 group-hover:text-gray-300">{{ $sector->description }}</p>
                 </div>
             </div>
             @endforeach

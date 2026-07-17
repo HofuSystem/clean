@@ -656,7 +656,7 @@
             {{-- Arabic JSON-LD Schema --}}
             <script type="application/ld+json">
             {
-              "@context": "https://schema.org",
+              "@@context": "https://schema.org",
               "@graph": [
                 {
                   "@type": "Organization",
@@ -772,7 +772,7 @@
             {{-- FAQPage Arabic --}}
             <script type="application/ld+json">
             {
-              "@context": "https://schema.org",
+              "@@context": "https://schema.org",
               "@type": "FAQPage",
               "inLanguage": "ar-SA",
               "mainEntity": [
@@ -799,7 +799,7 @@
             {{-- English JSON-LD Schema --}}
             <script type="application/ld+json">
             {
-              "@context": "https://schema.org",
+              "@@context": "https://schema.org",
               "@graph": [
                 {
                   "@type": "Organization",
@@ -915,7 +915,7 @@
             {{-- FAQPage English --}}
             <script type="application/ld+json">
             {
-              "@context": "https://schema.org",
+              "@@context": "https://schema.org",
               "@type": "FAQPage",
               "inLanguage": "en-SA",
               "mainEntity": [

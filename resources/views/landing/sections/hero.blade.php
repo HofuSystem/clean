@@ -15,7 +15,7 @@
             <div class="text-center lg:text-start space-y-6 order-2 lg:order-1" data-aos="fade-up">
                 <div class="inline-flex items-center gap-2 bg-white border border-brand-100 shadow-sm px-3 py-1.5 rounded-full">
                     <span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span></span>
-                    <span class="text-[10px] md:text-xs font-bold text-gray-600 tracking-wide"><span class="lang-ar">{{ $section->translate('ar')->small_title ?? $section->small_title }}</span><span class="lang-en">{{ $section->translate('en')->small_title ?? $section->small_title }}</span></span>
+                    <span class="text-[10px] md:text-xs font-bold text-gray-600 tracking-wide">{{ $section->small_title }}</span>
                 </div>
                 @php
                     $titleArray = explode('..', $section->title);

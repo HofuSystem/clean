@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="order-1 lg:order-2 text-center lg:text-start" data-aos="fade-left">
-                <h2 class="text-3xl md:text-5xl font-black mb-6"><span class="lang-ar">{{ $section->translate('ar')->title ?? 'تطبيق كلين ستيشن' }}</span><span class="lang-en">{{ $section->translate('en')->title ?? 'Clean Station App' }}</span></h2>
+                <h2 class="text-3xl md:text-5xl font-black mb-6">{{ $section->title ?? (app()->getLocale() === 'ar' ? 'تطبيق كلين ستيشن' : 'Clean Station App') }}</h2>
                 <div class="space-y-6 mt-8" id="app-features-list">
                     @foreach($appFeatures as $index => $feature)
                     @php $featureImage = $feature->image_url ?? $section->image_url ?? ''; @endphp
@@ -24,8 +24,8 @@
                          onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); window.appFeatureSelect(this); }">
                         <i class="{{ $feature->icon }} text-2xl text-brand-400"></i>
                         <div class="text-start">
-                            <h4 class="font-bold"><span class="lang-ar">{{ $feature->translate('ar')->title }}</span><span class="lang-en">{{ $feature->translate('en')->title }}</span></h4>
-                            <p class="text-xs text-gray-400"><span class="lang-ar">{{ $feature->translate('ar')->description }}</span><span class="lang-en">{{ $feature->translate('en')->description }}</span></p>
+                            <h4 class="font-bold">{{ $feature->title }}</h4>
+                            <p class="text-xs text-gray-400">{{ $feature->description }}</p>
                         </div>
                     </div>
                     @endforeach

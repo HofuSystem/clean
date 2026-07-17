@@ -3,7 +3,7 @@
 @endphp
 <section id="testimonials" class="page-section bg-white py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-12"><span class="lang-ar">{{ $section->translate('ar')->title }}</span><span class="lang-en">{{ $section->translate('en')->title }}</span></h2>
+        <h2 class="text-3xl font-bold mb-12">{{ $section->title }}</h2>
 
         <div class="relative">
             <div class="swiper testimonials-swiper">
@@ -14,9 +14,9 @@
                             <div class="text-yellow-400 mb-4">
                                 @for($i=0; $i<$t->rating; $i++) <i class="fa-solid fa-star"></i> @endfor
                             </div>
-                            <p class="italic text-gray-600 mb-4">"<span class="lang-ar">{{ $t->translate('ar')->body }}</span><span class="lang-en">{{ $t->translate('en')->body }}</span>"</p>
-                            <div class="font-bold"><span class="lang-ar">{{ $t->translate('ar')->name }}</span><span class="lang-en">{{ $t->translate('en')->name }}</span></div>
-                            <div class="text-xs text-gray-400"><span class="lang-ar">{{ $t->role_ar }}</span><span class="lang-en">{{ $t->role_en }}</span></div>
+                            <p class="italic text-gray-600 mb-4">"{{ $t->body }}"</p>
+                            <div class="font-bold">{{ $t->name }}</div>
+                            <div class="text-xs text-gray-400">{{ app()->getLocale() === 'ar' ? $t->role_ar : $t->role_en }}</div>
                         </div>
                     </div>
                     @endforeach
