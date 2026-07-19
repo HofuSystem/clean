@@ -44,6 +44,7 @@ class ProductSettingsRequest extends FormRequest
              "status"                                             	=>  ['required','in:active,not-active'], 
              "color"                                             	=>  ['nullable','string','max:255'], 
              "icon"                                             	=>  ['nullable','string','max:255'], 
+             "general"                                             =>  ['nullable','boolean'],
              "product_settings"                                  	=>  ['nullable','array'], 
              "product_settings.*.translations.en.name"           	=>  ['required','string'], 
              "product_settings.*.translations.ar.name"           	=>  ['required','string'], 
@@ -60,6 +61,7 @@ class ProductSettingsRequest extends FormRequest
              "product_settings.*.status"                         	=>  ['required','in:active,not-active'], 
              "product_settings.*.color"                         	=>  ['nullable','string','max:255'], 
              "product_settings.*.icon"                         	=>  ['nullable','string','max:255'], 
+             "product_settings.*.general"                         	=>  ['nullable','boolean'], 
             ]; 
     }
 

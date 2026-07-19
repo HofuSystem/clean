@@ -244,6 +244,7 @@
                                     <th class="text-center p-0" data-name="color">@lang("color")</th>
                                     <th class="text-center p-0" data-name="icon">@lang("icon")</th>
                                     <th class="text-center p-0" data-name="status">@lang("status")</th>
+                                    <th class="text-center p-0" data-name="general">@lang("general")</th>
                                     <th class="text-center p-0" data-name="product_settings">@lang("product settings")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
 

@@ -368,29 +368,10 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
-        $order->loadMissing('items.product');
+        $pointsPerSpentRiyal = SettingsService::getDataBaseSetting('points_per_spent_riyal') ?? 0;
         $totalPoints = 0;
-        if ($order->items && $order->items->count() > 0) {
-            foreach ($order->items as $item) {
-                $productPoints = 0;
-                if ($item->product) {
-                    $productPoints = $item->product->points;
-                } else {
-                    $productData = is_string($item->product_data) ? json_decode($item->product_data) : $item->product_data;
-                    $productPoints = $productData->points ?? 0;
-                }
-                if (isset($item->width) && $item->width && isset($item->height) && $item->height) {
-                    $totalPoints += ($item->width * $item->height * $item->quantity * $productPoints);
-                } else {
-                    $totalPoints += ($item->quantity * $productPoints);
-                }
-            }
-            $totalPoints = round($totalPoints);
-        } else {
-            $pointsPerSpentRiyal = SettingsService::getDataBaseSetting('points_per_spent_riyal');
-            if ($pointsPerSpentRiyal) {
-                $totalPoints = round($order->order_price * $pointsPerSpentRiyal);
-            }
+        if ($pointsPerSpentRiyal > 0) {
+            $totalPoints = round(max(0, ($order->order_price  - $order->total_coupon) * $pointsPerSpentRiyal));
         }
         if ($totalPoints > 0) {
             Point::create([

@@ -123,6 +123,16 @@
 
                         </div>
 
+                        <div class="form-group mb-3 col-md-12">
+                            <div class="form-check form-switch form-check-custom form-check-solid">
+                                <input type="hidden" name="general" value="0">
+                                <input class="form-check-input" type="checkbox" name="general" value="1" id="general" @checked(isset($item) and $item->general)>
+                                <label class="form-check-label fw-bold text-gray-700" for="general">
+                                    {{ trans('General / For all products') }}
+                                </label>
+                            </div>
+                        </div>
+
 
                         
 
@@ -159,6 +169,8 @@
                                                     {{ trans('icon') }}</th>
                                                 <th scope="col" data-name="status" data-type="select">
                                                     {{ trans('status') }}</th>
+                                                <th scope="col" data-name="general" data-type="checkbox">
+                                                    {{ trans('general') }}</th>
                                                 <th scope="col" data-name="actions" data-type="actions">
                                                     {{ trans('actions') }}</th>
                                             </tr>
@@ -188,6 +200,13 @@
                                                     {!! \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesHtml($sItem->icon) !!}
                                                 </td>
                                                 <td>{{ $sItem->status }}</td>
+                                                <td>
+                                                    @if($sItem->general)
+                                                        <span class="p-1 rounded bg-success text-white">@lang('yes')</span>
+                                                    @else
+                                                        <span class="p-1 rounded bg-danger text-white">@lang('no')</span>
+                                                    @endif
+                                                </td>
                                                 <td class="options">{!! $sItem->itemsActions !!}</td>
                                             </tr>
                                             @endforeach
@@ -407,6 +426,16 @@
 
                                             </select>
 
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-12">
+                                            <div class="form-check form-switch form-check-custom form-check-solid">
+                                                <input type="hidden" name="general" value="0">
+                                                <input class="form-check-input" type="checkbox" name="general" value="1" id="item-general">
+                                                <label class="form-check-label fw-bold text-gray-700" for="item-general">
+                                                    {{ trans('General / For all products') }}
+                                                </label>
+                                            </div>
                                         </div>
 
                                         <div class="form-group mb-3 col-md-12">

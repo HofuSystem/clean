@@ -30,7 +30,7 @@ class ProductSettingsService
 
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $recordData = array_filter($data, fn($key) => in_array($key, ['addon_price', 'cost', 'discount_percent', 'parent_id', 'status', 'color', 'icon', 'translations']), ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data, fn($key) => in_array($key, ['addon_price', 'cost', 'discount_percent', 'parent_id', 'status', 'color', 'icon', 'translations', 'general']), ARRAY_FILTER_USE_KEY);
         $slug = null;
         if ($id) {
             $existingRecord = ProductSetting::find($id);

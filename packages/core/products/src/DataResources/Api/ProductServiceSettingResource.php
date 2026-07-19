@@ -33,6 +33,7 @@ class ProductServiceSettingResource extends JsonResource
             'color'         => $this->color ,
             'price'         => ToolHelper::getPriceBasedOnCurrentWeekDay($price),
             'cost'          => $cost,
+            'general'       => (bool) $this->general,
             'sub_settings'  => ProductServiceSettingResource::collection($this->productSettings),
         ];
     }
