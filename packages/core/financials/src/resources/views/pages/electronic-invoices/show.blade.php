@@ -294,7 +294,7 @@
                             class="h-7 w-auto object-contain opacity-80">
                     </div>
                     <div class="h-10 border-r-2 border-gray-200"></div>
-                    <img src="{{ asset('storage/images/dl29CO1MJ5yWzinJI34Gy1j9NrePLaJt78kX0W1h.webp') }}" alt="كلين ستيشن"
+                    <img src="{{ \Core\Settings\Services\SettingsService::getDataBaseSetting('logo') ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('logo') : asset('client/image/logo.svg') }}" alt="كلين ستيشن"
                         class="h-20 w-auto object-contain">
 
                 </div>
