@@ -16,7 +16,7 @@ class ProviderResource extends JsonResource
     {
         return [
             'id'                        => $this->id,
-            'user_type'                 => $this->roles->first()->name,
+            'user_type'                 => request()->is('*driver*') ? 'driver' : (request()->is('*technical*') ? 'technical' : $this->roles->first()?->name),
             'fullname'                  => $this->fullname,
             'phone'                     => (string)$this->phone,
             "image"                     => $this->avatar_url,
