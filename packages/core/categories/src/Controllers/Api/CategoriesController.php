@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Core\Products\Models\Product;
+use Core\Products\Models\ProductSetting;
 use Core\Categories\Models\CategorySetting;
 use Core\Products\DataResources\Api\SimpleProductResource;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
@@ -566,15 +567,23 @@ class CategoriesController extends Controller
         try {
             $product = Product::active()->findOrFail($id);
 
-            $productSettings = $product->productSettings()
-                ->whereNull('parent_id')
+            $productSettings = ProductSetting::whereNull('parent_id')
                 ->active()
+                ->where(function ($q) use ($product) {
+                    $q->whereHas('products', function ($pq) use ($product) {
+                        $pq->where('products.id', $product->id);
+                    })
+                    ->orWhere('general', true);
+                })
                 ->with([
                     'translations',
                     'productSettings' => function ($q) use ($product) {
                         $q->active()
-                            ->whereHas('products', function ($pq) use ($product) {
-                                $pq->where('products.id', $product->id);
+                            ->where(function ($subQ) use ($product) {
+                                $subQ->whereHas('products', function ($pq) use ($product) {
+                                    $pq->where('products.id', $product->id);
+                                })
+                                ->orWhere('general', true);
                             })
                             ->with('translations');
                     }
@@ -583,11 +592,7 @@ class CategoriesController extends Controller
 
             $addons = Product::active()
                 ->where('display_as', 'addon')
-                ->when($product->sub_category_id, function ($q) use ($product) {
-                    $q->where('sub_category_id', $product->sub_category_id);
-                }, function ($q) use ($product) {
-                    $q->where('category_id', $product->category_id);
-                })
+                ->where('category_id', $product->category_id)
                 ->get();
 
             $data = [

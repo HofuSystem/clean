@@ -25,6 +25,7 @@ class ProductSettingsResource extends JsonResource
             "cost"              => DashboardDataTableFormatter::text($this->cost),
             "parent_id"         => DashboardDataTableFormatter::relations($this->parent, "name", "dashboard.product-settings.show"),
             "status"            => DashboardDataTableFormatter::text(trans($this->status)),
+            "general"           => DashboardDataTableFormatter::text($this->general ? trans('yes') : trans('no')),
             "color"             => $this->color ? '<div style="width: 15px; height: 15px; border-radius: 50%; background-color: ' . $this->color . '; display: inline-block; vertical-align: middle; border: 1px solid #ddd; margin-right: 5px;"></div> <span>' . $this->color . '</span>' : '--',
             "icon"              => DashboardDataTableFormatter::mediaCenter($this->icon),
             "product_settings"  => DashboardDataTableFormatter::relations($this->productSettings, "name", "dashboard.product-settings.show"),

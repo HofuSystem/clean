@@ -24,31 +24,14 @@ class UpdateLocationRequest extends FormRequest
     public function rules()
     {
         return [
-            'city_id'     => 'nullable|required_without_all:lat,lng|exists:cities,id',
-            'district_id' => 'nullable|exists:districts,id',
-            'district_name' => 'nullable|string',
-            'lat'           => 'nullable|required_without_all:city_id,district_id|numeric',
-            'lng'           => 'nullable|required_without_all:city_id,district_id|numeric',
+            'city_id'       => 'required_without_all:city_name,lat,lng|exists:cities,id',
+            'city_name'     => 'required_without_all:city_id,lat,lng|string',
+            'district_id'   => 'required_without_all:district_name,lat,lng|exists:districts,id',
+            'district_name' => 'required_without_all:district_id,lat,lng|string',
+            'lat'           => 'required_without_all:city_name,district_name,city_id,district_id|numeric',
+            'lng'           => 'required_without_all:city_name,district_name,city_id,district_id|numeric',
         ];
     }
 
-    /**
-     * Configure the validator instance.
-     *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $hasCityAndDistrict = ($this->filled('city_id') || $this->filled('city')) && 
-                                  ($this->filled('district_id') || $this->filled('district'));
-            $hasLatLng = ($this->filled('lat') || $this->filled('latitude')) && 
-                         ($this->filled('lng') || $this->filled('longitude'));
 
-            if (!$hasCityAndDistrict && !$hasLatLng) {
-                $validator->errors()->add('location', trans('Either city and district or coordinates are required'));
-            }
-        });
-    }
 }

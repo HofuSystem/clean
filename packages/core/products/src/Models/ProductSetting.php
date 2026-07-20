@@ -18,7 +18,7 @@ class ProductSetting extends CoreModel implements TranslatableContract
     use Translatable;
 
     protected $table             = 'product_settings';
-    protected $fillable          = ['slug', 'addon_price', 'cost', 'discount_percent', 'parent_id', 'status', 'color', 'icon', 'creator_id', 'updater_id'];
+    protected $fillable          = ['slug', 'addon_price', 'cost', 'discount_percent', 'parent_id', 'status', 'color', 'icon', 'creator_id', 'updater_id', 'general'];
     protected $guarded           = [];
     public $translatedAttributes = ["name", "description"];
 

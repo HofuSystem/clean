@@ -412,42 +412,51 @@ class AuthenticationController extends Controller
             return $this->returnErrorMessage(trans('user not found'), [], [], 404);
         }
 
-        $cityId = $request->city_id ?? $request->city;
-        $districtId = $request->district_id ?? $request->district;
+        $cityId = $request->city_id ;
+
+        if (!$cityId && $request->filled('city_name')) {
+            $dbCity = City::whereTranslationLike('name', '%' . $request->city_name . '%')->first();
+            if ($dbCity) {
+                $cityId = $dbCity->id;
+            } else {
+                // Create a new INACTIVE city
+                $dbCity = City::create([
+                    'slug'   => $this->generate_unique_code(10, City::class, 'slug'),
+                    'status' => 'not-active',
+                    'en'     => ['name' => $request->city_name],
+                    'ar'     => ['name' => $request->city_name],
+                ]);
+                $cityId = $dbCity->id;
+            }
+        }
 
         if ($cityId) {
-        
-            $profileData = [
-                'city_id' => $cityId,
-            ];
+            $districtId = $request->district_id;
+            $profileData = ['city_id' => $cityId];
+
             if ($districtId) {
                 $profileData['district_id'] = $districtId;
-            } else if ($request->district_name) {
-               $dbDistrict = District::whereTranslationLike("name","%".$request->district_name."%")
-               ->where("city_id",$cityId)->first();
-               if ($dbDistrict) {
-                   $profileData['district_id'] = $dbDistrict->id;
-               }else {
-                $dbDistrict = District::create([
-                    'slug' => $this->generate_unique_code(10, District::class, 'slug'),
-                    'city_id' => $cityId,
-                    'en' => [
-                        'name' => $request->district_name,
-                    ],
-                    'ar' => [
-                        'name' => $request->district_name,
-                    ],
-                ]);
-                $lat = $request->lat ?? $request->latitude;
-                $lng = $request->lng ?? $request->longitude;
-                MapPoint::firstOrCreate([
-                    'district_id' => $dbDistrict->id,
-                    'lat' => $lat,
-                    'lng' => $lng,
-                ]);
-                $profileData['district_id'] = $dbDistrict->id;
-               }
+            } elseif ($request->filled('district_name')) {
+                $dbDistrict = District::whereTranslationLike('name', '%' . $request->district_name . '%')
+                    ->where('city_id', $cityId)
+                    ->first();
+
+                if ($dbDistrict) {
+                    $profileData['district_id'] = $dbDistrict->id;
+                } else {
+                    // Create a new INACTIVE district
+                    $dbDistrict = District::create([
+                        'slug'    => $this->generate_unique_code(10, District::class, 'slug'),
+                        'city_id' => $cityId,
+                        'status'  => 'inactive',
+                        'en'      => ['name' => $request->district_name],
+                        'ar'      => ['name' => $request->district_name],
+                    ]);
+
+                    $profileData['district_id'] = $dbDistrict->id;
+                }
             }
+
             if ($user->profile) {
                 $user->profile->update($profileData);
             } else {
@@ -457,6 +466,7 @@ class AuthenticationController extends Controller
             return $this->returnData(trans('profile updated'), ['data' => new UserProfileResource($user->fresh())]);
         }
 
+        // ── Fall back to lat / lng polygon matching ──────────────────────────
         $lat = $request->lat ?? $request->latitude;
         $lng = $request->lng ?? $request->longitude;
 
@@ -479,10 +489,10 @@ class AuthenticationController extends Controller
 
             if ($matchingDistrict) {
                 $profileData = [
-                    'city_id' => $matchingDistrict->city_id,
+                    'city_id'     => $matchingDistrict->city_id,
                     'district_id' => $matchingDistrict->id,
-                    'lat' => $lat,
-                    'lng' => $lng,
+                    'lat'         => $lat,
+                    'lng'         => $lng,
                 ];
 
                 if ($user->profile) {

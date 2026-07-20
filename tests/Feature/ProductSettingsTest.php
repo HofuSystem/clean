@@ -89,7 +89,35 @@ class ProductSettingsTest extends TestCase
             ],
         ]);
 
-        // 4.5 Associate to product using the many-to-many relationship
+        // 3b. Create a general parent product setting
+        $generalParentSetting = ProductSetting::create([
+            'slug' => 'test-general-setting-' . uniqid(),
+            'status' => 'active',
+            'general' => true,
+            'en' => [
+                'name' => 'Test General Parent EN',
+            ],
+            'ar' => [
+                'name' => 'Test General Parent AR',
+            ],
+        ]);
+
+        // 4b. Create a general child/sub setting
+        $generalChildSetting = ProductSetting::create([
+            'slug' => 'test-general-subsetting-' . uniqid(),
+            'parent_id' => $generalParentSetting->id,
+            'addon_price' => 30,
+            'status' => 'active',
+            'general' => true,
+            'en' => [
+                'name' => 'Test General Child Option EN',
+            ],
+            'ar' => [
+                'name' => 'Test General Child Option AR',
+            ],
+        ]);
+
+        // 4.5 Associate only the specific ones to product using the many-to-many relationship
         $product->productSettings()->attach([$parentSetting->id, $childSetting->id]);
 
         // 5. Query the API endpoint
@@ -108,19 +136,29 @@ class ProductSettingsTest extends TestCase
         ]);
 
         $responseData = $response->json('data.category_settings');
-        $this->assertCount(1, $responseData);
-        $this->assertEquals('Test Setting Parent EN', $responseData[0]['name']);
+        $this->assertCount(2, $responseData);
         
-        $subSettings = $responseData[0]['sub_settings'];
+        $names = collect($responseData)->pluck('name')->all();
+        $this->assertContains('Test Setting Parent EN', $names);
+        $this->assertContains('Test General Parent EN', $names);
+
+        $specificParent = collect($responseData)->firstWhere('name', 'Test Setting Parent EN');
+        $this->assertNotNull($specificParent);
+        $subSettings = $specificParent['sub_settings'];
         $this->assertCount(1, $subSettings);
         $this->assertEquals('Test Setting Child Option EN', $subSettings[0]['name']);
         $this->assertEquals(20, $subSettings[0]['price']);
 
+        $generalParent = collect($responseData)->firstWhere('name', 'Test General Parent EN');
+        $this->assertNotNull($generalParent);
+        $generalSub = $generalParent['sub_settings'];
+        $this->assertCount(1, $generalSub);
+        $this->assertEquals('Test General Child Option EN', $generalSub[0]['name']);
+        $this->assertEquals(30, $generalSub[0]['price']);
+
         // Assert customizations match
         $customizationsData = $response->json('data.customizations');
-        $this->assertCount(1, $customizationsData);
-        $this->assertEquals('Test Setting Parent EN', $customizationsData[0]['name']);
-        $this->assertEquals('Test Setting Child Option EN', $customizationsData[0]['sub_settings'][0]['name']);
+        $this->assertCount(2, $customizationsData);
     }
 
     public function test_products_service_get_accepts_integer_and_string_id()
@@ -484,5 +522,84 @@ class ProductSettingsTest extends TestCase
         $this->assertEquals('Premium Wrap Option EN', $customizations[0]['option_name_en']);
         $this->assertEquals(25, $customizations[0]['price']);
         $this->assertEquals(125, $item->total_price);
+    }
+
+    public function test_general_product_setting_cascades_to_children_on_save_and_update()
+    {
+        // 1. Create and authenticate an admin user
+        $user = User::create([
+            'fullname' => 'Admin User',
+            'email' => 'admin-' . uniqid() . '@example.com',
+            'phone' => '123' . rand(111111, 999999),
+            'password' => 'secret123',
+            'is_active' => true,
+        ]);
+
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate([
+            'name' => 'dashboard.product-settings.create',
+            'guard_name' => 'web',
+        ]);
+        $user->givePermissionTo($permission);
+        
+        $editPermission = \Spatie\Permission\Models\Permission::firstOrCreate([
+            'name' => 'dashboard.product-settings.edit',
+            'guard_name' => 'web',
+        ]);
+        $user->givePermissionTo($editPermission);
+
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $this->actingAs($user, 'web');
+
+        // Create a parent setting that is not general initially, with a child setting
+        $parent = ProductSetting::create([
+            'slug' => 'cascade-parent-' . uniqid(),
+            'status' => 'active',
+            'general' => false,
+            'en' => ['name' => 'Cascade Parent EN'],
+            'ar' => ['name' => 'Cascade Parent AR'],
+        ]);
+
+        $child1 = ProductSetting::create([
+            'parent_id' => $parent->id,
+            'slug' => 'cascade-child-1-' . uniqid(),
+            'status' => 'active',
+            'general' => false,
+            'en' => ['name' => 'Cascade Child 1 EN'],
+            'ar' => ['name' => 'Cascade Child 1 AR'],
+        ]);
+
+        // Assert initially false
+        $this->assertFalse((bool)$parent->fresh()->general);
+        $this->assertFalse((bool)$child1->fresh()->general);
+
+        // Update parent to general => true using the storeOrUpdate endpoint (simulating dashboard form submission)
+        $updateData = [
+            'status' => 'active',
+            'general' => 1,
+            'translations' => [
+                'en' => ['name' => 'Cascade Parent EN Updated'],
+                'ar' => ['name' => 'Cascade Parent AR Updated'],
+            ],
+        ];
+
+        $response = $this->putJson(route('dashboard.product-settings.edit', $parent->id), $updateData);
+        $response->assertStatus(200);
+
+        // Assert parent and existing child are now general => true
+        $this->assertTrue((bool)$parent->fresh()->general);
+        $this->assertTrue((bool)$child1->fresh()->general);
+
+        // Create a new child under the general parent directly, and assert it inherits general => true
+        $child2 = ProductSetting::create([
+            'parent_id' => $parent->id,
+            'slug' => 'cascade-child-2-' . uniqid(),
+            'status' => 'active',
+            'general' => false, // explicitly pass false, should be overridden to true by observer
+            'en' => ['name' => 'Cascade Child 2 EN'],
+            'ar' => ['name' => 'Cascade Child 2 AR'],
+        ]);
+
+        $this->assertTrue((bool)$child2->fresh()->general);
     }
 }
