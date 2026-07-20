@@ -22,7 +22,7 @@ class ImageUploadController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $imageName = \Illuminate\Support\Str::random(40) . '.' . $file->extension();  
-            $file->storeAs('public/images', $imageName);
+            $file->storeAs('images', $imageName, 'public');
             $url = asset('storage/images/' . $imageName);
             return back()
                 ->with('success', trans('تم رفع الصورة بنجاح!'))
