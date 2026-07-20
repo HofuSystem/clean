@@ -7,7 +7,7 @@
     </div>
     <form id="comment-form" class="mt-3">
         <div class="mb-3">
-            <textarea class="form-control" id="comment-input" rows="3" placeholder="Write a comment..." required></textarea>
+            <textarea class="form-control" id="comment-input" rows="3" placeholder="{{ trans('Write a comment...') }}" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">{{ trans('Post Comment') }}</button>
     </form>

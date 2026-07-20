@@ -22,7 +22,7 @@ class OrdersResource extends JsonResource
 
             "id"                  => $this->id,
             "reference_id"        => DashboardDataTableFormatter::text($this->reference_id),
-            "type"                => DashboardDataTableFormatter::text($this->type),
+            "type"                => DashboardDataTableFormatter::text(trans($this->type)),
             "status"              => DashboardDataTableFormatter::text($this->status),
             "client_id"           => isset($this->company_id) ? DashboardDataTableFormatter::text($this->company?->fullname) : DashboardDataTableFormatter::text($this->client?->fullname),
             "company_id"          => DashboardDataTableFormatter::relations($this->company, "fullname", "dashboard.companies.show"),

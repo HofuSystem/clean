@@ -39,6 +39,9 @@ var KTUsersList = function () {
                 lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500,trans('all')] ],
                 pageLength: 25, // default selected value
                 buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                language: {
+                    url: $('html').attr('lang') === 'ar' ? '//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json' : '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
+                },
                 searchDelay: 500,
                 searching: false,
                 processing: true,
@@ -590,6 +593,9 @@ $(document).ready(function () {
             lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500,trans('all')] ],
             pageLength: 25, // default selected value
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+            language: {
+                url: $('html').attr('lang') === 'ar' ? '//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json' : '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
+            },
             ajax: {
                 url: url, // Use the data-load attribute for the AJAX URL
                 type: 'POST',
