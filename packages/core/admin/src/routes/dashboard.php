@@ -21,7 +21,6 @@ use Core\Admin\Controllers\Dashboard\OrderQuantitiesReportController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
 */
@@ -33,6 +32,12 @@ Route::group(
     ],
     function () {
         Route::group(['prefix' => 'admin', 'as' => 'dashboard.'], function () {
+            // Image Uploader Utility
+            Route::group(['middleware' => ['auth', 'active']], function () {
+                Route::get('/image-uploader', [\Core\Admin\Controllers\Dashboard\ImageUploadController::class, 'index'])->name('image-uploader.index');
+                Route::post('/image-uploader', [\Core\Admin\Controllers\Dashboard\ImageUploadController::class, 'upload'])->name('image-uploader.upload');
+            });
+
             Route::group(['middleware' => ['auth', 'active', 'checkPermission']], function () {
                 Route::get('routes-analysis', [RouteRecordsController::class, 'index'])->name('routes-analysis.index');
 
@@ -42,7 +47,6 @@ Route::group(
                 
                 //users analysis route
                 Route::get('users-analysis', [UsersAnalysisController::class, 'index'])->name('users-analysis');
-
 
 
                 // Order Quantities Report
