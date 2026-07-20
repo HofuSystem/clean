@@ -96,8 +96,11 @@
                                     <div class="card-body p-3 text-center">
                                         <div class="input-group input-group-sm">
                                             <input type="text" class="form-control text-start" dir="ltr" id="img_{{ $loop->index }}" value="{{ $img['url'] }}" readonly>
-                                            <button class="btn btn-outline-primary" type="button" onclick="copySpecificUrl('img_{{ $loop->index }}')">
-                                                <i class="fa fa-copy"></i> نسخ
+                                            <button class="btn btn-outline-primary" title="نسخ الرابط" type="button" onclick="copySpecificUrl('img_{{ $loop->index }}')">
+                                                <i class="fa fa-copy"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" title="حذف الصورة" type="button" onclick="deleteImage('{{ $img['name'] }}')">
+                                                <i class="fa fa-trash"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -144,6 +147,40 @@
                 toastr.error('فشل في نسخ الرابط');
             });
         }
+    }
+
+    function deleteImage(imageName) {
+        Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: "لن تتمكن من استعادة هذه الصورة بعد حذفها!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'نعم، احذفها!',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("dashboard.image-uploader.index") }}/' + imageName;
+                
+                var csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                
+                var method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+                
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
 </script>
 @endpush

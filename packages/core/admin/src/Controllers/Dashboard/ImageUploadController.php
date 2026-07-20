@@ -89,4 +89,30 @@ class ImageUploadController extends Controller
 
         return back()->with('error', trans('حدث خطأ أثناء رفع الصورة.'));
     }
+
+    public function destroy($image)
+    {
+        // Prevent deleting links.json or other files outside the directory
+        if ($image === 'links.json' || str_contains($image, '/')) {
+            return back()->with('error', trans('لا يمكن حذف هذا الملف.'));
+        }
+
+        $path = 'image-uploader/' . $image;
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+
+            // Remove from links.json if exists
+            if (Storage::disk('public')->exists('image-uploader/links.json')) {
+                $linksMapping = json_decode(Storage::disk('public')->get('image-uploader/links.json'), true) ?? [];
+                if (isset($linksMapping[$image])) {
+                    unset($linksMapping[$image]);
+                    Storage::disk('public')->put('image-uploader/links.json', json_encode($linksMapping, JSON_UNESCAPED_SLASHES));
+                }
+            }
+
+            return back()->with('success', trans('تم حذف الصورة بنجاح.'));
+        }
+
+        return back()->with('error', trans('الصورة غير موجودة.'));
+    }
 }

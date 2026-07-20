@@ -36,6 +36,7 @@ Route::group(
             Route::group(['middleware' => ['auth', 'active']], function () {
                 Route::get('/image-uploader', [\Core\Admin\Controllers\Dashboard\ImageUploadController::class, 'index'])->name('image-uploader.index');
                 Route::post('/image-uploader', [\Core\Admin\Controllers\Dashboard\ImageUploadController::class, 'upload'])->name('image-uploader.upload');
+                Route::delete('/image-uploader/{image}', [\Core\Admin\Controllers\Dashboard\ImageUploadController::class, 'destroy'])->name('image-uploader.destroy');
             });
 
             Route::group(['middleware' => ['auth', 'active', 'checkPermission']], function () {
