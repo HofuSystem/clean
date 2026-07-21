@@ -167,7 +167,7 @@
     <script src="{{ asset('control') }}/assets/vendor/js/menu.js"></script>
     <script src="{{ asset('control') }}/assets/js/main.js"></script>
     <script src="{{ asset('custom') }}/dist/js/custom.js"></script>
-    <script src="{{ asset('control') }}/js/custom/datatable/table.js"></script>
+    <script src="{{ asset('control') }}/js/custom/datatable/table.js?v={{ time() }}"></script>
 
     <script>
         var translations = {!! json_encode(\Core\Admin\Helpers\TransHelper::getDataOfKey(config('app.locale'))) !!}

@@ -19,7 +19,7 @@ class UserProfileResource extends JsonResource
     {
         return [
             'id'                        => $this->id,
-            'user_type'                 => $this->roles->first()?->name,
+            'user_type'                 => $this->hasRole('client') ? 'client' : $this->roles->first()?->name,
             'fullname'                  => $this->fullname,
             'phone'                     => (string)$this->phone,
             'email'                     => $this->email,
