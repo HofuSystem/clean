@@ -127,6 +127,7 @@ class SettingsRequest extends FormRequest
 			"flowers_tab" => ['nullable', 'in:0,1'],
 			"service_tab" => ['nullable', 'in:0,1'],
 			"sales_tab" => ['nullable', 'in:0,1'],
+			"follow_up_hours_diff" => ['nullable', 'integer', 'min:1'],
 		];
 
 	}

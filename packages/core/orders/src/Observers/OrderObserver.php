@@ -27,7 +27,7 @@ class OrderObserver
      */
     public function created(Order $order)
     {
-      
+        app(\Core\Orders\Services\CartFollowUpsService::class)->checkAndMarkAsSale($order);
     }
 
     /**

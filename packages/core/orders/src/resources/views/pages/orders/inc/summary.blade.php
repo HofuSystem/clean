@@ -251,6 +251,46 @@
 
         @endisset
     </div>
+
+    @if($order->followUp)
+    <div class="col-md-12 mt-3">
+        <div class="table-responsive p-2">
+            <table class="table table-bordered table-striped table-hover text-start">
+                <thead class="text-center text-white" style="background-color: #28a745;">
+                    <tr>
+                        <th class="p-3 text-white" colspan="2" scope="col" style="background-color: #28a745;">
+                            <i class="fas fa-phone-volume me-2"></i> {{ trans('Follow Up Details') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row" class="p-2" style="width: 30%">{{ trans('Followed Up By (Admin)') }}</th>
+                        <td class="p-2">{{ $order->followUp->admin?->fullname ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('Followed Up At') }}</th>
+                        <td class="p-2">{{ $order->followUp->followed_up_at ? Carbon\Carbon::parse($order->followUp->followed_up_at)->format('Y-m-d H:i') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('Follow Up Phone') }}</th>
+                        <td class="p-2">{{ $order->followUp->phone ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('Follow Up Status') }}</th>
+                        <td class="p-2">
+                            <span class="badge bg-success text-white" style="background-color: #28a745; padding: 4px 8px; border-radius: 4px;">{{ trans($order->followUp->status) }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('Follow Up Notes') }}</th>
+                        <td class="p-2">{{ $order->followUp->notes ?? '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
 </div>
 <hr>
 @include('orders::pages.orders.inc.remade-part')

@@ -438,6 +438,11 @@ class Order extends CoreModel
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
+    public function followUp()
+    {
+        return $this->hasOne(CartFollowUp::class, 'order_id', 'id');
+    }
+
     public function orderRepresentatives()
     {
         return $this->hasMany(OrderRepresentative::class, 'order_id', 'id');

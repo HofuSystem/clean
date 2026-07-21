@@ -13,42 +13,7 @@ class EntitiesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('entities')->insert([
-            'id' => 1,
-            'name' => 'CmsPage',
-            'slug' => 'cms-pages',
-            'table' => 'cms_pages',
-            'operations' => '["list","single","create","update","delete","api-list","api-single","api-create","api-update","api-delete"]',
-            'package' => 'cms',
-            'orderable' => 'no',
-            'orderable_key' => 'slug',
-            'model' => 'Core\CMS\Models\CmsPage',
-            'migration' => '',
-            'table_filters' => '["slug","name","is_parent","details"]',
-            'table_fields' => '["slug","name","is_parent"]',
-            'api_fields_list' => '["slug","name","is_parent","is_multi_upload","have_point","have_name","have_description","have_intro","have_image","have_tablet_image","have_mobile_image","have_icon","have_video","have_link","details"]',
-            'api_fields_single' => '["slug","name","is_parent","is_multi_upload","have_point","have_name","have_description","have_intro","have_image","have_tablet_image","have_mobile_image","have_icon","have_video","have_link","details"]',
-            'created_at' => '2025-01-07 04:10:54',
-            'updated_at' => '2025-01-08 05:40:58',
-        ]);
-        DB::table('entities')->insert([
-            'id' => 2,
-            'name' => 'CmsPageDetail',
-            'slug' => 'cms-page-details',
-            'table' => 'cms_page_details',
-            'operations' => '["list","single","create","update","delete","api-list","api-single","api-create","api-update","api-delete"]',
-            'package' => 'cms',
-            'orderable' => 'no',
-            'orderable_key' => 'name',
-            'model' => 'Core\CMS\Models\CmsPageDetail',
-            'migration' => '',
-            'table_filters' => '["name","description","intro","point","image","tablet_image","mobile_image","icon","video","link","cms_pages_id"]',
-            'table_fields' => '["name","image","mobile_image","icon","video","link","cms_pages_id"]',
-            'api_fields_list' => '["name","description","intro","point","image","tablet_image","mobile_image","icon","video","link","cms_pages_id"]',
-            'api_fields_single' => '["name","description","intro","point","image","tablet_image","mobile_image","icon","video","link","cms_pages_id"]',
-            'created_at' => '2025-01-07 04:10:54',
-            'updated_at' => '2025-01-08 05:40:58',
-        ]);
+
         DB::table('entities')->insert([
             'id' => 3,
             'name' => 'Country',

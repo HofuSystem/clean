@@ -8,6 +8,7 @@ use Core\Orders\Observers\CartObserver;
 use Core\Settings\Models\CoreModel;
 use Carbon\Carbon;
 use App\Observers\GlobalModelObserver;
+use Core\Orders\Models\CartFollowUp;
 
 
 #[ObservedBy([CartObserver::class])]
@@ -68,6 +69,14 @@ class Cart extends CoreModel {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function followUps(){
+        return $this->hasMany(CartFollowUp::class, 'cart_id', 'id');
+    }
+
+    public function activeFollowUp(){
+        return $this->hasOne(CartFollowUp::class, 'cart_id', 'id')->where('status','pending');
+    }
+
     //end relations
 
     //start Attributes
@@ -103,6 +112,26 @@ class Cart extends CoreModel {
             $actions .= '<a class="btn-operation  d-flex justify-content-center align-items-center mx-1 delete-btn" href="' . route('dashboard.'.$slug.'.delete', ['id' => $this->id]) . '"> 
                 <i class="fa fa-trash"></i><span> ' . trans('delete') . ' </span>
                 </a>';
+        }
+        if (auth('web')->check() and auth('web')->user()->can('dashboard.cart-follow-ups.store')) {
+            $hasActive = $this->activeFollowUp()->exists();
+            if (!$hasActive) {
+                $phone = $this->phone ?? $this->user?->phone ?? '';
+                $actions .= '
+                    <button type="button"
+                        class="btn-operation d-flex justify-content-center align-items-center mx-1 start-follow-up-btn"
+                        data-cart-id="' . $this->id . '"
+                        data-phone="' . e($phone) . '"
+                        data-user="' . e($this->user?->fullname ?? '') . '"
+                        title="' . trans('Add Follow Up') . '">
+                        <i class="fas fa-phone-volume"></i><span> ' . trans('Follow Up') . ' </span>
+                    </button>';
+            } else {
+                $actions .= '
+                    <span class="btn-operation d-flex justify-content-center align-items-center mx-1 text-success" title="' . trans('Active follow-up exists') . '">
+                        <i class="fas fa-phone-volume"></i><span> ' . trans('Active') . ' </span>
+                    </span>';
+            }
         }
 
         $actions .= '</div>';

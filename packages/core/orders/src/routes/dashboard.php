@@ -14,6 +14,7 @@ use Core\Orders\Controllers\Dashboard\DeliveryPricesController;
 use Core\Orders\Controllers\Dashboard\OrderSchedulesController;
 use Core\Orders\Controllers\Dashboard\OrderTransactionsController;
 use Core\Orders\Controllers\Dashboard\ElectronicInvoicesController;
+use Core\Orders\Controllers\Dashboard\CartFollowUpsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -238,6 +239,15 @@ Route::group(
                     Route::put('{id}/restore', [OrderTransactionsController::class,'restore'])->name('restore');
                 });        
                 //{{ new_routes}}
+
+                Route::group(['prefix' => 'cart-follow-ups', 'as' => 'cart-follow-ups.'], function () {
+                    Route::get('', [CartFollowUpsController::class, 'index'])->name('index');
+                    Route::post('', [CartFollowUpsController::class, 'dataTable'])->name('index');
+                    Route::post('store', [CartFollowUpsController::class, 'store'])->name('store');
+                    Route::get('settings', [CartFollowUpsController::class, 'getSettings'])->name('settings');
+                    Route::get('analysis', [CartFollowUpsController::class, 'analysis'])->name('analysis');
+                    Route::post('{id}/update-status', [CartFollowUpsController::class, 'updateStatus'])->name('update-status');
+                });
 
 
 

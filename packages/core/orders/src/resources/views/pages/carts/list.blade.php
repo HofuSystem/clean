@@ -173,7 +173,7 @@
                                                 
                                                 <option  value="" > @lang("select users")</option>
                                                 @foreach($users as $item)
-                                                    <option value="{{$item->id }}" @selected($item->id  == request("user_id")) >@lang($item->fullname)</option>
+                                                    <option value="{{$item->id }}" @selected($item->id  == request("user_id")) >{{ $item->fullname }} - {{ $item->phone }}</option>
                                                 @endforeach
             
                                             </select>
@@ -225,7 +225,7 @@
                             <!--begin::Table row-->
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 
-                                    <th class="w-10px pe-2" data-name="select_switch">
+                                    <th class="text-center p-0" data-name="select_switch">
                                         <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#view-datatable .form-check-input" value="1">
                                         </div>
@@ -241,6 +241,8 @@
                                     <th class="text-center p-0" orderable="false" data-name="number_of_orders">@lang("number of orders")</th>
                                     <th class="text-center p-0" orderable="false" data-name="last_order">@lang("last order")</th>
                                     <th class="text-center p-0" orderable="false" data-name="order_total_price">@lang("order total price")</th>
+                                    <th class="text-center p-0" orderable="false" data-name="follow_up_count">@lang("follow ups")</th>
+                                    <th class="text-center p-0" orderable="false" data-name="has_active_follow_up">@lang("follow up status")</th>
                                     <th class="text-center p-0" data-name="updated_at">@lang("added at")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
                             </tr>
@@ -265,6 +267,58 @@
     <!--end::Content-->
     @include('notification::inc.notifyModal')
 
+    <!-- Follow Up Quick Modal -->
+    <div class="modal fade" id="followUpModal" tabindex="-1" aria-labelledby="followUpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="followUpModalLabel">
+                        <i class="fas fa-phone-volume me-2 text-primary"></i>
+                        @lang('Add Follow Up')
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- User Info -->
+                    <div class="alert alert-light border mb-3 d-flex align-items-center gap-3" id="followUpUserInfo">
+                        <i class="fas fa-user-circle fs-2 text-primary"></i>
+                        <div>
+                            <div class="fw-bold" id="followUpUserName">—</div>
+                            <div class="text-muted" id="followUpUserPhoneDisplay">—</div>
+                        </div>
+                        <div class="ms-auto d-flex gap-2">
+                            <a href="#" id="followUpCallBtn" class="btn btn-sm btn-success">
+                                <i class="fas fa-phone"></i> @lang('Call')
+                            </a>
+                            <a href="#" id="followUpWaBtn" target="_blank" class="btn btn-sm btn-success">
+                                <i class="fab fa-whatsapp"></i> @lang('WhatsApp')
+                            </a>
+                        </div>
+                    </div>
+
+                    <form id="quickFollowUpForm">
+                        @csrf
+                        <input type="hidden" name="cart_id" id="followUpCartId">
+                        <div class="mb-3">
+                            <label class="form-label">@lang('Phone')</label>
+                            <input type="text" name="phone" id="followUpPhone" class="form-control" placeholder="@lang('phone')">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">@lang('Notes')</label>
+                            <textarea name="notes" id="followUpNotes" class="form-control" rows="3" placeholder="@lang('notes')"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('Cancel')</button>
+                    <button type="button" class="btn btn-primary" id="saveFollowUpBtn">
+                        <i class="fas fa-save me-1"></i> @lang('Save Follow Up')
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @push('css')
 
@@ -272,6 +326,18 @@
 @push('js')
 <script>
     var deleteUrl = "{{ route('dashboard.carts.delete', ['id'=>'%s','trash'=>request()->trash]) }}"
+
+    var fuLang = {
+        storeUrl:    @json(route('dashboard.cart-follow-ups.store')),
+        csrf:        @json(csrf_token()),
+        unknownUser: @json(__('Unknown User')),
+        saving:      @json(__('Saving...')),
+        created:     @json(__('Follow up created')),
+        save:        @json(__('Save Follow Up')),
+        error:       @json(__('Error')),
+        systemError: @json(__('system Error please try again later')),
+    };
+
     $(document).ready(function () {
         $(document).on('click','.notify-btn',function(e) {
             e.preventDefault();
@@ -300,7 +366,60 @@
             $('#notifyModal [name=for_data]').val(ids)
 
         });
+
+        // ── Follow Up Quick Modal ──────────────────────────────────────────────
+        $(document).on('click', '.start-follow-up-btn', function () {
+            let cartId = $(this).data('cart-id');
+            let phone  = $(this).data('phone') || '';
+            let user   = $(this).data('user')  || '';
+
+            $('#followUpCartId').val(cartId);
+            $('#followUpPhone').val(phone);
+            $('#followUpNotes').val('');
+            $('#followUpUserName').text(user || fuLang.unknownUser);
+            $('#followUpUserPhoneDisplay').text(phone || '—');
+
+            // Update call / WhatsApp links
+            $('#followUpCallBtn').attr('href', phone ? 'tel:' + phone : '#');
+            let clean = phone.replace(/[^0-9]/g, '');
+            $('#followUpWaBtn').attr('href', clean ? 'https://wa.me/' + clean : '#');
+
+            $('#followUpModal').modal('show');
+        });
+
+        $('#saveFollowUpBtn').click(function () {
+            let $btn = $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> ' + fuLang.saving);
+
+            $.ajax({
+                url: fuLang.storeUrl,
+                type: 'POST',
+                data: $('#quickFollowUpForm').serialize(),
+                headers: { 'X-CSRF-TOKEN': fuLang.csrf },
+                success: function (res) {
+                    if (res.status) {
+                        toastr.success(res.message || fuLang.created);
+                        $('#followUpModal').modal('hide');
+                        // Reload datatable to refresh the actions column
+                        if (typeof window.reloadDataTable === 'function') {
+                            window.reloadDataTable();
+                        } else {
+                            $('#view-datatable').DataTable().ajax.reload(null, false);
+                        }
+                    } else {
+                        toastr.error(res.message || fuLang.error);
+                    }
+                },
+                error: function (xhr) {
+                    let msg = xhr.responseJSON?.message || fuLang.systemError;
+                    toastr.error(msg);
+                },
+                complete: function () {
+                    $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> ' + fuLang.save);
+                }
+            });
+        });
     });
 </script>
+
 
 @endpush

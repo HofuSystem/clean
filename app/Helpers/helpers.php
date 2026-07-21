@@ -13,8 +13,6 @@ use App\Jobs\{SendOrderRequestToDriver , SendFCMNotification};
 use App\Notifications\General\{FCMNotification};
 use GuzzleHttp\Client;
 
-use Core\CMS\Models\CmsPage;
-use Core\CMS\Models\CmsPageDetail;
 use Core\Settings\Models\Setting;
 use Core\Settings\Services\SettingsService;
 use Core\Users\Models\Device;
@@ -47,23 +45,6 @@ function checkroute(string $slug)
             return true;
         }
         return false; */
-}
-
-function getCmsDetails(string $slug)
-{
-    return CmsPage::where('slug', $slug)->first();
-    //return CmsPageDetail::where('cms_pages_id',CmsPage::where('slug', $slug)->first()?->id)->first();
-}
-
-function getCmsPageDataArray(string $slug)
-{
-    $data =  CmsPage::where('slug', $slug)->first();
-        if($data)
-        {
-            return CmsPageDetail::where('cms_pages_id',$data->id)->get();
-        }else{
-            return false ;
-        }
 }
 
 

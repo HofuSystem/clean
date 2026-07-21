@@ -15,7 +15,6 @@
         "core/financials": "*",
         "core/cache": "*",
         "core/categories": "*",
-        "core/cms": "*",
         "core/comments": "*",
         "core/coupons": "*",
         "core/info": "*",

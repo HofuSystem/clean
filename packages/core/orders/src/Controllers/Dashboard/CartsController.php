@@ -36,7 +36,7 @@ class CartsController extends Controller
         $screen     = 'carts-index';
         $total      = $this->cartsService->totalCount();
         $trash      = $this->cartsService->trashCount();
-		$users      = $this->usersService->selectable('id','fullname');
+		$users      = $this->usersService->selectable('id','fullname', ['phone']);
         $cities     = $this->citiesService->selectable('id','name');
         return view('orders::pages.carts.list', compact('title','screen','users','cities',"total","trash"));
     }

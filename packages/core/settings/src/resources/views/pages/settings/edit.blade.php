@@ -1391,6 +1391,14 @@
                                                     @checked(($settings['sales_tab'] ?? '1') == '1') />
                                             </div>
                                         </div>
+                                        <div class="form-group mb-3 col-md-4 mt-3">
+                                            <label for="follow_up_hours_diff">{{ trans('follow up hours diff') }}</label>
+                                            <input type="number" name="follow_up_hours_diff" id="follow_up_hours_diff"
+                                                class="form-control" min="1"
+                                                placeholder="{{ trans('Enter hours between follow-up and order') }}"
+                                                value="{{ $settings['follow_up_hours_diff'] ?? 24 }}">
+                                            <small class="text-muted">{{ trans('If user orders within this many hours after a follow-up, the follow-up will be marked as sale') }}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

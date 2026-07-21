@@ -32,19 +32,23 @@ class CartsResource extends JsonResource
         }
         return [
 
-            'id'                =>  $this->id,
-            'user_id'           =>  DashboardDataTableFormatter::relation($this->user,'fullname','dashboard.users.edit'),
-            'phone'             =>  $this->phone,
-            'city'              =>  $this->user?->profile?->city?->name,
-            'district'          =>  $this->user?->profile?->other_city_name ?? $this->user?->profile?->district?->name,
-            'number_of_items'  =>   count($data),
-            'number_of_orders'  =>  $this->user?->orders->count(),
-            'last_order'        =>  $this->user?->orders()->latest()->first()?->created_at?->format("Y-m-d"),
-            'order_total_price' =>  $totalPrice,
-            'created_at'        =>  $this->created_at?->format("Y-m-d"),
-            'updated_at'        =>  $this->updated_at?->format("Y-m-d"),
-            "actions"           =>  $this->actions,
-            "select_switch"     =>  $this->select_switch,
+            'id'                   =>  $this->id,
+            'user_id'              =>  DashboardDataTableFormatter::relation($this->user,'fullname','dashboard.users.edit'),
+            'phone'                =>  $this->phone,
+            'city'                 =>  $this->user?->profile?->city?->name,
+            'district'             =>  $this->user?->profile?->other_city_name ?? $this->user?->profile?->district?->name,
+            'number_of_items'      =>  count($data),
+            'number_of_orders'     =>  $this->user?->orders->count(),
+            'last_order'           =>  $this->user?->orders()->latest()->first()?->created_at?->format("Y-m-d"),
+            'order_total_price'    =>  $totalPrice,
+            'follow_up_count'      =>  $this->followUps()->count(),
+            'has_active_follow_up' =>  $this->activeFollowUp()->exists()
+                                        ? '<span class="badge badge-success">'.trans('active').'</span>'
+                                        : '<span class="badge badge-secondary">'.trans('none').'</span>',
+            'created_at'           =>  $this->created_at?->format("Y-m-d"),
+            'updated_at'           =>  $this->updated_at?->format("Y-m-d"),
+            "actions"              =>  $this->actions,
+            "select_switch"        =>  $this->select_switch,
         ];
     }
 }

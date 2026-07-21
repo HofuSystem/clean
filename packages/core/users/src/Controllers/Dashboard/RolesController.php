@@ -62,7 +62,7 @@ class RolesController extends Controller
             'favs'                          => ['favs'],
             'workers'                       => ['worker'],
             'blogs'                         => ['blogs' ,'blog-categories'],
-            'settings'                      => ['cms-pages','cms-page-detail','settings'],
+            'settings'                      => ['settings'],
             'seo'                           => ['pages','sections','features','contact-requests','counters','reasons','businesses'],
 
         ];
@@ -114,7 +114,7 @@ class RolesController extends Controller
             'favs'                          => ['favs'],
             'workers'                       => ['worker'],
             'blogs'                         => ['blogs' ,'blog-categories'],
-            'settings'                      => ['cms-pages','settings'],
+            'settings'                      => ['settings'],
         ];
         $comments   = $item->comments()->where('parent_id',null)->get();
         return view('users::pages.roles.show', compact('title','screen','item','rolePermissions','tabs','comments'));
