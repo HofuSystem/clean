@@ -100,6 +100,12 @@
                                 {{ trans('change status') }} </a>
                             <!--end::Primary button-->
                         @endif
+                                                @if ($order->status != 'issue')
+                            <!--begin::Primary button-->
+                            <a href="#" class="btn fw-bold btn-danger" id="issueStatusBtn" data-id="{{ $order->id }}">
+                                {{ trans('issue status') }} </a>
+                            <!--end::Primary button-->
+                        @endif
                         @if (!in_array($order->status, ['finished', 'delivered']) and $order->admin_cancel_reason == null)
                             <!--begin::Primary button-->
                             <a href="#" class="btn fw-bold btn-danger" id="cancelBtn" data-id="{{ $order->id }}">
@@ -110,6 +116,7 @@
                             <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="btn fw-bold btn-dark">
                                 {{ trans('Electronic Invoice') }} </a>
                         @endif
+
                     @endisset
                 </div>
             </div>
