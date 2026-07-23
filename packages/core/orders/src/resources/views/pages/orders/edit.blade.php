@@ -100,7 +100,7 @@
                                 {{ trans('change status') }} </a>
                             <!--end::Primary button-->
                         @endif
-                                                @if ($order->status != 'issue')
+                        @if ($order->status != 'issue')
                             <!--begin::Primary button-->
                             <a href="#" class="btn fw-bold btn-danger" id="issueStatusBtn" data-id="{{ $order->id }}">
                                 {{ trans('issue status') }} </a>
