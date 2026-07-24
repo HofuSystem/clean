@@ -41,82 +41,78 @@
                     <!--end::Breadcrumb-->
                 </div>
                 <!--end::Page title-->
-                <div class="d-flex align-items-center gap-2 gap-lg-3 ms-auto">
+                <div class="d-flex align-items-center flex-wrap gap-2 ms-auto order-action-btns">
                     @isset($editMode)
-                        <!--begin::Primary button-->
-                        <a href="#" class="btn fw-bold btn-success" id="addCouponBtn" data-id="{{ $order->id }}">
-                            {{ trans('apply coupon') }} </a>
-                        <!--end::Primary button-->
+                        <a href="#" class="order-btn order-btn-success" id="addCouponBtn" data-id="{{ $order->id }}" title="{{ trans('apply coupon') }}">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span class="btn-text">{{ trans('apply coupon') }}</span>
+                        </a>
                         @if (isset($allowedRepresentatives) and !empty($allowedRepresentatives))
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-primary" id="assignRepresentativeBtn"
-                                data-id="{{ $order->id }}">
-                                {{ trans('assign Representative') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-primary" id="assignRepresentativeBtn" data-id="{{ $order->id }}" title="{{ trans('assign Representative') }}">
+                                <i class="fas fa-user-tie"></i>
+                                <span class="btn-text">{{ trans('assign Representative') }}</span>
+                            </a>
                         @endif
                         @if (isset($allowedRepresentatives) and !empty($allowedRepresentatives))
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-primary" id="assignOperatorBtn"
-                                data-id="{{ $order->id }}">
-                                {{ trans('assign Operator') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-primary" id="assignOperatorBtn" data-id="{{ $order->id }}" title="{{ trans('assign Operator') }}">
+                                <i class="fas fa-user-cog"></i>
+                                <span class="btn-text">{{ trans('assign Operator') }}</span>
+                            </a>
                         @endif
                         @can('dashboard.orders.update-delivery-price')
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-warning" id="updateDeliveryPriceBtn"
-                                data-id="{{ $order->id }}">
-                                {{ trans('update delivery price') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-warning" id="updateDeliveryPriceBtn" data-id="{{ $order->id }}" title="{{ trans('update delivery price') }}">
+                                <i class="fas fa-truck"></i>
+                                <span class="btn-text">{{ trans('update delivery price') }}</span>
+                            </a>
                         @endcan
                         @can('dashboard.orders.update-cost')
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-secondary" id="updateCostBtn"
-                                data-id="{{ $order->id }}">
-                                {{ trans('update cost') }} ({{ $order->total_cost }}) {{ trans('SAR') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-secondary" id="updateCostBtn" data-id="{{ $order->id }}" title="{{ trans('update cost') }} ({{ $order->total_cost }}) {{ trans('SAR') }}">
+                                <i class="fas fa-coins"></i>
+                                <span class="btn-text">{{ trans('update cost') }} ({{ $order->total_cost }}) {{ trans('SAR') }}</span>
+                            </a>
                         @endcan
                         @can('dashboard.orders.change-pay-type')
-                        <!--begin::Primary button-->
-                        <a href="#" class="btn fw-bold btn-info" id="changePayTypeBtn" data-id="{{ $order->id }}">
-                            {{ trans('Change Payment Type') }} </a>
-                        <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-info" id="changePayTypeBtn" data-id="{{ $order->id }}" title="{{ trans('Change Payment Type') }}">
+                                <i class="fas fa-credit-card"></i>
+                                <span class="btn-text">{{ trans('Change Payment Type') }}</span>
+                            </a>
                         @endcan
                         @if($order->company_id)
-                        <!--begin::Primary button-->
-                        <a href="#" class="btn fw-bold btn-primary" data-bs-toggle="modal" data-bs-target="#updateB2bFinancialNoteModal">
-                            {{ trans('B2B Financial Note') }} </a>
-                        <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-primary" data-bs-toggle="modal" data-bs-target="#updateB2bFinancialNoteModal" title="{{ trans('B2B Financial Note') }}">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span class="btn-text">{{ trans('B2B Financial Note') }}</span>
+                            </a>
                         @endif
                         @if ($order->reports()->exists())
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn  fw-bold btn-info" id="returnOrderContinueBtn"
-                                data-id="{{ $order->id }}">{{ trans('return order continue') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-info" id="returnOrderContinueBtn" data-id="{{ $order->id }}" title="{{ trans('return order continue') }}">
+                                <i class="fas fa-undo"></i>
+                                <span class="btn-text">{{ trans('return order continue') }}</span>
+                            </a>
                         @endif
                         @if ($order->status == 'issue')
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn fw-bold btn-warning" id="changeStatusBtn"
-                                data-id="{{ $order->id }}">
-                                {{ trans('change status') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-warning" id="changeStatusBtn" data-id="{{ $order->id }}" title="{{ trans('change status') }}">
+                                <i class="fas fa-sync-alt"></i>
+                                <span class="btn-text">{{ trans('change status') }}</span>
+                            </a>
                         @endif
                         @if ($order->status != 'issue')
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn fw-bold btn-danger" id="issueStatusBtn" data-id="{{ $order->id }}">
-                                {{ trans('issue status') }} </a>
-                            <!--end::Primary button-->
+                            <a href="#" class="order-btn order-btn-danger" id="issueStatusBtn" data-id="{{ $order->id }}" title="{{ trans('issue status') }}">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span class="btn-text">{{ trans('issue status') }}</span>
+                            </a>
                         @endif
                         @if (!in_array($order->status, ['finished', 'delivered']) and $order->admin_cancel_reason == null)
-                            <!--begin::Primary button-->
-                            <a href="#" class="btn fw-bold btn-danger" id="cancelBtn" data-id="{{ $order->id }}">
-                                {{ trans('cancel') }} </a>
+                            <a href="#" class="order-btn order-btn-danger" id="cancelBtn" data-id="{{ $order->id }}" title="{{ trans('cancel') }}">
+                                <i class="fas fa-ban"></i>
+                                <span class="btn-text">{{ trans('cancel') }}</span>
+                            </a>
                         @endif
-                        <!--end::Primary button-->
                         @if (in_array($order->status, ['finished', 'delivered']) && $order->electronicInvoice)
-                            <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="btn fw-bold btn-dark">
-                                {{ trans('Electronic Invoice') }} </a>
+                            <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="order-btn order-btn-dark" title="{{ trans('Electronic Invoice') }}">
+                                <i class="fas fa-file-invoice"></i>
+                                <span class="btn-text">{{ trans('Electronic Invoice') }}</span>
+                            </a>
                         @endif
-
                     @endisset
                 </div>
             </div>
@@ -726,6 +722,79 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="{{ asset('control') }}/js/custom/crud/form.css" rel="stylesheet" type="text/css" />
     <style>
+        /* ── Modern expandable icon action buttons ─────────────────────── */
+        .order-action-btns {
+            row-gap: 6px;
+        }
+        .order-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 18px;
+            border: 1.5px solid transparent;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+            overflow: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding 0.3s ease;
+        }
+        .order-btn i {
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .order-btn .btn-text {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, margin 0.3s ease;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .order-btn:hover,
+        .order-btn:focus {
+            text-decoration: none;
+            padding: 0 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+        .order-btn:hover .btn-text,
+        .order-btn:focus .btn-text {
+            max-width: 200px;
+            opacity: 1;
+            margin-left: 7px;
+        }
+        [dir="rtl"] .order-btn:hover .btn-text,
+        [dir="rtl"] .order-btn:focus .btn-text {
+            margin-left: 0;
+            margin-right: 7px;
+        }
+        /* success */
+        .order-btn-success   { color: #1a7a4a; border-color: #1a7a4a; background: rgba(26, 122, 74, 0.06); }
+        .order-btn-success:hover { background: #1a7a4a; color: #fff; }
+        /* primary */
+        .order-btn-primary   { color: #3b5fdb; border-color: #3b5fdb; background: rgba(59, 95, 219, 0.06); }
+        .order-btn-primary:hover { background: #3b5fdb; color: #fff; }
+        /* warning */
+        .order-btn-warning   { color: #b06e00; border-color: #e8960a; background: rgba(232, 150, 10, 0.06); }
+        .order-btn-warning:hover { background: #e8960a; color: #fff; }
+        /* secondary */
+        .order-btn-secondary { color: #4b5563; border-color: #9ca3af; background: rgba(156, 163, 175, 0.08); }
+        .order-btn-secondary:hover { background: #4b5563; color: #fff; border-color: #4b5563; }
+        /* info */
+        .order-btn-info      { color: #0284c7; border-color: #0284c7; background: rgba(2, 132, 199, 0.06); }
+        .order-btn-info:hover { background: #0284c7; color: #fff; }
+        /* danger */
+        .order-btn-danger    { color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.06); }
+        .order-btn-danger:hover { background: #dc2626; color: #fff; }
+        /* dark */
+        .order-btn-dark      { color: #1f2937; border-color: #374151; background: rgba(31, 41, 55, 0.06); }
+        .order-btn-dark:hover { background: #1f2937; color: #fff; }
+        /* ─────────────────────────────────────────────────────────────── */
+
         thead th {
             font-size: 12px !important
         }
