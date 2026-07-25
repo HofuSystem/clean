@@ -196,4 +196,118 @@ class ProductsService
             'cost' => $cost,
         ];
     }
+
+    /**
+     * Convert product images to WebP format, and compress sales product images.
+     *
+     * @param int $quality
+     * @return array
+     */
+    public function convertProductImagesToWebp($quality = 60)
+    {
+        $products = Product::whereNotNull('image')->where('image', '!=', '')->get();
+        $convertedCount = 0;
+        $failedCount = 0;
+        $errors = [];
+
+        foreach ($products as $product) {
+            try {
+                $imagePath = $product->image;
+                $isUrl = str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://');
+                $tempDownloadedPath = null;
+                $localSourcePath = null;
+
+                if ($isUrl) {
+                    $uploadedFile = \Core\MediaCenter\Helpers\MediaCenterHelper::downloadFile($imagePath);
+                    if ($uploadedFile) {
+                        $localSourcePath = $uploadedFile->getPathname();
+                        $tempDownloadedPath = $localSourcePath;
+                    } else {
+                        $failedCount++;
+                        $errors[] = "Failed to download image URL for Product ID {$product->id}: {$imagePath}";
+                        continue;
+                    }
+                } else {
+                    $cleanRelativePath = preg_replace('#^(storage/|public/)?#', '', ltrim($imagePath, '/'));
+                    $possiblePaths = [
+                        \Illuminate\Support\Facades\Storage::disk('public')->path($cleanRelativePath),
+                        storage_path('app/public/' . $cleanRelativePath),
+                        public_path('storage/' . $cleanRelativePath),
+                        public_path($cleanRelativePath),
+                        base_path($imagePath),
+                    ];
+
+                    foreach ($possiblePaths as $p) {
+                        if (file_exists($p) && !is_dir($p)) {
+                            $localSourcePath = $p;
+                            break;
+                        }
+                    }
+
+                    if (!$localSourcePath) {
+                        $failedCount++;
+                        $errors[] = "Image file not found for Product ID {$product->id}: {$imagePath}";
+                        continue;
+                    }
+                }
+
+                // Make Intervention Image
+                $img = \Intervention\Image\Facades\Image::make($localSourcePath);
+
+                // Compress if sales product, or convert to WebP
+                if ($product->type === 'sales') {
+                    $compressedImg = \Core\MediaCenter\Helpers\MediaCenterHelper::compressImage($img, 'webp', $quality);
+                    $encodedData = (string) $compressedImg->encode('webp', $quality);
+                } else {
+                    $encodedData = (string) $img->encode('webp', 80);
+                }
+
+                // Determine relative directory and new WebP filename
+                if ($isUrl) {
+                    $dir = 'images';
+                    $newFileName = \Illuminate\Support\Str::random(40) . '.webp';
+                } else {
+                    $cleanRelativePath = preg_replace('#^(storage/|public/)?#', '', ltrim($imagePath, '/'));
+                    $info = pathinfo($cleanRelativePath);
+                    $dir = ($info['dirname'] !== '.' && !empty($info['dirname'])) ? $info['dirname'] : 'images';
+                    $newFileName = $info['filename'] . '.webp';
+                }
+
+                $newRelativePath = trim($dir, '/') . '/' . $newFileName;
+
+                // Save WebP file via Storage facade (automatically handles directory creation & stream writing)
+                \Illuminate\Support\Facades\Storage::disk('public')->put($newRelativePath, $encodedData);
+
+                $targetAbsolutePath = \Illuminate\Support\Facades\Storage::disk('public')->path($newRelativePath);
+
+                // Clean up old file if different path
+                if (!$isUrl && $localSourcePath && $localSourcePath !== $targetAbsolutePath && file_exists($localSourcePath)) {
+                    $oldExt = strtolower(pathinfo($localSourcePath, PATHINFO_EXTENSION));
+                    if ($oldExt !== 'webp') {
+                        @unlink($localSourcePath);
+                    }
+                }
+
+                if ($tempDownloadedPath && file_exists($tempDownloadedPath)) {
+                    @unlink($tempDownloadedPath);
+                }
+
+                // Update DB record
+                $product->image = $newRelativePath;
+                $product->save();
+
+                $convertedCount++;
+            } catch (\Throwable $e) {
+                $failedCount++;
+                $errors[] = "Error processing Product ID {$product->id}: " . $e->getMessage();
+            }
+        }
+
+        return [
+            'total' => $products->count(),
+            'converted' => $convertedCount,
+            'failed' => $failedCount,
+            'errors' => $errors,
+        ];
+    }
 }
