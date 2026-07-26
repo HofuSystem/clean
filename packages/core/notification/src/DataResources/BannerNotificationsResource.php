@@ -22,7 +22,7 @@ class BannerNotificationsResource extends JsonResource
             "publish_date"     => DashboardDataTableFormatter::text($this->publish_date),
             "expired_date"     => DashboardDataTableFormatter::text($this->expired_date),
             "next_vision_hour" => DashboardDataTableFormatter::text($this->next_vision_hour),
-            "status"           => DashboardDataTableFormatter::text($this->status),
+            "status"           => DashboardDataTableFormatter::text(trans($this->status)),
             "actions"          => $this->actions,
             "select_switch"    => $this->select_switch,
            

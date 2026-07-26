@@ -48,7 +48,7 @@
                 <!--begin::Card-->
                 <div class="card">
 
-                    <form class="form" method="POST" id="operation-form"  redirect-to="{{route("dashboard.products.index")}}" data-id="{{ $item->id ?? null }}"
+                    <form class="form" method="POST" id="operation-form"  redirect-to="{{ (isset($item) && $item->type == 'sales') || request('type') == 'sales' ? route('dashboard.products.sales') : route('dashboard.products.index') }}" data-id="{{ $item->id ?? null }}"
                         @if ($item) action="{{ route('dashboard.products.edit', $item->id) }}"
                             data-mode="edit"
                         @else

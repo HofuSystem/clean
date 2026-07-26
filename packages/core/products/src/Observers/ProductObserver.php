@@ -4,9 +4,22 @@ namespace Core\Products\Observers;
 
 use Core\Products\Models\Product;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductObserver
 {
+    private function flushCategoriesCache()
+    {
+        try {
+            if (Cache::supportsTags()) {
+                Cache::tags(['categories_api'])->flush();
+            } else {
+                Cache::forget('categories_api');
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to flush category cache: ' . $e->getMessage());
+        }
+    }
     /**
      * Handle the Product "creating" event.
      *
@@ -66,7 +79,7 @@ class ProductObserver
      */
     public function saved(Product $product)
     {
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -77,7 +90,7 @@ class ProductObserver
      */
     public function deleted(Product $product)
     {
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**

@@ -128,7 +128,7 @@ class HomeController extends Controller
             $dayData = $dailyData->where('day_of_week', $dayNum)->first();
             $dailyAnalysis[] = [
                 'day_number' => $dayNum,
-                'day_name' => $dayName,
+                'day_name' => trans($dayName),
                 'order_count' => $dayData ? $dayData->order_count : 0,
                 'unique_customers' => $dayData ? $dayData->unique_customers : 0,
                 'total_revenue' => $dayData ? $dayData->total_revenue : 0,
@@ -201,7 +201,7 @@ class HomeController extends Controller
                 'total_revenue' => $peakHour->total_revenue,
             ] : null,
             'peak_day' => $peakDay ? [
-                'day_name' => $peakDay->day_name,
+                'day_name' => trans($peakDay->day_name),
                 'order_count' => $peakDay->order_count,
                 'total_revenue' => $peakDay->total_revenue,
             ] : null,
@@ -214,8 +214,8 @@ class HomeController extends Controller
 
     public function analysis(Request $request)
     {
-        $title = trans('dashboard-home');
-        $screen = 'dashboard-home';
+        $title = trans('Performance Analytics');
+        $screen = 'performance-analysis';
         $cities = $this->citiesService->selectable('id', 'name');
         $companyType = $request->get('company_type');
         $timePeriod = (isset($request->from) or isset($request->to)) ? trans('from').' '.$request->from.' - '.trans('to').' '.$request->to : null;

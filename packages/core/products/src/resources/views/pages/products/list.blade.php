@@ -104,14 +104,14 @@
                                         </a>
                                     @endcan
                                     <!--begin::Add -->
-                                    @can('dashboard.products.create')
-                                        <a href="{{ route('dashboard.products.create') }}" class="btn-operation ">
-                                            <i class="fas fa-plus-circle"></i>
-                                            <span>
-                                                @lang('create new')
-                                            </span>
-                                        </a>
-                                    @endcan
+                                     @can('dashboard.products.create')
+                                         <a href="{{ route('dashboard.products.create', !empty($isSales) ? ['type' => 'sales'] : []) }}" class="btn-operation ">
+                                             <i class="fas fa-plus-circle"></i>
+                                             <span>
+                                                 @lang('create new')
+                                             </span>
+                                         </a>
+                                     @endcan
                                 </div>
 
                             </div>

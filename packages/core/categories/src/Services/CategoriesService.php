@@ -138,7 +138,15 @@ class CategoriesService
             DB::update("UPDATE categories SET `{$orderBy}` = (CASE id {$casesList} END) WHERE id IN ({$idsList})");
         }
 
-        Cache::tags(['categories_api'])->flush();
+        try {
+            if (\Illuminate\Support\Facades\Cache::supportsTags()) {
+                \Illuminate\Support\Facades\Cache::tags(['categories_api'])->flush();
+            } else {
+                \Illuminate\Support\Facades\Cache::forget('categories_api');
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to flush category cache: ' . $e->getMessage());
+        }
     }
     public function import(array $items){
         foreach ($items as  $index => $item) {

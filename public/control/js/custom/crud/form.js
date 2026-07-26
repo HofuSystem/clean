@@ -1,3 +1,52 @@
+function handleAjaxError(jqXHR, textStatus, errorThrown, form) {
+  if (form) enableSubmitButton(form);
+  let isAr = $('html').attr('lang') === 'ar';
+  let confirmBtnText = isAr ? "حسناً" : "Ok";
+  let defaultErrorMsg = isAr
+    ? "حدث خطأ أثناء تنفيذ الطلب. يرجى مراجعة البيانات المدخلة وإعادة المحاولة."
+    : "An error occurred while processing your request. Please review the entered data and try again.";
+
+  let response = {};
+  try {
+    response = JSON.parse(jqXHR.responseText);
+  } catch (e) {
+    response = { message: defaultErrorMsg };
+  }
+
+  let errorMessage = response.message;
+  let errList = [];
+  if (response.errors) {
+    $.each(response.errors, function (key, array) {
+      $.each(array, function (index, error) {
+        errList.push(error);
+        if (typeof toastr !== 'undefined') {
+          toastr.error(error, isAr ? "خطأ في البيانات" : key);
+        }
+      });
+    });
+  }
+
+  if (!errorMessage || errorMessage === 'Something went wrong. Please try again.' || errorMessage === 'Something went wrong' || errorMessage === 'The given data was invalid.') {
+    if (errList.length > 0) {
+      errorMessage = (isAr ? "حدث خطأ في البيانات التالية:\n• " : "Validation errors:\n• ") + errList.join("\n• ");
+    } else {
+      errorMessage = defaultErrorMsg;
+    }
+  }
+
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      text: errorMessage,
+      icon: "error",
+      buttonsStyling: false,
+      confirmButtonText: confirmBtnText,
+      customClass: {
+        confirmButton: "btn fw-bold btn-success",
+      }
+    });
+  }
+}
+
 const fullToolbar = [
     [
       {
@@ -150,30 +199,7 @@ const fullToolbar = [
         })
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // Code to run if the request fails
-        enableSubmitButton(form);
-        let response = {};
-        try {
-          response = JSON.parse(jqXHR.responseText);
-        } catch (e) {
-          response = { message: 'Something went wrong. Please try again.' };
-        }
-        Swal.fire({
-          text: response.message,
-          icon: "error",
-          buttonsStyling: false,
-          confirmButtonText: "Ok",
-          customClass: {
-            confirmButton: "btn fw-bold btn-success",
-          }
-        })
-        if (response.errors) {
-          $.each(response.errors, function (key, array) {
-            $.each(array, function (index, error) {
-              toastr.error(error, key);
-            });
-          });
-        }
+        handleAjaxError(jqXHR, textStatus, errorThrown, form);
       },
       complete: function () {
         $('.loader').removeClass('show');
@@ -324,13 +350,23 @@ const fullToolbar = [
       },
     });
 
+    var select2ArLanguage = {
+      noResults: function () { return "لا توجد نتائج"; },
+      searching: function () { return "جاري البحث..."; },
+      inputTooShort: function () { return "الرجاء كتابة حروف أكثر للبحث"; },
+      inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+    };
     $('.select2').each(function (index, element) {
       let id = $(this).attr('id');
+      let emptyOptionText = $(this).find('option[value=""]').first().text().trim();
+      let placeholderText = emptyOptionText || "اختر من القائمة";
       if ($(this).parents('.modal').length) {
         let parentId = $(this).parents('.modal').first().attr('id');
         $('#' + id).select2({
           allowClear: true,
-          dropdownParent: $('#' + parentId)
+          placeholder: placeholderText,
+          dropdownParent: $('#' + parentId),
+          language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
         });
       } else {
 
@@ -338,7 +374,8 @@ const fullToolbar = [
           allowClear: true,
           width: '100%',
           height: '40px',
-          placeholder: 'select..'
+          placeholder: placeholderText,
+          language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
         });
       }
     });
@@ -521,30 +558,7 @@ const fullToolbar = [
             })
           },
           error: function (jqXHR, textStatus, errorThrown) {
-            // Code to run if the request fails
-            enableSubmitButton(form);
-            let response = {};
-            try {
-              response = JSON.parse(jqXHR.responseText);
-            } catch (e) {
-              response = { message: 'Something went wrong. Please try again.' };
-            }
-            Swal.fire({
-              text: response.message,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              customClass: {
-                confirmButton: "btn fw-bold btn-success",
-              }
-            })
-            if (response.errors) {
-              $.each(response.errors, function (key, array) {
-                $.each(array, function (index, error) {
-                  toastr.error(error, key);
-                });
-              });
-            }
+            handleAjaxError(jqXHR, textStatus, errorThrown, form);
           },
           complete: function () {
             $('.loader').removeClass('show');
@@ -588,30 +602,7 @@ const fullToolbar = [
             })
           },
           error: function (jqXHR, textStatus, errorThrown) {
-            // Code to run if the request fails
-            enableSubmitButton(form);
-            let response = {};
-            try {
-              response = JSON.parse(jqXHR.responseText);
-            } catch (e) {
-              response = { message: 'Something went wrong. Please try again.' };
-            }
-            Swal.fire({
-              text: response.message,
-              icon: "error",
-              buttonsStyling: false,
-              confirmButtonText: "Ok",
-              customClass: {
-                confirmButton: "btn fw-bold btn-success",
-              }
-            })
-            if (response.errors) {
-              $.each(response.errors, function (key, array) {
-                $.each(array, function (index, error) {
-                  toastr.error(error, key);
-                });
-              });
-            }
+            handleAjaxError(jqXHR, textStatus, errorThrown, form);
           },
           complete: function () {
             $('.loader').removeClass('show');
@@ -819,27 +810,31 @@ const fullToolbar = [
     return `<div style="width: 25px; height: 25px; border-radius: 50%; background-color: ${color}; display: inline-block; vertical-align: middle; border: 1px solid #ddd; margin-right: 5px;"></div> <span>${color}</span>`;
   }
   $(document).ready(function () {
+    var select2ArLanguage = {
+      noResults: function () { return "لا توجد نتائج"; },
+      searching: function () { return "جاري البحث..."; },
+      inputTooShort: function () { return "الرجاء كتابة حروف أكثر للبحث"; },
+      inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+    };
     $('.advance-select').each(function (index, element) {
-      let name = $(this).attr('name') + "...";
+      let emptyOptionText = $(this).find('option[value=""]').first().text().trim();
+      let dataPlaceholder = $(this).attr('data-placeholder');
+      let placeholderText = emptyOptionText || dataPlaceholder || "اختر من القائمة";
       if ($(this).parents('.modal').length) {
         let id = $(this).parents('.modal').first().attr('id');
         $(this).select2({
           allowClear: true,
-          placeholder: name,
+          placeholder: placeholderText,
           dropdownParent: $('#' + id),
-          placeholder: "Select an option",
-          width: '100%' // Force width
-
-
+          width: '100%',
+          language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
         }).trigger('change');
       } else {
         $(this).select2({
           allowClear: true,
-          placeholder: name,
-          placeholder: "Select an option",
-          width: '100%' // Force width
-
-
+          placeholder: placeholderText,
+          width: '100%',
+          language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
         }).trigger('change');
       }
     });

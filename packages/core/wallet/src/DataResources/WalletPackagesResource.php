@@ -21,7 +21,7 @@ class WalletPackagesResource extends JsonResource
             "image"         => DashboardDataTableFormatter::mediaCenter($this->image),
             "price"         => DashboardDataTableFormatter::text($this->price),
             "value"         => DashboardDataTableFormatter::text($this->value),
-            "status"        => DashboardDataTableFormatter::text($this->status),
+            "status"        => DashboardDataTableFormatter::text(trans($this->status)),
             "actions"       => $this->actions,
             "select_switch" => $this->select_switch,
 

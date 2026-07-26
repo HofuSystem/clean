@@ -6,9 +6,22 @@ use Core\Categories\Models\Slider;
 use Core\Categories\Models\SliderView;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class SliderObserver
 {
+    private function flushCategoriesCache()
+    {
+        try {
+            if (Cache::supportsTags()) {
+                Cache::tags(['categories_api'])->flush();
+            } else {
+                Cache::forget('categories_api');
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to flush category cache: ' . $e->getMessage());
+        }
+    }
     /**
      * Handle the Slider "creating" event.
      *
@@ -85,7 +98,7 @@ class SliderObserver
             ]);
         }
 
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -96,7 +109,7 @@ class SliderObserver
      */
     public function deleted(Slider $slider)
     {
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**

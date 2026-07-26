@@ -48,7 +48,7 @@
                 <!--begin::Card-->
                 <div class="card">
 
-                    <form class="form" method="POST" id="operation-form"  redirect-to="{{route("dashboard.$type.index")}}" data-id="{{ $item->id ?? null }}"
+                    <form class="form" method="POST" id="operation-form"  redirect-to="{{ ($type === 'categories' && ((isset($item) && $item->type == 'sales') || request('type') == 'sales')) ? route('dashboard.categories.sales') : route("dashboard.$type.index") }}" data-id="{{ $item->id ?? null }}"
                         @if (isset($item)) action="{{ route('dashboard.'.$type.'.edit', $item->id) }}"
                             data-mode="edit"
                         @else
@@ -1491,7 +1491,18 @@
             forAllCitiesSwitch.addEventListener('change', toggleCitiesSelectGroup);
             // Trigger on page load
             toggleCitiesSelectGroup();
-            }
+            // Dynamic redirect to correct category list (sales vs normal) on type change
+            $('#type').change(function() {
+                var selectedType = $(this).val();
+                var currentType = "{{ $type }}";
+                if (currentType === 'categories') {
+                    if (selectedType === 'sales') {
+                        $('#operation-form').attr('redirect-to', "{{ route('dashboard.categories.sales') }}");
+                    } else {
+                        $('#operation-form').attr('redirect-to', "{{ route('dashboard.categories.index') }}");
+                    }
+                }
+            });
         });
     </script>
 @endpush

@@ -8,17 +8,18 @@ let page = 1;
 let mediaChooseBtn = null;
 const fileHandler = (file, name, type) => {
   let modalType = $('#mediaModal').data('type');
+  let isAr = $('html').attr('lang') === 'ar';
   if (modalType !== 'file') {
     if (type.split("/")[0] !== "image") {
       //File Type Error
-      error.innerText = "Please upload an image file";
+      error.innerText = isAr ? "الرجاء رفع ملف صورة فقط" : "Please upload an image file";
       return false;
     }
   } else {
     let allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
     let ext = name.split('.').pop().toLowerCase();
     if (!allowedExtensions.includes(ext)) {
-      error.innerText = "Please upload a PDF, Word, Excel, PowerPoint or Image file";
+      error.innerText = isAr ? "الرجاء رفع ملف PDF أو Word أو Excel أو PowerPoint أو صورة" : "Please upload a PDF, Word, Excel, PowerPoint or Image file";
       return false;
     }
   }
@@ -348,7 +349,8 @@ $(document).on('click', '.select-item', function (e) {
   error.innerText = ""
 
   if (current == max) {
-    error.innerText = "Max limit is reached"
+    let isAr = $('html').attr('lang') === 'ar';
+    error.innerText = isAr ? "تم الوصول للحد الأقصى المسموح به من الوسائط" : "Max limit is reached";
     return
   }
   let value = $(this).data('value');

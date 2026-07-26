@@ -112,8 +112,7 @@ class CategoriesController extends Controller
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
         } catch (\Throwable $e) {
             DB::rollback();
-            dd($e);
-            return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
+            return $this->returnErrorMessage(trans('system Error please try again later'). ': ' . $e->getMessage(),[],[],422);
         }
     }
     public function duplicateAction(CategoriesRequest $request, $id){

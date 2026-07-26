@@ -2,6 +2,12 @@
 
 var datatable;
 var cols;
+var select2ArLanguage = {
+  noResults: function () { return "لا توجد نتائج"; },
+  searching: function () { return "جاري البحث..."; },
+  inputTooShort: function () { return "الرجاء كتابة حروف أكثر للبحث"; },
+  inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+};
 var KTUsersList = function () {
     // Define shared variables
     var table = document.getElementById('view-datatable');
@@ -16,7 +22,11 @@ var KTUsersList = function () {
         cols = [];
         $('table#view-datatable thead th').each(function (index, element) {
             let data        = $(this).data('name');
-            let name        = (index == 0) ? data : $(this).text();
+            let text        = $(this).text().trim();
+            let name        = text;
+            if (!name || data === 'select_switch') {
+                name = (typeof trans === 'function' && trans('select_switch') !== 'select_switch') ? trans('select_switch') : 'تحديد الكل';
+            }
             let col         = { 'name': name, 'data': data  };
             if($(this).attr('orderable')){
                 col.orderable = ($(this).attr('orderable') == true);
@@ -36,11 +46,33 @@ var KTUsersList = function () {
             datatable = $('table#view-datatable').DataTable({
                 dom:   "<'d-flex justify-content-between align-items-center mb-2'<'dt-buttons'B><'dt-length'l>>" +
                 "frtip",
-                lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500,trans('all')] ],
+                lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500, trans('all')] ],
                 pageLength: 25, // default selected value
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-                language: {
-                    url: $('html').attr('lang') === 'ar' ? '//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json' : '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
+                buttons: [
+                    { extend: 'copy', text: trans('copy') || 'نسخ' },
+                    { extend: 'csv', text: trans('csv') || 'CSV' },
+                    { extend: 'excel', text: trans('excel') || 'Excel' },
+                    { extend: 'pdf', text: trans('pdf') || 'PDF' },
+                    { extend: 'print', text: trans('print') || 'طباعة' }
+                ],
+                language: $('html').attr('lang') === 'ar' ? {
+                    "sProcessing": "جاري التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يتم العثور على أية سجلات",
+                    "sEmptyTable": "لا توجد بيانات متاحة في الجدول",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sSearch": "ابحث:",
+                    "sLoadingRecords": "جاري التحميل...",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sLast": "الأخير",
+                        "sNext": "التالي",
+                        "sPrevious": "السابق"
+                    }
+                } : {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
                 },
                 searchDelay: 500,
                 searching: false,
@@ -89,14 +121,20 @@ var KTUsersList = function () {
         var select = $('#visible_cols');
 
         $.each(cols, function (index, option) {
+            let optionText = option.name;
+            if (optionText === 'select_switch' || option.data === 'select_switch') {
+                optionText = (typeof trans === 'function' && trans('select_switch') !== 'select_switch') ? trans('select_switch') : 'تحديد الكل';
+            }
             select.append($('<option>', {
                 value: index,
-                text: option.name
+                text: optionText
             }).prop('selected', true)
             );
         });
         if(select){            
-            select.select2()
+            select.select2({
+                language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
+            })
         }
     }
 
@@ -160,14 +198,14 @@ var KTUsersList = function () {
                 // set the btn
                 const btn = $(this);
                 const href = btn.attr('href');
-                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+                let isAr = $('html').attr('lang') === 'ar';
                 Swal.fire({
-                    text: "Are you sure you want to delete this?",
+                    text: isAr ? "هل أنت متأكد من أنك تريد حذف هذا العنصر؟" : "Are you sure you want to delete this?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Yes, delete!",
-                    cancelButtonText: "No, cancel",
+                    confirmButtonText: isAr ? "نعم، احذف!" : "Yes, delete!",
+                    cancelButtonText: isAr ? "لا، إلغاء" : "No, cancel",
                     customClass: {
                         confirmButton: "btn fw-bold btn-primary",
                         cancelButton: "btn fw-bold btn-active-light-primary"
@@ -181,10 +219,10 @@ var KTUsersList = function () {
                             dataType: "json",
                             success: function (response) {
                                 Swal.fire({
-                                    text: trans("You have deleted the record!."),
+                                    text: isAr ? "تم حذف العنصر بنجاح." : "You have deleted the record!.",
                                     icon: "success",
                                     buttonsStyling: false,
-                                    confirmButtonText: "Ok, got it!",
+                                    confirmButtonText: isAr ? "حسناً" : "Ok, got it!",
                                     customClass: {
                                         confirmButton: "btn fw-bold btn-primary",
                                     }
@@ -195,17 +233,6 @@ var KTUsersList = function () {
                                     // Detect checked checkboxes
                                     toggleToolbars();
                                 });
-                            }
-                        });
-
-                    } else if (result.dismiss === 'cancel') {
-                        Swal.fire({
-                            text: "item was not deleted.",
-                            icon: "error",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn fw-bold btn-primary",
                             }
                         });
                     }
@@ -330,14 +357,14 @@ var KTUsersList = function () {
         // Deleted selected rows
         if (deleteSelected) {
         deleteSelected.addEventListener('click', function () {
-            // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+            let isAr = $('html').attr('lang') === 'ar';
             Swal.fire({
-                text: "Are you sure you want to delete selected records?",
+                text: isAr ? "هل أنت متأكد من أنك تريد حذف العناصر المحددة؟" : "Are you sure you want to delete selected records?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,
-                confirmButtonText: trans("Yes, delete!"),
-                cancelButtonText: trans("No, cancel"),
+                confirmButtonText: isAr ? "نعم، احذف!" : "Yes, delete!",
+                cancelButtonText: isAr ? "لا، إلغاء" : "No, cancel",
                 customClass: {
                     confirmButton: "btn fw-bold btn-primary",
                     cancelButton: "btn fw-bold btn-active-light-primary"
@@ -359,10 +386,10 @@ var KTUsersList = function () {
 
                     });
                     Swal.fire({
-                        text: trans("You have deleted all selected recodes!."),
+                        text: isAr ? "تم حذف جميع العناصر المحددة بنجاح." : "You have deleted all selected records!.",
                         icon: "success",
                         buttonsStyling: false,
-                        confirmButtonText: trans("Ok, got it!"),
+                        confirmButtonText: isAr ? "حسناً" : "Ok, got it!",
                         customClass: {
                             confirmButton: "btn fw-bold btn-primary",
                         }
@@ -373,16 +400,6 @@ var KTUsersList = function () {
                         datatable.draw();
                         toggleToolbars(); // Detect checked checkboxes
                         initToggleToolbar(); // Re-init toolbar to recalculate checkboxes
-                    });
-                } else if (result.dismiss === 'cancel') {
-                    Swal.fire({
-                        text: trans("Selected records was not deleted."),
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: trans("Ok, got it!"),
-                        customClass: {
-                            confirmButton: "btn fw-bold btn-primary",
-                        }
                     });
                 }
             });
@@ -490,21 +507,31 @@ $('#visible_cols').change(function () {
 })
 $(document).ready(function () {
     KTUsersList.init();
+    var select2ArLanguage = {
+      noResults: function () { return "لا توجد نتائج"; },
+      searching: function () { return "جاري البحث..."; },
+      inputTooShort: function () { return "الرجاء كتابة حروف أكثر للبحث"; },
+      inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+    };
     $('.advance-select').each(function (index, element) {
-        let name = $(this).attr('name') + "...";
+        let emptyOptionText = $(this).find('option[value=""]').first().text().trim();
+        let dataPlaceholder = $(this).attr('data-placeholder');
+        let placeholderText = emptyOptionText || dataPlaceholder || "اختر من القائمة";
         if ($(this).parents('.modal').length) {
             let id = $(this).parents('.modal').first().attr('id');
             $(this).select2({
                 allowClear: true,
-                placeholder: name,
+                placeholder: placeholderText,
                 dropdownParent: $('#' + id),
-                width: '100%' // Force width
+                width: '100%',
+                language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
             }).trigger('change');
         } else {
             $(this).select2({
                 allowClear: true,
-                placeholder: name,
-                width: '100%' // Force width
+                placeholder: placeholderText,
+                width: '100%',
+                language: $('html').attr('lang') === 'ar' ? select2ArLanguage : "en"
             }).trigger('change');
         }
     });
@@ -573,10 +600,15 @@ $(document).ready(function () {
             
 
         table.find('thead th').each(function () {
+            let titleText = $(this).text().trim();
+            let dataName = $(this).data('name');
+            if (!titleText || dataName === 'select_switch') {
+                titleText = (typeof trans === 'function' && trans('select_switch') !== 'select_switch') ? trans('select_switch') : 'تحديد الكل';
+            }
             var column = {
-                data: $(this).data('name'), // Use the data-name attribute as the data source
-                name: $(this).data('name'), // Use the data-name attribute as the column name
-                title: $(this).text().trim(), // Use the text content of the <th> as the column title
+                data: dataName, // Use the data-name attribute as the data source
+                name: dataName, // Use the data-name attribute as the column name
+                title: titleText, // Use the text content of the <th> as the column title
                 className: $(this).attr('class'), // Preserve the class names for styling
                 orderable:$(this).hasClass('orderable')
             };
@@ -590,11 +622,33 @@ $(document).ready(function () {
             serverSide: true,
             dom:   "<'d-flex justify-content-between align-items-center mb-2'<'dt-buttons'B><'dt-length'l>>" +
             "frtip",
-            lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500,trans('all')] ],
+            lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500, trans('all')] ],
             pageLength: 25, // default selected value
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            language: {
-                url: $('html').attr('lang') === 'ar' ? '//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json' : '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
+            buttons: [
+                { extend: 'copy', text: trans('copy') || 'نسخ' },
+                { extend: 'csv', text: trans('csv') || 'CSV' },
+                { extend: 'excel', text: trans('excel') || 'Excel' },
+                { extend: 'pdf', text: trans('pdf') || 'PDF' },
+                { extend: 'print', text: trans('print') || 'طباعة' }
+            ],
+            language: $('html').attr('lang') === 'ar' ? {
+                "sProcessing": "جاري التحميل...",
+                "sLengthMenu": "أظهر _MENU_ مدخلات",
+                "sZeroRecords": "لم يتم العثور على أية سجلات",
+                "sEmptyTable": "لا توجد بيانات متاحة في الجدول",
+                "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                "sSearch": "ابحث:",
+                "sLoadingRecords": "جاري التحميل...",
+                "oPaginate": {
+                    "sFirst": "الأول",
+                    "sLast": "الأخير",
+                    "sNext": "التالي",
+                    "sPrevious": "السابق"
+                }
+            } : {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/en-GB.json'
             },
             ajax: {
                 url: url, // Use the data-load attribute for the AJAX URL
@@ -621,14 +675,14 @@ $(document).ready(function () {
                     // set the btn
                     const btn = $(this);
                     const href = btn.attr('href');
-                    // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
+                    let isAr = $('html').attr('lang') === 'ar';
                     Swal.fire({
-                        text: "Are you sure you want to delete this?",
+                        text: isAr ? "هل أنت متأكد من أنك تريد حذف هذا العنصر؟" : "Are you sure you want to delete this?",
                         icon: "warning",
                         showCancelButton: true,
                         buttonsStyling: false,
-                        confirmButtonText: "Yes, delete!",
-                        cancelButtonText: "No, cancel",
+                        confirmButtonText: isAr ? "نعم، احذف!" : "Yes, delete!",
+                        cancelButtonText: isAr ? "لا، إلغاء" : "No, cancel",
                         customClass: {
                             confirmButton: "btn fw-bold btn-primary",
                             cancelButton: "btn fw-bold btn-active-light-primary"
@@ -642,10 +696,10 @@ $(document).ready(function () {
                                 dataType: "json",
                                 success: function (response) {
                                     Swal.fire({
-                                        text: trans("You have deleted the record!."),
+                                        text: isAr ? "تم حذف العنصر بنجاح." : "You have deleted the record!.",
                                         icon: "success",
                                         buttonsStyling: false,
-                                        confirmButtonText: trans("Ok, got it!"),
+                                        confirmButtonText: isAr ? "حسناً" : "Ok, got it!",
                                         customClass: {
                                             confirmButton: "btn fw-bold btn-primary",
                                         }
@@ -653,17 +707,6 @@ $(document).ready(function () {
                                         // Remove current row
                                         dataTable.draw();
                                     })
-                                }
-                            });
-
-                        } else if (result.dismiss === 'cancel') {
-                            Swal.fire({
-                                text: "item was not deleted.",
-                                icon: "error",
-                                buttonsStyling: false,
-                                confirmButtonText: "Ok, got it!",
-                                customClass: {
-                                    confirmButton: "btn fw-bold btn-primary",
                                 }
                             });
                         }

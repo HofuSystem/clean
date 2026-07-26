@@ -18,9 +18,9 @@ class PointsResource extends JsonResource
         return [
             
             "id"            => $this->id,
-            "title"         => DashboardDataTableFormatter::text($this->title),
+            "title"         => DashboardDataTableFormatter::text(trans($this->title)),
             "amount"        => DashboardDataTableFormatter::text($this->amount),
-            "operation"     => DashboardDataTableFormatter::text($this->operation),
+            "operation"     => DashboardDataTableFormatter::text(trans($this->operation)),
             "expire_at"     => $this->expire_at ? Carbon::parse($this->expire_at)->format('Y-m-d') : null,
             "actions"       => $this->actions,
             "select_switch" => $this->select_switch,

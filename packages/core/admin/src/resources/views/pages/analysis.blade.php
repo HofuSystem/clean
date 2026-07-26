@@ -62,7 +62,7 @@
                                                     <div class="card border-0 shadow-sm">
                                                         <div class="card-body p-3">
                                                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                <h6 class="card-title mb-0 text-muted">{{ $month['month_abbr'] }}</h6>
+                                                                <h6 class="card-title mb-0 text-muted">{{ trans($month['month_abbr']) }}</h6>
                                                                 <div class="badge rounded-pill" style="background-color: {{ $month['profit_color'] }}; color: white;">
                                                                     <i class="fas fa-chart-line me-1"></i>
                                                                     {{ $month['profit_percentage'] }}%
@@ -899,14 +899,36 @@
             let ordersPayTypeCounts = {!! json_encode($ordersPayTypeCounts) !!}
             createChart('payTypesChart', ordersPayTypeCounts);
 
+            var datatableLanguage = $('html').attr('lang') === 'ar' ? {
+                "sProcessing": "جاري التحميل...",
+                "sLengthMenu": "أظهر _MENU_ مدخلات",
+                "sZeroRecords": "لم يتم العثور على أية سجلات",
+                "sEmptyTable": "لا توجد بيانات متاحة في الجدول",
+                "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                "sSearch": "ابحث:",
+                "sLoadingRecords": "جاري التحميل...",
+                "oPaginate": {
+                    "sFirst": "الأول",
+                    "sLast": "الأخير",
+                    "sNext": "التالي",
+                    "sPrevious": "السابق"
+                }
+            } : {};
+
             $('.data-table').DataTable({
                 "paging": true,        
                 "searching": true,    
                 "ordering": true,     
                 "info": true,
+                "language": datatableLanguage,
                 dom: 'Bfrtip',
                 buttons: [
-                    'copy', 'csv', 'excel', 'pdf'
+                    { extend: 'copy', text: (typeof trans === 'function' && trans('copy') !== 'copy') ? trans('copy') : 'نسخ' },
+                    { extend: 'csv', text: 'CSV' },
+                    { extend: 'excel', text: 'Excel' },
+                    { extend: 'pdf', text: 'PDF' }
                 ],     
             });
 

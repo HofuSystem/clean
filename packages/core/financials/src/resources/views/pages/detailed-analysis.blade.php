@@ -190,8 +190,8 @@
                                         <tr class="month-row {{ $summary['net_income'] >= 0 ? 'positive' : 'negative' }}">
                                             <td class="text-center fw-bold" data-order="{{ $summary['month'] }}">
                                                 <div class="d-flex flex-column">
-                                                    <span>{{ $summary['month_name'] }}</span>
-                                                    <small class="text-muted">{{ $summary['month_abbr'] }}</small>
+                                                    <span>{{ trans($summary['month_name']) }}</span>
+                                                    <small class="text-muted">{{ trans($summary['month_abbr']) }}</small>
                                                 </div>
                                             </td>
                                             <td class="text-center text-success fw-bold" data-order="{{ $summary['total_coming_money'] }}">
@@ -538,7 +538,7 @@
                 new Chart(growthCtx, {
                     type: 'line',
                     data: {
-                        labels: growthData.map(item => item.month),
+                        labels: growthData.map(item => (typeof trans === 'function' && trans(item.month) !== item.month) ? trans(item.month) : item.month),
                         datasets: [
                             {
                                 label: '{{ trans("Transactions") }}',
@@ -631,11 +631,12 @@
                                     : (transaction.order && transaction.order.client 
                                         ? `${transaction.order.client.name}<br><small class="text-muted">${transaction.order.client.phone || '-'}</small>` 
                                         : '-');
+                                const transType = (typeof trans === 'function' && trans(transaction.type) !== transaction.type) ? trans(transaction.type) : transaction.type;
                                 row.innerHTML = `
                                     <td>${transaction.id}</td>
                                     <td>${orderLink}</td>
                                     <td>${clientLink}</td>
-                                    <td><span class="badge bg-primary">${transaction.type}</span></td>
+                                    <td><span class="badge bg-primary">${transType}</span></td>
                                     <td class="${transaction.amount >= 0 ? 'text-success' : 'text-danger'} fw-bold">
                                         ${transaction.amount >= 0 ? '+' : ''}${parseFloat(transaction.amount).toFixed(2)} {{ trans('SAR') }}
                                     </td>
@@ -771,8 +772,9 @@
                 dateInput.value = dateString;
                 
                 // Update modal title
+                const transMonthName = (typeof trans === 'function' && trans(monthName) !== monthName) ? trans(monthName) : monthName;
                 document.getElementById('addFixedCostModalLabel').textContent = 
-                    `{{ trans('Add Fixed Cost') }} - ${monthName} ${year}`;
+                    `{{ trans('Add Fixed Cost') }} - ${transMonthName} ${year}`;
                 
                 // Reset form
                 form.reset();

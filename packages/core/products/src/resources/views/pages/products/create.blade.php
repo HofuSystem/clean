@@ -48,7 +48,7 @@
                 <!--begin::Card-->
                 <div class="card">
 
-                    <form class="form" method="POST" id="operation-form"  redirect-to="{{route("dashboard.products.index")}}" data-id="{{ $item->id ?? null }}"
+                    <form class="form" method="POST" id="operation-form"  redirect-to="{{ request('type') == 'sales' ? route('dashboard.products.sales') : route('dashboard.products.index') }}" data-id="{{ $item->id ?? null }}"
                         action="{{ route('dashboard.products.create') }}" data-mode="new">
                         @csrf
                         <div class="card-body row">
@@ -57,8 +57,8 @@
                                 <select class="custom-select  form-select advance-select" name="type" id="type">
 
                                     <option value="">{{ trans('select type') }}</option>
-                                    <option value="clothes" @selected(isset($item) and $item->type == 'clothes')>{{ trans('clothes') }}</option>
-                                    <option value="sales" @selected(isset($item) and $item->type == 'sales')>{{ trans('sales') }}</option>
+                                    <option value="clothes" @selected((isset($item) and $item->type == 'clothes') || (!isset($item) && request('type') != 'sales'))>{{ trans('clothes') }}</option>
+                                    <option value="sales" @selected((isset($item) and $item->type == 'sales') || request('type') == 'sales')>{{ trans('sales') }}</option>
                                     <option value="services" @selected(isset($item) and $item->type == 'services')>{{ trans('services') }}</option>
 
                                 </select>
@@ -370,6 +370,12 @@
 
                 var type        = $(this).val();
                 var $Category   = $('#category_id');
+
+                if (type == "sales") {
+                    $('#operation-form').attr('redirect-to', "{{ route('dashboard.products.sales') }}");
+                } else {
+                    $('#operation-form').attr('redirect-to', "{{ route('dashboard.products.index') }}");
+                }
                 if(type =="clothes"){
                     $('#images-div,#vars-div,#wash-type-div').show();
                 }else  if(type =="sales"){

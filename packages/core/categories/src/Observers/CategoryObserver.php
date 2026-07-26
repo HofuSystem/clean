@@ -4,9 +4,22 @@ namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Category;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CategoryObserver
 {
+    private function flushCategoriesCache()
+    {
+        try {
+            if (Cache::supportsTags()) {
+                Cache::tags(['categories_api'])->flush();
+            } else {
+                Cache::forget('categories_api');
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to flush category cache: ' . $e->getMessage());
+        }
+    }
     /**
      * Handle the Category "creating" event.
      *
@@ -66,7 +79,7 @@ class CategoryObserver
      */
     public function saved(Category $category)
     {
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -77,7 +90,7 @@ class CategoryObserver
      */
     public function deleted(Category $category)
     {
-        Cache::tags(['categories_api'])->flush();
+        $this->flushCategoriesCache();
     }
 
     /**

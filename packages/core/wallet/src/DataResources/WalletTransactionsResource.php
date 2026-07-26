@@ -19,12 +19,12 @@ class WalletTransactionsResource extends JsonResource
         return [
             
             "id"             => $this->id,
-            "type"           => DashboardDataTableFormatter::text($this->transaction_type ?? $this->type),
+            "type"           => DashboardDataTableFormatter::text(trans($this->transaction_type ?? $this->type)),
             "amount"         => DashboardDataTableFormatter::text($this->amount),
             "wallet_before"  => DashboardDataTableFormatter::text($this->wallet_before),
             "wallet_after"   => DashboardDataTableFormatter::text($this->wallet_after),
             "current_wallet" => (isset($this?->user?->wallet) and $this?->user?->wallet > 0) ? "(".$this?->user?->wallet.") ".trans("SAR") : "",
-            "status"         => DashboardDataTableFormatter::text($this->status),
+            "status"         => DashboardDataTableFormatter::text(trans($this->status)),
             "transaction_id" => DashboardDataTableFormatter::text($this->transaction_id),
             "bank_name"      => DashboardDataTableFormatter::text($this->bank_name),
             "account_number" => DashboardDataTableFormatter::text($this->account_number),

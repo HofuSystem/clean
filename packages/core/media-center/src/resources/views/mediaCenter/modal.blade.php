@@ -5,8 +5,8 @@
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="mediaModalLabel">Upload Media</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="mediaModalLabel">{{ trans('Upload Media') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ trans('Close') }}"></button>
                 </div>
                 <div class="modal-body">
                     <div class="image-container">
@@ -34,8 +34,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="mediaUploadBtn">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ trans('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="mediaUploadBtn">{{ trans('Save') }}</button>
                 </div>
             </div>
         </div>
