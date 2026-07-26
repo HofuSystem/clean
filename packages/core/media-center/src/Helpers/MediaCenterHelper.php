@@ -16,7 +16,7 @@ class MediaCenterHelper
      *
      * @var array
      */
-    protected static $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'mp4', 'mp3', 'wav', 'jpg', 'jpeg', 'png'];
+    protected static $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'mp4', 'mp3', 'wav', 'jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
     protected static $imageExtensions   = ['gif', 'webp', 'jpg', 'jpeg', 'png','svg'];
 
     /**
@@ -55,19 +55,46 @@ class MediaCenterHelper
             $file = $fileOrUrl;
         }
 
+        if (!$file) {
+            return null;
+        }
 
-        $extension      = $file->getClientOriginalExtension();
+        $extension      = strtolower($file->getClientOriginalExtension());
         $originalName   = $file->getClientOriginalName();
 
         if (!in_array($extension, self::$allowedExtensions)) {
             return null;
         }
 
-        $fileName = $file->hashName();
+        $mimeType = $file->getMimeType();
+        $isImage  = (str_starts_with($mimeType, 'image/') || in_array($extension, self::$imageExtensions)) && $extension !== 'svg' && $mimeType !== 'image/svg+xml';
+
+        if ($isImage) {
+            $fileName = pathinfo($file->hashName(), PATHINFO_FILENAME) . '.webp';
+        } else {
+            $fileName = $file->hashName();
+        }
+
         switch ($type) {
             case 'media':
-                $filePath       = $file->storeAs('media', $fileName, $disk);
-                $sizeInBytes    = $file->getSize();
+                if ($isImage) {
+                    $fileObj = Image::make($file);
+                    if ($fileObj->width() > 1024 || $fileObj->height() > 1024) {
+                        $fileObj = self::compressImage($fileObj, $extension, $quality);
+                    } else {
+                        $fileObj->encode('webp', $quality);
+                    }
+                    $path = storage_path('app/public/media/');
+                    if (!File::exists($path)) {
+                        File::makeDirectory($path, 0755, true, true);
+                    }
+                    $fileObj->save($path . $fileName);
+                    $filePath       = 'media/' . $fileName;
+                    $sizeInBytes    = filesize($path . $fileName);
+                } else {
+                    $filePath       = $file->storeAs('media', $fileName, $disk);
+                    $sizeInBytes    = $file->getSize();
+                }
                 break;
             case 'pdf':
                 $filePath       = $file->storeAs('pdf', $fileName, $disk);
@@ -82,16 +109,18 @@ class MediaCenterHelper
                 $sizeInBytes    = $file->getSize();
                 break;
             case 'gallery':
-                if (str_starts_with($file->getMimeType(), 'image/')) {
-                    $file = Image::make($file);
-                    if ($file->filesize() > 1024 * 1024) {
-                        $file = self::compressImage($file, $extension, $quality);
+                if ($isImage) {
+                    $fileObj = Image::make($file);
+                    if ($fileObj->width() > 1024 || $fileObj->height() > 1024) {
+                        $fileObj = self::compressImage($fileObj, $extension, $quality);
+                    } else {
+                        $fileObj->encode('webp', $quality);
                     }
                     $path = storage_path('app/public/gallery/');
                     if (!File::exists($path)) {
                         File::makeDirectory($path, 0755, true, true);
                     }
-                    $file->save($path . $fileName);
+                    $fileObj->save($path . $fileName);
                     $filePath    = 'gallery/' . $fileName;
                     $sizeInBytes = filesize($path . $fileName);
                 } else {
@@ -99,46 +128,51 @@ class MediaCenterHelper
                     $filePath    = $file->storeAs('gallery', $fileName, $disk);
                     $sizeInBytes = $file->getSize();
                 }
+                break;
             case 'image':
-                $file = Image::make($file);
-                if ($file->filesize() > 1024 * 1024) {
-                    $file = self::compressImage($file, $extension, $quality);
+                $fileObj = Image::make($file);
+                if ($fileObj->width() > 1024 || $fileObj->height() > 1024) {
+                    $fileObj = self::compressImage($fileObj, $extension, $quality);
+                } else {
+                    $fileObj->encode('webp', $quality);
                 }
                 $path = storage_path('app/public/images/');
                 if (!File::exists($path)) {
                     File::makeDirectory($path, 0755, true, true);
                 }
-                $file->save($path . $fileName);
+                $fileObj->save($path . $fileName);
                 $filePath       = 'images/' . $fileName;
                 $sizeInBytes    = filesize($path . $fileName);
                 break;
             case 'avatar':
-                $file = Image::make($file)->fit(200);
-                $file = self::compressImage($file, $extension, $quality);
+                $fileObj = Image::make($file)->fit(200);
+                $fileObj->encode('webp', $quality);
                 $path = storage_path('app/public/avatars/');
                 if (!File::exists($path)) {
                     File::makeDirectory($path, 0755, true, true);
                 }
-                $file->save($path . $fileName);
+                $fileObj->save($path . $fileName);
                 $filePath       = 'avatars/' . $fileName;
                 $sizeInBytes    = filesize($path . $fileName);
                 break;
             case 'thumbnail':
-                $file = Image::make($file)->fit(100);
-                $file = self::compressImage($file, $extension, $quality);
+                $fileObj = Image::make($file)->fit(100);
+                $fileObj->encode('webp', $quality);
                 $path = storage_path('app/public/thumbnails/');
                 if (!File::exists($path)) {
                     File::makeDirectory($path, 0755, true, true);
                 }
-                $file->save($path . $fileName);
+                $fileObj->save($path . $fileName);
                 $filePath       = 'thumbnails/' . $fileName;
                 $sizeInBytes    = filesize($path . $fileName);
                 break;
             case 'file':
-                if (str_starts_with($file->getMimeType(), 'image/')) {
+                if ($isImage) {
                     $fileObj = Image::make($file);
-                    if ($fileObj->filesize() > 1024 * 1024) {
+                    if ($fileObj->width() > 1024 || $fileObj->height() > 1024) {
                         $fileObj = self::compressImage($fileObj, $extension, $quality);
+                    } else {
+                        $fileObj->encode('webp', $quality);
                     }
                     $path = storage_path('app/public/files/');
                     if (!File::exists($path)) {
@@ -156,10 +190,9 @@ class MediaCenterHelper
                 return null;
         }
 
-        if (isset($file) && is_string($file)) {
-            unlink($file);
+        if (is_string($fileOrUrl) && isset($file) && file_exists($file->getPathname())) {
+            @unlink($file->getPathname());
         }
-
 
         $sizeInKB       = round($sizeInBytes / 1024, 2);
         $media          = Media::create([
@@ -176,11 +209,11 @@ class MediaCenterHelper
      * Compress and resize an image while maintaining quality.
      *
      * @param mixed $image
-     * @param string $extension
+     * @param string|null $extension
      * @param int $quality
      * @return mixed
      */
-    public static function compressImage($image, $extension, $quality = 60)
+    public static function compressImage($image, $extension = null, $quality = 60)
     {
         // Get the original image dimensions.
         $width = $image->width();
@@ -202,12 +235,7 @@ class MediaCenterHelper
         });
 
         // Convert the image to WebP format.
-        if ($extension !== 'gif') { // Don't convert GIF images to WebP.
-            $image->encode('webp', $quality);
-            $extension = 'webp';
-        } else {
-            $image->encode($extension, $quality);
-        }
+        $image->encode('webp', $quality);
 
         return $image;
     }

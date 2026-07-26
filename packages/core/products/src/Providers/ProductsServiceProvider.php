@@ -31,8 +31,11 @@ class ProductsServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/../lang', 'products');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'products');
 		$this->loadMigrationsFrom(__DIR__."/../database/migrations");
-        // $this->publishes([
-        //     __DIR__ . '/../public' => public_path('test'),
-        // ], 'public');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Core\Products\Commands\ConvertProductImagesToWebp::class,
+            ]);
+        }
     }
 }
