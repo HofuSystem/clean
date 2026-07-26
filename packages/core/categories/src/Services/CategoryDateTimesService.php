@@ -115,10 +115,20 @@ class CategoryDateTimesService
   
     public function dataTable($draw)
     {
+        $totalQuery = CategoryDateTime::selectRaw('1')
+            ->groupBy('type', 'date', 'category_id', 'city_id');
+        $recordsTotal = \Illuminate\Support\Facades\DB::table(\Illuminate\Support\Facades\DB::raw("({$totalQuery->toSql()}) as sub"))
+            ->mergeBindings($totalQuery->getQuery())
+            ->count();
 
-        $recordsTotal       = CategoryDateTime::count();
-        $recordsFiltered    = CategoryDateTime::search()->count();
-        $records            = CategoryDateTime::select(['type', 'category_id', 'city_id', 'date'])
+        $filteredQuery = CategoryDateTime::selectRaw('1')
+            ->groupBy('type', 'date', 'category_id', 'city_id')
+            ->search();
+        $recordsFiltered = \Illuminate\Support\Facades\DB::table(\Illuminate\Support\Facades\DB::raw("({$filteredQuery->toSql()}) as sub"))
+            ->mergeBindings($filteredQuery->getQuery())
+            ->count();
+
+        $records = CategoryDateTime::select(['type', 'category_id', 'city_id', 'date'])
             ->groupBy('type','date','category_id','city_id')
             ->with(['category', 'city'])
             ->selectRaw('COUNT(*) as count')
