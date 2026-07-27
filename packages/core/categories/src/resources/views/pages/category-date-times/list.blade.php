@@ -287,7 +287,7 @@
 @endpush
 @push('js')
 <script>
-    var deleteUrl = "{{ route('dashboard.category-date-times.delete', ['type'=>'%type','date'=>'%date','category_id'=>'%category_id','city_id'=>'%city_id','trash'=>request()->trash]) }}"
+    var deleteUrl = "{{ route('dashboard.category-date-times.delete', ['type'=>'%type','date'=>'%date','category_id'=>'%category_id','city_id'=>'%city_id','trash'=>request()->trash], false) }}"
     $(document).ready(function() {
         // Handle duplicate button click
         $(document).on('click', '.duplicate-datetime-btn', function(e) {

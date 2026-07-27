@@ -123,12 +123,12 @@ class CategoryDateTime extends CoreModel {
                 </a>';
         }
         if (auth('web')->check() and auth('web')->user()->can('dashboard.category-date-times.edit')) {
-            $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.category-date-times.edit', ['type' => $this->type, 'date' => $this->date,'category_id' => $this->category_id,'city_id' => $this->city_id]) . '"> 
+            $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 " href="' . route('dashboard.category-date-times.edit', ['type' => $this->type, 'date' => $this->date,'category_id' => $this->category_id,'city_id' => $this->city_id], false) . '"> 
                 <i class="fa fa-edit"></i> <span>' . trans('edit') . '</span>
                 </a>';
         }
         if (auth('web')->check() and auth('web')->user()->can('dashboard.category-date-times.delete')) {
-            $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 delete-btn" href="' . route('dashboard.category-date-times.delete', ['type' => $this->type, 'date' => $this->date,'category_id' => $this->category_id,'city_id' => $this->city_id]) . '"> 
+            $actions .= '<a class="btn-operation d-flex justify-content-center align-items-center mx-1 delete-btn" href="' . route('dashboard.category-date-times.delete', ['type' => $this->type, 'date' => $this->date,'category_id' => $this->category_id,'city_id' => $this->city_id], false) . '"> 
                 <i class="fa fa-trash"></i><span> ' . trans('delete') . ' </span>
                 </a>';
         }
