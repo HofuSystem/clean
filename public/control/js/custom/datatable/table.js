@@ -213,9 +213,10 @@ var KTUsersList = function () {
                 }).then(function (result) {
                     if (result.value) {
                         $.ajax({
-                            type: "DELETE",
+                            type: "POST",
                             url: href,
-                            data: {},
+                            data: { _method: 'DELETE' },
+                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                             dataType: "json",
                             success: function (response) {
                                 Swal.fire({
@@ -232,6 +233,15 @@ var KTUsersList = function () {
                                 }).then(function () {
                                     // Detect checked checkboxes
                                     toggleToolbars();
+                                });
+                            },
+                            error: function (xhr) {
+                                Swal.fire({
+                                    text: isAr ? 'حدث خطأ أثناء الحذف.' : 'An error occurred while deleting.',
+                                    icon: 'error',
+                                    buttonsStyling: false,
+                                    confirmButtonText: isAr ? 'حسناً' : 'Ok',
+                                    customClass: { confirmButton: 'btn fw-bold btn-primary' }
                                 });
                             }
                         });
@@ -375,9 +385,10 @@ var KTUsersList = function () {
                         let checkboxValue = $(this).val();
                         let checkUrl = deleteUrl.replace('%s', checkboxValue)
                         $.ajax({
-                            type: "DELETE",
+                            type: "POST",
                             url: checkUrl,
-                            data: {},
+                            data: { _method: 'DELETE' },
+                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                             dataType: "json",
                             success: function (response) {
 

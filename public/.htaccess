@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # Allow all HTTP methods (DELETE, PUT, PATCH) for API/AJAX requests
+    <IfModule mod_headers.c>
+        Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    </IfModule>
+
     # 301 Redirect: www → non-www (توحيد الدومين وتقوية Domain Authority)
     RewriteCond %{HTTP_HOST} ^www\.cleanstation\.app [NC]
     RewriteRule ^(.*)$ https://cleanstation.app/$1 [L,R=301]
