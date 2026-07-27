@@ -215,8 +215,10 @@ var KTUsersList = function () {
                         $.ajax({
                             type: "POST",
                             url: href,
-                            data: { _method: 'DELETE' },
-                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                            data: { 
+                                _method: 'DELETE',
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
                             dataType: "json",
                             success: function (response) {
                                 Swal.fire({
@@ -387,8 +389,10 @@ var KTUsersList = function () {
                         $.ajax({
                             type: "POST",
                             url: checkUrl,
-                            data: { _method: 'DELETE' },
-                            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                            data: { 
+                                _method: 'DELETE',
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
                             dataType: "json",
                             success: function (response) {
 
