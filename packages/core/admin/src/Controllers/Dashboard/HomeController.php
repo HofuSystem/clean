@@ -475,6 +475,17 @@ class HomeController extends Controller
                 ')
                 ->first();
 
+            // Count all orders that went through a delivery (regardless of final status)
+            // This matches the deliveries_count logic in FinancialAnalysisService
+            $deliveriesCount = Order::analysis($request->city_id, null, null, null, $companyType)
+                ->whereNotIn('status', ['pending_payment', 'cancel_payment', 'failed_payment', 'canceled'])
+                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
+                    $query->where('type', 'delivery')
+                        ->whereBetween('date', [$startDate, $endDate]);
+                })
+                ->testAccounts(false)
+                ->count();
+
             $monthName = date('F', mktime(0, 0, 0, $month, 1));
             $monthAbbr = date('M', mktime(0, 0, 0, $month, 1));
 
@@ -490,6 +501,7 @@ class HomeController extends Controller
                 'month_name' => $monthName,
                 'month_abbr' => $monthAbbr,
                 'orders_count' => $monthData->orders_count,
+                'deliveries_count' => $deliveriesCount,
                 'total_revenue' => number_format($monthData->total_revenue, 2),
                 'total_cost' => number_format($monthData->total_cost, 2),
                 'total_profit' => number_format($monthData->total_profit, 2),

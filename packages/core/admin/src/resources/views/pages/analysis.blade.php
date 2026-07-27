@@ -72,7 +72,7 @@
                                                                 <div class="col-6">
                                                                     <div class="mb-2">
                                                                         <small class="text-muted">{{ trans('Orders') }}</small>
-                                                                        <h4 class="mb-0 fw-bold text-primary">{{ $month['orders_count'] }}</h4>
+                                                                        <h4 class="mb-0 fw-bold text-primary">{{ $month['deliveries_count'] }}</h4>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-6">
