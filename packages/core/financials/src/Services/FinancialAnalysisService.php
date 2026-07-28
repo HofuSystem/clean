@@ -72,8 +72,7 @@ class FinancialAnalysisService
 
 
 
-            $deliveriesCount = Order::analysis($cityId, null, null, null, $companyType)
-                ->whereNotIn('status', $this->notValidStatuses)
+            $deliveriesCount = Order::analysis($cityId, null, null, ['delivered', 'finished'], $companyType)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
                     $query->where('type', 'delivery')
                         ->whereBetween('date', [$startDate, $endDate]);

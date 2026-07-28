@@ -475,10 +475,8 @@ class HomeController extends Controller
                 ')
                 ->first();
 
-            // Count all orders that went through a delivery (regardless of final status)
-            // This matches the deliveries_count logic in FinancialAnalysisService
-            $deliveriesCount = Order::analysis($request->city_id, null, null, null, $companyType)
-                ->whereNotIn('status', ['pending_payment', 'cancel_payment', 'failed_payment', 'canceled'])
+            // Count only fully delivered/finished orders
+            $deliveriesCount = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
                 ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
                     $query->where('type', 'delivery')
                         ->whereBetween('date', [$startDate, $endDate]);
