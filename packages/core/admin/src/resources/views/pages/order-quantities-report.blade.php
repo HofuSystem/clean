@@ -95,35 +95,39 @@
         <div class="row">
             @foreach(['lab', 'washer'] as $type)
             <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-capitalize">{{ trans($type) }} {{ trans('Report') }}</h5>
-                        <div class="card-tools">
-                            <a href="{{ route('dashboard.order-quantities-report.export', array_merge(request()->all(), ['wash_type' => $type])) }}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-file-excel me-1"></i> {{ trans('Export') }} {{ trans($type) }}
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center {{ $type == 'lab' ? 'bg-primary text-white' : 'bg-success text-white' }}">
+                        <h5 class="mb-0 text-white"><i class="fas {{ $type == 'lab' ? 'fa-flask' : 'fa-soap' }} me-2"></i>{{ trans('Report') }} {{ trans($type) }}</h5>
+                        <div class="card-tools d-flex align-items-center gap-2">
+                            <span class="badge bg-white text-dark">{{ count($reportData->get($type) ?? []) }}</span>
+                            <a href="{{ route('dashboard.order-quantities-report.export', array_merge(request()->all(), ['wash_type' => $type])) }}" class="btn btn-light btn-sm fw-bold">
+                                <i class="fas fa-file-excel me-1 text-success"></i> {{ trans('Export') }}
                             </a>
                         </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped mb-0">
-                                <thead class="table-light">
+                    <div class="card-body p-0 d-flex flex-column">
+                        <div class="p-2 bg-light border-bottom d-flex align-items-center justify-content-between">
+                            <input type="text" class="form-control form-control-sm table-search-input w-auto" data-target="{{ $type }}-table" placeholder="{{ trans('Search in table...') }}">
+                        </div>
+                        <div class="table-responsive flex-grow-1" style="max-height: 520px; overflow-y: auto;">
+                            <table class="table table-bordered table-hover mb-0" id="{{ $type }}-table">
+                                <thead class="sticky-top" style="background-color: {{ $type == 'lab' ? '#1d4ed8' : '#047857' }}; color: #ffffff;">
                                     <tr>
-                                        <th>{{ trans('Product Name') }}</th>
-                                        <th>{{ trans('Category') }}</th>
-                                        <th>{{ trans('Total Quantity') }}</th>
+                                        <th style="color: #ffffff !important; font-weight: bold;">{{ trans('Product Name') }}</th>
+                                        <th style="color: #ffffff !important; font-weight: bold;">{{ trans('Category') }}</th>
+                                        <th style="color: #ffffff !important; font-weight: bold;">{{ trans('Total Quantity') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($reportData->get($type) ?? [] as $row)
                                         <tr>
                                             <td>{{ $row->product_name }}</td>
-                                            <td>{{ $row->category_name }}</td>
-                                            <td class="fw-bold">{{ number_format($row->total_quantity) }}</td>
+                                            <td><span class="badge bg-label-secondary">{{ $row->category_name }}</span></td>
+                                            <td class="fw-bold text-primary">{{ number_format($row->total_quantity) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-4">{{ trans('No data found') }}</td>
+                                            <td colspan="3" class="text-center py-4 text-muted">{{ trans('No data found') }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -141,6 +145,15 @@
 @push('js')
 <script>
     $(document).ready(function() {
+        $('.table-search-input').on('keyup search input', function() {
+            var targetId = $(this).data('target');
+            var term = $(this).val().toLowerCase();
+            $('#' + targetId + ' tbody tr').each(function() {
+                var text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(term) > -1);
+            });
+        });
+
         $('.ajax-select-company').select2({
             placeholder: "{{ trans('Search for Company') }}",
             allowClear: true,

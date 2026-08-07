@@ -5,9 +5,9 @@
         <div class="card text-start">
             <div class="card-body">
                 <h1 class="card-title text-center"><i class="fas fa-chart-line"></i> {{ trans('Routes Analysis') }}</h1>
-                <form action="{{ route('dashboard.routes-analysis.index') }}" method="get" style="display: flex; align-items: center; width:100%">
-                    <label for="time-filter" style="margin-right: 10px;">{{ __('Filter by Time:') }}</label>
-                    <select id="time-filter" name="time_filter" class="form-control select2 " style="width:200px">
+                <form action="{{ route('dashboard.routes-analysis.index') }}" method="get" class="d-flex align-items-center gap-2 flex-wrap my-3">
+                    <label for="time-filter" class="fw-bold mb-0">{{ trans('Filter by Time:') }}</label>
+                    <select id="time-filter" name="time_filter" class="form-select w-auto">
                         <option @selected(request()->time_filter == "all-time") value="all-time">{{ trans('all-time') }}</option>
                         <option @selected(request()->time_filter == "last-minute") value="last-minute">{{ trans('last-minute') }}</option>
                         <option @selected(request()->time_filter == "10-minute") value="10-minute">{{ trans('10-minute') }}</option>
@@ -19,7 +19,7 @@
                         <option @selected(request()->time_filter == "last-year") value="last-year">{{ trans('last-year') }}</option>
                     </select>
                 
-                    <button type="submit" class="btn btn-success">{{ __('Apply Filter') }}</button>
+                    <button type="submit" class="btn btn-success">{{ trans('Apply Filter') }}</button>
                 </form>
         
               
@@ -47,7 +47,7 @@
                                     <div class="card-body">
                                         <h5><i class="fas fa-calendar-day"></i> {{ trans('Peak Day') }}</h5>
                                         @if($peakUsageAnalysis['peak_day'])
-                                            <h4>{{ $peakUsageAnalysis['peak_day']['day_name'] }}</h4>
+                                            <h4>{{ trans($peakUsageAnalysis['peak_day']['day_name']) }}</h4>
                                             <p>{{ $peakUsageAnalysis['peak_day']['request_count'] }} {{ trans('requests') }}</p>
                                         @else
                                             <h4>{{ trans('No data') }}</h4>
@@ -131,7 +131,7 @@
                                     @foreach ($dailyAnalysis['top_active_days'] as $index => $day)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td><strong>{{ $day['day_name'] }}</strong></td>
+                                            <td><strong>{{ trans($day['day_name']) }}</strong></td>
                                             <td>{{ $day['request_count'] }}</td>
                                             <td>{{ $day['unique_users'] }}</td>
                                         </tr>
@@ -489,7 +489,7 @@
             const dailyChart = new Chart(dailyCtx, {
                 type: 'bar',
                 data: {
-                    labels: @json(collect($dailyAnalysis['daily_data'])->pluck('day_name')),
+                    labels: @json(collect($dailyAnalysis['daily_data'])->map(fn($d) => trans($d['day_name']))),
                     datasets: [{
                         label: '{{ trans("Requests") }}',
                         data: @json(collect($dailyAnalysis['daily_data'])->pluck('request_count')),

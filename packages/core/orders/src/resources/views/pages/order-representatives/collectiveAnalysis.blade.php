@@ -10,7 +10,7 @@
                         <div class="col-md-3 mb-3">
                             <label class="" for="representative_id">{{ trans("representative") }}</label>
                             <select class="custom-select  form-select advance-select" name="representative_id" id="representative_id"  >
-                                <option   value="" >{{trans("select city")}}</option>
+                                <option   value="" >{{trans("select representative")}}</option>
                                 @foreach($allRepresentatives ?? [] as $allRepresentative)
                                     <option data-id="{{$allRepresentative->id }}" @selected(request('representative_id') == $allRepresentative->id) value="{{$allRepresentative->id }}" >{{$allRepresentative->fullname}}</option>
                                 @endforeach

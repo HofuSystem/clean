@@ -128,11 +128,27 @@
                                         <div class="tab-pane fade  @if ($loop->first) show active @endif" id="{{ $key }}-tab-pane" role="tabpanel" aria-labelledby="{{ $key }}-tab" tabindex="0">
                                             <div class="switched-group mt-2">
 
-                                                <label class="" for="permissions">{{ trans($key) }}</label>
+                                                <label class="fw-bold fs-5 mb-2" for="permissions">{{ trans($key) }}</label>
                                                 <div class="form-group row" multiple>
-                                                    <div class="form-check form-switch col-md-12 mt-1">
-                                                        <label class="form-check-label">
-                                                            <input class="form-check-input alls" type="checkbox"  name="alls">
+                                                    @php
+                                                        $tabPermissionsCollection = collect();
+                                                        foreach ($innerTabs as $innerTab) {
+                                                            $matching = $permissions->filter(function($permission) use ($innerTab) {
+                                                                return str_starts_with($permission->tab, $innerTab);
+                                                            });
+                                                            $tabPermissionsCollection = $tabPermissionsCollection->merge($matching);
+                                                        }
+                                                        $tabAllChecked = $tabPermissionsCollection->count() > 0;
+                                                        foreach ($tabPermissionsCollection as $pCheck) {
+                                                            if (!isset($rolePermissions[$pCheck->name])) {
+                                                                $tabAllChecked = false;
+                                                                break;
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <div class="form-check form-switch col-md-12 mt-1 mb-2">
+                                                        <label class="form-check-label fw-bold">
+                                                            <input class="form-check-input alls" type="checkbox" name="alls" @checked($tabAllChecked)>
                                                                 {{ trans('select all of')." ".trans($key) }}
                                                         </label>
                                                     </div>
@@ -144,11 +160,11 @@
                                                         @endphp 
                                                             @foreach ($innerTabPermissions ?? [] as $sItem)
                                                                 <div class="form-check form-switch col-md-4 mt-1">
-                                                                    <input class="form-check-input" type="checkbox" @checked(isset($rolePermissions[$sItem->name]))
+                                                                    <input class="form-check-input perm-checkbox" type="checkbox" @checked(isset($rolePermissions[$sItem->name]))
                                                                         id="permissions-{{ $sItem->id }}" name="permissions[]"
                                                                         value="{{ $sItem->name }}">
                                                                     <label class="form-check-label"
-                                                                        for="permissions-{{ $sItem->id }}">{{ $sItem->title ?? $sItem->name }}</label>
+                                                                        for="permissions-{{ $sItem->id }}">{{ trans($sItem->title ?? $sItem->name) }}</label>
                                                                 </div>
                                                             @endforeach
                                                         @endforeach
@@ -161,14 +177,8 @@
                                     <div class="tab-pane fade" id="other-tab-pane" role="tabpanel" aria-labelledby="other-tab" tabindex="0">
                                         <div class="switched-group mt-2">
 
-                                            <label class="" for="permissions">{{ trans('other') }}</label>
+                                            <label class="fw-bold fs-5 mb-2" for="permissions">{{ trans('other') }}</label>
                                             <div class="form-group row" multiple>
-                                                <div class="form-check form-switch col-md-12 mt-1">
-                                                    <label class="form-check-label">
-                                                        <input class="form-check-input alls" type="checkbox"  name="alls" data-tab="other">
-                                                            {{ trans('select all of')." ".trans('other') }}
-                                                        </label>
-                                                </div>
                                                 @php
                                                     $otherPermissions = $permissions->filter(function($permission)use($tabs){
                                                         $other = true;
@@ -183,16 +193,28 @@
                                                         if($other){
                                                             return $other;
                                                         }
-                                                        
                                                     });
+                                                    $otherAllChecked = $otherPermissions->count() > 0;
+                                                    foreach ($otherPermissions as $pCheck) {
+                                                        if (!isset($rolePermissions[$pCheck->name])) {
+                                                            $otherAllChecked = false;
+                                                            break;
+                                                        }
+                                                    }
                                                 @endphp
+                                                <div class="form-check form-switch col-md-12 mt-1 mb-2">
+                                                    <label class="form-check-label fw-bold">
+                                                        <input class="form-check-input alls" type="checkbox" name="alls" data-tab="other" @checked($otherAllChecked)>
+                                                            {{ trans('select all of')." ".trans('other') }}
+                                                        </label>
+                                                </div>
                                                 @foreach ($otherPermissions ?? [] as $sItem)
                                                     <div class="form-check form-switch col-md-4 mt-1">
-                                                        <input class="form-check-input" type="checkbox" @checked(isset($rolePermissions[$sItem->name]))
+                                                        <input class="form-check-input perm-checkbox" type="checkbox" @checked(isset($rolePermissions[$sItem->name]))
                                                             id="permissions-{{ $sItem->id }}" name="permissions[]"
                                                             value="{{ $sItem->name }}">
                                                         <label class="form-check-label"
-                                                            for="permissions-{{ $sItem->id }}">{{ $sItem->title ?? $sItem->name }}</label>
+                                                            for="permissions-{{ $sItem->id }}">{{ trans($sItem->title ?? $sItem->name) }}</label>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -231,13 +253,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/1.0.5/jquery.tablednd.js"></script>
     <script src="{{ asset('control') }}/js/custom/crud/form.js"></script>
     <script>
-        $('.alls').change(function (e) { 
-            e.preventDefault();
-            let row = $(this).closest('.row'); // Get the closest table row
-            let checkboxes = row.find('input[type="checkbox"]'); // Find all checkboxes in that row
-            let isChecked = $(this).prop('checked'); // Get the state of the clicked checkbox
+        $(document).ready(function() {
+            $('.alls').change(function (e) { 
+                let row = $(this).closest('.switched-group');
+                let checkboxes = row.find('.perm-checkbox');
+                checkboxes.prop('checked', $(this).prop('checked'));
+            });
 
-            checkboxes.prop('checked', isChecked); // Set all checkboxes in the row to the same state
+            $(document).on('change', '.perm-checkbox', function() {
+                let row = $(this).closest('.switched-group');
+                let alls = row.find('.alls');
+                let checkboxes = row.find('.perm-checkbox');
+                let total = checkboxes.length;
+                let checkedCount = checkboxes.filter(':checked').length;
+                alls.prop('checked', total > 0 && total === checkedCount);
+            });
         });
     </script>
 @endpush

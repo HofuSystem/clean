@@ -56,8 +56,8 @@
                 <!--begin::Card-->
                 <div class="container">
                     <div class="sidebar">
-                        <h1>View Areas</h1>
-                        <button id="clearAreas">Clear All</button>
+                        <h1>{{ trans('View Areas') }}</h1>
+                        <button id="clearAreas">{{ trans('Clear All') }}</button>
                         <div class="areas-list" id="areasList">
                             <!-- Areas will be listed here -->
                         </div>

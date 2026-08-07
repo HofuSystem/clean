@@ -14,11 +14,11 @@ class GiftsResource extends JsonResource
             "id"            => $this->id,
             "title"         => DashboardDataTableFormatter::text($this->title),
             "coupon_code"   => DashboardDataTableFormatter::text($this->coupon_code),
-            "order_type"    => DashboardDataTableFormatter::text($this->order_type),
+            "order_type"    => DashboardDataTableFormatter::text(trans($this->order_type ?? '')),
             "from"          => DashboardDataTableFormatter::text($this->from),
             "to"            => DashboardDataTableFormatter::text($this->to),
             "value"         => DashboardDataTableFormatter::text($this->value),
-            "type"          => DashboardDataTableFormatter::text($this->type),
+            "type"          => DashboardDataTableFormatter::text(trans($this->type ?? '')),
             "status"        => DashboardDataTableFormatter::text(trans($this->status)),
 
             "actions"       => $this->actions,

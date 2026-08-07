@@ -369,7 +369,7 @@
                                                     <td>{{ $order->reference_id }}</td>
                                                     <td>{{ $order->total_price }}</td>
                                                     <td>{{ $order->total_coupon }}</td>
-                                                    <td>{{ $order->status }}</td>
+                                                    <td>{{ trans($order->status ?? '') }}</td>
                                                     <td>{{ $order->created_at }}</td>
                                                 </tr>
                                             @endforeach

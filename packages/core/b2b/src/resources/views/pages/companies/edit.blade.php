@@ -381,8 +381,7 @@
                                     <button type="button" class="btn btn-light-primary font-weight-bold prev-step"><i
                                             class="fas fa-arrow-left"></i> @lang('Previous')</button>
                                     <div>
-                                        <button type="submit" class="btn btn-primary font-weight-bold">{{ trans('Save
-                                            Contract Details') }}</button>
+                                        <button type="submit" class="btn btn-primary font-weight-bold">{{ trans('Save Contract Details') }}</button>
                                         @if($contract)
                                         <button type="button"
                                             class="btn btn-light-primary font-weight-bold next-step">@lang('Next') <i

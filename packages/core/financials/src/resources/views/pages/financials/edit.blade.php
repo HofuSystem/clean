@@ -89,13 +89,38 @@
                             </div>
 
                             <div class="form-group mb-3 col-md-6">
-                                <label for="attachment">{{ trans("Attachment") }}</label>
+                                <label for="attachment" class="form-label fw-bold">{{ trans("Attachment") }}</label>
                                 <input type="file" name="attachment" id="attachment" class="form-control">
                                 @if(isset($item) && $item->attachment)
-                                    <div class="mt-2">
-                                        <a href="{{ asset('storage/' . $item->attachment) }}" target="_blank" class="btn btn-sm btn-light-primary">
-                                            <i class="fas fa-paperclip"></i> @lang('View current attachment')
-                                        </a>
+                                    @php
+                                        $attachmentUrl = \Illuminate\Support\Str::startsWith($item->attachment, ['http://', 'https://']) 
+                                            ? $item->attachment 
+                                            : (\Illuminate\Support\Str::startsWith($item->attachment, 'storage/') ? asset($item->attachment) : asset('storage/' . $item->attachment));
+                                        $ext = strtolower(pathinfo($item->attachment, PATHINFO_EXTENSION));
+                                        $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg']);
+                                    @endphp
+                                    <div class="mt-3 p-3 border rounded bg-light shadow-sm">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="fw-bold text-muted small"><i class="fas fa-paperclip me-1"></i>{{ trans('Current Attachment') }}</span>
+                                            <a href="{{ $attachmentUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> {{ trans('View / Download Attachment') }}
+                                            </a>
+                                        </div>
+                                        @if($isImage)
+                                            <div class="text-center p-2 bg-white rounded border">
+                                                <a href="{{ $attachmentUrl }}" target="_blank">
+                                                    <img src="{{ $attachmentUrl }}" alt="{{ trans('Attachment') }}" class="img-fluid rounded shadow-sm" style="max-height: 180px; object-fit: contain;">
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="p-3 bg-white rounded border d-flex align-items-center">
+                                                <i class="fas {{ $ext === 'pdf' ? 'fa-file-pdf text-danger' : 'fa-file-alt text-primary' }} fa-2x me-3"></i>
+                                                <div class="text-truncate">
+                                                    <div class="fw-bold text-dark text-truncate" style="max-width: 250px;">{{ basename($item->attachment) }}</div>
+                                                    <small class="text-muted text-uppercase">{{ $ext }} {{ trans('File') }}</small>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             </div>

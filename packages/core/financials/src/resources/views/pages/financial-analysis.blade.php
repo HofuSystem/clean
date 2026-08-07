@@ -49,6 +49,24 @@
     </style>
 
     <div class="container-fluid flex-grow-1 container-p-y mx-auto">
+        <!--begin::Toolbar-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack mb-3">
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
+                data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
+                class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ $title }}</h1>
+                <span class="h-20px border-gray-200 border-start mx-4"></span>
+                <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{{ route('dashboard.index') }}" class="text-muted text-hover-primary">@lang('Home')</a>
+                    </li>
+                    <li class="breadcrumb-item text-muted">@lang("Financials")</li>
+                    <li class="breadcrumb-item text-dark">{{ $title }}</li>
+                </ul>
+            </div>
+        </div>
+        <!--end::Toolbar-->
+
         <!-- Filters -->
         <div class="filter-card">
             <form method="GET" action="{{ route('dashboard.financial-analysis') }}">
@@ -129,8 +147,8 @@
                                         <tr class="month-row {{ $month['raw_profit'] >= 0 ? 'positive' : 'negative' }}">
                                             <td class="text-center fw-bold">
                                                 <div class="d-flex flex-column">
-                                                    <span>{{ trans($month['month_name']) }}</span>
-                                                    <small class="text-muted">{{ trans($month['month_abbr']) }}</small>
+                                                    <span>{{ $month['month_name'] }}</span>
+                                                    <small class="text-muted">{{ trans($month['month_name']) }}</small>
                                                 </div>
                                             </td>
                                             <td class="text-center">{{ number_format($month['new_orders_count']) }}</td>

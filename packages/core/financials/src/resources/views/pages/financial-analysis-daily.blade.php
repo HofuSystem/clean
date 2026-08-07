@@ -59,15 +59,30 @@
     </style>
 
     <div class="container-fluid flex-grow-1 container-p-y mx-auto">
-        <!-- Back button & Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">
-                {{ trans('Daily Financial Analysis') }} - {{ trans($monthName) }} {{ $year }}
-            </h4>
-            <a href="{{ route('dashboard.financial-analysis', ['year' => $year, 'city_id' => $cityId, 'company_type' => $companyType]) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>{{ trans('Back to Monthly Analysis') }}
-            </a>
+        <!--begin::Toolbar-->
+        <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack mb-3">
+            <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
+                data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
+                class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
+                <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ $title }} - {{ trans($monthName) }} {{ $year }}</h1>
+                <span class="h-20px border-gray-200 border-start mx-4"></span>
+                <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{{ route('dashboard.index') }}" class="text-muted text-hover-primary">@lang('Home')</a>
+                    </li>
+                    <li class="breadcrumb-item text-muted">
+                        <a href="{{ route('dashboard.financial-analysis', ['year' => $year, 'city_id' => $cityId, 'company_type' => $companyType]) }}" class="text-muted text-hover-primary">{{ trans('Financial Analysis') }}</a>
+                    </li>
+                    <li class="breadcrumb-item text-dark">{{ trans($monthName) }} {{ $year }}</li>
+                </ul>
+            </div>
+            <div>
+                <a href="{{ route('dashboard.financial-analysis', ['year' => $year, 'city_id' => $cityId, 'company_type' => $companyType]) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>{{ trans('Back to Monthly Analysis') }}
+                </a>
+            </div>
         </div>
+        <!--end::Toolbar-->
 
         <!-- Filters -->
         <div class="filter-card">

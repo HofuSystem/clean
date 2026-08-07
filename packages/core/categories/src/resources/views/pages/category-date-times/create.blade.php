@@ -12,7 +12,7 @@
                     data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
                     <!--begin::Title-->
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ $title }}</h1>
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ trans($title) }}</h1>
                     <!--end::Title-->
                     <!--begin::Separator-->
                     <span class="h-20px border-gray-200 border-start mx-4"></span>
@@ -30,7 +30,7 @@
                         <!--end::Item-->
                         
                         <!--begin::Item-->
-                        <li class="breadcrumb-item text-dark">{{ $title }}</li>
+                        <li class="breadcrumb-item text-dark">{{ trans($title) }}</li>
                         <!--end::Item-->
                     </ul>
                     <!--end::Breadcrumb-->
@@ -235,7 +235,7 @@
                         <td> <input name="receiver_count[]" type="number" class="form-control receiver-count"  value="${receiverCount}" > </td>
                         <td class="delivery-column" ${displayNone}> <input name="delivery_count[]" type="number" class="form-control delivery-count"  value="${deliveryCount}" > </td>
                         <td> <input disabled name="order_count[]" type="number" class="form-control order-count"  value="${(parseInt(receiverCount)+parseInt(deliveryCount))}" > </td>
-                        <td><button  class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                        <td><button  class="btn btn-danger btn-sm delete-row">${"{{ trans('Delete') }}"}</button></td>
                     </tr>`;
                     $('#scheduleTable tbody').append(newRow);
 

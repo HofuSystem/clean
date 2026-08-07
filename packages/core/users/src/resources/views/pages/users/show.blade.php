@@ -454,15 +454,16 @@
                                 <div class="tab-pane fade" id="pills-notifications" role="tabpanel"
                                 aria-labelledby="pills-notifications-tab" tabindex="0">
                                 <div class="mt-3">
-                                    <h3 class="text-dark">{{ trans('notifications') }}</h3>
-                                    @can('dashboard.notifications.create')
-                                        <a href="{{ route('dashboard.notifications.create') }}" id ="notify-user" data-id="{{ $item->id }}"
-                                            class="btn btn-warning align-middle ">
-                                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
-                                            <i class="fas fa-bell"></i>
-                                            <!--end::Svg Icon-->@lang('notify')
-                                        </a>
-                                    @endcan
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h3 class="text-dark mb-0">{{ trans('notifications') }}</h3>
+                                        @can('dashboard.notifications.create')
+                                            <a href="{{ route('dashboard.notifications.create') }}" id="notify-user" data-id="{{ $item->id }}"
+                                                class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2 px-3 py-2">
+                                                <i class="fas fa-bell"></i>
+                                                <span>{{ trans('Send Notification') }}</span>
+                                            </a>
+                                        @endcan
+                                    </div>
                                     <div class="table-responsive">
                                         <!--begin::Table-->
                                         <table

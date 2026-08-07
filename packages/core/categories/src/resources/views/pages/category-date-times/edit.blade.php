@@ -12,7 +12,7 @@
                     data-kt-swapper-parent="{default: '#kt_content_container', 'lg': '#kt_toolbar_container'}"
                     class="page-title d-flex align-items-center flex-wrap me-3 mb-5 mb-lg-0">
                     <!--begin::Title-->
-                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ $title }}</h1>
+                    <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">{{ trans($title) }}</h1>
                     <!--end::Title-->
                     <!--begin::Separator-->
                     <span class="h-20px border-gray-200 border-start mx-4"></span>
@@ -30,7 +30,7 @@
                         <!--end::Item-->
                         
                         <!--begin::Item-->
-                        <li class="breadcrumb-item text-dark">{{ $title }}</li>
+                        <li class="breadcrumb-item text-dark">{{ trans($title) }}</li>
                         <!--end::Item-->
                     </ul>
                     <!--end::Breadcrumb-->
@@ -58,7 +58,7 @@
                             </div>
                             <div class="form-group mb-3 col-md-6">
                                 <label class="required" for="type">{{ trans('type') }}</label>
-                                <select class="custom-select  form-select advance-select" name="type" id="type">
+                                <select class="custom-select  form-select advance-select" name="type" id="type" data-placeholder="{{ trans('select type') }}">
 
                                     <option value="">{{ trans('select type') }}</option>
                                     <option value="clothes" @selected(isset($type) and $type == 'clothes')>{{ trans('clothes') }}</option>
@@ -73,7 +73,7 @@
                             <div class="form-group mb-3 col-md-6">
                                 <label for="category_id">{{ trans('category') }}</label>
                                 <select class="custom-select  form-select advance-select" name="category_id"
-                                    id="category_id" data-old-value="{{ $categoryId }}">
+                                    id="category_id" data-old-value="{{ $categoryId }}" data-placeholder="{{ trans('select category') }}">
 
                                     <option value="">{{ trans('select category') }}</option>
                                     @foreach ($categories ?? [] as $sItem)
@@ -86,7 +86,7 @@
                             </div>
                             <div class="form-group mb-3 col-md-12">
                                 <label  for="city_id">{{ trans("city") }}</label>
-                                <select class="custom-select  form-select advance-select" name="city_id" id="city_id"  >
+                                <select class="custom-select  form-select advance-select" name="city_id" id="city_id" data-placeholder="{{ trans('select cities') }}" >
                                     
                                     <option   value="" >{{trans("select cities")}}</option>
                                     @foreach($cities ?? [] as $sItem)
@@ -117,7 +117,7 @@
                                                 <td> <input name="receiver_count[]" type="number" class="form-control receiver-count"  value="{{ $sItem->receiver_count }}" > </td>
                                                 <td class="delivery-column"> <input name="delivery_count[]" type="number" class="form-control delivery-count"  value="{{ $sItem->delivery_count }}" > </td>
                                                 <td> <input disabled name="order_count[]" type="number" class="form-control order-count"  value="{{ $sItem->delivery_count + $sItem->receiver_count }}" > </td>
-                                                <td><button  class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                                                <td><button  class="btn btn-danger btn-sm delete-row">{{ trans('Delete') }}</button></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -230,7 +230,7 @@
                         <td> <input name="receiver_count[]" type="number" class="form-control receiver-count"  value="${receiverCount}" > </td>
                         <td class="delivery-column" ${displayNone}> <input name="delivery_count[]" type="number" class="form-control delivery-count"  value="${deliveryCount}" > </td>
                         <td> <input disabled name="order_count[]" type="number" class="form-control order-count"  value="${(parseInt(receiverCount)+parseInt(deliveryCount))}" > </td>
-                        <td><button  class="btn btn-danger btn-sm delete-row">Delete</button></td>
+                        <td><button  class="btn btn-danger btn-sm delete-row">${"{{ trans('Delete') }}"}</button></td>
                     </tr>`;
                     $('#scheduleTable tbody').append(newRow);
 

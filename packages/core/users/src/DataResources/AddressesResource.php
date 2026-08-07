@@ -17,14 +17,14 @@ class AddressesResource extends JsonResource
 
         return [
             "id"            => $this->id,
-            "name"          => DashboardDataTableFormatter::text($this->name),
+            "name"          => DashboardDataTableFormatter::text(trans($this->name ?? '')),
             "location"      => DashboardDataTableFormatter::text($this->location),
             "lat"           => DashboardDataTableFormatter::text($this->lat),
             "lng"           => DashboardDataTableFormatter::text($this->lng),
             "city_id"       => DashboardDataTableFormatter::relations($this->city,"name","dashboard.cities.show"),
             "district_id"   => DashboardDataTableFormatter::relations($this->district,"name","dashboard.districts.show"),
             'is_default'    => DashboardDataTableFormatter::text($this->is_default),
-            "status"        => DashboardDataTableFormatter::text($this->status),
+            "status"        => DashboardDataTableFormatter::text(trans($this->status ?? '')),
             "actions"       => $this->actions,
             "select_switch" => $this->select_switch,
         ];

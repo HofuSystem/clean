@@ -190,7 +190,7 @@
                                         <tr class="month-row {{ $summary['net_income'] >= 0 ? 'positive' : 'negative' }}">
                                             <td class="text-center fw-bold" data-order="{{ $summary['month'] }}">
                                                 <div class="d-flex flex-column">
-                                                    <span>{{ trans($summary['month_name']) }}</span>
+                                                    <span>{{ $summary['month_name'] }}</span>
                                                     <small class="text-muted">{{ trans($summary['month_abbr']) }}</small>
                                                 </div>
                                             </td>

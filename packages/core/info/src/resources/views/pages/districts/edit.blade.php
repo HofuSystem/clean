@@ -126,7 +126,7 @@
                                 </select>
 
                             </div>
-                            <button class="btn btn-danger" id="clearPoints">Clear All</button>
+                            <button class="btn btn-danger" id="clearPoints">{{ trans('Clear All') }}</button>
 
                             <div id="map"></div>
 

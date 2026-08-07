@@ -11,7 +11,7 @@ class FixedCostController extends Controller
 {
     public function index()
     {
-        $title = trans('Fixed cost index'); 
+        $title = trans('Fixed Costs Management'); 
         $screen = 'fixed-costs-index';
         $fixedCosts = FixedCost::orderBy('created_at', 'desc')->paginate(15);
         return view('financials::pages.fixed-costs.index', compact('title', 'screen', 'fixedCosts'));
@@ -19,7 +19,7 @@ class FixedCostController extends Controller
 
     public function create()
     {
-        $title = trans('Fixed cost create');
+        $title = trans('Add New Fixed Cost');
         $screen = 'fixed-costs-create';
         return view('financials::pages.fixed-costs.create', compact('title', 'screen'));
     }
@@ -48,14 +48,14 @@ class FixedCostController extends Controller
 
     public function show(FixedCost $fixedCost)
     {
-        $title = trans('Fixed cost show');
+        $title = trans('Fixed Cost Details');
         $screen = 'fixed-costs-show';
         return view('financials::pages.fixed-costs.show', compact('title', 'screen', 'fixedCost'));
     }
 
     public function edit(FixedCost $fixedCost)
     {
-        $title = trans('Fixed cost edit');
+        $title = trans('Edit Fixed Cost');
         $screen = 'fixed-costs-edit';
         return view('financials::pages.fixed-costs.edit', compact('title', 'screen', 'fixedCost'));
     }

@@ -20,12 +20,18 @@ use Core\Orders\Services\OrdersService;
 use Core\Users\Services\UsersService;
 use Core\Orders\Services\OrderItemsService;
 use Core\Users\Models\User;
+use Core\Info\Services\CitiesService;
 
 class OrderRepresentativesController extends Controller
 {
     use ApiResponse;
-    public function __construct(protected OrderRepresentativesService $orderRepresentativesService, protected OrdersService $ordersService, protected UsersService $usersService, protected OrderItemsService $orderItemsService)
-    {
+    public function __construct(
+        protected OrderRepresentativesService $orderRepresentativesService,
+        protected OrdersService $ordersService,
+        protected UsersService $usersService,
+        protected OrderItemsService $orderItemsService,
+        protected CitiesService $citiesService
+    ) {
     }
 
     public function index()
@@ -44,6 +50,7 @@ class OrderRepresentativesController extends Controller
     {
         $title              = trans('OrderRepresentative analysis');
         $screen             = 'order-representatives-analysis';
+        $cities             = $this->citiesService->selectable('id', 'name');
         $allRepresentatives = User::whereHas('roles',function($roleQuery){
             $roleQuery->whereIn('name', ['technical', 'driver']);
         })->get();
@@ -70,12 +77,13 @@ class OrderRepresentativesController extends Controller
             $query->where('users.id', $request->representative_id);
         })->get();
 
-        return view('orders::pages.order-representatives.analysis', compact('title', 'screen',  'representatives','allRepresentatives'));
+        return view('orders::pages.order-representatives.analysis', compact('title', 'screen', 'representatives', 'allRepresentatives', 'cities'));
     }
     public function collectiveAnalysis(Request $request)
     {
         $title              = trans('OrderRepresentative collective Analysis');
         $screen             = 'order-representatives-collective-analysis';
+        $cities             = $this->citiesService->selectable('id', 'name');
         $allRepresentatives = User::whereHas('roles',function($roleQuery){
             $roleQuery->whereIn('name', ['technical', 'driver']);
         })->get();
@@ -114,7 +122,7 @@ class OrderRepresentativesController extends Controller
             return $representative;
         });
 
-        return view('orders::pages.order-representatives.collectiveAnalysis', compact('title', 'screen',  'representatives','allRepresentatives'));
+        return view('orders::pages.order-representatives.collectiveAnalysis', compact('title', 'screen', 'representatives', 'allRepresentatives', 'cities'));
     }
 
 
