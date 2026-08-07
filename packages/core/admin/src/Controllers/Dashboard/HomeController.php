@@ -302,7 +302,17 @@ class HomeController extends Controller
             });
         $ordersRepresentativeAnalysis = User::query()
             ->underMyControl()
-            ->has('representativeOrders')
+            ->whereHas('representativeOrders', function ($query) use ($request, $companyType) {
+                $query->analysis($request->city_id, null, null, null, $companyType)
+                    ->where('order_representatives.type', 'delivery')
+                    ->when(isset($request->from), function ($query) use ($request) {
+                        $query->where('order_representatives.date', '>=', $request->from);
+                    })
+                    ->when(isset($request->to), function ($query) use ($request) {
+                        $query->where('order_representatives.date', '<=', $request->to);
+                    })
+                    ->testAccounts(false);
+            })
             ->withCount([
                 'representativeOrders as count_orders' => function ($query) use ($request, $companyType) {
                     $query->analysis($request->city_id, null, null, null, $companyType)
@@ -361,9 +371,22 @@ class HomeController extends Controller
                     ->testAccounts(false);
             }], 'total_price')
             ->get();
+
         $operatorsAnalysis = User::query()
             ->underMyControl()
-            ->has('operatorOrders')
+            ->whereHas('operatorOrders', function ($query) use ($request, $companyType) {
+                $query->analysis($request->city_id, null, null, null, $companyType)
+                    ->whereHas('orderRepresentatives', function ($query) use ($request) {
+                        $query->where('type', 'delivery')
+                            ->when(isset($request->from), function ($query) use ($request) {
+                                $query->where('order_representatives.date', '>=', $request->from);
+                            })
+                            ->when(isset($request->to), function ($query) use ($request) {
+                                $query->where('order_representatives.date', '<=', $request->to);
+                            });
+                    })
+                    ->testAccounts(false);
+            })
             ->withCount([
                 'operatorOrders as count_orders' => function ($query) use ($request, $companyType) {
                     $query->analysis($request->city_id, null, null, null, $companyType)
