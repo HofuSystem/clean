@@ -18,8 +18,8 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-        $role = Role::firstOrCreate(['name'=>'it']);
-        $role->syncPermissions(Permission::all());
+        $role = Role::firstOrCreate(['name'=>'it', 'guard_name' => 'web']);
+        $role->syncPermissions(Permission::where('guard_name', $role->guard_name)->get());
 
         $admin = User::updateOrCreate([
             'email'     => 'it@cleanstation.app',

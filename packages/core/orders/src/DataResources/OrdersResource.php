@@ -66,15 +66,15 @@ class OrdersResource extends JsonResource
 
         $data['pay_type'] = $payType;
 
-        $technical  = $this->resource->orderRepresentatives()->where('type','technical')->latest()->first();
+        $technical  = $this->orderRepresentatives?->where('type','technical')->sortByDesc('id')->first();
         $data['technical_date']     = $technical?->date;
         $data['technical_time']     = $technical?->time ? Carbon::parse($technical->time)->format('h:i A') . ' : ' . Carbon::parse($technical->to_time)->format('h:i A') : null;
 
-        $delivery   = $this->resource->orderRepresentatives()->where('type','delivery')->latest()->first();
+        $delivery   = $this->orderRepresentatives?->where('type','delivery')->sortByDesc('id')->first();
         $data['delivery_date']      = $delivery?->date;
         $data['delivery_time']      = $delivery?->time ? Carbon::parse($delivery->time)->format('h:i A') . ' : ' . Carbon::parse($delivery->to_time)->format('h:i A') : null;
 
-        $receiver   = $this->resource->orderRepresentatives()->where('type','receiver')->latest()->first();
+        $receiver   = $this->orderRepresentatives?->where('type','receiver')->sortByDesc('id')->first();
         $data['receiver_date']     = $receiver?->date;
         $data['receiver_time']     = $receiver?->time ? Carbon::parse($receiver->time)->format('h:i A') . ' : ' . Carbon::parse($receiver->to_time)->format('h:i A') : null;
 

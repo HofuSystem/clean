@@ -19,7 +19,7 @@ class ProductServiceSettingResource extends JsonResource
         $price      = $this->addon_price;
         $cost       = $this->cost;
         $cityId     = auth('api')->user()?->profile?->city_id ?? request('city_id');
-        $cityPrice  = $this->addonPrices->where('city_id', $cityId)->first();
+        $cityPrice  = $this->relationLoaded('addonPrices') ? $this->addonPrices->where('city_id', $cityId)->first() : null;
         if($cityPrice){
             $price  = $cityPrice->price;
             $cost   = $cityPrice->cost;
@@ -34,7 +34,7 @@ class ProductServiceSettingResource extends JsonResource
             'price'         => ToolHelper::getPriceBasedOnCurrentWeekDay($price),
             'cost'          => $cost,
             'general'       => (bool) $this->general,
-            'sub_settings'  => ProductServiceSettingResource::collection($this->productSettings),
+            'sub_settings'  => ProductServiceSettingResource::collection($this->whenLoaded('productSettings')),
         ];
     }
 }

@@ -31,21 +31,14 @@ class HomeController extends Controller
         $screen = 'dashboard-home';
         $total = $this->ordersService->totalCount();
         $trash = $this->ordersService->trashCount();
-        $clients = $this->usersService->selectable('id', 'fullname');
-        $coupons = $this->couponsService->selectable('id', 'code');
-        $orders = $this->ordersService->selectable('id', 'reference_id');
-        $products = $this->productsService->selectable('id', 'name');
-        $representatives = $this->usersService->selectable('id', 'fullname');
-        $items = $this->orderItemsService->selectable('id', 'product_id');
-        $users = $this->usersService->selectable('id', 'fullname');
-        $pendingTypes = Order::select('type')->where('status', 'pending')->groupBy('type')->get()->pluck('type');
-        $types = Order::groupBy('type')->select('type')->get()->pluck('type');
-        $statuses = Order::groupBy('status')->select('status')->get()->pluck('status');
+        $pendingTypes = Order::select('type')->where('status', 'pending')->groupBy('type')->pluck('type');
+        $types = Order::groupBy('type')->pluck('type');
+        $statuses = Order::groupBy('status')->pluck('status');
         $operators = $this->usersService->selectable('id', 'fullname', ['wallet'], 'operator');
         $representatives = $this->usersService->selectable('id', 'fullname', ['wallet'], ['driver', 'technical']);
         $cities = $this->citiesService->selectable('id', 'name');
 
-        return view('admin::pages.index', compact('title', 'screen', 'pendingTypes', 'types', 'operators', 'representatives', 'types', 'statuses', 'clients', 'coupons', 'orders', 'products', 'representatives', 'items', 'users', 'cities', 'total', 'trash'));
+        return view('admin::pages.index', compact('title', 'screen', 'pendingTypes', 'types', 'operators', 'representatives', 'statuses', 'cities', 'total', 'trash'));
     }
 
     /**

@@ -577,6 +577,7 @@ class CategoriesController extends Controller
                 })
                 ->with([
                     'translations',
+                    'addonPrices',
                     'productSettings' => function ($q) use ($product) {
                         $q->active()
                             ->where(function ($subQ) use ($product) {
@@ -585,7 +586,7 @@ class CategoriesController extends Controller
                                 })
                                 ->orWhere('general', true);
                             })
-                            ->with('translations');
+                            ->with(['translations', 'addonPrices']);
                     }
                 ])
                 ->get();
