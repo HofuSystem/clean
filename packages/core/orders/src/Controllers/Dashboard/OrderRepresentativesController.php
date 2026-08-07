@@ -40,11 +40,9 @@ class OrderRepresentativesController extends Controller
         $screen = 'order-representatives-index';
         $total = $this->orderRepresentativesService->totalCount();
         $trash = $this->orderRepresentativesService->trashCount();
-        $orders = $this->ordersService->selectable('id', 'reference_id');
         $representatives = $this->usersService->selectable('id', 'fullname');
-        $items = $this->orderItemsService->selectable('id', 'product_id');
 
-        return view('orders::pages.order-representatives.list', compact('title', 'screen', 'orders', 'representatives', 'items', "total", "trash"));
+        return view('orders::pages.order-representatives.list', compact('title', 'screen', 'representatives', "total", "trash"));
     }
     public function analysis(Request $request)
     {
@@ -58,19 +56,17 @@ class OrderRepresentativesController extends Controller
         $representatives    = User::withCount(['representativeOrders as total_orders' => function ($query) use ($request) {
             $query->analysis($request->city_id,null,null,['delivered', 'finished'])
             ->testAccounts(false)
-            ->with('orderRepresentatives')
             ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
         }])
         ->with(['representativeOrders'=>function($query)use($request){
             $query->analysis($request->city_id,null,null,['delivered', 'finished'])
             ->testAccounts(false)
-            ->with('orderRepresentatives')
+            ->with(['orderRepresentatives.representative', 'city', 'client'])
             ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
         }])
         ->whereHas('representativeOrders',function($orderQuery)use($request){
             $orderQuery->analysis($request->city_id,$request->from,$request->to,['delivered', 'finished'])
             ->testAccounts(false)
-            ->with('orderRepresentatives')
             ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
         })
         ->when(isset($request->representative_id), function ($query) use ($request) {

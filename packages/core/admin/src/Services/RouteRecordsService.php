@@ -193,13 +193,20 @@ class RouteRecordsService
       ->limit(50)
       ->get();
 
-    // Get the last endpoint for each user
-    foreach ($requestsPerUser as $user) {
-      $lastRequest = RoutesRecord::where('user_id', $user->user_id)
-        ->select('end_point', 'created_at', 'attributes')
-        ->orderBy('created_at', 'desc')
-        ->first();
+    // Get the last endpoint for all these users in a single query
+    $userIds = $requestsPerUser->pluck('user_id')->all();
+    $lastRequests = RoutesRecord::whereIn('user_id', $userIds)
+        ->whereIn('created_at', function($query) {
+            $query->selectRaw('MAX(created_at)')
+                ->from('routes_records')
+                ->groupBy('user_id');
+        })
+        ->select('user_id', 'end_point', 'created_at', 'attributes')
+        ->get()
+        ->keyBy('user_id');
 
+    foreach ($requestsPerUser as $user) {
+      $lastRequest = $lastRequests->get($user->user_id);
       $user->last_endpoint = $lastRequest ? $lastRequest->end_point : null;
       $user->last_request_attributes = $lastRequest ? $lastRequest->attributes : null;
       $user->last_request_time = $lastRequest ? $lastRequest->created_at : null;

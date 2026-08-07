@@ -27,10 +27,8 @@ class RoutesRecordsController extends Controller
         $screen     = 'routes-records-index';
         $total      = $this->routesRecordsService->totalCount();
         $trash      = $this->routesRecordsService->trashCount();
-		$users      = $this->usersService->selectable('id','fullname',['phone']);
-		$ipAddresses = $this->usersService->selectable('id','fullname');
 
-        return view('admin::pages.routes-records.list', compact('title','screen','users','ipAddresses',"total","trash"));
+        return view('admin::pages.routes-records.list', compact('title','screen',"total","trash"));
     }
 
 
@@ -38,11 +36,9 @@ class RoutesRecordsController extends Controller
         $item       = isset($id)    ? $this->routesRecordsService->get($id) : null;
         $screen     = isset($item)  ? 'routes records-edit'          : 'routes records-create';
         $title      = isset($item)  ? trans("routes records  edit")  : trans("routes records  create");
-		$users = $this->usersService->selectable('id','fullname');
-		$ipAddresses = $this->usersService->selectable('id','fullname');
 
 
-        return view('admin::pages.routes-records.edit', compact('item','title','screen','users','ipAddresses') );
+        return view('admin::pages.routes-records.edit', compact('item','title','screen') );
     }
 
     public function storeOrUpdate(RoutesRecordsRequest $request, $id = null){

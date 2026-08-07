@@ -446,56 +446,51 @@ class HomeController extends Controller
             ->groupBy('order_representatives.date')
             ->orderBy('order_representatives.date', 'asc')
             ->get();
-        // Monthly Analysis - 12 months data showing revenue, cost, and net profit
+        // Monthly Analysis - 12 months data showing revenue, cost, and net profit in a single query
         $currentYear = date('Y');
         $monthlyAnalysis = [];
 
-        for ($month = 1; $month <= 12; $month++) {
-            $startDate = $currentYear.'-'.str_pad($month, 2, '0', STR_PAD_LEFT).'-01';
-            $endDate = date('Y-m-t', strtotime($startDate));
- 
-            $monthData = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->selectRaw('
-                    COUNT(*) as orders_count,
-                    COALESCE(SUM(total_price), 0) as total_revenue,
-                    COALESCE(SUM(total_cost), 0) as total_cost,
-                    COALESCE(SUM(total_price - total_cost), 0) as total_profit
-                ')
-                ->first();
+        $monthlyStats = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
+            ->join('order_representatives', 'orders.id', '=', 'order_representatives.order_id')
+            ->where('order_representatives.type', 'delivery')
+            ->whereYear('order_representatives.date', $currentYear)
+            ->testAccounts(false)
+            ->selectRaw('
+                MONTH(order_representatives.date) as month,
+                COUNT(orders.id) as orders_count,
+                COALESCE(SUM(orders.total_price), 0) as total_revenue,
+                COALESCE(SUM(orders.total_cost), 0) as total_cost,
+                COALESCE(SUM(orders.total_price - orders.total_cost), 0) as total_profit
+            ')
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
 
-            // Count only fully delivered/finished orders
-            $deliveriesCount = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
-                ->whereHas('orderRepresentatives', function ($query) use ($startDate, $endDate) {
-                    $query->where('type', 'delivery')
-                        ->whereBetween('date', [$startDate, $endDate]);
-                })
-                ->testAccounts(false)
-                ->count();
+        for ($month = 1; $month <= 12; $month++) {
+            $monthData = $monthlyStats->get($month);
+            $ordersCount = $monthData ? $monthData->orders_count : 0;
+            $totalRevenue = $monthData ? $monthData->total_revenue : 0;
+            $totalCost = $monthData ? $monthData->total_cost : 0;
+            $totalProfit = $monthData ? $monthData->total_profit : 0;
 
             $monthName = date('F', mktime(0, 0, 0, $month, 1));
             $monthAbbr = date('M', mktime(0, 0, 0, $month, 1));
 
             // Calculate profit percentage
-            $profitPercentage = $monthData->total_revenue > 0 ?
-                (($monthData->total_profit / $monthData->total_revenue) * 100) : 0;
+            $profitPercentage = $totalRevenue > 0 ? (($totalProfit / $totalRevenue) * 100) : 0;
 
             // Determine profit color based on positive/negative profit
-            $profitColor = $monthData->total_profit >= 0 ? '#03ad03' : '#cf1a02';
+            $profitColor = $totalProfit >= 0 ? '#03ad03' : '#cf1a02';
 
             $monthlyAnalysis[] = [
                 'month' => $month,
                 'month_name' => $monthName,
                 'month_abbr' => $monthAbbr,
-                'orders_count' => $monthData->orders_count,
-                'deliveries_count' => $deliveriesCount,
-                'total_revenue' => number_format($monthData->total_revenue, 2),
-                'total_cost' => number_format($monthData->total_cost, 2),
-                'total_profit' => number_format($monthData->total_profit, 2),
+                'orders_count' => $ordersCount,
+                'deliveries_count' => $ordersCount,
+                'total_revenue' => number_format($totalRevenue, 2),
+                'total_cost' => number_format($totalCost, 2),
+                'total_profit' => number_format($totalProfit, 2),
                 'profit_percentage' => number_format($profitPercentage, 2),
                 'profit_color' => $profitColor,
             ];
