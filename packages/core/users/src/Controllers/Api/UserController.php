@@ -3,6 +3,7 @@
 namespace Core\Users\Controllers\Api;
 
 use Core\Settings\Traits\ApiResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Profile\EditProfileRequest;
@@ -52,9 +53,34 @@ class UserController extends Controller
 
     public function deleteAccount(Request $request)
     {
-        $user = auth('api')->user();
-        $user->update(['is_ban'=>true]);
-        return $this->returnData(trans('your account was panned'),['status' => 'success', 'data' => null], 200);
+        $user = $request->user() ?? auth('api')->user();
+
+        if (!$user) {
+            return $this->returnErrorMessage(trans('User not found'), [], [], 401);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Delete all tokens for API authentication
+            $user->tokens()->delete();
+
+            // Delete associated devices (FCM tokens)
+            $user->devices()->delete();
+
+            // Mark user inactive
+            $user->update(['is_active' => false]);
+
+            // Soft delete user record
+            $user->delete();
+
+            DB::commit();
+
+            return $this->returnSuccessMessage(trans('Account deleted successfully'), 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('Failed to delete account'), [], [], 500);
+        }
     }
 
     public function updateFcm(Request $request)

@@ -4,6 +4,8 @@
     "main": "Main",
     "addon": "Addon",
     "color": "Color",
+    "Account deleted successfully": "Account deleted successfully",
+    "Failed to delete account": "Failed to delete account, please try again",
     "bank account number": "Bank Account Number",
     "financial record saved": "Financial record saved",
     "financial record deleted": "Financial record deleted",
