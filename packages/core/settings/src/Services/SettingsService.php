@@ -15,7 +15,7 @@ class SettingsService
         if (isset(self::$allSettings)) {
             return self::$allSettings;
         }
-        self::$allSettings =  Setting::all()->keyBy('key')->map(function ($item) {
+        self::$allSettings = \Illuminate\Support\Facades\DB::table('settings')->get()->keyBy('key')->map(function ($item) {
             return ToolHelper::isJson($item->value) ? json_decode($item->value) : $item->value;
         })->toArray();
         return self::$allSettings;
