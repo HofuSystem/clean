@@ -48,30 +48,35 @@ class OrderRepresentativesController extends Controller
     {
         $title              = trans('OrderRepresentative analysis');
         $screen             = 'order-representatives-analysis';
-        $cities             = $this->citiesService->selectable('id', 'name');
-        $allRepresentatives = User::whereHas('roles',function($roleQuery){
+        $cities             = \Core\Info\Models\City::with('translations')->get();
+        $allRepresentatives = User::whereHas('roles', function($roleQuery){
             $roleQuery->whereIn('name', ['technical', 'driver']);
-        })->get();
-        //update anylsis
-        $representatives    = User::withCount(['representativeOrders as total_orders' => function ($query) use ($request) {
-            $query->analysis($request->city_id,null,null,['delivered', 'finished'])
+        })->select(['id', 'fullname', 'phone'])->get();
+
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        $representatives = User::select(['users.id', 'users.fullname', 'users.phone', 'users.email', 'users.image'])
+        ->withCount(['representativeOrders as total_orders' => function ($query) use ($request, $from, $to) {
+            $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
             ->testAccounts(false)
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         }])
-        ->with(['representativeOrders'=>function($query)use($request){
-            $query->analysis($request->city_id,null,null,['delivered', 'finished'])
+        ->with(['representativeOrders' => function($query) use ($request, $from, $to) {
+            $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
             ->testAccounts(false)
-            ->with(['orderRepresentatives.representative', 'city', 'client'])
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+            ->with(['orderRepresentatives.representative:id,fullname,phone', 'city', 'client:id,fullname,phone'])
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         }])
-        ->whereHas('representativeOrders',function($orderQuery)use($request){
-            $orderQuery->analysis($request->city_id,$request->from,$request->to,['delivered', 'finished'])
+        ->whereHas('representativeOrders', function($orderQuery) use ($request, $from, $to) {
+            $orderQuery->analysis($request->city_id, $from, $to, ['delivered', 'finished'])
             ->testAccounts(false)
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         })
-        ->when(isset($request->representative_id), function ($query) use ($request) {
+        ->when($request->filled('representative_id'), function ($query) use ($request) {
             $query->where('users.id', $request->representative_id);
-        })->get();
+        })
+        ->get();
 
         return view('orders::pages.order-representatives.analysis', compact('title', 'screen', 'representatives', 'allRepresentatives', 'cities'));
     }
@@ -79,24 +84,28 @@ class OrderRepresentativesController extends Controller
     {
         $title              = trans('OrderRepresentative collective Analysis');
         $screen             = 'order-representatives-collective-analysis';
-        $cities             = $this->citiesService->selectable('id', 'name');
-        $allRepresentatives = User::whereHas('roles',function($roleQuery){
+        $cities             = \Core\Info\Models\City::with('translations')->get();
+        $allRepresentatives = User::whereHas('roles', function($roleQuery){
             $roleQuery->whereIn('name', ['technical', 'driver']);
-        })->get();
-        //update anylsis
-        $representatives    = User::withCount(['representativeOrders as total_orders_count' => function ($query) use ($request) {
-            $query->analysis($request->city_id,null,null,['deleivered', 'finished'])
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+        })->select(['id', 'fullname', 'phone'])->get();
+
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        $representatives = User::select(['users.id', 'users.fullname', 'users.phone', 'users.email'])
+        ->withCount(['representativeOrders as total_orders_count' => function ($query) use ($request, $from, $to) {
+            $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         }])
-        ->with(['representativeOrders'=>function($query)use($request){
-            $query->analysis($request->city_id,null,null,['deleivered', 'finished'])
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+        ->with(['representativeOrders' => function($query) use ($request, $from, $to) {
+            $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         }])
-        ->whereHas('representativeOrders',function($orderQuery)use($request){
-            $orderQuery->analysis($request->city_id,$request->from,$request->to,['delivered', 'finished'])
-            ->analysisRepresentatives(['technical', 'delivery'],$request->from ?? now(),$request->to ?? now());
+        ->whereHas('representativeOrders', function($orderQuery) use ($request, $from, $to) {
+            $orderQuery->analysis($request->city_id, $from, $to, ['delivered', 'finished'])
+            ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         })
-        ->when(isset($request->representative_id), function ($query) use ($request) {
+        ->when($request->filled('representative_id'), function ($query) use ($request) {
             $query->where('users.id', $request->representative_id);
         })->get()->map(function ($representative) {
             //total orders before any discount
