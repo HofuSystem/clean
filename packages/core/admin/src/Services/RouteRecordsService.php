@@ -155,79 +155,143 @@ class RouteRecordsService
 
   public function getRoutesAnalysis($timeDuration = 'all-time')
   {
+    // If all-time, cap at last 6 months to prevent scanning millions of old historical records
+    if ($timeDuration === 'all-time' || empty($timeDuration)) {
+      $timeDuration = 'last-month';
+    }
+
     $totalRequests = RoutesRecord::inTimePeriod($timeDuration)->count();
 
-    // Get requests per user with user details and last endpoint
-    $requestsPerUser = RoutesRecord::inTimePeriod($timeDuration)
+    // 1. Get requests per user (group on routes_records first without joining users table over 500k rows)
+    $requestsPerUserRaw = RoutesRecord::inTimePeriod($timeDuration)
       ->whereNotNull('user_id')
-      ->select(
-        'routes_records.user_id',
-        DB::raw('COUNT(*) as request_count'),
-        'users.fullname as name',
-        'users.email as email',
-        'users.phone as phone',
-        'users.image as avatar',
-        DB::raw('MAX(routes_records.created_at) as last_request_time')
-      )
-      ->join('users', 'routes_records.user_id', '=', 'users.id')
-      ->groupBy('routes_records.user_id', 'users.fullname', 'users.email', 'users.phone', 'users.image')
-      ->orderBy('request_count', 'desc')
+      ->selectRaw('user_id, COUNT(*) as request_count, MAX(id) as max_id')
+      ->groupBy('user_id')
+      ->orderByDesc('request_count')
       ->limit(50)
       ->get();
 
-    // Get the last endpoint for all these users in a single query using indexed MAX(id)
-    $userIds = $requestsPerUser->pluck('user_id')->filter()->all();
-    $latestRecordIds = !empty($userIds) ? RoutesRecord::whereIn('user_id', $userIds)
-        ->selectRaw('MAX(id) as max_id')
-        ->groupBy('user_id')
-        ->pluck('max_id') : collect();
+    $userIds = $requestsPerUserRaw->pluck('user_id')->filter()->toArray();
+    $maxIds = $requestsPerUserRaw->pluck('max_id')->filter()->toArray();
 
-    $lastRequests = !empty($latestRecordIds) ? RoutesRecord::whereIn('id', $latestRecordIds)
-        ->select('user_id', 'end_point', 'created_at', 'attributes')
-        ->get()
-        ->keyBy('user_id') : collect();
+    $usersMap = !empty($userIds)
+      ? \Core\Users\Models\User::whereIn('id', $userIds)->select(['id', 'fullname', 'email', 'phone', 'image'])->get()->keyBy('id')
+      : collect();
 
-    foreach ($requestsPerUser as $user) {
-      $lastRequest = $lastRequests->get($user->user_id);
-      $user->last_endpoint = $lastRequest ? $lastRequest->end_point : null;
-      $user->last_request_attributes = $lastRequest ? $lastRequest->attributes : null;
-      $user->last_request_time = $lastRequest ? $lastRequest->created_at : null;
-    }
+    $lastRequestsMap = !empty($maxIds)
+      ? RoutesRecord::whereIn('id', $maxIds)->select(['id', 'user_id', 'end_point', 'created_at', 'attributes'])->get()->keyBy('user_id')
+      : collect();
+
+    $requestsPerUser = $requestsPerUserRaw->map(function ($item) use ($usersMap, $lastRequestsMap) {
+      $user = $usersMap->get($item->user_id);
+      $lastReq = $lastRequestsMap->get($item->user_id);
+
+      return (object) [
+        'user_id' => $item->user_id,
+        'request_count' => $item->request_count,
+        'name' => $user ? $user->fullname : 'Unknown',
+        'email' => $user ? $user->email : '',
+        'phone' => $user ? $user->phone : '',
+        'avatar' => $user ? $user->image : null,
+        'last_endpoint' => $lastReq ? $lastReq->end_point : null,
+        'last_request_attributes' => $lastReq ? $lastReq->attributes : null,
+        'last_request_time' => $lastReq ? $lastReq->created_at : null,
+      ];
+    });
 
     $topUsers = $requestsPerUser->take(10);
     $lestUsers = $requestsPerUser->sortBy('request_count')->take(10);
 
+    // 2. Most used endpoints & IP addresses
     $mostUsedEndpoints = RoutesRecord::inTimePeriod($timeDuration)
-      ->select('end_point', DB::raw('COUNT(*) as request_count'))
+      ->selectRaw('end_point, COUNT(*) as request_count')
       ->groupBy('end_point')
-      ->orderBy('request_count', 'desc')
+      ->orderByDesc('request_count')
       ->limit(10)
       ->get();
 
     $mostUsedIpAddress = RoutesRecord::inTimePeriod($timeDuration)
-      ->select('ip_address', DB::raw('COUNT(*) as request_count'))
+      ->selectRaw('ip_address, COUNT(*) as request_count')
       ->groupBy('ip_address')
-      ->orderBy('request_count', 'desc')
+      ->orderByDesc('request_count')
       ->limit(10)
       ->get();
 
-    // Get hourly and daily analysis
-    $hourlyAnalysis = $this->getHourlyAnalysis($timeDuration);
-    $dailyAnalysis = $this->getDailyAnalysis($timeDuration);
-    $peakUsageAnalysis = $this->getPeakUsageAnalysis($hourlyAnalysis, $dailyAnalysis);
+    // 3. Combined Single Query for Hourly & Daily Pattern Analysis
+    $hourlyAndDailyData = RoutesRecord::inTimePeriod($timeDuration)
+      ->selectRaw('HOUR(created_at) as hour, DAYOFWEEK(created_at) as day_of_week, COUNT(*) as request_count, COUNT(DISTINCT user_id) as unique_users')
+      ->groupBy('hour', 'day_of_week')
+      ->get();
 
-    $data = [
+    // Process hourly analysis from combined data
+    $hourlyAnalysis = [];
+    for ($hour = 0; $hour < 24; $hour++) {
+      $hourRows = $hourlyAndDailyData->where('hour', $hour);
+      $hourlyAnalysis[] = [
+        'hour' => $hour,
+        'hour_label' => sprintf('%02d:00', $hour),
+        'request_count' => $hourRows->sum('request_count'),
+        'unique_users' => $hourRows->max('unique_users') ?? 0,
+      ];
+    }
+    $topActiveHours = collect($hourlyAnalysis)->sortByDesc('request_count')->take(5)->values();
+
+    // Process daily analysis from combined data
+    $dayNames = [
+      1 => 'Sunday',
+      2 => 'Monday',
+      3 => 'Tuesday',
+      4 => 'Wednesday',
+      5 => 'Thursday',
+      6 => 'Friday',
+      7 => 'Saturday'
+    ];
+    $dailyAnalysis = [];
+    foreach ($dayNames as $dayNum => $dayName) {
+      $dayRows = $hourlyAndDailyData->where('day_of_week', $dayNum);
+      $dailyAnalysis[] = [
+        'day_number' => $dayNum,
+        'day_name' => $dayName,
+        'request_count' => $dayRows->sum('request_count'),
+        'unique_users' => $dayRows->max('unique_users') ?? 0,
+      ];
+    }
+    $topActiveDays = collect($dailyAnalysis)->sortByDesc('request_count')->take(3)->values();
+
+    // Peak Usage Analysis
+    $peakHour = collect($hourlyAnalysis)->sortByDesc('request_count')->first();
+    $peakDay = collect($dailyAnalysis)->sortByDesc('request_count')->first();
+    $sumRequests = collect($hourlyAnalysis)->sum('request_count');
+
+    $peakUsageAnalysis = [
+      'peak_hour' => ($peakHour && $peakHour['request_count'] > 0) ? [
+        'hour' => $peakHour['hour'],
+        'hour_label' => $peakHour['hour_label'],
+        'request_count' => $peakHour['request_count']
+      ] : null,
+      'peak_day' => ($peakDay && $peakDay['request_count'] > 0) ? [
+        'day_name' => $peakDay['day_name'],
+        'request_count' => $peakDay['request_count']
+      ] : null,
+      'avg_requests_per_hour' => round($sumRequests / 24, 2)
+    ];
+
+    return [
       'totalRequests' => $totalRequests,
       'requestsPerUser' => $requestsPerUser,
       'topUsers' => $topUsers,
       'lestUsers' => $lestUsers,
       'mostUsedEndpoints' => $mostUsedEndpoints,
       'mostUsedIpAddress' => $mostUsedIpAddress,
-      'hourlyAnalysis' => $hourlyAnalysis,
-      'dailyAnalysis' => $dailyAnalysis,
+      'hourlyAnalysis' => [
+        'hourly_data' => $hourlyAnalysis,
+        'top_active_hours' => $topActiveHours,
+      ],
+      'dailyAnalysis' => [
+        'daily_data' => $dailyAnalysis,
+        'top_active_days' => $topActiveDays,
+      ],
       'peakUsageAnalysis' => $peakUsageAnalysis,
     ];
-
-    return $data;
   }
 }
