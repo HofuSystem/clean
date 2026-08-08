@@ -15,7 +15,7 @@ class OrderReportService
      */
     public function getOrderQuantitiesReport($filters)
     {
-        $query = OrderItem::query()
+        $query = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->join('product_translations', function($join) {
@@ -67,7 +67,9 @@ class OrderReportService
 
         // Test accounts - usually we exclude them in reports
         $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        $query->whereNotIn('orders.client_id', $testAccounts);
+        if (!empty($testAccounts)) {
+            $query->whereNotIn('orders.client_id', $testAccounts);
+        }
 
         $query->select(
             'order_items.product_id',
@@ -88,7 +90,7 @@ class OrderReportService
      */
     public function getOrderCostsSummary($filters)
     {
-        $query = Order::query();
+        $query = DB::table('orders');
 
         // Apply filters
         if (!empty($filters['from_date'])) {
@@ -120,7 +122,9 @@ class OrderReportService
 
         // Test accounts
         $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        $query->whereNotIn('orders.client_id', $testAccounts);
+        if (!empty($testAccounts)) {
+            $query->whereNotIn('orders.client_id', $testAccounts);
+        }
 
         return $query->select(
             DB::raw('SUM(lab_cost) as total_lab_cost'),

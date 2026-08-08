@@ -40,7 +40,7 @@ class OrderQuantitiesReportController extends Controller
         }
 
 
-        $statuses = Order::groupBy('status')->select('status')->get()->pluck('status');
+        $statuses = DB::table('orders')->whereNotNull('status')->distinct()->pluck('status');
 
         $filters = [
             'from_date' => $request->get('from_date'),
