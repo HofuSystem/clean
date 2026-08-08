@@ -47,15 +47,20 @@ class HomeController extends Controller
     private function getOrderHourlyAnalysis($request)
     {
         $companyType = $request->get('company_type');
-        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false);
-
-        $hourlyData = $query->select(
-            DB::raw('HOUR(created_at) as hour'),
-            DB::raw('COUNT(*) as order_count'),
-            DB::raw('COUNT(DISTINCT client_id) as unique_customers'),
-            DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
-        )
+        $hourlyData = DB::table('orders')
+            ->whereNull('deleted_at')
+            ->when($request->city_id, fn($q) => $q->where('city_id', $request->city_id))
+            ->when($request->from, fn($q) => $q->whereDate('created_at', '>=', $request->from))
+            ->when($request->to, fn($q) => $q->whereDate('created_at', '<=', $request->to))
+            ->when($companyType == 'b2b', fn($q) => $q->whereNotNull('company_id'))
+            ->when($companyType == 'b2c', fn($q) => $q->whereNull('company_id'))
+            ->whereIn('status', ['delivered', 'finished'])
+            ->select(
+                DB::raw('HOUR(created_at) as hour'),
+                DB::raw('COUNT(*) as order_count'),
+                DB::raw('COUNT(DISTINCT client_id) as unique_customers'),
+                DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
+            )
             ->groupBy('hour')
             ->orderBy('hour')
             ->get();
@@ -91,16 +96,21 @@ class HomeController extends Controller
     private function getOrderDailyAnalysis($request)
     {
         $companyType = $request->get('company_type');
-        $query = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false);
-
-        $dailyData = $query->select(
-            DB::raw('DAYOFWEEK(created_at) as day_of_week'),
-            DB::raw('DAYNAME(created_at) as day_name'),
-            DB::raw('COUNT(*) as order_count'),
-            DB::raw('COUNT(DISTINCT client_id) as unique_customers'),
-            DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
-        )
+        $dailyData = DB::table('orders')
+            ->whereNull('deleted_at')
+            ->when($request->city_id, fn($q) => $q->where('city_id', $request->city_id))
+            ->when($request->from, fn($q) => $q->whereDate('created_at', '>=', $request->from))
+            ->when($request->to, fn($q) => $q->whereDate('created_at', '<=', $request->to))
+            ->when($companyType == 'b2b', fn($q) => $q->whereNotNull('company_id'))
+            ->when($companyType == 'b2c', fn($q) => $q->whereNull('company_id'))
+            ->whereIn('status', ['delivered', 'finished'])
+            ->select(
+                DB::raw('DAYOFWEEK(created_at) as day_of_week'),
+                DB::raw('DAYNAME(created_at) as day_name'),
+                DB::raw('COUNT(*) as order_count'),
+                DB::raw('COUNT(DISTINCT client_id) as unique_customers'),
+                DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
+            )
             ->groupBy('day_of_week', 'day_name')
             ->orderBy('day_of_week')
             ->get();
@@ -178,16 +188,24 @@ class HomeController extends Controller
     {
         $title = trans('Performance Analytics');
         $screen = 'performance-analysis';
-        $cities = $this->citiesService->selectable('id', 'name');
+        $cities = \Core\Info\Models\City::with('translations')->get();
         $companyType = $request->get('company_type');
         $timePeriod = (isset($request->from) or isset($request->to)) ? trans('from').' '.$request->from.' - '.trans('to').' '.$request->to : null;
-        $ordersCount = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)->count();
-        $ordersPayTypeCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
-            ->select('pay_type', DB::raw('COUNT(*) as count'))->groupBy('pay_type')->get();
-        $ordersStatusCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
-            ->select('status', DB::raw('COUNT(*) as count'))->groupBy('status')->get();
-        $ordersTypeCounts = Order::analysis($request->city_id, $request->from, $request->to, null, $companyType)->testAccounts(false)
-            ->select('type', DB::raw('COUNT(*) as count'))->groupBy('type')->get();
+        
+        $baseOrderQuery = function() use ($request, $companyType) {
+            return DB::table('orders')
+                ->whereNull('deleted_at')
+                ->when($request->city_id, fn($q) => $q->where('city_id', $request->city_id))
+                ->when($request->from, fn($q) => $q->whereDate('created_at', '>=', $request->from))
+                ->when($request->to, fn($q) => $q->whereDate('created_at', '<=', $request->to))
+                ->when($companyType == 'b2b', fn($q) => $q->whereNotNull('company_id'))
+                ->when($companyType == 'b2c', fn($q) => $q->whereNull('company_id'));
+        };
+
+        $ordersCount = $baseOrderQuery()->count();
+        $ordersPayTypeCounts = $baseOrderQuery()->select('pay_type', DB::raw('COUNT(*) as count'))->groupBy('pay_type')->get();
+        $ordersStatusCounts = $baseOrderQuery()->select('status', DB::raw('COUNT(*) as count'))->groupBy('status')->get();
+        $ordersTypeCounts = $baseOrderQuery()->select('type', DB::raw('COUNT(*) as count'))->groupBy('type')->get();
 
         $orderStatusValues = [
             'canceled' => ['icon' => 'fas fa-ban', 'color' => '#cf1a02'],
@@ -254,8 +272,8 @@ class HomeController extends Controller
             return $item;
         });
 
-        $ordersAnalysis = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false)
+        $ordersAnalysis = $baseOrderQuery()
+            ->whereIn('status', ['delivered', 'finished'])
             ->selectRaw('type,COUNT(*)as type_count,AVG(total_price)as order_average,SUM(total_price)as total_revenue,SUM(total_cost)as total_cost,SUM(total_coupon)as total_discount,SUM(delivery_price)as total_delivery')
             ->groupBy('type')
             ->get()
@@ -269,6 +287,7 @@ class HomeController extends Controller
 
                 return $item;
             });
+
         $ordersRepresentativeAnalysis = User::query()
             ->select(['users.id', 'users.fullname'])
             ->underMyControl()
@@ -430,29 +449,39 @@ class HomeController extends Controller
             ->orderByDesc('count_orders')
             ->limit(50)
             ->get();
-        $revenuesAnalysis = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
+
+        $revenuesAnalysis = DB::table('orders')
             ->join('order_representatives', 'orders.id', '=', 'order_representatives.order_id')
             ->where('order_representatives.type', 'delivery')
+            ->whereNull('orders.deleted_at')
+            ->whereIn('orders.status', ['delivered', 'finished'])
+            ->when($request->city_id, fn($q) => $q->where('orders.city_id', $request->city_id))
+            ->when($companyType == 'b2b', fn($q) => $q->whereNotNull('orders.company_id'))
+            ->when($companyType == 'b2c', fn($q) => $q->whereNull('orders.company_id'))
             ->when(isset($request->from), function ($query) use ($request) {
                 $query->where('order_representatives.date', '>=', $request->from);
             })
             ->when(isset($request->to), function ($query) use ($request) {
                 $query->where('order_representatives.date', '<=', $request->to);
             })
-            ->testAccounts(false)
             ->selectRaw('order_representatives.date as date, COUNT(orders.id) as count, COALESCE(SUM(orders.order_price), 0) as total, COALESCE(SUM(orders.total_cost), 0) as cost')
             ->groupBy('order_representatives.date')
             ->orderBy('order_representatives.date', 'asc')
             ->get();
+
         // Monthly Analysis - 12 months data showing revenue, cost, and net profit in a single query
         $currentYear = date('Y');
         $monthlyAnalysis = [];
 
-        $monthlyStats = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
+        $monthlyStats = DB::table('orders')
             ->join('order_representatives', 'orders.id', '=', 'order_representatives.order_id')
             ->where('order_representatives.type', 'delivery')
             ->whereYear('order_representatives.date', $currentYear)
-            ->testAccounts(false)
+            ->whereNull('orders.deleted_at')
+            ->whereIn('orders.status', ['delivered', 'finished'])
+            ->when($request->city_id, fn($q) => $q->where('orders.city_id', $request->city_id))
+            ->when($companyType == 'b2b', fn($q) => $q->whereNotNull('orders.company_id'))
+            ->when($companyType == 'b2c', fn($q) => $q->whereNull('orders.company_id'))
             ->selectRaw('
                 MONTH(order_representatives.date) as month,
                 COUNT(orders.id) as orders_count,

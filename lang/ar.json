@@ -1,4 +1,8 @@
 {
+    "delivery or receiver": "نوع العملية (استلام / تسليم)",
+    "DELIVERY OR RECEIVER": "نوع العملية (استلام / تسليم)",
+    "receiver": "استلام",
+    "delivery": "تسليم",
     "Account deleted successfully": "تم حذف الحساب بنجاح",
     "Failed to delete account": "فشل في حذف الحساب، حاول مرة أخرى",
     "Performance Analytics": "تحليلات الأداء",
