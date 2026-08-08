@@ -22,14 +22,18 @@ class RoutesRecordsController extends Controller
     use ApiResponse;
     public function __construct(protected RoutesRecordsService $routesRecordsService,protected UsersService $usersService){}
 
-    public function index(){
+    public function index(Request $request){
         $title      = trans('routes records index');
         $screen     = 'routes-records-index';
         $total      = $this->routesRecordsService->totalCount();
         $trash      = $this->routesRecordsService->trashCount();
         
-        $userIds = \Core\Admin\Models\RoutesRecord::distinct()->whereNotNull('user_id')->pluck('user_id');
-        $users = \Core\Users\Models\User::whereIn('id', $userIds)->select('id', 'fullname', 'phone')->get();
+        if ($request->filled('user_id')) {
+            $users = \Core\Users\Models\User::where('id', $request->user_id)->select('id', 'fullname', 'phone')->get();
+        } else {
+            $userIds = \Core\Admin\Models\RoutesRecord::whereNotNull('user_id')->latest('id')->limit(200)->pluck('user_id')->unique()->take(30);
+            $users = \Core\Users\Models\User::whereIn('id', $userIds)->select('id', 'fullname', 'phone')->get();
+        }
 
         return view('admin::pages.routes-records.list', compact('title','screen',"total","trash","users"));
     }
@@ -40,8 +44,12 @@ class RoutesRecordsController extends Controller
         $screen     = isset($item)  ? 'routes records-edit'          : 'routes records-create';
         $title      = isset($item)  ? trans("routes records  edit")  : trans("routes records  create");
 
-        $userIds = \Core\Admin\Models\RoutesRecord::distinct()->whereNotNull('user_id')->pluck('user_id');
-        $users = \Core\Users\Models\User::whereIn('id', $userIds)->select('id', 'fullname', 'phone')->get();
+        if (isset($item) && $item->user_id) {
+            $users = \Core\Users\Models\User::where('id', $item->user_id)->select('id', 'fullname', 'phone')->get();
+        } else {
+            $userIds = \Core\Admin\Models\RoutesRecord::whereNotNull('user_id')->latest('id')->limit(200)->pluck('user_id')->unique()->take(30);
+            $users = \Core\Users\Models\User::whereIn('id', $userIds)->select('id', 'fullname', 'phone')->get();
+        }
 
         return view('admin::pages.routes-records.edit', compact('item','title','screen','users') );
     }
