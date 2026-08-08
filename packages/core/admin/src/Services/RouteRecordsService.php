@@ -126,8 +126,7 @@ class RouteRecordsService
     ];
   }
 
-  /**
-   * Get peak usage time analysis (derived from hourly and daily data)
+  /**   * Get peak usage time analysis (derived from hourly and daily data)
    */
   private function getPeakUsageAnalysis($hourlyAnalysis, $dailyAnalysis)
   {
@@ -155,15 +154,34 @@ class RouteRecordsService
 
   public function getRoutesAnalysis($timeDuration = 'all-time')
   {
-    // If all-time, cap at last 6 months to prevent scanning millions of old historical records
     if ($timeDuration === 'all-time' || empty($timeDuration)) {
       $timeDuration = 'last-month';
     }
 
-    $totalRequests = RoutesRecord::inTimePeriod($timeDuration)->count();
+    $startTime = null;
+    $endTime = Carbon::now();
+    switch ($timeDuration) {
+      case 'last-minute': $startTime = Carbon::now()->subMinute(); break;
+      case '10-minute': $startTime = Carbon::now()->subMinutes(10); break;
+      case '30-minute': $startTime = Carbon::now()->subMinutes(30); break;
+      case 'last-hour': $startTime = Carbon::now()->subHour(); break;
+      case 'last-day': $startTime = Carbon::now()->subDay(); break;
+      case 'last-week': $startTime = Carbon::now()->subWeek(); break;
+      case 'last-month': $startTime = Carbon::now()->subMonth(); break;
+      case 'last-year': $startTime = Carbon::now()->subYear(); break;
+    }
 
-    // 1. Get requests per user (group on routes_records first without joining users table over 500k rows)
-    $requestsPerUserRaw = RoutesRecord::inTimePeriod($timeDuration)
+    $applyTimeFilter = function ($query) use ($startTime, $endTime) {
+      if ($startTime) {
+        $query->whereBetween('created_at', [$startTime, $endTime]);
+      }
+      return $query;
+    };
+
+    $totalRequests = $applyTimeFilter(DB::table('routes_records'))->count();
+
+    // 1. Get requests per user (using DB::table to prevent Eloquent model hydration)
+    $requestsPerUserRaw = $applyTimeFilter(DB::table('routes_records'))
       ->whereNotNull('user_id')
       ->selectRaw('user_id, COUNT(*) as request_count, MAX(id) as max_id')
       ->groupBy('user_id')
@@ -175,11 +193,11 @@ class RouteRecordsService
     $maxIds = $requestsPerUserRaw->pluck('max_id')->filter()->toArray();
 
     $usersMap = !empty($userIds)
-      ? \Core\Users\Models\User::whereIn('id', $userIds)->select(['id', 'fullname', 'email', 'phone', 'image'])->get()->keyBy('id')
+      ? DB::table('users')->whereIn('id', $userIds)->select(['id', 'fullname', 'email', 'phone', 'image'])->get()->keyBy('id')
       : collect();
 
     $lastRequestsMap = !empty($maxIds)
-      ? RoutesRecord::whereIn('id', $maxIds)->select(['id', 'user_id', 'end_point', 'created_at', 'attributes'])->get()->keyBy('user_id')
+      ? DB::table('routes_records')->whereIn('id', $maxIds)->select(['id', 'user_id', 'end_point', 'created_at', 'attributes'])->get()->keyBy('user_id')
       : collect();
 
     $requestsPerUser = $requestsPerUserRaw->map(function ($item) use ($usersMap, $lastRequestsMap) {
@@ -203,14 +221,14 @@ class RouteRecordsService
     $lestUsers = $requestsPerUser->sortBy('request_count')->take(10);
 
     // 2. Most used endpoints & IP addresses
-    $mostUsedEndpoints = RoutesRecord::inTimePeriod($timeDuration)
+    $mostUsedEndpoints = $applyTimeFilter(DB::table('routes_records'))
       ->selectRaw('end_point, COUNT(*) as request_count')
       ->groupBy('end_point')
       ->orderByDesc('request_count')
       ->limit(10)
       ->get();
 
-    $mostUsedIpAddress = RoutesRecord::inTimePeriod($timeDuration)
+    $mostUsedIpAddress = $applyTimeFilter(DB::table('routes_records'))
       ->selectRaw('ip_address, COUNT(*) as request_count')
       ->groupBy('ip_address')
       ->orderByDesc('request_count')
@@ -218,7 +236,7 @@ class RouteRecordsService
       ->get();
 
     // 3. Combined Single Query for Hourly & Daily Pattern Analysis
-    $hourlyAndDailyData = RoutesRecord::inTimePeriod($timeDuration)
+    $hourlyAndDailyData = $applyTimeFilter(DB::table('routes_records'))
       ->selectRaw('HOUR(created_at) as hour, DAYOFWEEK(created_at) as day_of_week, COUNT(*) as request_count, COUNT(DISTINCT user_id) as unique_users')
       ->groupBy('hour', 'day_of_week')
       ->get();
