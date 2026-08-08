@@ -222,10 +222,8 @@ class HomeController extends Controller
         ];
         $ordersStatusCounts->map(function ($item) use ($orderStatusValues, $ordersCount) {
             $value = $orderStatusValues[$item->status] ?? null;
-            if ($value) {
-                $item->color = $value['color'];
-                $item->icon = $value['icon'];
-            }
+            $item->color = $value['color'] ?? '#b3b2b1';
+            $item->icon = $value['icon'] ?? 'fas fa-chart-pie';
             $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->label = trans($item->status);
 
@@ -244,10 +242,8 @@ class HomeController extends Controller
         ];
         $ordersTypeCounts->map(function ($item) use ($orderTypesValues, $ordersCount) {
             $value = $orderTypesValues[$item->type] ?? null;
-            if ($value) {
-                $item->color = $value['color'];
-                $item->icon = $value['icon'];
-            }
+            $item->color = $value['color'] ?? '#b3b2b1';
+            $item->icon = $value['icon'] ?? 'fas fa-chart-pie';
             $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->label = trans($item->type);
 
@@ -261,10 +257,8 @@ class HomeController extends Controller
         ];
         $ordersPayTypeCounts->map(function ($item) use ($orderPayTypesValues, $ordersCount) {
             $value = $orderPayTypesValues[$item->pay_type] ?? null;
-            if ($value) {
-                $item->color = $value['color'];
-                $item->icon = $value['icon'];
-            }
+            $item->color = $value['color'] ?? '#b3b2b1';
+            $item->icon = $value['icon'] ?? 'fas fa-chart-pie';
             $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->pay_type = trans($item->pay_type);
             $item->label = trans($item->pay_type);
