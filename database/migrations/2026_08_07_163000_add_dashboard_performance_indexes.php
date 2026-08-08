@@ -35,10 +35,38 @@ return new class extends Migration
                 }
             });
         }
+        // 3. Indexes on 'routes_records' table for route analysis
+        if (Schema::hasTable('routes_records')) {
+            Schema::table('routes_records', function (Blueprint $table) {
+                if (!$this->indexExists('routes_records', 'routes_records_created_at_index')) {
+                    $table->index('created_at', 'routes_records_created_at_index');
+                }
+                if (!$this->indexExists('routes_records', 'routes_records_user_id_id_index')) {
+                    $table->index(['user_id', 'id'], 'routes_records_user_id_id_index');
+                }
+                if (!$this->indexExists('routes_records', 'routes_records_end_point_index')) {
+                    $table->index('end_point', 'routes_records_end_point_index');
+                }
+            });
+        }
     }
 
     public function down(): void
     {
+        if (Schema::hasTable('routes_records')) {
+            Schema::table('routes_records', function (Blueprint $table) {
+                if ($this->indexExists('routes_records', 'routes_records_created_at_index')) {
+                    $table->dropIndex('routes_records_created_at_index');
+                }
+                if ($this->indexExists('routes_records', 'routes_records_user_id_id_index')) {
+                    $table->dropIndex('routes_records_user_id_id_index');
+                }
+                if ($this->indexExists('routes_records', 'routes_records_end_point_index')) {
+                    $table->dropIndex('routes_records_end_point_index');
+                }
+            });
+        }
+
         if (Schema::hasTable('order_representatives')) {
             Schema::table('order_representatives', function (Blueprint $table) {
                 if ($this->indexExists('order_representatives', 'order_reps_order_id_type_index')) {

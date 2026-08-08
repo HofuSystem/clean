@@ -127,47 +127,29 @@ class RouteRecordsService
   }
 
   /**
-   * Get peak usage time analysis
+   * Get peak usage time analysis (derived from hourly and daily data)
    */
-  private function getPeakUsageAnalysis($timeDuration = 'all-time')
+  private function getPeakUsageAnalysis($hourlyAnalysis, $dailyAnalysis)
   {
-    // Get peak hour (hour with most requests)
-    $peakHour = RoutesRecord::inTimePeriod($timeDuration)
-      ->select(
-        DB::raw('HOUR(created_at) as hour'),
-        DB::raw('COUNT(*) as request_count')
-      )
-      ->groupBy('hour')
-      ->orderBy('request_count', 'desc')
-      ->first();
+    $hourlyCollect = collect($hourlyAnalysis['hourly_data'] ?? [])->sortByDesc('request_count');
+    $dailyCollect = collect($dailyAnalysis['daily_data'] ?? [])->sortByDesc('request_count');
 
-    // Get peak day (day with most requests)
-    $peakDay = RoutesRecord::inTimePeriod($timeDuration)
-      ->select(
-        DB::raw('DAYOFWEEK(created_at) as day_of_week'),
-        DB::raw('DAYNAME(created_at) as day_name'),
-        DB::raw('COUNT(*) as request_count')
-      )
-      ->groupBy('day_of_week', 'day_name')
-      ->orderBy('request_count', 'desc')
-      ->first();
+    $peakHour = $hourlyCollect->first();
+    $peakDay = $dailyCollect->first();
 
-    // Get average requests per hour
-    $avgRequestsPerHour = RoutesRecord::inTimePeriod($timeDuration)
-      ->select(DB::raw('COUNT(*) / 24 as avg_requests_per_hour'))
-      ->first();
+    $totalRequests = $hourlyCollect->sum('request_count');
 
     return [
-      'peak_hour' => $peakHour ? [
-        'hour' => $peakHour->hour,
-        'hour_label' => sprintf('%02d:00', $peakHour->hour),
-        'request_count' => $peakHour->request_count
+      'peak_hour' => ($peakHour && $peakHour['request_count'] > 0) ? [
+        'hour' => $peakHour['hour'],
+        'hour_label' => $peakHour['hour_label'],
+        'request_count' => $peakHour['request_count']
       ] : null,
-      'peak_day' => $peakDay ? [
-        'day_name' => $peakDay->day_name,
-        'request_count' => $peakDay->request_count
+      'peak_day' => ($peakDay && $peakDay['request_count'] > 0) ? [
+        'day_name' => $peakDay['day_name'],
+        'request_count' => $peakDay['request_count']
       ] : null,
-      'avg_requests_per_hour' => $avgRequestsPerHour ? round($avgRequestsPerHour->avg_requests_per_hour, 2) : 0
+      'avg_requests_per_hour' => round($totalRequests / 24, 2)
     ];
   }
 
@@ -193,17 +175,17 @@ class RouteRecordsService
       ->limit(50)
       ->get();
 
-    // Get the last endpoint for all these users in a single query
-    $userIds = $requestsPerUser->pluck('user_id')->all();
-    $lastRequests = RoutesRecord::whereIn('user_id', $userIds)
-        ->whereIn('created_at', function($query) {
-            $query->selectRaw('MAX(created_at)')
-                ->from('routes_records')
-                ->groupBy('user_id');
-        })
+    // Get the last endpoint for all these users in a single query using indexed MAX(id)
+    $userIds = $requestsPerUser->pluck('user_id')->filter()->all();
+    $latestRecordIds = !empty($userIds) ? RoutesRecord::whereIn('user_id', $userIds)
+        ->selectRaw('MAX(id) as max_id')
+        ->groupBy('user_id')
+        ->pluck('max_id') : collect();
+
+    $lastRequests = !empty($latestRecordIds) ? RoutesRecord::whereIn('id', $latestRecordIds)
         ->select('user_id', 'end_point', 'created_at', 'attributes')
         ->get()
-        ->keyBy('user_id');
+        ->keyBy('user_id') : collect();
 
     foreach ($requestsPerUser as $user) {
       $lastRequest = $lastRequests->get($user->user_id);
@@ -232,7 +214,7 @@ class RouteRecordsService
     // Get hourly and daily analysis
     $hourlyAnalysis = $this->getHourlyAnalysis($timeDuration);
     $dailyAnalysis = $this->getDailyAnalysis($timeDuration);
-    $peakUsageAnalysis = $this->getPeakUsageAnalysis($timeDuration);
+    $peakUsageAnalysis = $this->getPeakUsageAnalysis($hourlyAnalysis, $dailyAnalysis);
 
     $data = [
       'totalRequests' => $totalRequests,
