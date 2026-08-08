@@ -141,67 +141,36 @@ class HomeController extends Controller
     }
 
     /**
-     * Get peak order usage analysis
+     * Get peak order usage analysis (derived from hourly and daily data)
      */
-    private function getOrderPeakUsageAnalysis($request)
+    private function getOrderPeakUsageAnalysis($hourlyAnalysis, $dailyAnalysis)
     {
-        $companyType = $request->get('company_type');
-        // Get peak hour (hour with most orders)
-        $peakHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false)
-            ->select(
-                DB::raw('HOUR(created_at) as hour'),
-                DB::raw('COUNT(*) as order_count'),
-                DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
-            )
-            ->groupBy('hour')
-            ->orderBy('order_count', 'desc')
-            ->first();
- 
-        // Get peak day (day with most orders)
-        $peakDay = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false)
-            ->select(
-                DB::raw('DAYOFWEEK(created_at) as day_of_week'),
-                DB::raw('DAYNAME(created_at) as day_name'),
-                DB::raw('COUNT(*) as order_count'),
-                DB::raw('COALESCE(SUM(total_price), 0) as total_revenue')
-            )
-            ->groupBy('day_of_week', 'day_name')
-            ->orderBy('order_count', 'desc')
-            ->first();
- 
-        // Get average orders per hour
-        $avgOrdersPerHour = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false)
-            ->select(DB::raw('COUNT(*) / 24 as avg_orders_per_hour'))
-            ->first();
- 
-        // Get total orders and revenue
-        $totalStats = Order::analysis($request->city_id, $request->from, $request->to, ['delivered', 'finished'], $companyType)
-            ->testAccounts(false)
-            ->select(
-                DB::raw('COUNT(*) as total_orders'),
-                DB::raw('COALESCE(SUM(total_price), 0) as total_revenue'),
-                DB::raw('COUNT(DISTINCT client_id) as unique_customers')
-            )->first();
+        $hourlyCollect = collect($hourlyAnalysis)->sortByDesc('order_count');
+        $dailyCollect = collect($dailyAnalysis)->sortByDesc('order_count');
+
+        $peakHour = $hourlyCollect->first();
+        $peakDay = $dailyCollect->first();
+
+        $totalOrders = $hourlyCollect->sum('order_count');
+        $totalRevenue = $hourlyCollect->sum('total_revenue');
+        $uniqueCustomers = $hourlyCollect->max('unique_customers');
 
         return [
-            'peak_hour' => $peakHour ? [
-                'hour' => $peakHour->hour,
-                'hour_label' => sprintf('%02d:00', $peakHour->hour),
-                'order_count' => $peakHour->order_count,
-                'total_revenue' => $peakHour->total_revenue,
+            'peak_hour' => ($peakHour && $peakHour['order_count'] > 0) ? [
+                'hour' => $peakHour['hour'],
+                'hour_label' => $peakHour['hour_label'],
+                'order_count' => $peakHour['order_count'],
+                'total_revenue' => $peakHour['total_revenue'],
             ] : null,
-            'peak_day' => $peakDay ? [
-                'day_name' => trans($peakDay->day_name),
-                'order_count' => $peakDay->order_count,
-                'total_revenue' => $peakDay->total_revenue,
+            'peak_day' => ($peakDay && $peakDay['order_count'] > 0) ? [
+                'day_name' => $peakDay['day_name'],
+                'order_count' => $peakDay['order_count'],
+                'total_revenue' => $peakDay['total_revenue'],
             ] : null,
-            'avg_orders_per_hour' => $avgOrdersPerHour ? round($avgOrdersPerHour->avg_orders_per_hour, 2) : 0,
-            'total_orders' => $totalStats ? $totalStats->total_orders : 0,
-            'total_revenue' => $totalStats ? $totalStats->total_revenue : 0,
-            'unique_customers' => $totalStats ? $totalStats->unique_customers : 0,
+            'avg_orders_per_hour' => round($totalOrders / 24, 2),
+            'total_orders' => $totalOrders,
+            'total_revenue' => $totalRevenue,
+            'unique_customers' => $uniqueCustomers,
         ];
     }
 
@@ -239,7 +208,7 @@ class HomeController extends Controller
                 $item->color = $value['color'];
                 $item->icon = $value['icon'];
             }
-            $item->percentage = $item->count / $ordersCount * 100;
+            $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->label = trans($item->status);
 
             return $item;
@@ -261,7 +230,7 @@ class HomeController extends Controller
                 $item->color = $value['color'];
                 $item->icon = $value['icon'];
             }
-            $item->percentage = $item->count / $ordersCount * 100;
+            $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->label = trans($item->type);
 
             return $item;
@@ -278,7 +247,7 @@ class HomeController extends Controller
                 $item->color = $value['color'];
                 $item->icon = $value['icon'];
             }
-            $item->percentage = $item->count / $ordersCount * 100;
+            $item->percentage = $ordersCount > 0 ? ($item->count / $ordersCount * 100) : 0;
             $item->pay_type = trans($item->pay_type);
             $item->label = trans($item->pay_type);
 
@@ -301,6 +270,7 @@ class HomeController extends Controller
                 return $item;
             });
         $ordersRepresentativeAnalysis = User::query()
+            ->select(['users.id', 'users.fullname'])
             ->underMyControl()
             ->whereHas('representativeOrders', function ($query) use ($request, $companyType) {
                 $query->analysis($request->city_id, null, null, null, $companyType)
@@ -370,9 +340,12 @@ class HomeController extends Controller
                     })
                     ->testAccounts(false);
             }], 'total_price')
+            ->orderByDesc('count_orders')
+            ->limit(50)
             ->get();
 
         $operatorsAnalysis = User::query()
+            ->select(['users.id', 'users.fullname'])
             ->underMyControl()
             ->whereHas('operatorOrders', function ($query) use ($request, $companyType) {
                 $query->analysis($request->city_id, null, null, null, $companyType)
@@ -454,6 +427,8 @@ class HomeController extends Controller
                     })
                     ->testAccounts(false);
             }], 'total_price')
+            ->orderByDesc('count_orders')
+            ->limit(50)
             ->get();
         $revenuesAnalysis = Order::analysis($request->city_id, null, null, ['delivered', 'finished'], $companyType)
             ->join('order_representatives', 'orders.id', '=', 'order_representatives.order_id')
@@ -522,7 +497,7 @@ class HomeController extends Controller
         // Get order pattern analysis
         $orderHourlyAnalysis = $this->getOrderHourlyAnalysis($request);
         $orderDailyAnalysis = $this->getOrderDailyAnalysis($request);
-        $orderPeakUsageAnalysis = $this->getOrderPeakUsageAnalysis($request);
+        $orderPeakUsageAnalysis = $this->getOrderPeakUsageAnalysis($orderHourlyAnalysis['hourly_data'], $orderDailyAnalysis['daily_data']);
 
         return view('admin::pages.analysis', compact(
             'title',
