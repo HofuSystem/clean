@@ -53,8 +53,8 @@ class OrderRepresentativesController extends Controller
             $roleQuery->whereIn('name', ['technical', 'driver']);
         })->select(['id', 'fullname', 'phone'])->get();
 
-        $from = $request->get('from');
-        $to = $request->get('to');
+        $from = $request->get('from', \Carbon\Carbon::now()->startOfMonth()->toDateString());
+        $to   = $request->get('to', \Carbon\Carbon::now()->endOfMonth()->toDateString());
 
         $representatives = User::select(['users.id', 'users.fullname', 'users.phone', 'users.email', 'users.image'])
         ->withCount(['representativeOrders as total_orders' => function ($query) use ($request, $from, $to) {
@@ -78,7 +78,7 @@ class OrderRepresentativesController extends Controller
         })
         ->get();
 
-        return view('orders::pages.order-representatives.analysis', compact('title', 'screen', 'representatives', 'allRepresentatives', 'cities'));
+        return view('orders::pages.order-representatives.analysis', compact('title', 'screen', 'representatives', 'allRepresentatives', 'cities', 'from', 'to'));
     }
     public function collectiveAnalysis(Request $request)
     {
@@ -89,8 +89,8 @@ class OrderRepresentativesController extends Controller
             $roleQuery->whereIn('name', ['technical', 'driver']);
         })->select(['id', 'fullname', 'phone'])->get();
 
-        $from = $request->get('from');
-        $to = $request->get('to');
+        $from = $request->get('from', \Carbon\Carbon::now()->startOfMonth()->toDateString());
+        $to   = $request->get('to', \Carbon\Carbon::now()->endOfMonth()->toDateString());
 
         $representatives = User::select(['users.id', 'users.fullname', 'users.phone', 'users.email'])
         ->withCount(['representativeOrders as total_orders_count' => function ($query) use ($request, $from, $to) {

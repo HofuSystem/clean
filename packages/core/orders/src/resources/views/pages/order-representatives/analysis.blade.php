@@ -30,11 +30,11 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="from">{{ trans('from') }}</label>
-                            <input value="{{ request()->from }}" type="date" name="from" class="form-control">
+                            <input value="{{ request('from', $from) }}" type="date" name="from" class="form-control">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="to">{{ trans('to') }}</label>
-                            <input value="{{ request()->to }}" type="date" name="to" class="form-control">
+                            <input value="{{ request('to', $to) }}" type="date" name="to" class="form-control">
                         </div>
                     </div>
                 </div>
