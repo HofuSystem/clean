@@ -57,7 +57,7 @@ class OrdersController extends Controller
 
         $operators = DB::table('users')
             ->select('users.id', 'users.fullname')
-            ->selectRaw("JSON_ARRAY('operator') as roles_json")
+            ->selectRaw("'[\"operator\"]' as roles_json")
             ->whereNull('users.deleted_at')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
@@ -71,7 +71,7 @@ class OrdersController extends Controller
 
         $representatives = DB::table('users')
             ->select('users.id', 'users.fullname', 'users.phone')
-            ->selectRaw("(SELECT JSON_ARRAYAGG(roles.name) FROM model_has_roles JOIN roles ON roles.id = model_has_roles.role_id WHERE model_has_roles.model_id = users.id AND model_has_roles.model_type = 'Core\\\\Users\\\\Models\\\\User') as roles_json")
+            ->selectRaw("(SELECT CONCAT('[', GROUP_CONCAT(DISTINCT CONCAT('\"', roles.name, '\"')), ']') FROM model_has_roles JOIN roles ON roles.id = model_has_roles.role_id WHERE model_has_roles.model_id = users.id AND model_has_roles.model_type = 'Core\\\\Users\\\\Models\\\\User') as roles_json")
             ->whereNull('users.deleted_at')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
