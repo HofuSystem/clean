@@ -51,11 +51,11 @@ class OrdersController extends Controller
         $screen          = 'orders-index';
         $total           = $this->ordersService->totalCount();
         $trash           = $this->ordersService->trashCount();
-        $types           = Order::groupBy('type')->select('type')->get()->pluck('type');
-        $statuses        = Order::groupBy('status')->select('status')->get()->pluck('status');
-        $operators       = $this->usersService->selectable('id','fullname',['wallet'],"operator");
-        $representatives = $this->usersService->selectable('id','fullname',['wallet'],["driver","technical"]);
-        $cities          = $this->citiesService->selectable('id','name');
+        $types           = DB::table('orders')->whereNotNull('type')->distinct()->pluck('type');
+        $statuses        = DB::table('orders')->whereNotNull('status')->distinct()->pluck('status');
+        $operators       = User::select(['id', 'fullname', 'wallet'])->underMyControl()->role('operator')->get();
+        $representatives = User::select(['id', 'fullname', 'wallet'])->underMyControl()->whereHas('roles', fn($q) => $q->whereIn('name', ['driver', 'technical']))->get();
+        $cities          = \Core\Info\Models\City::with('translations')->get();
         return view('orders::pages.orders.list', compact('title','screen','operators','cities','representatives',"types","statuses","total","trash"));
     }
     public function create(Request $request ){

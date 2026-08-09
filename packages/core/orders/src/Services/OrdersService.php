@@ -688,7 +688,7 @@ class OrdersService
         $recordsTotal       = Order::count();
         $recordsFiltered    = Order::search()->count();
         $records            = Order::select(['id', 'reference_id', 'type', 'status', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'operator_id', 'pay_type', 'note', 'coupon_id', 'total_price','total_provider_invoice', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'online_payment_method', 'city_id', 'district_id', 'created_at', 'updated_at'])
-            ->with(['client.profile.city', 'client.profile.district', 'company', 'branch', 'operator', 'coupon', 'city', 'district', 'orderRepresentatives'])
+            ->with(['client.profile.city.translations', 'client.profile.district.translations', 'company', 'branch', 'operator', 'coupon', 'city.translations', 'district.translations', 'orderRepresentatives'])
             ->search()->dataTable()->get();
 
         return [
