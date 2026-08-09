@@ -27,8 +27,13 @@ class CartFollowUpsController extends Controller
     {
         $title   = trans('Follow Ups');
         $screen  = 'cart-follow-ups-index';
-        $users   = $this->usersService->selectable('id', 'fullname', ['phone']);
-        $admins  = $this->usersService->selectable('id', 'fullname', ['phone']);
+
+        $userIds = DB::table('cart_follow_ups')->whereNotNull('user_id')->distinct()->pluck('user_id');
+        $users   = !empty($userIds) ? DB::table('users')->select('id', 'fullname', 'phone')->whereIn('id', $userIds)->get() : collect();
+
+        $adminIds = DB::table('cart_follow_ups')->whereNotNull('admin_id')->distinct()->pluck('admin_id');
+        $admins  = !empty($adminIds) ? DB::table('users')->select('id', 'fullname', 'phone')->whereIn('id', $adminIds)->get() : collect();
+
         $total   = $this->cartFollowUpsService->totalCount();
         $statuses = ['pending', 'sale', 'no_answer', 'not_interested'];
 
