@@ -28,7 +28,11 @@ class CartFollowUpsController extends Controller
         $title   = trans('Follow Ups');
         $screen  = 'cart-follow-ups-index';
 
-        $userIds = DB::table('cart_follow_ups')->whereNotNull('user_id')->distinct()->pluck('user_id');
+        $userIds = DB::table('cart_follow_ups')
+            ->join('carts', 'cart_follow_ups.cart_id', '=', 'carts.id')
+            ->whereNotNull('carts.user_id')
+            ->distinct()
+            ->pluck('carts.user_id');
         $users   = !empty($userIds) ? DB::table('users')->select('id', 'fullname', 'phone')->whereIn('id', $userIds)->get() : collect();
 
         $adminIds = DB::table('cart_follow_ups')->whereNotNull('admin_id')->distinct()->pluck('admin_id');
