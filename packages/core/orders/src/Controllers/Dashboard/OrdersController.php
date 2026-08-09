@@ -20,6 +20,7 @@ use Core\Orders\Requests\ImportOrdersRequest;
 use Core\Orders\Exports\OrdersExport;
 use Core\Orders\Services\OrdersService;
 use Core\Users\Services\UsersService;
+use Core\Users\Models\User;
 use Core\Coupons\Services\CouponsService;
 use Core\Info\Services\CitiesService;
 use Core\Info\Services\DistrictsService;
@@ -53,7 +54,7 @@ class OrdersController extends Controller
         $trash           = $this->ordersService->trashCount();
         $types           = DB::table('orders')->whereNotNull('type')->distinct()->pluck('type');
         $statuses        = DB::table('orders')->whereNotNull('status')->distinct()->pluck('status');
-        $operators       = User::select(['id', 'fullname', 'wallet'])->underMyControl()->role('operator')->get();
+        $operators       = User::select(['id', 'fullname', 'wallet'])->underMyControl()->whereHas('roles', fn($q) => $q->where('name', 'operator'))->get();
         $representatives = User::select(['id', 'fullname', 'wallet'])->underMyControl()->whereHas('roles', fn($q) => $q->whereIn('name', ['driver', 'technical']))->get();
         $cities          = \Core\Info\Models\City::with('translations')->get();
         return view('orders::pages.orders.list', compact('title','screen','operators','cities','representatives',"types","statuses","total","trash"));
