@@ -19,7 +19,7 @@
                                 
                                 <option value="">{{ trans('select operator') }}</option>
                                 @foreach ($operators ?? [] as $sItem)
-                                        <option data-roles="{{ $sItem->roles->pluck('name')->toJson() }}"
+                                        <option data-roles="{{ $sItem->roles_json ?? ($sItem->roles ? $sItem->roles->pluck('name')->toJson() : '[]') }}"
                                             value="{{ $sItem->id }}">{{ $sItem->fullname }}</option>
                                 @endforeach
 

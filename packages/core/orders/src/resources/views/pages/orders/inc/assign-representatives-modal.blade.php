@@ -41,8 +41,8 @@
 
                                 <option value="">{{ trans('select representative') }}</option>
                                 @foreach ($users ?? [] as $sItem)
-                                    <option data-roles="{{ $sItem->roles->pluck('name')->toJson() }}"
-                                        value="{{ $sItem->id }}">{{ $sItem->fullname . " - " . $sItem->phone }}</option>
+                                    <option data-roles="{{ $sItem->roles_json ?? ($sItem->roles ? $sItem->roles->pluck('name')->toJson() : '[]') }}"
+                                        value="{{ $sItem->id }}">{{ $sItem->fullname . " - " . ($sItem->phone ?? '') }}</option>
                                 @endforeach
 
                             </select>

@@ -54,9 +54,43 @@ class OrdersController extends Controller
         $trash           = $this->ordersService->trashCount();
         $types           = DB::table('orders')->whereNotNull('type')->distinct()->pluck('type');
         $statuses        = DB::table('orders')->whereNotNull('status')->distinct()->pluck('status');
-        $operators       = User::select(['id', 'fullname', 'wallet'])->underMyControl()->whereHas('roles', fn($q) => $q->where('name', 'operator'))->get();
-        $representatives = User::select(['id', 'fullname', 'wallet'])->underMyControl()->whereHas('roles', fn($q) => $q->whereIn('name', ['driver', 'technical']))->get();
-        $cities          = \Core\Info\Models\City::with('translations')->get();
+
+        $operators = DB::table('users')
+            ->select('users.id', 'users.fullname')
+            ->selectRaw("JSON_ARRAY('operator') as roles_json")
+            ->whereNull('users.deleted_at')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('model_has_roles')
+                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                    ->whereColumn('model_has_roles.model_id', 'users.id')
+                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
+                    ->where('roles.name', 'operator');
+            })
+            ->get();
+
+        $representatives = DB::table('users')
+            ->select('users.id', 'users.fullname', 'users.phone')
+            ->selectRaw("(SELECT JSON_ARRAYAGG(roles.name) FROM model_has_roles JOIN roles ON roles.id = model_has_roles.role_id WHERE model_has_roles.model_id = users.id AND model_has_roles.model_type = 'Core\\\\Users\\\\Models\\\\User') as roles_json")
+            ->whereNull('users.deleted_at')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('model_has_roles')
+                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                    ->whereColumn('model_has_roles.model_id', 'users.id')
+                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
+                    ->whereIn('roles.name', ['driver', 'technical']);
+            })
+            ->get();
+
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
         return view('orders::pages.orders.list', compact('title','screen','operators','cities','representatives',"types","statuses","total","trash"));
     }
     public function create(Request $request ){
