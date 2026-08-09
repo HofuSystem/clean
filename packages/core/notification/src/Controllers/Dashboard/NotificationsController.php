@@ -37,8 +37,17 @@ class NotificationsController extends Controller
         $screen     = 'notifications-index';
         $total      = $this->notificationsService->totalCount();
         $trash      = $this->notificationsService->trashCount();
-		$senders    = $this->usersService->selectable('id','fullname');
-        $cities     = $this->citiesService->selectable('id','name');
+
+        $senderIds  = DB::table('notifications')->whereNotNull('sender_id')->distinct()->pluck('sender_id');
+        $senders    = !empty($senderIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $senderIds)->get() : collect();
+        $cities     = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
         return view('notification::pages.notifications.list', compact('title','screen','senders','cities',"total","trash"));
     }
 
