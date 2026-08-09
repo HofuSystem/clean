@@ -36,8 +36,17 @@ class CartsController extends Controller
         $screen     = 'carts-index';
         $total      = $this->cartsService->totalCount();
         $trash      = $this->cartsService->trashCount();
-		$users      = $this->usersService->selectable('id','fullname', ['phone']);
-        $cities     = $this->citiesService->selectable('id','name');
+
+        $userIds    = DB::table('carts')->whereNotNull('user_id')->distinct()->pluck('user_id');
+        $users      = !empty($userIds) ? DB::table('users')->select('id', 'fullname', 'phone')->whereIn('id', $userIds)->get() : collect();
+        $cities     = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
         return view('orders::pages.carts.list', compact('title','screen','users','cities',"total","trash"));
     }
 
