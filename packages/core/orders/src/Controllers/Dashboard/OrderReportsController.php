@@ -29,9 +29,20 @@ class OrderReportsController extends Controller
         $screen     = 'order-reports-index';
         $total      = $this->orderReportsService->totalCount();
         $trash      = $this->orderReportsService->trashCount();
-		$orders = $this->ordersService->selectable('id','reference_id');
-		$users = $this->usersService->selectable('id','fullname');
-		$reportReasons = $this->reportReasonsService->selectable('id','name');
+
+        $orderIds   = DB::table('order_reports')->whereNotNull('order_id')->distinct()->pluck('order_id');
+        $orders     = !empty($orderIds) ? DB::table('orders')->select('id', 'reference_id')->whereIn('id', $orderIds)->get() : collect();
+
+        $userIds    = DB::table('order_reports')->whereNotNull('user_id')->distinct()->pluck('user_id');
+        $users      = !empty($userIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $userIds)->get() : collect();
+
+        $reportReasons = DB::table('report_reasons')
+            ->join('report_reason_translations', function ($join) {
+                $join->on('report_reasons.id', '=', 'report_reason_translations.report_reason_id')
+                    ->where('report_reason_translations.locale', '=', app()->getLocale());
+            })
+            ->select('report_reasons.id', 'report_reason_translations.name')
+            ->get();
 
         return view('orders::pages.order-reports.list', compact('title','screen','orders','users','reportReasons',"total","trash"));
     }
