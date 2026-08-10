@@ -91,7 +91,7 @@ class CategoriesService
     }
 
     public function get(int $id){
-        return  Category::findOrFail($id);
+        return Category::with(['translations', 'cities.translations', 'parent.translations'])->findOrFail($id);
     }
 
     public function delete(int $id,$final = false){

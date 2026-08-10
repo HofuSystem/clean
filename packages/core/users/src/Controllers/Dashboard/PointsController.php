@@ -41,7 +41,7 @@ class PointsController extends Controller
         $item       = isset($id)    ? $this->pointsService->get($id) : null;
         $screen     = isset($item)  ? 'points-edit'          : 'points-create';
         $title      = isset($item)  ? trans("points  edit")  : trans("points  create");
-		$users = $this->usersService->selectable('id','fullname');
+        $users = DB::table('users')->select('id', 'fullname')->whereNull('deleted_at')->get();
 
 
         return view('users::pages.points.edit', compact('item','title','screen','users') );
