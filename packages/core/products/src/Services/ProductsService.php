@@ -25,7 +25,15 @@ class ProductsService
         if($user){
             ProductCardResource::$cityId = $user?->profile?->city_id;
         }
-       return ProductCardResource::collection(Product::with(['translations','category.translations','subCategory.translations','prices','contractsPrices','contractCustomerPrices'])->get());
+        $query = Product::with(['translations','category.translations','subCategory.translations','prices','contractsPrices','contractCustomerPrices'])
+            ->where('status', 'active');
+        if ($type) {
+            $orderType = \Core\Orders\Helpers\OrderHelper::getOrderType($type);
+            $query->whereHas('category', function($q) use ($orderType) {
+                $q->where('type', $orderType);
+            });
+        }
+        return ProductCardResource::collection($query->get());
     }
     public function selectable(string $key,string $value,array $selected = [],$with = []){
         $selected[] = 'id';
