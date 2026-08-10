@@ -129,19 +129,41 @@ class OrdersController extends Controller
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
-        $categories             = $this->categoriesService->selectable('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id' ,null]],true);
-        $subCategories          = $this->categoriesService->getSelect('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id','!=' ,null]],true);
+        $categories             = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->whereNull('categories.parent_id')
+            ->where('categories.type', OrderHelper::getOrderType($order->type))
+            ->get();
+        $subCategories          = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name', 'categories.parent_id')
+            ->whereNull('categories.deleted_at')
+            ->whereNotNull('categories.parent_id')
+            ->where('categories.type', OrderHelper::getOrderType($order->type))
+            ->get();
         $items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
         $reportReasons          = $this->reportReasonsService->selectable('id','name');
-        $coupons                = Coupon::where('status','active')->get()->keyBy('id')->map(function($item){
-            $title =  $item->code.", ".trans('type').": ".trans("coupons.".$item->type).", ".trans('value').": ".$item->value;
-            if($item->type == 'percentage'){
-                $title .= "%";
-            }else{
-                $title .= " ".trans('SAR');
-            }
-            return $title;
-        });
+        $coupons                = DB::table('coupons')
+            ->where('status','active')
+            ->get()
+            ->keyBy('id')
+            ->map(function($item){
+                $title =  $item->code.", ".trans('type').": ".trans("coupons.".$item->type).", ".trans('value').": ".$item->value;
+                if($item->type == 'percentage'){
+                    $title .= "%";
+                }else{
+                    $title .= " ".trans('SAR');
+                }
+                return $title;
+            });
         $editMode               = true;
         $hasSize                = [55];
         $allowedRepresentatives =  [];
