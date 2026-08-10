@@ -63,10 +63,17 @@ class WalletTransactionsController extends Controller
         $item       = isset($id)    ? $this->walletTransactionsService->get($id) : null;
         $screen     = isset($item)  ? 'WalletTransaction-edit'          : 'WalletTransaction-create';
         $title      = isset($item)  ? trans("WalletTransaction  edit")  : trans("WalletTransaction  create");
-		$users = $this->usersService->selectable('id','fullname');
-		$addedBies = $this->usersService->selectable('id','fullname');
-		$packages = $this->walletPackagesService->selectable('id','price');
-		$orders = $this->ordersService->selectable('id','reference_id');
+
+        $users      = DB::table('users')->select('id', 'fullname')->whereNull('deleted_at')->get();
+        $addedBies  = $users;
+        $packages   = DB::table('wallet_packages')->select('id', 'price')->whereNull('deleted_at')->get();
+        $orders     = DB::table('orders')->select('id', 'reference_id')->whereNull('deleted_at')->latest('id')->take(500)->get();
+        if (isset($item) && $item->order_id && !$orders->contains('id', $item->order_id)) {
+            $currentOrder = DB::table('orders')->select('id', 'reference_id')->where('id', $item->order_id)->first();
+            if ($currentOrder) {
+                $orders->push($currentOrder);
+            }
+        }
 
         return view('wallet::pages.wallet-transactions.edit', compact('item','title','screen','users','addedBies','packages','orders'   ) );
     }
