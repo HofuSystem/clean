@@ -34,10 +34,18 @@ class WalletTransactionsController extends Controller
         $screen     = 'wallet-transactions-index';
         $total      = $this->walletTransactionsService->totalCount();
         $trash      = $this->walletTransactionsService->trashCount();
-		$users = $this->usersService->selectable('id','fullname');
-		$addedBies = $this->usersService->selectable('id','fullname');
-		$packages = $this->walletPackagesService->selectable('id','price');
-		$orders = $this->ordersService->selectable('id','reference_id');
+
+        $userIds    = DB::table('wallet_transactions')->whereNotNull('user_id')->distinct()->pluck('user_id');
+        $users      = !empty($userIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $userIds)->get() : collect();
+
+        $addedByIds = DB::table('wallet_transactions')->whereNotNull('added_by_id')->distinct()->pluck('added_by_id');
+        $addedBies  = !empty($addedByIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $addedByIds)->get() : collect();
+
+        $packages   = DB::table('wallet_packages')->select('id', 'price')->whereNull('deleted_at')->get();
+
+        $orderIds   = DB::table('wallet_transactions')->whereNotNull('order_id')->distinct()->pluck('order_id');
+        $orders     = !empty($orderIds) ? DB::table('orders')->select('id', 'reference_id')->whereIn('id', $orderIds)->get() : collect();
+
         return view('wallet::pages.wallet-transactions.list', compact('title','screen','users','addedBies','packages',"total","trash","orders"));
     }
 
