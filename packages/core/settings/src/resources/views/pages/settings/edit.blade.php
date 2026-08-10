@@ -151,7 +151,7 @@
                                     <button class="nav-link" id="pills-coverage-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-coverage" type="button" role="tab"
                                         aria-controls="pills-coverage"
-                                        aria-selected="false">{{ trans('coverage messages') }}</button>
+                                        aria-selected="false">{{ app()->getLocale() == 'ar' ? 'رسائل التغطية' : 'Coverage Messages' }}</button>
                                 </li>
 
                             </ul>
@@ -1425,20 +1425,20 @@
                                             </ul>
                                             <div class="tab-content mt-3" id="coverageLanguageTabsContent">
                                                 <div class="tab-pane fade show active" id="coverage-ar" role="tabpanel">
-                                                    <h5 class="text-primary mb-3">{{ trans('Temporarily Stopped Coverage Messages (Arabic)') }}</h5>
+                                                    <h5 class="text-primary mb-3">رسائل الإيقاف المؤقت (باللغة العربية)</h5>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_title_ar">{{ trans('Title (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_title_ar">العنوان الرئيسي (حالة الإيقاف المؤقت)</label>
                                                         <input type="text" name="coverage_paused_title_ar" class="form-control"
                                                             placeholder="نظبط أمورنا ونرجع لكم!"
                                                             value="{{ $settings['coverage_paused_title_ar'] ?? 'نظبط أمورنا ونرجع لكم!' }}">
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_message_ar">{{ trans('Message (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_message_ar">نص الرسالة والتوضيح (حالة الإيقاف المؤقت)</label>
                                                         <textarea name="coverage_paused_message_ar" class="form-control" rows="3"
                                                             placeholder="أوقفنا استقبال الطلبات مؤقتاً في منطقتك لتطوير الخدمة.. راجعين لكم قريب!">{{ $settings['coverage_paused_message_ar'] ?? 'أوقفنا استقبال الطلبات مؤقتاً في منطقتك لتطوير الخدمة.. راجعين لكم قريب!' }}</textarea>
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_button_ar">{{ trans('Button Text (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_button_ar">نص الزر التفاعلي (حالة الإيقاف المؤقت)</label>
                                                         <input type="text" name="coverage_paused_button_ar" class="form-control"
                                                             placeholder="علموني إذا رجعتوا!"
                                                             value="{{ $settings['coverage_paused_button_ar'] ?? 'علموني إذا رجعتوا!' }}">
@@ -1446,20 +1446,20 @@
 
                                                     <hr class="my-4">
 
-                                                    <h5 class="text-primary mb-3">{{ trans('Not Covered Yet Messages (Arabic)') }}</h5>
+                                                    <h5 class="text-primary mb-3">رسائل عدم الوصول بعد (باللغة العربية)</h5>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_title_ar">{{ trans('Title (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_title_ar">العنوان الرئيسي (حالة عدم الوصول)</label>
                                                         <input type="text" name="coverage_not_reached_title_ar" class="form-control"
                                                             placeholder="يا هلا بك! لسا ما وصلنا لكم"
                                                             value="{{ $settings['coverage_not_reached_title_ar'] ?? 'يا هلا بك! لسا ما وصلنا لكم' }}">
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_message_ar">{{ trans('Message (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_message_ar">نص الرسالة والتوضيح (حالة عدم الوصول)</label>
                                                         <textarea name="coverage_not_reached_message_ar" class="form-control" rows="3"
                                                             placeholder="ودنا نخدمك اليوم قبل بكرة بس منطقتك لسا ما غطيناها، خطتنا نتوسع وقريب بنطرق بابك.">{{ $settings['coverage_not_reached_message_ar'] ?? 'ودنا نخدمك اليوم قبل بكرة بس منطقتك لسا ما غطيناها، خطتنا نتوسع وقريب بنطرق بابك.' }}</textarea>
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_button_ar">{{ trans('Button Text (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_button_ar">نص الزر التفاعلي (حالة عدم الوصول)</label>
                                                         <input type="text" name="coverage_not_reached_button_ar" class="form-control"
                                                             placeholder="علموني إذا وصلتول!"
                                                             value="{{ $settings['coverage_not_reached_button_ar'] ?? 'علموني إذا وصلتول!' }}">
@@ -1467,20 +1467,20 @@
                                                 </div>
 
                                                 <div class="tab-pane fade" id="coverage-en" role="tabpanel">
-                                                    <h5 class="text-primary mb-3">{{ trans('Temporarily Stopped Coverage Messages (English)') }}</h5>
+                                                    <h5 class="text-primary mb-3">Temporarily Stopped Messages (English)</h5>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_title_en">{{ trans('Title (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_title_en">Title (Paused Status)</label>
                                                         <input type="text" name="coverage_paused_title_en" class="form-control"
                                                             placeholder="We will be back soon!"
                                                             value="{{ $settings['coverage_paused_title_en'] ?? 'We will be back soon!' }}">
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_message_en">{{ trans('Message (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_message_en">Message (Paused Status)</label>
                                                         <textarea name="coverage_paused_message_en" class="form-control" rows="3"
                                                             placeholder="We temporarily paused order reception in your area for service enhancement.. We will be back soon!">{{ $settings['coverage_paused_message_en'] ?? 'We temporarily paused order reception in your area for service enhancement.. We will be back soon!' }}</textarea>
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_paused_button_en">{{ trans('Button Text (Paused)') }}</label>
+                                                        <label class="" for="coverage_paused_button_en">Button Text (Paused Status)</label>
                                                         <input type="text" name="coverage_paused_button_en" class="form-control"
                                                             placeholder="Notify me when back!"
                                                             value="{{ $settings['coverage_paused_button_en'] ?? 'Notify me when back!' }}">
@@ -1488,20 +1488,20 @@
 
                                                     <hr class="my-4">
 
-                                                    <h5 class="text-primary mb-3">{{ trans('Not Covered Yet Messages (English)') }}</h5>
+                                                    <h5 class="text-primary mb-3">Not Covered Yet Messages (English)</h5>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_title_en">{{ trans('Title (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_title_en">Title (Not Covered Yet)</label>
                                                         <input type="text" name="coverage_not_reached_title_en" class="form-control"
                                                             placeholder="Welcome! We haven't reached your area yet"
                                                             value="{{ $settings['coverage_not_reached_title_en'] ?? 'Welcome! We haven\'t reached your area yet' }}">
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_message_en">{{ trans('Message (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_message_en">Message (Not Covered Yet)</label>
                                                         <textarea name="coverage_not_reached_message_en" class="form-control" rows="3"
                                                             placeholder="We would love to serve you, but we haven't covered your area yet. We are expanding soon!">{{ $settings['coverage_not_reached_message_en'] ?? 'We would love to serve you, but we haven\'t covered your area yet. We are expanding soon!' }}</textarea>
                                                     </div>
                                                     <div class="form-group mb-3 col-md-12">
-                                                        <label class="" for="coverage_not_reached_button_en">{{ trans('Button Text (Not Covered Yet)') }}</label>
+                                                        <label class="" for="coverage_not_reached_button_en">Button Text (Not Covered Yet)</label>
                                                         <input type="text" name="coverage_not_reached_button_en" class="form-control"
                                                             placeholder="Notify me when available!"
                                                             value="{{ $settings['coverage_not_reached_button_en'] ?? 'Notify me when available!' }}">
