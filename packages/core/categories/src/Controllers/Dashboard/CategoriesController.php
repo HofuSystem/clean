@@ -83,11 +83,35 @@ class CategoriesController extends Controller
         $item       = isset($id)    ? $this->categoriesService->get($id) : null;
         $screen     = isset($item)  ? $type.'-edit'          : $type.'-create';
         $title      = isset($item)  ? trans($type." edit")  : trans($type." create");
-		$parents = $this->categoriesService->selectable('id','name',['parent_id' => null],false,$types);
-		$cities = $this->citiesService->selectable('id','name');
+        $parents = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->whereNull('categories.parent_id')
+            ->when(!empty($types), function ($query) use ($types) {
+                $query->whereIn('categories.type', $types);
+            })
+            ->get();
 
-		$categories = $this->categoriesService->selectable('id','name');
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
 
+        $categories = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
 
         return view('categories::pages.categories.edit', compact('item','title','type','types','screen','parents','cities','categories') );
     }
