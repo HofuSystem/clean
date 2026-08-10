@@ -17,23 +17,64 @@ class ProductsService
     public function __construct(protected CommentingService $commentingService,protected PricesService $pricesService){}
     function getProductsCard($type = null,$user = null,$company = null,$b2b_type = null)
     {
-        if($company){
-            ProductsService::setCurrentContract($company);
-            ProductCardResource::$company = $company;
-            ProductCardResource::$b2bType = $b2b_type;
-        }
-        if($user){
-            ProductCardResource::$cityId = $user?->profile?->city_id;
-        }
-        $query = Product::with(['translations','category.translations','subCategory.translations','prices','contractsPrices','contractCustomerPrices'])
-            ->where('status', 'active');
-        if ($type) {
-            $orderType = \Core\Orders\Helpers\OrderHelper::getOrderType($type);
-            $query->whereHas('category', function($q) use ($orderType) {
-                $q->where('type', $orderType);
-            });
-        }
-        return ProductCardResource::collection($query->get());
+        $cityId = $user?->profile?->city_id ?? null;
+        $orderType = $type ? \Core\Orders\Helpers\OrderHelper::getOrderType($type) : null;
+        $locale = app()->getLocale();
+
+        $query = DB::table('products')
+            ->join('product_translations', function ($join) use ($locale) {
+                $join->on('products.id', '=', 'product_translations.product_id')
+                    ->where('product_translations.locale', '=', $locale);
+            })
+            ->leftJoin('categories as cat', 'products.category_id', '=', 'cat.id')
+            ->leftJoin('category_translations as cat_trans', function ($join) use ($locale) {
+                $join->on('cat.id', '=', 'cat_trans.category_id')
+                    ->where('cat_trans.locale', '=', $locale);
+            })
+            ->leftJoin('categories as sub_cat', 'products.sub_category_id', '=', 'sub_cat.id')
+            ->leftJoin('category_translations as sub_cat_trans', function ($join) use ($locale) {
+                $join->on('sub_cat.id', '=', 'sub_cat_trans.category_id')
+                    ->where('sub_cat_trans.locale', '=', $locale);
+            })
+            ->where('products.status', 'active')
+            ->whereNull('products.deleted_at')
+            ->when($orderType, function ($q) use ($orderType) {
+                $q->where('cat.type', $orderType);
+            })
+            ->select(
+                'products.id',
+                'products.sku',
+                'products.image',
+                'product_translations.name',
+                'products.price',
+                'products.cost',
+                'products.points',
+                'products.type',
+                'cat_trans.name as category',
+                'products.category_id',
+                'sub_cat_trans.name as sub_category',
+                'products.sub_category_id'
+            );
+
+        $products = $query->get();
+
+        return $products->map(function ($p) {
+            return [
+                'id'              => $p->id,
+                'sku'             => $p->sku,
+                'image'           => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($p->image),
+                'name'            => $p->name,
+                'price'           => (double) $p->price,
+                'points'          => (double) $p->points,
+                'cost'            => (double) $p->cost,
+                'type'            => $p->type,
+                'category'        => $p->category,
+                'category_id'     => $p->category_id,
+                'sub_category'    => $p->sub_category,
+                'sub_category_id' => $p->sub_category_id,
+                'in_contract'     => 0,
+            ];
+        });
     }
     public function selectable(string $key,string $value,array $selected = [],$with = []){
         $selected[] = 'id';
