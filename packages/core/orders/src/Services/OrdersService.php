@@ -555,7 +555,7 @@ class OrdersService
         $items = OrderItem::where('order_id', $orderId)->with('product')->get();
         $originalProductsTotal = 0;
         foreach ($items as $item) {
-            $product = $item->product ? $item->product : json_decode($item->product_data);
+            $product = isset($item->product) ? $item->product : (isset($item->product_data) ? json_decode($item->product_data) : null);
             $prices = ProductsService::getProductOutOfContractPriceData($product, $order->city_id);
             $originalProductsTotal += $prices['price'] * $item->quantity;
         }

@@ -180,7 +180,7 @@ class OrdersController extends Controller
             ->whereNotNull('categories.parent_id')
             ->where('categories.type', OrderHelper::getOrderType($order->type))
             ->get();
-        $items                  = DB::table('order_items')->select('id', 'product_id')->where('order_id', $order->id)->whereNull('deleted_at')->get();
+        $items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
         $reportReasons          = DB::table('report_reasons')
             ->join('report_reason_translations', function ($join) {
                 $join->on('report_reasons.id', '=', 'report_reason_translations.report_reason_id')
