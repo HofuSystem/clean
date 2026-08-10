@@ -565,7 +565,13 @@ class OrdersService
     }
     public function get($id)
     {
-        return  Order::where('id', $id)->orWhere('reference_id', $id)->firstOrFail();
+        return Order::with([
+            'client.district',
+            'client.city',
+            'items.product.translations',
+            'orderRepresentatives.representative',
+            'operator'
+        ])->where('id', $id)->orWhere('reference_id', $id)->firstOrFail();
     }
 
     public function delete(int $id, $final = false)

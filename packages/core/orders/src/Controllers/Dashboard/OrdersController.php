@@ -97,13 +97,25 @@ class OrdersController extends Controller
 
         $screen             = 'Order-create';
         $title              = trans("Order  create");
-		$clients            = $this->usersService->selectable('id','fullname',['wallet']);
-		$coupons            = $this->couponsService->findMatching(applying:'manual')->get();
+        $clients            = DB::table('users')->select('id', 'fullname')->whereNull('deleted_at')->get();
+        $coupons            = $this->couponsService->findMatching(applying:'manual')->get();
         $products           = $this->productsService->getProductsCard();
         $categories         = $this->categoriesService->selectable('id','name',[['parent_id' ,null]],true);
         $subCategories      = $this->categoriesService->getSelect('id','name',[['parent_id','!=' ,null]],true);
-        $cities             = $this->citiesService->selectable('id','name');
-        $districts          = $this->districtsService->selectable('id','name');
+        $cities             = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+        $districts          = DB::table('districts')
+            ->join('district_translations', function ($join) {
+                $join->on('districts.id', '=', 'district_translations.district_id')
+                    ->where('district_translations.locale', '=', app()->getLocale());
+            })
+            ->select('districts.id', 'district_translations.name')
+            ->get();
         $hasSize            = [55];
         return view('orders::pages.orders.create', compact('title','screen','hasSize','cities','districts','clients','coupons','subCategories','categories','products') );
     }
@@ -111,16 +123,38 @@ class OrdersController extends Controller
         $order                  = $this->ordersService->get($id) ;
         $screen                 = $order->type;
         $title                  = trans($order->type)  ;
-		$users                  = $this->usersService->selectable('id','fullname',['phone'],['technical','driver'],['roles']);
-		$operators              = $this->usersService->selectable('id','fullname',['phone'],['operator'],['roles']);
-		$orderItems             = $order->items()->withTrashed()->get();
+        $users                  = DB::table('users')
+            ->select('users.id', 'users.fullname', 'users.phone')
+            ->whereNull('users.deleted_at')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('model_has_roles')
+                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                    ->whereColumn('model_has_roles.model_id', 'users.id')
+                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
+                    ->whereIn('roles.name', ['technical', 'driver']);
+            })
+            ->get();
+        $operators              = DB::table('users')
+            ->select('users.id', 'users.fullname', 'users.phone')
+            ->whereNull('users.deleted_at')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('model_has_roles')
+                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                    ->whereColumn('model_has_roles.model_id', 'users.id')
+                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
+                    ->where('roles.name', 'operator');
+            })
+            ->get();
+        $orderItems             = $order->items()->withTrashed()->get();
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
         $categories             = $this->categoriesService->selectable('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id' ,null]],true);
         $subCategories          = $this->categoriesService->getSelect('id','name',[['type' ,OrderHelper::getOrderType($order->type)],['parent_id','!=' ,null]],true);
-		$items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
-		$reportReasons          = $this->reportReasonsService->selectable('id','name');
+        $items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
+        $reportReasons          = $this->reportReasonsService->selectable('id','name');
         $coupons                = Coupon::where('status','active')->get()->keyBy('id')->map(function($item){
             $title =  $item->code.", ".trans('type').": ".trans("coupons.".$item->type).", ".trans('value').": ".$item->value;
             if($item->type == 'percentage'){
