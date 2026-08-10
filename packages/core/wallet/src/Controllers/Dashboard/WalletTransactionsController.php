@@ -35,16 +35,25 @@ class WalletTransactionsController extends Controller
         $total      = $this->walletTransactionsService->totalCount();
         $trash      = $this->walletTransactionsService->trashCount();
 
-        $userIds    = DB::table('wallet_transactions')->whereNotNull('user_id')->distinct()->pluck('user_id');
-        $users      = !empty($userIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $userIds)->get() : collect();
+        $users = DB::table('users')
+            ->select('id', 'fullname')
+            ->whereIn('id', DB::table('wallet_transactions')->select('user_id')->whereNotNull('user_id'))
+            ->get();
 
-        $addedByIds = DB::table('wallet_transactions')->whereNotNull('added_by_id')->distinct()->pluck('added_by_id');
-        $addedBies  = !empty($addedByIds) ? DB::table('users')->select('id', 'fullname')->whereIn('id', $addedByIds)->get() : collect();
+        $addedBies = DB::table('users')
+            ->select('id', 'fullname')
+            ->whereIn('id', DB::table('wallet_transactions')->select('added_by_id')->whereNotNull('added_by_id'))
+            ->get();
 
-        $packages   = DB::table('wallet_packages')->select('id', 'price')->whereNull('deleted_at')->get();
+        $packages = DB::table('wallet_packages')
+            ->select('id', 'price')
+            ->whereNull('deleted_at')
+            ->get();
 
-        $orderIds   = DB::table('wallet_transactions')->whereNotNull('order_id')->distinct()->pluck('order_id');
-        $orders     = !empty($orderIds) ? DB::table('orders')->select('id', 'reference_id')->whereIn('id', $orderIds)->get() : collect();
+        $orders = DB::table('orders')
+            ->select('id', 'reference_id')
+            ->whereIn('id', DB::table('wallet_transactions')->select('order_id')->whereNotNull('order_id'))
+            ->get();
 
         return view('wallet::pages.wallet-transactions.list', compact('title','screen','users','addedBies','packages',"total","trash","orders"));
     }
