@@ -109,7 +109,7 @@ class CategoriesService
         $recordsTotal       = Category::search($type, $isSales)->count();
         $recordsFiltered    = Category::search($type, $isSales)->count();
         $records            = Category::select(['id','image','type','delivery_price','sort','is_package','status','parent_id'])
-        ->with(['parent','cities'])
+        ->with(['parent.translations','cities.translations'])
         ->search($type, $isSales)
         ->dataTable()->get();
 

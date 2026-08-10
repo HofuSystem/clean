@@ -46,9 +46,24 @@ class CategoriesController extends Controller
         $screen         = $type.'-index';
         $total          = $this->categoriesService->totalCount($type, $isSales);
         $trash          = $this->categoriesService->trashCount($type, $isSales);
-		$parents        = $this->categoriesService->selectable('id','name');
-		$cities         = $this->citiesService->selectable('id','name');
-		$categories     = $this->categoriesService->selectable('id','name');
+        $parents = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
+
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
+        $categories = $parents;
 
         return view('categories::pages.categories.list', compact('title','screen','type','types','parents','cities','categories',"total","trash", "isSales"));
     }
