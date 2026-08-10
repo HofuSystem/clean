@@ -156,7 +156,7 @@ class OrdersController extends Controller
                     ->where('roles.name', 'operator');
             })
             ->get();
-        $orderItems             = $order->items()->withTrashed()->with(['product.translations', 'orderReport.reportReason.translations'])->get();
+        $orderItems             = $order->items()->withTrashed()->with(['product.translations'])->get();
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);

@@ -569,7 +569,6 @@ class OrdersService
             'client',
             'company',
             'items.product.translations',
-            'items.orderReport.reportReason.translations',
             'orderRepresentatives.representative',
             'operator',
             'comments',
