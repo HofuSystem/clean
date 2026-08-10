@@ -156,6 +156,72 @@ class OrdersController extends Controller
             $deliveryDates = CategoryDateTimesService::getDateTimesFormatted('delivery', $deliveryDates);
             $receiverDates = CategoryDateTimesService::getDateTimes(OrderHelper::getOrderType($request->type), request('category_id'), $address);
             $receiverDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $receiverDates);
+
+            // Coverage Info Calculation
+            $cityStatus = $address->city?->status ?? 'active';
+            $districtStatus = $address->district?->status ?? 'active';
+            $hasDates = !empty($dateTimes);
+            $isCovered = false;
+            $coverageStatus = 'covered';
+
+            if ($cityStatus === 'paused' || $districtStatus === 'paused') {
+                $coverageStatus = 'temporarily_stopped';
+            } elseif ($cityStatus === 'not-active' || $districtStatus === 'not-active') {
+                $hasOrderHistory = false;
+                if ($address->district_id) {
+                    $hasOrderHistory = \Core\Orders\Models\Order::where('district_id', $address->district_id)->exists();
+                } elseif ($address->city_id) {
+                    $hasOrderHistory = \Core\Orders\Models\Order::where('city_id', $address->city_id)->exists();
+                }
+                $coverageStatus = $hasOrderHistory ? 'temporarily_stopped' : 'not_covered_yet';
+            } elseif (!$hasDates) {
+                $hasOrderHistory = false;
+                if ($address->district_id) {
+                    $hasOrderHistory = \Core\Orders\Models\Order::where('district_id', $address->district_id)->exists();
+                } elseif ($address->city_id) {
+                    $hasOrderHistory = \Core\Orders\Models\Order::where('city_id', $address->city_id)->exists();
+                }
+                $coverageStatus = $hasOrderHistory ? 'temporarily_stopped' : 'not_covered_yet';
+            } else {
+                $isCovered = true;
+                $coverageStatus = 'covered';
+            }
+
+            $lang = app()->getLocale() == 'en' ? 'en' : 'ar';
+            if ($coverageStatus === 'temporarily_stopped') {
+                $title = SettingsService::getDataBaseSetting('coverage_paused_title_' . $lang) 
+                    ?? ($lang === 'en' ? 'We will be back soon!' : 'نظبط أمورنا ونرجع لكم!');
+                $message = SettingsService::getDataBaseSetting('coverage_paused_message_' . $lang) 
+                    ?? ($lang === 'en' ? 'We temporarily paused order reception in your area for service enhancement.. We will be back soon!' : 'أوقفنا استقبال الطلبات مؤقتاً في منطقتك لتطوير الخدمة.. راجعين لكم قريب!');
+                $buttonText = SettingsService::getDataBaseSetting('coverage_paused_button_' . $lang) 
+                    ?? ($lang === 'en' ? 'Notify me when back!' : 'علموني إذا رجعتوا!');
+                $actionType = 'notify_on_resume';
+            } elseif ($coverageStatus === 'not_covered_yet') {
+                $title = SettingsService::getDataBaseSetting('coverage_not_reached_title_' . $lang) 
+                    ?? ($lang === 'en' ? 'Welcome! We haven\'t reached your area yet' : 'يا هلا بك! لسا ما وصلنا لكم');
+                $message = SettingsService::getDataBaseSetting('coverage_not_reached_message_' . $lang) 
+                    ?? ($lang === 'en' ? 'We would love to serve you, but we haven\'t covered your area yet. We are expanding soon!' : 'ودنا نخدمك اليوم قبل بكرة بس منطقتك لسا ما غطيناها، خطتنا نتوسع وقريب بنطرق بابك.');
+                $buttonText = SettingsService::getDataBaseSetting('coverage_not_reached_button_' . $lang) 
+                    ?? ($lang === 'en' ? 'Notify me when available!' : 'علموني إذا وصلتول!');
+                $actionType = 'notify_on_expansion';
+            } else {
+                $title = null;
+                $message = null;
+                $buttonText = null;
+                $actionType = null;
+            }
+
+            $coverageInfo = [
+                'is_covered'    => $isCovered,
+                'status'        => $coverageStatus,
+                'city_id'       => $address->city_id,
+                'district_id'   => $address->district_id,
+                'title'         => $title,
+                'message'       => $message,
+                'button_text'   => $buttonText,
+                'action_type'   => $actionType,
+            ];
+
             $data = [
                 'points' => $address->user?->points_balance ?? 0,
                 'wallet' => $address->user?->wallet ?? 0,
@@ -164,6 +230,7 @@ class OrdersController extends Controller
                 'dates' => $dateTimes,
                 'receiver_dates' => $receiverDates,
                 'delivery_dates' => $deliveryDates,
+                'coverage_info' => $coverageInfo,
             ];
 
             return $this->returnData(trans('order was created'), ['status' => 'success', 'data' => $data]);

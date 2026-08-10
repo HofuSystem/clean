@@ -265,6 +265,7 @@
                                     <th class="text-center p-0" data-name="lat">@lang("lat")</th>
                                     <th class="text-center p-0" data-name="lng">@lang("lng")</th>
                                     <th class="text-center p-0" data-name="postal_code">@lang("postal code")</th>
+                                    <th class="text-center p-0" data-name="status">@lang("status")</th>
                                     <th class="text-center p-0" data-name="city_id">@lang("city")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
 

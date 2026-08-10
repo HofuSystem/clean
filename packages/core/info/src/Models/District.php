@@ -16,7 +16,7 @@ use App\Observers\GlobalModelObserver;
 class District extends CoreModel implements TranslatableContract{
     use Translatable;
 	protected $table             = 'districts';
-	protected $fillable          = ['slug', 'lat', 'lng', 'postal_code', 'city_id', 'creator_id', 'updater_id'];
+	protected $fillable          = ['slug', 'lat', 'lng', 'postal_code', 'status', 'city_id', 'creator_id', 'updater_id'];
     protected $guarded           = [];
     public $translatedAttributes = ["name"];
 
@@ -31,6 +31,11 @@ class District extends CoreModel implements TranslatableContract{
         //filter text on  name
         if((request()->has("filters.name")) and !empty(request("filters.name"))){
             $query->whereTranslationLike("name","%".request("filters.name")."%");
+        }
+
+        //filter select on status
+        if((request()->has("filters.status")) and !empty(request("filters.status"))){
+            $query->where("status", request("filters.status"));
         }
         
         //filter by number on  lat

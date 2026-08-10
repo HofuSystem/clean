@@ -1,6 +1,7 @@
 <?php
 
 use Core\Info\Controllers\Api\CitiesController;
+use Core\Info\Controllers\Api\CoverageNotificationController;
 use Core\Info\Controllers\Api\DistrictsController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -28,4 +29,6 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
         
     });
     Route::get('city/{id}/districts',[CitiesController::class,'districts']);
+    Route::post('coverage-notifications/subscribe', [CoverageNotificationController::class, 'subscribe']);
 });
+

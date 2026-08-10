@@ -33,6 +33,7 @@ class DistrictsRequest extends FormRequest
 			 "translations.en.name"  =>  ['required','string'], 
 			 "translations.ar.name"  =>  ['required','string'], 
 			 "postal_code"           =>  ['nullable','string'], 
+			 "status"                =>  ['nullable','in:active,paused,not-active'], 
 			 "city_id"               =>  ['required','exists:cities,id'], 
 			 "coordinates"           =>  ['nullable','array'],  
 			 "coordinates.*.lat"     =>  ['nullable','numeric'],

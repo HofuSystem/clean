@@ -126,6 +126,14 @@
                                 </select>
 
                             </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <label class="" for="status">{{ trans('status') }}</label>
+                                <select class="custom-select form-select advance-select" name="status" id="status">
+                                    <option value="active" @selected(!isset($item) || $item->status == 'active')>{{ trans('active') }}</option>
+                                    <option value="paused" @selected(isset($item) && $item->status == 'paused')>{{ trans('paused') }} ({{ trans('temporarily stopped') }})</option>
+                                    <option value="not-active" @selected(isset($item) && $item->status == 'not-active')>{{ trans('not-active') }} ({{ trans('not covered yet') }})</option>
+                                </select>
+                            </div>
                             <button class="btn btn-danger" id="clearPoints">{{ trans('Clear All') }}</button>
 
                             <div id="map"></div>

@@ -45,7 +45,9 @@ class DistrictObserver
      */
     public function updated(District $district)
     {
-
+        if ($district->isDirty('status') && $district->status === 'active') {
+            \Core\Info\Services\CoverageNotificationService::notifySubscribersOnActivation(null, $district->id);
+        }
     }
     /**
      * Handle the District "saving" event.

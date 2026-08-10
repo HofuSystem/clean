@@ -23,7 +23,7 @@ class DistrictsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null,$coordinates = []){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['slug','lat','lng','postal_code','city_id','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['slug','lat','lng','postal_code','status','city_id','translations']),ARRAY_FILTER_USE_KEY);
         $record     = District::updateOrCreate(['id' => $id],$recordData);
         if($id){
             $record->mapPoints()->delete();
@@ -54,7 +54,7 @@ class DistrictsService
 
         $recordsTotal       = District::count();
         $recordsFiltered    = District::search()->count();
-        $records            = District::select(['id','slug','lat','lng','postal_code','city_id'])
+        $records            = District::select(['id','slug','lat','lng','postal_code','status','city_id'])
         ->with(['city'])
         ->search()->dataTable()->get();
         

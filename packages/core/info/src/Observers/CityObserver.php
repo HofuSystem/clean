@@ -45,7 +45,9 @@ class CityObserver
      */
     public function updated(City $city)
     {
-
+        if ($city->isDirty('status') && $city->status === 'active') {
+            \Core\Info\Services\CoverageNotificationService::notifySubscribersOnActivation($city->id, null);
+        }
     }
     /**
      * Handle the City "saving" event.

@@ -23,6 +23,7 @@ class DistrictsResource extends JsonResource
             "lat"           => DashboardDataTableFormatter::text($this->lat),
             "lng"           => DashboardDataTableFormatter::text($this->lng),
             "postal_code"   => DashboardDataTableFormatter::text($this->postal_code),
+            "status"        => DashboardDataTableFormatter::text(trans($this->status ?? 'active')),
             "city_id"       => DashboardDataTableFormatter::relations($this->city,"name","dashboard.cities.edit"),
             "actions"       => $this->actions,
             "select_switch" => $this->select_switch,
