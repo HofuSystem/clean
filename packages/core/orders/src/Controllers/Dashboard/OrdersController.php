@@ -156,7 +156,7 @@ class OrdersController extends Controller
                     ->where('roles.name', 'operator');
             })
             ->get();
-        $orderItems             = $order->items()->withTrashed()->get();
+        $orderItems             = $order->items()->withTrashed()->with(['product.translations', 'orderReport.reportReason.translations'])->get();
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
@@ -180,8 +180,14 @@ class OrdersController extends Controller
             ->whereNotNull('categories.parent_id')
             ->where('categories.type', OrderHelper::getOrderType($order->type))
             ->get();
-        $items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
-        $reportReasons          = $this->reportReasonsService->selectable('id','name');
+        $items                  = DB::table('order_items')->select('id', 'product_id')->where('order_id', $order->id)->whereNull('deleted_at')->get();
+        $reportReasons          = DB::table('report_reasons')
+            ->join('report_reason_translations', function ($join) {
+                $join->on('report_reasons.id', '=', 'report_reason_translations.report_reason_id')
+                    ->where('report_reason_translations.locale', '=', app()->getLocale());
+            })
+            ->select('report_reasons.id', 'report_reason_translations.name')
+            ->get();
         $coupons                = DB::table('coupons')
             ->where('status','active')
             ->get()

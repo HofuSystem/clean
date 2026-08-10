@@ -567,9 +567,13 @@ class OrdersService
     {
         return Order::with([
             'client',
+            'company',
             'items.product.translations',
+            'items.orderReport.reportReason.translations',
             'orderRepresentatives.representative',
-            'operator'
+            'operator',
+            'comments',
+            'histories'
         ])->where('id', $id)->orWhere('reference_id', $id)->firstOrFail();
     }
 
