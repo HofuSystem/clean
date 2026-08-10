@@ -123,30 +123,8 @@ class OrdersController extends Controller
         $order                  = $this->ordersService->get($id) ;
         $screen                 = $order->type;
         $title                  = trans($order->type)  ;
-        $users                  = DB::table('users')
-            ->select('users.id', 'users.fullname', 'users.phone')
-            ->whereNull('users.deleted_at')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('model_has_roles')
-                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                    ->whereColumn('model_has_roles.model_id', 'users.id')
-                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
-                    ->whereIn('roles.name', ['technical', 'driver']);
-            })
-            ->get();
-        $operators              = DB::table('users')
-            ->select('users.id', 'users.fullname', 'users.phone')
-            ->whereNull('users.deleted_at')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('model_has_roles')
-                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                    ->whereColumn('model_has_roles.model_id', 'users.id')
-                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
-                    ->where('roles.name', 'operator');
-            })
-            ->get();
+        $users                  = $this->usersService->selectable('id','fullname',['phone'],['technical','driver'],['roles']);
+        $operators              = $this->usersService->selectable('id','fullname',['phone'],['operator'],['roles']);
         $orderItems             = $order->items()->withTrashed()->get();
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
