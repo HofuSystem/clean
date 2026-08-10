@@ -27,7 +27,11 @@ class PointsController extends Controller
         $screen     = 'points-index';
         $total      = $this->pointsService->totalCount();
         $trash      = $this->pointsService->trashCount();
-		$users      = $this->usersService->selectable('id','fullname');
+
+        $users = DB::table('users')
+            ->select('id', 'fullname')
+            ->whereIn('id', DB::table('points')->select('user_id')->whereNotNull('user_id'))
+            ->get();
 
         return view('users::pages.points.list', compact('title','screen','users',"total","trash"));
     }
