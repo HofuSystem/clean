@@ -97,7 +97,7 @@ class OrdersController extends Controller
 
         $screen             = 'Order-create';
         $title              = trans("Order  create");
-        $clients            = DB::table('users')->select('id', 'fullname')->whereNull('deleted_at')->get();
+        $clients            = DB::table('users')->select('id', 'fullname', 'wallet')->whereNull('deleted_at')->get();
         $coupons            = $this->couponsService->findMatching(applying:'manual')->get();
         $products           = $this->productsService->getProductsCard();
         $categories         = $this->categoriesService->selectable('id','name',[['parent_id' ,null]],true);

@@ -566,8 +566,7 @@ class OrdersService
     public function get($id)
     {
         return Order::with([
-            'client.district',
-            'client.city',
+            'client',
             'items.product.translations',
             'orderRepresentatives.representative',
             'operator'
