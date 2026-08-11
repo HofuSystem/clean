@@ -86,28 +86,32 @@ class CategoriesController extends Controller
                 ->where('type', 'clothes')
                 ->where('is_package', true)->get();
 
-            $notifications = BannerNotification::active()
-                ->where('publish_date', '<=', now())
-                ->where('expired_date', '>=', now())
-                ->WhereHas('users', function ($userNotificationQuery) {
-                    $userNotificationQuery->where('users.id', auth('api')->id())
-                        ->where('users_notifications.next_vision_date', '<=', now()->format("Y-m-d h:i:s"))
-                        ->orWhereNull('users_notifications.next_vision_date');
-                })
-                ->orWhereDoesntHave('users', function ($userNotificationQuery) {
-                    $userNotificationQuery->where('users.id', auth('api')->id());
-                })
-                ->get();
-            foreach ($notifications as $notification) {
-                DB::table('users_notifications')->updateOrInsert([
-                    'user_id' => auth('api')->id(),
-                    'notifications_type' => BannerNotification::class,
-                    'notifications_id' => $notification->id,
-                ], [
-                    'status' => 'sent',
-                    'read_at' => now()->format("Y-m-d h:i:s"),
-                    'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d h:i:s"),
-                ]);
+            $notifications = collect();
+            if (auth('api')->check()) {
+                $userId = auth('api')->id();
+                $notifications = BannerNotification::active()
+                    ->where('publish_date', '<=', now())
+                    ->where('expired_date', '>=', now())
+                    ->WhereHas('users', function ($userNotificationQuery) use ($userId) {
+                        $userNotificationQuery->where('users.id', $userId)
+                            ->where('users_notifications.next_vision_date', '<=', now()->format("Y-m-d h:i:s"))
+                            ->orWhereNull('users_notifications.next_vision_date');
+                    })
+                    ->orWhereDoesntHave('users', function ($userNotificationQuery) use ($userId) {
+                        $userNotificationQuery->where('users.id', $userId);
+                    })
+                    ->get();
+                foreach ($notifications as $notification) {
+                    DB::table('users_notifications')->updateOrInsert([
+                        'user_id' => $userId,
+                        'notifications_type' => BannerNotification::class,
+                        'notifications_id' => $notification->id,
+                    ], [
+                        'status' => 'sent',
+                        'read_at' => now()->format("Y-m-d h:i:s"),
+                        'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d h:i:s"),
+                    ]);
+                }
             }
             $data = [
                 'slider' => SliderResource::collection($slider),
