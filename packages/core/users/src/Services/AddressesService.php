@@ -23,10 +23,19 @@ class AddressesService
 
     public function storeOrUpdate(array $data = [],$id = null){
         $imageFile = request()->file('image') ?? ($data['image'] ?? null);
-        if ($imageFile instanceof \Illuminate\Http\UploadedFile) {
+        if ($imageFile instanceof \Illuminate\Http\UploadedFile && $imageFile->isValid()) {
             $data['image'] = $imageFile->store('addresses', 'public');
+        } elseif (is_string($imageFile)) {
+            $data['image'] = $imageFile;
+        } else {
+            unset($data['image']);
         }
+
         $recordData = array_filter($data,fn($key) => in_array($key, ['location','name','status','lat','lng','city_id','district_id','is_default','user_id','image','translations']),ARRAY_FILTER_USE_KEY);
+        if (isset($recordData['image']) && !is_string($recordData['image'])) {
+            unset($recordData['image']);
+        }
+
         $record     = Address::updateOrCreate(['id' => $id],$recordData);
         return $record;
     }
