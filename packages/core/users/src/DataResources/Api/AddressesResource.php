@@ -21,6 +21,7 @@ class AddressesResource extends JsonResource
             "location"      => $this->location,
             "lat"           => $this->lat,
             "lng"           => $this->lng,
+            "image"         => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($this->image),
             "city_id"       => $this->city?->id,
             "city_name"     => $this->city?->name,
             "district_id"   => $this->district?->id,

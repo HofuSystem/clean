@@ -36,12 +36,10 @@ class AddressesRequest extends FormRequest
 			"lng"          =>  ['nullable','string'],
 			"city_id"      =>  ['required','exists:cities,id'],
 			"district_id"  =>  ['required','exists:districts,id'],
+			"image"        =>  ['nullable','sometimes','image','mimes:jpeg,png,jpg,webp','max:10240'],
             "is_default"   =>  [
                 'sometimes',
                 'boolean',
-               /*  Rule::unique('addresses')->where(function ($query) {
-                    return $query->where('user_id', auth()->id());
-                })->ignore($this->address) */
             ]
 			];
     }

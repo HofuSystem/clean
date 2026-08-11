@@ -154,6 +154,16 @@
                         <th scope="row" class="p-2">{{ trans('address description') }}</th>
                         <td class="p-2">{{ $order->addressDescription ?? "---------------------" }}</td>
                     </tr>
+                    @if(!empty($order->address?->image))
+                    <tr>
+                        <th scope="row" class="p-2">{{ trans('building image') }}</th>
+                        <td class="p-2">
+                            <a href="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" target="_blank">
+                                <img src="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" class="img-thumbnail rounded" style="max-height: 120px;" alt="{{ trans('building image') }}">
+                            </a>
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <th scope="row" class="p-2">{{ trans('customer notes') }}</th>
                         <td class="p-2">{{ $order->note ?? "---------------------" }}</td>

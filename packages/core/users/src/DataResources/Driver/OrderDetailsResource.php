@@ -74,6 +74,7 @@ class OrderDetailsResource extends JsonResource
             'lat'                   => $lat,
             'lng'                   => $lng,
             'location'              => $location,
+            'building_image'        => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($this->address?->image ?? $delivery?->address?->image ?? $receiver?->address?->image),
 
             'created_at'            => $this->created_at->format('d-m-Y'),
             'category'              => $this->items()->first()?->product()->first()?->category?->name ?? '',

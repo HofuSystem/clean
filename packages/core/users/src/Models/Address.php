@@ -17,7 +17,7 @@ use App\Observers\GlobalModelObserver;
 class Address extends CoreModel {
 
 	protected $table             = 'addresses';
-	protected $fillable          = ['location','name', 'lat', 'lng','description', 'city_id', 'district_id', 'user_id','is_default', 'creator_id', 'updater_id', 'status'];
+	protected $fillable          = ['location','name', 'lat', 'lng','description', 'image', 'city_id', 'district_id', 'user_id','is_default', 'creator_id', 'updater_id', 'status'];
     protected $guarded           = [];
 
 
