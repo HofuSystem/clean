@@ -24,7 +24,7 @@ class AddressesService
     public function storeOrUpdate(array $data = [],$id = null){
         $imageFile = request()->file('image') ?? ($data['image'] ?? null);
         if ($imageFile instanceof \Illuminate\Http\UploadedFile && $imageFile->isValid()) {
-            $data['image'] = $imageFile->store('addresses', 'public');
+            $data['image'] = \Core\MediaCenter\Helpers\MediaCenterHelper::saveMedia($imageFile, 'image') ?: $imageFile->store('addresses', 'public');
         } elseif (is_string($imageFile)) {
             $data['image'] = $imageFile;
         } else {
@@ -37,6 +37,7 @@ class AddressesService
         }
 
         $record     = Address::updateOrCreate(['id' => $id],$recordData);
+        $record->load(['city', 'district']);
         return $record;
     }
 
