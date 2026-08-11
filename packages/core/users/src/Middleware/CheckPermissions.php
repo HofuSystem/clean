@@ -22,18 +22,41 @@ class CheckPermissions
             abort(403, 'access denied...  you Are frodiiden from this action');
         }
 
-        if ($user->hasRole('super_admin')) {
+        if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('it')) {
             return $next($request);
         }
 
         $routeName = $request->route()->getName();
-        $hasPermission = $user->can($routeName)
-            || (str_ends_with($routeName, '.update-password') && $user->can(str_replace('.update-password', '.edit', $routeName)))
-            || (str_ends_with($routeName, '.profile.edit') && $user->can(str_replace('.profile.edit', '.edit', $routeName)));
-
-        if (!$hasPermission) {
-            abort(403, 'access denied...  you Are frodiiden from this action');
+        if (!$routeName) {
+            return $next($request);
         }
-        return $next($request);
+
+        $cleanRoute = str_replace('dashboard.', '', $routeName);
+        $spaceRoute = str_replace('.', ' ', $cleanRoute);
+
+        $possiblePermissions = [
+            $routeName,
+            $cleanRoute,
+            $spaceRoute,
+        ];
+
+        if (str_ends_with($routeName, '.update-password')) {
+            $possiblePermissions[] = str_replace('.update-password', '.edit', $routeName);
+            $possiblePermissions[] = str_replace('dashboard.', '', str_replace('.update-password', '.edit', $routeName));
+            $possiblePermissions[] = str_replace('.', ' ', str_replace('dashboard.', '', str_replace('.update-password', '.edit', $routeName)));
+        }
+
+        if (str_ends_with($routeName, '.profile.edit')) {
+            $possiblePermissions[] = str_replace('.profile.edit', '.edit', $routeName);
+            $possiblePermissions[] = str_replace('dashboard.', '', str_replace('.profile.edit', '.edit', $routeName));
+        }
+
+        foreach ($possiblePermissions as $permission) {
+            if ($user->can($permission)) {
+                return $next($request);
+            }
+        }
+
+        abort(403, 'access denied...  you Are frodiiden from this action');
     }
 }
