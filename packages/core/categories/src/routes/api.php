@@ -15,9 +15,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 |
 */
 
-Route::group([
-    'middleware' => ['auth:sanctum', 'active']
-], function () {
+Route::group([], function () {
 
     //all client routes
     Route::group([

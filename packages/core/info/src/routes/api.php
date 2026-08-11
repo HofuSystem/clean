@@ -17,18 +17,14 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 |
 */
  //{{ new_routes}}
- Route::group([
-    'middleware'=>['auth:sanctum','active'] 
-],function(){
-    Route::group(['prefix' => 'cities'],function(){
-        Route::get('',[CitiesController::class,'list']);
-        
+Route::group([], function () {
+    Route::group(['prefix' => 'cities'], function () {
+        Route::get('', [CitiesController::class, 'list']);
     });
-    Route::group(['prefix' => 'districts'],function(){
-        Route::get('',[DistrictsController::class,'list']);
-        
+    Route::group(['prefix' => 'districts'], function () {
+        Route::get('', [DistrictsController::class, 'list']);
     });
-    Route::get('city/{id}/districts',[CitiesController::class,'districts']);
-    Route::post('coverage-notifications/subscribe', [CoverageNotificationController::class, 'subscribe']);
+    Route::get('city/{id}/districts', [CitiesController::class, 'districts']);
+    Route::post('coverage-notifications/subscribe', [CoverageNotificationController::class, 'subscribe'])->middleware(['auth:sanctum', 'active']);
 });
 
