@@ -64,36 +64,13 @@ class UsersController extends Controller
         $item       = isset($id)    ? $this->usersService->get($id) : null;
         $screen     = isset($item)  ? 'User-edit'          : 'User-create';
         $title      = isset($item)  ? trans("User  edit")  : trans("User  create");
-        $roles      = DB::table('roles')->select('id', 'name')->get();
-        $technicals = DB::table('users')
-            ->select('users.id', 'users.fullname')
-            ->whereNull('users.deleted_at')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('model_has_roles')
-                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                    ->whereColumn('model_has_roles.model_id', 'users.id')
-                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
-                    ->where('roles.name', 'technical');
-            })
-            ->get();
-        $coupons    = DB::table('coupons')->select('id', 'code')->whereNull('deleted_at')->get();
-        $packages   = DB::table('wallet_packages')->select('id', 'price')->whereNull('deleted_at')->get();
-        $countries  = DB::table('countries')
-            ->join('country_translations', function ($join) {
-                $join->on('countries.id', '=', 'country_translations.country_id')
-                    ->where('country_translations.locale', '=', app()->getLocale());
-            })
-            ->select('countries.id', 'country_translations.name')
-            ->get();
-        $cities     = DB::table('cities')
-            ->join('city_translations', function ($join) {
-                $join->on('cities.id', '=', 'city_translations.city_id')
-                    ->where('city_translations.locale', '=', app()->getLocale());
-            })
-            ->select('cities.id', 'city_translations.name')
-            ->get();
-        $districts  = collect();
+		$roles      = $this->rolesService->selectable('id','name');
+		$technicals = $this->usersService->selectable('id','fullname',[],'technical');
+		$coupons    = $this->couponsService->selectable('id','code');
+		$packages   = $this->walletPackagesService->selectable('id','price');
+        $countries  = $this->countriesService->selectable('id','name');
+		$cities     = $this->citiesService->selectable('id','name');
+		$districts  = collect();
 
         return view('users::pages.users.edit', compact('item','title','screen','roles','technicals','coupons','packages','countries','cities','districts') );
     }
