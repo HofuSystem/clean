@@ -111,7 +111,7 @@ Route::group(
                     Route::get('export-chunks', [UsersController::class,'exportChunks'])->name('export-chunks');
                     Route::get('export', [UsersController::class,'export'])->name('export');
                     Route::get('{id}', [UsersController::class,'show'])->name('show');
-                    Route::patch('{id}/update-password', [UsersController::class,'updatePassword'])->name('update-password');
+                    Route::match(['post', 'put', 'patch'], '{id}/update-password', [UsersController::class,'updatePassword'])->name('update-password');
                     Route::get('{id}/edit', [UsersController::class,'createOrEdit'])->name('edit');
                     Route::put('{id}/edit', [UsersController::class,'storeOrUpdate'])->name('edit');
                     Route::put('{id}/profile/update', [UsersController::class,'updateProfile'])->name('profile.edit');

@@ -770,9 +770,11 @@
             let password = $(this).find('#password').val();
             let action = $(this).attr('action');
             $.ajax({
-                type: "Patch",
+                type: "POST",
                 url: action,
                 data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PATCH',
                     password: password
                 },
                 dataType: "json",
