@@ -18,9 +18,20 @@ class CheckPermissions
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
-        // $user = User::first();
-        // dd($user,$user->permissions,$user->can($request->route()->getName()),$request->route()->getName());
-        if (! $request->user() || ! $request->user()->can($request->route()->getName())) {
+        if (!$user) {
+            abort(403, 'access denied...  you Are frodiiden from this action');
+        }
+
+        if ($user->hasRole('super_admin')) {
+            return $next($request);
+        }
+
+        $routeName = $request->route()->getName();
+        $hasPermission = $user->can($routeName)
+            || (str_ends_with($routeName, '.update-password') && $user->can(str_replace('.update-password', '.edit', $routeName)))
+            || (str_ends_with($routeName, '.profile.edit') && $user->can(str_replace('.profile.edit', '.edit', $routeName)));
+
+        if (!$hasPermission) {
             abort(403, 'access denied...  you Are frodiiden from this action');
         }
         return $next($request);
