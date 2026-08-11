@@ -36,7 +36,7 @@ class AddressesRequest extends FormRequest
 			"lng"          =>  ['nullable','string'],
 			"city_id"      =>  ['required','exists:cities,id'],
 			"district_id"  =>  ['required','exists:districts,id'],
-			"image"        =>  ['nullable','sometimes','image','mimes:jpeg,png,jpg,webp','max:10240'],
+			"image"        =>  ['nullable','sometimes','file','max:20480'],
             "is_default"   =>  [
                 'sometimes',
                 'boolean',

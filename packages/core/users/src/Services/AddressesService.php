@@ -22,8 +22,9 @@ class AddressesService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
-            $data['image'] = \Core\MediaCenter\Helpers\MediaCenterHelper::saveMedia($data['image'], 'addresses');
+        $imageFile = request()->file('image') ?? ($data['image'] ?? null);
+        if ($imageFile instanceof \Illuminate\Http\UploadedFile) {
+            $data['image'] = $imageFile->store('addresses', 'public');
         }
         $recordData = array_filter($data,fn($key) => in_array($key, ['location','name','status','lat','lng','city_id','district_id','is_default','user_id','image','translations']),ARRAY_FILTER_USE_KEY);
         $record     = Address::updateOrCreate(['id' => $id],$recordData);
