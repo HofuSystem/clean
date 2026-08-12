@@ -360,6 +360,8 @@
     "User Address": "عنوان العميل",
     "Expansion": "طلب توسع لمناطق جديدة",
     "Resume": "تنبيه عند استئناف الخدمة",
+    "coverage_pending": "قيد الانتظار",
+    "coverage_notified": "تم الإشعار",
     "finished": "تم التسليم",
     "client": "العميل",
     "select clients": "اختر العملاء",

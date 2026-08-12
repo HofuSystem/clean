@@ -91,6 +91,8 @@
     "User Address": "User Address",
     "Expansion": "New Region Expansion",
     "Resume": "Resume Service Notification",
+    "coverage_pending": "Pending",
+    "coverage_notified": "Notified",
     "finished": "Finished",
     "client": "client",
     "select clients": "select clients",

@@ -75,6 +75,7 @@ class CoverageNotificationsController extends Controller
                 $actions .= '</div>';
 
                 $data[] = [
+                    'select_switch' => '',
                     'id'            => $record->id,
                     'user'          => $record->user?->fullname ?? '---------------------',
                     'phone'         => $record->user?->phone ?? '---------------------',
@@ -82,7 +83,9 @@ class CoverageNotificationsController extends Controller
                     'district'      => $record->district?->name ?? '---------------------',
                     'address'       => $address ? ($address->location . ($address->description ? ' (' . $address->description . ')' : '')) : '---------------------',
                     'type'          => $record->type == 'expansion' ? trans('Expansion') : trans('Resume'),
-                    'status'        => $record->status == 'pending' ? '<span class="badge bg-warning text-dark">' . trans('Pending') . '</span>' : '<span class="badge bg-success">' . trans('Notified') . '</span>',
+                    'status'        => $record->status == 'pending'
+                                        ? '<span class="badge bg-warning text-dark">' . trans('coverage_pending') . '</span>'
+                                        : '<span class="badge bg-success">' . trans('coverage_notified') . '</span>',
                     'created_at'    => $record->created_at->format('Y-m-d H:i'),
                     'actions'       => $actions,
                 ];
