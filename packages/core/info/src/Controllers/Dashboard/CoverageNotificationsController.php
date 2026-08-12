@@ -84,8 +84,8 @@ class CoverageNotificationsController extends Controller
                     'address'       => $address ? ($address->location . ($address->description ? ' (' . $address->description . ')' : '')) : '---------------------',
                     'type'          => $record->type == 'expansion' ? trans('Expansion') : trans('Resume'),
                     'status'        => $record->status == 'pending'
-                                        ? '<span class="badge bg-warning text-dark">' . trans('coverage_pending') . '</span>'
-                                        : '<span class="badge bg-success">' . trans('coverage_notified') . '</span>',
+                                        ? '<span class="badge rounded-pill" style="background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:0.8rem;padding:5px 10px;"><i class="fas fa-clock me-1"></i>' . trans('coverage_pending') . '</span>'
+                                        : '<span class="badge rounded-pill" style="background:#d1e7dd;color:#0f5132;border:1px solid #198754;font-size:0.8rem;padding:5px 10px;"><i class="fas fa-check-circle me-1"></i>' . trans('coverage_notified') . '</span>',
                     'created_at'    => $record->created_at->format('Y-m-d H:i'),
                     'actions'       => $actions,
                 ];
