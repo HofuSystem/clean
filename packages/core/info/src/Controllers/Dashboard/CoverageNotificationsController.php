@@ -17,8 +17,10 @@ class CoverageNotificationsController extends Controller
         $title  = trans('Coverage Requests');
         $screen = 'coverage-notifications-index';
         $total  = CoverageNotification::count();
+        $cities = \Core\Info\Models\City::all();
+        $districts = \Core\Info\Models\District::all();
 
-        return view('info::pages.coverage_notifications.list', compact('title', 'screen', 'total'));
+        return view('info::pages.coverage_notifications.list', compact('title', 'screen', 'total', 'cities', 'districts'));
     }
 
     public function dataTable(Request $request)
@@ -30,8 +32,25 @@ class CoverageNotificationsController extends Controller
 
             $query = CoverageNotification::with(['user', 'city.translations', 'district.translations']);
 
-            $recordsTotal = $query->count();
-            $recordsFiltered = $recordsTotal;
+            // Apply Filters
+            if ($request->has('filters')) {
+                $filters = $request->input('filters');
+                if (!empty($filters['city_id'])) {
+                    $query->where('city_id', $filters['city_id']);
+                }
+                if (!empty($filters['district_id'])) {
+                    $query->where('district_id', $filters['district_id']);
+                }
+                if (!empty($filters['status'])) {
+                    $query->where('status', $filters['status']);
+                }
+                if (!empty($filters['type'])) {
+                    $query->where('type', $filters['type']);
+                }
+            }
+
+            $recordsTotal = CoverageNotification::count();
+            $recordsFiltered = $query->count();
 
             $records = $query->orderBy('created_at', 'desc')
                 ->skip($start)

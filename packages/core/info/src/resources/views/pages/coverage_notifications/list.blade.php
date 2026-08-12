@@ -45,7 +45,89 @@
                             <span class="badge badge-success p-2">{{ $total }}</span> @lang('Total Subscriptions')
                         </div>
                     </div>
+                    
+                    <div class="card-toolbar col-md-6 mt-3">
+                        <!--begin::Toolbar-->
+                        <div data-kt-user-table-toolbar="base">
+                        </div>
+                        <!--end::Toolbar-->
+                        <!--begin::Group actions-->
+                        <div class="d-flex justify-content-end align-items-center d-none"
+                            data-kt-user-table-toolbar="selected">
+                            <div class="border border-warning border-dashed rounded text-warning p-2 mx-1">
+                                <span class="me-2" data-kt-user-table-select="selected_count"></span>@lang('Selected')
+                            </div>
+                            <button type="button" class="btn btn-primary"
+                                data-kt-user-table-select="delete_selected">@lang('Delete Selected')</button>
+                        </div>
+                        <!--end::Group actions-->
+                    </div>
                 </div>
+
+                <!--begin::Filters-->
+                <div class="container-fluid mt-1">
+                    <button class="btn btn-primary mb-1" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <i class="fas fa-filter"></i>
+                        {{ trans('open filters of data') }}
+                    </button>
+
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                                data-bs-parent="#accordionExample">
+
+                                <div class="p-4 row" data-kt-user-table-filter="form">
+                                    <div class="col-md-3 mb-3">
+                                        <label for="city_id">@lang("City")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="filters[city_id]" id="city_id">
+                                            <option value="">@lang("select city")</option>
+                                            @foreach($cities as $c)
+                                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="district_id">@lang("District")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="filters[district_id]" id="district_id">
+                                            <option value="">@lang("select district")</option>
+                                            @foreach($districts as $d)
+                                                <option value="{{ $d->id }}">{{ $d->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="type">@lang("Type")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="filters[type]" id="type">
+                                            <option value="">@lang("select type")</option>
+                                            <option value="expansion">@lang("Expansion")</option>
+                                            <option value="resume">@lang("Resume")</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="status">@lang("Status")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="filters[status]" id="status">
+                                            <option value="">@lang("select status")</option>
+                                            <option value="pending">@lang("Pending")</option>
+                                            <option value="notified">@lang("Notified")</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!--begin::Actions-->
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button type="reset"
+                                            class="btn btn-light btn-active-light-primary fw-bold me-2 px-6"
+                                            data-kt-user-table-filter="reset">@lang('Reset')</button>
+                                        <button type="submit" class="btn btn-primary fw-bold px-6"
+                                            data-kt-user-table-filter="filter">@lang('Apply')</button>
+                                    </div>
+                                    <!--end::Actions-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end::Filters-->
 
                 <!--begin::Card body-->
                 <div class="card-body pt-0 table-responsive mt-3">
@@ -55,6 +137,11 @@
                         <!--begin::Table head-->
                         <thead class="table-primary">
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="w-10px pe-2" data-name="select_switch">
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox" data-kt-check="true" data-kt-check-target="#view-datatable .form-check-input" value="1">
+                                    </div>
+                                </th>
                                 <th class="text-center p-3" data-name="id">@lang("id")</th>
                                 <th class="text-center p-3" data-name="user">@lang("User")</th>
                                 <th class="text-center p-3" data-name="phone">@lang("Phone")</th>
