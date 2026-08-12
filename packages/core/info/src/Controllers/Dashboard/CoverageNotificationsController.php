@@ -70,7 +70,7 @@ class CoverageNotificationsController extends Controller
 
                 $actions = '<div class="d-flex justify-content-center">';
                 if (auth('web')->user()->can('dashboard.coverage-notifications.delete')) {
-                    $actions .= '<button class="btn-operation delete-item mx-1" data-href="' . route('dashboard.coverage-notifications.delete', ['id' => $record->id]) . '"><i class="fas fa-trash"></i></button>';
+                    $actions .= '<button class="btn-operation delete-btn mx-1" data-href="' . route('dashboard.coverage-notifications.delete', ['id' => $record->id]) . '"><i class="fas fa-trash"></i></button>';
                 }
                 $actions .= '</div>';
 
