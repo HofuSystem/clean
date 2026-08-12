@@ -834,6 +834,16 @@
       },
       {
         "url": null,
+        "route": "dashboard.coverage-notifications.index",
+        "type": null,
+        "icon": "fa fa-bell",
+        "title": {
+          "en": "Coverage Requests",
+          "ar": "طلبات التغطية"
+        }
+      },
+      {
+        "url": null,
         "route": "dashboard.delivery-prices.index",
         "type": null,
         "icon": "fa fa-car",

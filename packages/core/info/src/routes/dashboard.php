@@ -8,6 +8,7 @@ use Core\Info\Controllers\Dashboard\DistrictsController;
 use Core\Info\Controllers\Dashboard\NationalitiesController;
 use Core\Info\Controllers\Dashboard\FavsController;
 use Core\Info\Controllers\Dashboard\MapPointsController;
+use Core\Info\Controllers\Dashboard\CoverageNotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,12 @@ Route::group(
                     Route::delete('{id}/delete', [NationalitiesController::class,'delete'])->name('delete');
                     Route::post('{id}/comment', [NationalitiesController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [NationalitiesController::class,'restore'])->name('restore');
+                });
+
+                Route::group(['prefix' => 'coverage-notifications', 'as' => 'coverage-notifications.' ], function () {
+                    Route::get('', [CoverageNotificationsController::class,'index'])->name('index');
+                    Route::post('', [CoverageNotificationsController::class,'dataTable'])->name('index');
+                    Route::delete('{id}/delete', [CoverageNotificationsController::class,'delete'])->name('delete');
                 });
 
                 //{{ new_routes}}
