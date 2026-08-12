@@ -82,7 +82,7 @@
     "select type": "select type",
     "status": "status",
     "select status": "select status",
-    "pending": "Pending",
+    "pending": "New Order",
     "issue": "issue",
     "ready_to_delivered": "Ready for Delivery",
     "finished": "Finished",

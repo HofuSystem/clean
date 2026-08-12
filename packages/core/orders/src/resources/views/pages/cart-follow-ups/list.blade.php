@@ -165,7 +165,7 @@
                         <div class="mb-3">
                             <label class="form-label">@lang('status')</label>
                             <select name="status" id="updateStatusSelect" class="form-select">
-                                <option value="pending">@lang('pending')</option>
+                                <option value="pending">@lang('status_pending')</option>
                                 <option value="no_answer">@lang('no_answer')</option>
                                 <option value="not_interested">@lang('not_interested')</option>
                             </select>

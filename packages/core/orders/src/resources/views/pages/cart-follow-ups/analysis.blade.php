@@ -277,7 +277,7 @@ $(document).ready(function() {
 
     // Map labels to localized titles
     let statusMap = {
-        'pending': @json(__('pending')),
+        'pending': @json(__('status_pending')),
         'sale': @json(__('sale')),
         'no_answer': @json(__('no answer')),
         'not_interested': @json(__('not interested'))

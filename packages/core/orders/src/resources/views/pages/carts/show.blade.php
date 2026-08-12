@@ -136,7 +136,7 @@
                                             @if($fu->status === 'sale')
                                                 <span class="badge bg-success">@lang('sale')</span>
                                             @elseif($fu->status === 'pending')
-                                                <span class="badge bg-warning text-dark">@lang('pending')</span>
+                                                <span class="badge bg-warning text-dark">@lang('status_pending')</span>
                                             @elseif($fu->status === 'no_answer')
                                                 <span class="badge bg-secondary">@lang('no answer')</span>
                                             @else

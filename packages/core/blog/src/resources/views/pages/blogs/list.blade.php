@@ -172,7 +172,7 @@
                                         <div class="col-md-6 mb-1">
                                             <label for="status">@lang("status")</label>
                                             <select class="custom-select filter-input form-select advance-select" name="status" id="status">
-                                                <option value=""> @lang("select status")</option><option value="pending" @selected("pending" == request("status")) >{{trans("pending")}}</option><option value="publish" @selected("publish" == request("status")) >{{trans("publish")}}</option>
+                                                <option value=""> @lang("select status")</option><option value="pending" @selected("pending" == request("status")) >{{trans("status_pending")}}</option><option value="publish" @selected("publish" == request("status")) >{{trans("publish")}}</option>
                                             </select>
                                         </div>
                                     

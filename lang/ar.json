@@ -351,7 +351,7 @@
     "type": "النوع",
     "select type": "اختر النوع",
     "status": "الحالة",
-    "pending": "قيد الانتظار",
+    "pending": "طلب جديد",
     "issue": "مشكلة",
     "ready_to_delivered": "جاهز للتسليم",
     "finished": "تم التسليم",
