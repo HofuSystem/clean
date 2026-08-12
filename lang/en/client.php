@@ -340,7 +340,7 @@ return [
     'loading' => 'Loading...',
     'no_data' => 'No data available',
     'today' => 'Today',
-    'pending' => 'Pending',
+    'pending' => 'New Order',
     'completed' => 'Completed',
     'cancelled' => 'Cancelled',
     'processing' => 'Processing',

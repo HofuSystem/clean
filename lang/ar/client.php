@@ -339,7 +339,7 @@ return [
     'loading' => 'جاري التحميل...',
     'no_data' => 'لا توجد بيانات',
     'today' => 'اليوم',
-    'pending' => 'قيد الانتظار',
+    'pending' => 'طلب جديد',
     'completed' => 'مكتمل',
     'cancelled' => 'ملغي',
     'processing' => 'قيد المعالجة',
