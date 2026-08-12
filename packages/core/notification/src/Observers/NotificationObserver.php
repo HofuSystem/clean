@@ -28,7 +28,7 @@ class NotificationObserver
      */
     public function created(Notification $notification)
     {
-        NotificationsManger::getInstance()->sendNotification($notification);
+        \Core\Notification\Jobs\SendNotificationJob::dispatch($notification);
     }
 
     /**

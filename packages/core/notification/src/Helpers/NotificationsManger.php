@@ -223,6 +223,10 @@ class NotificationsManger
 
     function send()
     {
+        $this->phonesList = $this->phonesList->unique('phone');
+        $this->emailsList = $this->emailsList->unique('email');
+        $this->tokensList = $this->tokensList->unique('token');
+
         foreach ($this->sendTypes as $key  => $sendType) {
             $functionName = 'send' . \Str::ucfirst(\Str::camel($sendType));
             if (method_exists($this, $functionName)) {
