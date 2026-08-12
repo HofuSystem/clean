@@ -603,6 +603,11 @@ class Order extends CoreModel
     {
         return $this->getItemData('orders');
     }
+    public function getAddressAttribute()
+    {
+        $rep = $this->orderRepresentatives()->whereHas('address')->first();
+        return $rep?->address;
+    }
     public function getAddressDescriptionAttribute()
     {
         $rep = $this->orderRepresentatives()->whereHas('address', function ($addressQuery) {
