@@ -15,13 +15,13 @@ class SendNotificationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
-    public $afterCommit = true;
 
     /**
      * Create a new job instance.
      */
     public function __construct(protected Notification $notification)
     {
+        $this->afterCommit();
     }
 
     /**
