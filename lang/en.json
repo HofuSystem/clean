@@ -85,6 +85,7 @@
     "pending": "New Order",
     "issue": "issue",
     "ready_to_delivered": "Ready for Delivery",
+    "building image": "Building Image",
     "finished": "Finished",
     "client": "client",
     "select clients": "select clients",

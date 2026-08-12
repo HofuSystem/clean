@@ -158,8 +158,11 @@
                     <tr>
                         <th scope="row" class="p-2">{{ trans('building image') }}</th>
                         <td class="p-2">
-                            <a href="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" target="_blank">
-                                <img src="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" class="img-thumbnail rounded" style="max-height: 120px;" alt="{{ trans('building image') }}">
+                            <a href="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" target="_blank" class="d-inline-block">
+                                <img src="{{ Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($order->address->image) }}" 
+                                     class="rounded shadow-sm border" 
+                                     style="max-height: 180px; max-width: 100%; object-fit: contain; padding: 4px; background: #fff;" 
+                                     alt="{{ trans('building image') }}">
                             </a>
                         </td>
                     </tr>
