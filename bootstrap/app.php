@@ -82,6 +82,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Add route-record to the API middleware group
         $middleware->group('api', [
             \Core\Admin\Http\Middleware\RouteRecordMiddleware::class,
+            \App\Http\Middleware\SetLocaleFromHeader::class,
         ]);
 
         $middleware->alias([

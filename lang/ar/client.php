@@ -453,6 +453,9 @@ return [
     'employee_deleted_success' => 'تم حذف الموظف بنجاح',
     'employee_delete_failed' => 'حدث خطأ أثناء حذف الموظف',
     
+    // Coverage Notifications
+    'coverage_notification_subscribed' => 'سنقوم بإخطارك فور توفر الخدمة في منطقتك!',
+
     // Support
     'support_coming_soon' => 'قريباً جداً!',
     'support_coming_soon_desc' => 'ميزة تذاكر الدعم الفني تحت التطوير حالياً لخدمتكم بشكل أفضل.',

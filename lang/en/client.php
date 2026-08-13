@@ -454,6 +454,9 @@ return [
     'employee_deleted_success' => 'Employee deleted successfully',
     'employee_delete_failed' => 'An error occurred while deleting the employee',
 
+    // Coverage Notifications
+    'coverage_notification_subscribed' => 'We will notify you as soon as service becomes available in your area!',
+
     // Support
     'support_coming_soon' => 'Coming Very Soon!',
     'support_coming_soon_desc' => 'The support ticket feature is currently under development to serve you better.',

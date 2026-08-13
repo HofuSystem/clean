@@ -30,6 +30,6 @@ class CoverageNotificationController extends Controller
 
         CoverageNotificationService::subscribe($userId, $cityId, $districtId, $type);
 
-        return $this->returnSuccessMessage(trans('We will notify you as soon as service becomes available in your area!'));
+        return $this->returnSuccessMessage(trans('client.coverage_notification_subscribed'));
     }
 }
