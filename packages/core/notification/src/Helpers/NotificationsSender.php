@@ -17,37 +17,50 @@ class NotificationsSender
    
     public static function whatsApp(array $receivers,string $title,string $message)
     {
+        $rawMessage = $message;
         preg_match('/\d+/', $message, $matches);
         if (!empty($matches)) {
-            $message = $matches[0];
+            $otpCode = $matches[0];
+        } else {
+            $otpCode = $message;
         }
 
         foreach ($receivers as $receiver) {
+            $status = 'failed';
+            $response = null;
+            $failedToDeliver = false;
+
             try {
                 $data = [
                     "token"         => "EABIy7zT1dfYBOZBdnpDucOqHsR7JBI574IUjyj4EXqNXwstBGgMDCPdyMEPoglQa78uVkNiAyfVY8t7xRZCt9TRVGdFcZAr7BbBO5M7vV2ZAENjI4ZCQSIUfkAfD96XDQvaPHNZA8Qnyp5OWezRZCwgoOU8H39K3aZCq23OlwJIsb5a543O0tV4ZBzkXob9pR07mT03s8a33ZC3Pj6eYQIyO2LFQpUaZCmWVnoHFQAwjKQg2ez9CvTyZB56rdzETo1B8",
                     "sender_id"     => "366046636597017",
                     "phone"         => $receiver->phone,
                     "template"      => "otp",
-                    "param_1"       =>  $message,
+                    "param_1"       =>  $otpCode,
                     "url_button"    => "1561",
                 ];
                 $url    = "https://api.karzoun.app/CloudApi.php?".http_build_query($data);
-                $res    = Http::post($url,$data);
-                $isFailed = isset($res->json()['error']);
+                $res    = Http::timeout(5)->connectTimeout(3)->retry(1, 100)->post($url, $data);
+                
+                $responseBody = $res->json();
+                $isFailed = !$res->successful() || (isset($responseBody['error']) && !empty($responseBody['error']));
+
                 if(!$isFailed){
                     $status = 'sent';
-                    $response = $res->json();
+                    $response = $responseBody ?? $res->body();
                 }else{
                     $status = 'failed';
-                    $response = $res->json();
+                    $response = $responseBody ?? $res->body();
+                    $failedToDeliver = true;
                 }
                
             } catch (\Throwable $e) {
                 report($e);
                 $status = 'failed';
                 $response = $e->getMessage();
+                $failedToDeliver = true;
             }
+
             if(isset($receiver->notificationId) and isset($receiver->id)){
                 DB::table('users_notifications')
                 ->updateOrInsert([
@@ -56,8 +69,17 @@ class NotificationsSender
                     'user_id' => $receiver->id,
                 ],[
                     'status'   => $status,
-                    'response' => $response,
+                    'response' => is_array($response) ? json_encode($response, JSON_UNESCAPED_UNICODE) : (string)$response,
                 ]);
+            }
+
+            // Fallback: If WhatsApp fails or times out, send OTP via SMS automatically
+            if ($failedToDeliver) {
+                try {
+                    self::sms([$receiver], $title, $rawMessage);
+                } catch (\Throwable $smsEx) {
+                    report($smsEx);
+                }
             }
         }
     } // end of whats_App_Otp_sender
@@ -78,7 +100,10 @@ class NotificationsSender
                     //   "apiKey" => '2355cfdd16f5b2c301a8ef246b4c8b2d',
                     "msg" => $message,
                 ];
-                $client = new GuzzleClient();
+                $client = new GuzzleClient([
+                    'timeout' => 5,
+                    'connect_timeout' => 3,
+                ]);
                 $res = $client->request('POST', 'https://www.msegat.com/gw/sendsms.php', [
                     'headers' => [
                         'Accept' => 'application/json',
@@ -90,7 +115,7 @@ class NotificationsSender
                 $body = $res->getBody()->getContents();
                 
                 $bodyJson = json_decode($body,true);
-                if($bodyJson['code'] == 1){
+                if(isset($bodyJson['code']) && $bodyJson['code'] == 1){
                     $status = 'sent';
                     $response = $body;
                 }else{
@@ -110,7 +135,7 @@ class NotificationsSender
                     'user_id' => $receiver->id,
                 ],[
                     'status'   => $status,
-                    'response' => $response,
+                    'response' => is_array($response) ? json_encode($response, JSON_UNESCAPED_UNICODE) : (string)$response,
                 ]);
             }
         }
