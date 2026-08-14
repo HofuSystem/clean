@@ -448,7 +448,7 @@ class AuthenticationController extends Controller
                     $dbDistrict = District::create([
                         'slug'    => $this->generate_unique_code(10, District::class, 'slug'),
                         'city_id' => $cityId,
-                        'status'  => 'inactive',
+                        'status'  => 'not-active',
                         'en'      => ['name' => $request->district_name],
                         'ar'      => ['name' => $request->district_name],
                     ]);
