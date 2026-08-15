@@ -25,7 +25,7 @@ class AddressesController extends Controller
     {
         try {
             $user = Auth::user();
-            $addresses = $user->addresses()->latest()->get();
+            $addresses = $user->addresses()->latest('updated_at')->get();
 
             return $this->returnData(trans('addresses'),['data'=>AddressesResource::collection($addresses)]);
         }catch(ValidationException $e){
