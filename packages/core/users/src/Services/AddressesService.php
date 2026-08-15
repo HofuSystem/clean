@@ -36,6 +36,16 @@ class AddressesService
             unset($recordData['image']);
         }
 
+        // عند التحديث: لو city_id أو district_id ما انبعتوا → نحطهم null
+        if ($id) {
+            if (!array_key_exists('city_id', $recordData)) {
+                $recordData['city_id'] = null;
+            }
+            if (!array_key_exists('district_id', $recordData)) {
+                $recordData['district_id'] = null;
+            }
+        }
+
         $record     = Address::updateOrCreate(['id' => $id],$recordData);
         $record->load(['city', 'district']);
         return $record;

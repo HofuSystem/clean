@@ -158,13 +158,23 @@ class OrdersController extends Controller
             $receiverDates = CategoryDateTimesService::getDateTimesFormatted('receiver', $receiverDates);
 
             // Coverage Info Calculation
-            $cityStatus = $address->city?->status ?? 'active';
-            $districtStatus = $address->district?->status ?? 'active';
+            $city = $address->city;
+            $district = $address->district;
+
+            // إذا المدينة مش موجودة بالسيستم أو city_id = null → غير مغطاة
+            $cityExists = $address->city_id && $city !== null;
+            $districtExists = $address->district_id ? $district !== null : true;
+
+            $cityStatus = $city?->status ?? 'not-active';
+            $districtStatus = $district?->status ?? 'not-active';
             $hasDates = !empty($dateTimes);
             $isCovered = false;
             $coverageStatus = 'covered';
 
-            if ($cityStatus === 'paused' || $districtStatus === 'paused') {
+            if (!$cityExists || !$districtExists) {
+                // المدينة أو الحي مش مسجلين بالسيستم → غير مغطاة
+                $coverageStatus = 'not_covered_yet';
+            } elseif ($cityStatus === 'paused' || $districtStatus === 'paused') {
                 $coverageStatus = 'temporarily_stopped';
             } elseif ($cityStatus === 'not-active' || $districtStatus === 'not-active') {
                 $hasOrderHistory = false;
