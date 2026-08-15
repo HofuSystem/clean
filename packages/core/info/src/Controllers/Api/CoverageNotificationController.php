@@ -13,6 +13,12 @@ class CoverageNotificationController extends Controller
 
     public function subscribe(Request $request)
     {
+        // تحويل القيم الفارغة أو 0 إلى null
+        $request->merge([
+            'city_id'     => $request->input('city_id') ?: null,
+            'district_id' => $request->input('district_id') ?: null,
+        ]);
+
         $request->validate([
             'city_id'     => ['nullable', 'exists:cities,id'],
             'district_id' => ['nullable', 'exists:districts,id'],
