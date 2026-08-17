@@ -1,4 +1,10 @@
 {
+    "Perfume": "تعطير الملابس",
+    "Starch Level": "مستوى النشا",
+    "none": "بدون",
+    "light": "خفيف",
+    "medium": "وسط",
+    "heavy": "ثقيل",
     "delivery or receiver": "نوع العملية (استلام / تسليم)",
     "DELIVERY OR RECEIVER": "نوع العملية (استلام / تسليم)",
     "receiver": "استلام",

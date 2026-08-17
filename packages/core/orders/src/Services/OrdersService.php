@@ -65,7 +65,7 @@ class OrdersService
     }
     public function storeOrUpdate(array $data = [], $id = null)
     {
-        $recordData = array_filter($data, fn($key) => in_array($key, ['reference_id', 'type', 'status', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'coupon_id', 'coupon_data', 'order_price', 'delivery_price', 'total_price', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'translations']), ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data, fn($key) => in_array($key, ['reference_id', 'type', 'status', 'client_id', 'company_id', 'branch_id', 'b2b_type', 'pay_type', 'transaction_id', 'order_status_times', 'days_per_week', 'days_per_week_names', 'days_per_month_dates', 'note', 'coupon_id', 'coupon_data', 'order_price', 'delivery_price', 'total_price', 'paid', 'is_admin_accepted', 'admin_cancel_reason', 'wallet_used', 'wallet_amount_used', 'translations', 'perfume', 'starch_level']), ARRAY_FILTER_USE_KEY);
         $record     = Order::updateOrCreate(['id' => $id], $recordData);
 
         if (!isset($id)) {

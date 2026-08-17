@@ -89,6 +89,8 @@ class OrderDetailsResource extends JsonResource
             'address_text'   => $this->addressDescription,
             'location'              => $delivery?->location,
             'note'                  => $this->note,
+            'perfume'               => $this->perfume,
+            'starch_level'          => $this->starch_level,
             'paid'                  => (double)$this->paid,
             'card_amount_used'      => $this->card_amount_used,
             'cash_amount_used'      => $this->cash_amount_used,

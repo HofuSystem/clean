@@ -97,6 +97,8 @@ class CreateOrderRequest extends FormRequest
       'recipient_phone'               => 'nullable|required_if:order_for,other|string|max:255',
       'request_address'               => 'nullable|boolean',
       'hide_identity'                 => 'nullable|boolean',
+      'perfume'                       => 'nullable|boolean',
+      'starch_level'                  => 'nullable|string|in:none,light,medium,heavy',
 
       'service_id'                    => 'nullable',
       'nationality_id'                => 'nullable|exists:category_settings,id',

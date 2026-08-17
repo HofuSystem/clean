@@ -114,6 +114,26 @@
                         <td class="p-2">{{ $order->hide_identity ? trans('yes') : trans('no') }}</td>
                     </tr>
                     @endif
+                    @if($order->perfume !== null)
+                    <tr>
+                        <th scope="row" class="p-2 text-primary">{{ trans('Perfume') }}</th>
+                        <td class="p-2">
+                            <span class="badge {{ $order->perfume ? 'badge-light-success' : 'badge-light-secondary' }}">
+                                {{ $order->perfume ? trans('yes') : trans('no') }}
+                            </span>
+                        </td>
+                    </tr>
+                    @endif
+                    @if($order->starch_level !== null)
+                    <tr>
+                        <th scope="row" class="p-2 text-primary">{{ trans('Starch Level') }}</th>
+                        <td class="p-2">
+                            <span class="badge badge-light-info">
+                                {{ trans($order->starch_level) }}
+                            </span>
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <th scope="row" class="p-2">{{ trans('total price') }}</th>
                         <td class="p-2">{{ number_format($order->total_price, 2) }}</td>

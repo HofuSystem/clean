@@ -1,4 +1,10 @@
 {
+    "Perfume": "Perfume Clothes",
+    "Starch Level": "Starch Level",
+    "none": "None",
+    "light": "Light",
+    "medium": "Medium",
+    "heavy": "Heavy",
     "display as": "Display As",
     "select display as": "Select Display As",
     "main": "Main",

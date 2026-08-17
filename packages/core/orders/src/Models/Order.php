@@ -81,12 +81,15 @@ class Order extends CoreModel
         'recipient_name',
         'recipient_phone',
         'request_address',
-        'hide_identity'
+        'hide_identity',
+        'perfume',
+        'starch_level'
     ];
     protected $guarded           = [];
     protected $casts = [
         'request_address' => 'boolean',
         'hide_identity'   => 'boolean',
+        'perfume'         => 'boolean',
     ];
 
 

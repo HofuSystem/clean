@@ -74,6 +74,8 @@ class OrderDetailsResource extends JsonResource
             'recipient_phone'               => $this->recipient_phone,
             'request_address'               => $this->request_address,
             'hide_identity'                 => $this->hide_identity,
+            'perfume'                       => $this->perfume,
+            'starch_level'                  => $this->starch_level,
 
             'paid'                  => (float)$this->paid,
             'card_amount_used'      => $this->card_amount_used,
