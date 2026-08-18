@@ -285,6 +285,7 @@
                                     </th>
                                     <th class="text-center p-0" data-name="created_at">@lang("added at")</th>
                                     <th class="text-center p-0" data-name="type">@lang("type")</th>
+                                    <th class="text-center p-0" data-name="transaction_type">@lang("transaction_type")</th>
                                     <th class="text-center p-0" data-name="amount">@lang("amount")</th>
                                     <th class="text-center p-0" data-name="wallet_before">@lang("wallet before")</th>
                                     <th class="text-center p-0" data-name="wallet_after">@lang("wallet after")</th>

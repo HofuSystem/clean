@@ -442,6 +442,8 @@
                                                             @lang('added at')</th>
                                                         <th class="orderable text-center py-2" data-name="type">
                                                             @lang('type')</th>
+                                                        <th class="orderable text-center py-2" data-name="transaction_type">
+                                                            @lang('transaction_type')</th>
                                                         <th class="orderable text-center py-2" data-name="amount">
                                                             @lang('amount')</th>
                                                         <th class="orderable text-center py-2" data-name="wallet_before">
