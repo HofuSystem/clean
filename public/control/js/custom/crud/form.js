@@ -537,6 +537,13 @@ const fullToolbar = [
           },
           success: function (response) {
             modal.modal('hide');
+            if (typeof $.fn.DataTable !== 'undefined' && $('.view-dataTable').length > 0) {
+              $('.view-dataTable').each(function () {
+                if ($.fn.DataTable.isDataTable(this)) {
+                  $(this).DataTable().ajax.reload(null, false);
+                }
+              });
+            }
             Swal.fire({
               text: response.message,
               icon: "success",
@@ -546,15 +553,22 @@ const fullToolbar = [
                 confirmButton: "btn fw-bold btn-success",
               }
             }).then(function (result) {
-              tr = createRaw(display, response.entity, response.entity.updateUrl, response.entity.deleteUrl)
-              $('.items-container.active table').append(tr)
-              $(".items-container.active table[orderable]").tableDnD({
-                onDragClass: "myDragClass",
-                onDragStop: function (table, row) {
-                  reorderTable(table);
-                },
-              });
-
+              if ($('.view-dataTable').length > 0) {
+                let activeTab = $('.nav-pills .nav-link.active, .nav-tabs .nav-link.active').attr('id');
+                if (activeTab) {
+                  localStorage.setItem('last_active_tab', activeTab);
+                }
+                location.reload();
+              } else {
+                tr = createRaw(display, response.entity, response.entity.updateUrl, response.entity.deleteUrl)
+                $('.items-container.active table').append(tr)
+                $(".items-container.active table[orderable]").tableDnD({
+                  onDragClass: "myDragClass",
+                  onDragStop: function (table, row) {
+                    reorderTable(table);
+                  },
+                });
+              }
             })
           },
           error: function (jqXHR, textStatus, errorThrown) {
@@ -581,6 +595,13 @@ const fullToolbar = [
           },
           success: function (response) {
             modal.modal('hide');
+            if (typeof $.fn.DataTable !== 'undefined' && $('.view-dataTable').length > 0) {
+              $('.view-dataTable').each(function () {
+                if ($.fn.DataTable.isDataTable(this)) {
+                  $(this).DataTable().ajax.reload(null, false);
+                }
+              });
+            }
             Swal.fire({
               text: response.message,
               icon: "success",
@@ -590,15 +611,23 @@ const fullToolbar = [
                 confirmButton: "btn fw-bold btn-success",
               }
             }).then(function (result) {
-              tr = createRaw(display, data, response.entity.updateUrl, response.entity.deleteUrl)
-              $('.items-container tr.active').replaceWith(tr);
-              $(".items-container table[orderable] tr.active").tableDnD({
-                onDragClass: "myDragClass",
-                onDragStop: function (table, row) {
-                  reorderTable(table);
-                },
-              });
-              form.trigger('reset');
+              if ($('.view-dataTable').length > 0) {
+                let activeTab = $('.nav-pills .nav-link.active, .nav-tabs .nav-link.active').attr('id');
+                if (activeTab) {
+                  localStorage.setItem('last_active_tab', activeTab);
+                }
+                location.reload();
+              } else {
+                tr = createRaw(display, data, response.entity.updateUrl, response.entity.deleteUrl)
+                $('.items-container tr.active').replaceWith(tr);
+                $(".items-container table[orderable] tr.active").tableDnD({
+                  onDragClass: "myDragClass",
+                  onDragStop: function (table, row) {
+                    reorderTable(table);
+                  },
+                });
+                form.trigger('reset');
+              }
             })
           },
           error: function (jqXHR, textStatus, errorThrown) {
@@ -1010,4 +1039,10 @@ const fullToolbar = [
         }
       });
     });
+
+    let lastActiveTab = localStorage.getItem('last_active_tab');
+    if (lastActiveTab && $('#' + lastActiveTab).length > 0) {
+      $('#' + lastActiveTab).tab('show');
+      localStorage.removeItem('last_active_tab');
+    }
   });
