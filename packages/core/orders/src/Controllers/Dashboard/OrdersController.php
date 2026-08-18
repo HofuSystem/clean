@@ -537,7 +537,7 @@ class OrdersController extends Controller
         }catch(ValidationException $e){
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
         } catch (\Throwable $e) {
-            dd($e);
+            report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }
