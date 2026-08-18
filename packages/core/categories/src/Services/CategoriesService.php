@@ -36,7 +36,7 @@ class CategoriesService
        return CategoriesSelectResource::collection($categories);
     }
 
-    public function duplicateAction(array $data = [],$id){
+    public function duplicateAction(array $data = [], $id = null){
         $productsService = app(ProductsService::class);
         $category = Category::findOrFail($id);
         $newCategory = $this->storeOrUpdate($data);
@@ -108,8 +108,8 @@ class CategoriesService
 
         $recordsTotal       = Category::search($type, $isSales)->count();
         $recordsFiltered    = Category::search($type, $isSales)->count();
-        $records            = Category::select(['id','image','type','delivery_price','sort','is_package','status','parent_id'])
-        ->with(['parent.translations','cities.translations'])
+        $records            = Category::select(['id','image','type','delivery_price','discount_percent','for_all_cities','sort','is_package','status','parent_id'])
+        ->with(['translations', 'parent.translations','cities.translations'])
         ->search($type, $isSales)
         ->dataTable()->get();
 

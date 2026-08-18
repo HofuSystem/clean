@@ -20,6 +20,7 @@ class CategorySettingsService
             $selected[] = $value;
         }
         return CategorySetting::select($selected)
+        ->with('translations')
         ->when($parent,function($parentQuery){
             $parentQuery->whereNull('parent_id');
         })
@@ -62,7 +63,7 @@ class CategorySettingsService
     }
 
     public function get(int $id){
-        return  CategorySetting::findOrFail($id);
+        return  CategorySetting::with(['translations', 'category.translations', 'parent.translations', 'categorySettings.translations'])->findOrFail($id);
     }
 
     public function delete(int $id,$final = false){
@@ -79,8 +80,8 @@ class CategorySettingsService
 
         $recordsTotal       = CategorySetting::count();
         $recordsFiltered    = CategorySetting::search($type)->count();
-        $records            = CategorySetting::select(['id','slug','category_id','addon_price','parent_id','status','cost'])
-        ->with(['category','parent','categorySettings'])
+        $records            = CategorySetting::select(['id','slug','category_id','addon_price','discount_percent','parent_id','status','cost','color','icon'])
+        ->with(['translations', 'category.translations','parent.translations','categorySettings.translations'])
         ->search($type)->dataTable()->get();
         
         return [

@@ -27,7 +27,14 @@ class CategoryTypesController extends Controller
         $screen     = 'category-types-index';
         $total      = $this->categoryTypesService->totalCount();
         $trash      = $this->categoryTypesService->trashCount();
-		$categories = $this->categoriesService->selectable('id','name');
+        $categories = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
 
         return view('categories::pages.category-types.list', compact('title','screen','categories',"total","trash"));
     }
@@ -37,7 +44,14 @@ class CategoryTypesController extends Controller
         $item       = isset($id)    ? $this->categoryTypesService->get($id) : null;
         $screen     = isset($item)  ? 'CategoryType-edit'          : 'CategoryType-create';
         $title      = isset($item)  ? trans("Services Type edit")  : trans("Services Type create");
-		$categories = $this->categoriesService->selectable('id','name');
+        $categories = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
 
 
         return view('categories::pages.category-types.edit', compact('item','title','screen','categories') );

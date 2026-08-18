@@ -156,12 +156,16 @@ class ProductsController extends Controller
                 $filters['type'] = 'sales';
                 $request->merge(['filters' => $filters]);
             }
-            $data             = $this->productsService->dataTable($request->draw, $isSales ? 'sales' : 'non-sales');
+            $filterType = null;
+            if ($request->page !== 'best_sales') {
+                $filterType = $isSales ? 'sales' : 'non-sales';
+            }
+            $data             = $this->productsService->dataTable($request->draw, $filterType);
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
             return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
         } catch (\Throwable $e) {
-            dd($e);
+            report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }

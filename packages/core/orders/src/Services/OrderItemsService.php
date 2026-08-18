@@ -22,7 +22,7 @@ class OrderItemsService
         if(!in_array($value,[])){
             $selected[] = $value;
         }
-        return OrderItem::select($selected)->where($where)->get();
+        return OrderItem::select($selected)->where($where)->with(['product.translations'])->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){

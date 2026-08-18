@@ -342,7 +342,9 @@ const fullToolbar = [
 
 
   $(document).ready(function () {
-    drawMediaCenters($('#operation-form'));
+    if (typeof drawMediaCenters === 'function') {
+      drawMediaCenters($('#operation-form'));
+    }
     $("table[orderable]").tableDnD({
       onDragClass: "myDragClass",
       onDragStop: function (table, row) {
@@ -464,7 +466,9 @@ const fullToolbar = [
     $('#' + modelID).data('mainMode', mainMode)
     $('#' + modelID).data('mode', mode)
     $('#' + modelID + " form").trigger('reset');
-    drawMediaCenters($(`#${modelID} form`));
+    if (typeof drawMediaCenters === 'function') {
+      drawMediaCenters($(`#${modelID} form`));
+    }
   });
 
   //edit operations
@@ -498,7 +502,9 @@ const fullToolbar = [
     $('#' + modelID).data('updateUrl', updateUrl)
 
     populateForm($(`#${modelID} form `), data)
-    drawMediaCenters($(`#${modelID} form`));
+    if (typeof drawMediaCenters === 'function') {
+      drawMediaCenters($(`#${modelID} form`));
+    }
     $('#' + modelID).modal('show')
   });
 

@@ -447,7 +447,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td>{{ $item->product?->subcategory?->translate('en')?->name . ' | ' . $item->product?->subcategory?->translate('ar')?->name ?? '' }}
+                        <td>{{ $item->product?->subCategory?->translate('en')?->name . ' | ' . $item->product?->subCategory?->translate('ar')?->name ?? '' }}
                         </td>
                         <td>{{ number_format($item->product_price, 2) }} ر.س</td>
                         <td>{{ $item->quantity }}</td>

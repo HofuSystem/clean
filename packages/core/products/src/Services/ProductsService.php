@@ -84,6 +84,7 @@ class ProductsService
         if(!in_array($value,["name","desc"])){
             $selected[] = $value;
         }
+        $with = array_unique(array_merge($with, ['translations']));
         return Product::select($selected)->with($with)->get();
     }
 
@@ -122,7 +123,11 @@ class ProductsService
 
         $recordsTotal       = Product::when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->count();
         $recordsFiltered    = Product::when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->search()->count();
-        $records            = Product::with(['category','subCategory'])->when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->search()->dataTable()->get();
+        $records            = Product::with([
+            'translations',
+            'category.translations',
+            'subCategory.translations'
+        ])->when($type, function($q) use ($type) { return $type === 'non-sales' ? $q->where('type', '!=', 'sales') : $q->where('type', $type); })->search()->dataTable()->get();
         return [
             'draw'              => $draw,
             'recordsTotal'      => $recordsTotal,

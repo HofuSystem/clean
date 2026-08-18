@@ -22,6 +22,7 @@ class ProductSettingsService
             $selected[] = $value;
         }
         return ProductSetting::select($selected)
+        ->with('translations')
         ->when($parent, function($parentQuery){
             $parentQuery->whereNull('parent_id');
         })
@@ -66,7 +67,7 @@ class ProductSettingsService
 
     public function get(int|string $id)
     {
-        return ProductSetting::findOrFail($id);
+        return ProductSetting::with(['translations', 'products.translations', 'parent.translations', 'productSettings.translations'])->findOrFail($id);
     }
 
     public function delete(int|string $id, $final = false)
@@ -84,8 +85,8 @@ class ProductSettingsService
     {
         $recordsTotal       = ProductSetting::count();
         $recordsFiltered    = ProductSetting::search($type)->count();
-        $records            = ProductSetting::select(['id', 'slug', 'addon_price', 'parent_id', 'status', 'cost'])
-        ->with(['products', 'parent', 'productSettings'])
+        $records            = ProductSetting::select(['id', 'slug', 'addon_price', 'discount_percent', 'cost', 'parent_id', 'status', 'general', 'color', 'icon'])
+        ->with(['translations', 'products.translations', 'parent.translations', 'productSettings.translations'])
         ->search($type)->dataTable()->get();
         
         return [

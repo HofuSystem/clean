@@ -48,10 +48,25 @@ class OrderRepresentativesController extends Controller
     {
         $title              = trans('OrderRepresentative analysis');
         $screen             = 'order-representatives-analysis';
-        $cities             = \Core\Info\Models\City::with('translations')->get();
-        $allRepresentatives = User::whereHas('roles', function($roleQuery){
-            $roleQuery->whereIn('name', ['technical', 'driver']);
-        })->select(['id', 'fullname', 'phone'])->get();
+        $cities             = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
+        $allRepresentatives = DB::table('users')
+            ->join('model_has_roles', function ($join) {
+                $join->on('model_has_roles.model_id', '=', 'users.id')
+                    ->where('model_has_roles.model_type', '=', 'Core\\Users\\Models\\User');
+            })
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereIn('roles.name', ['technical', 'driver'])
+            ->whereNull('users.deleted_at')
+            ->select('users.id', 'users.fullname', 'users.phone')
+            ->distinct()
+            ->get();
 
         $from = $request->get('from', \Carbon\Carbon::now()->startOfMonth()->toDateString());
         $to   = $request->get('to', \Carbon\Carbon::now()->endOfMonth()->toDateString());
@@ -65,7 +80,7 @@ class OrderRepresentativesController extends Controller
         ->with(['representativeOrders' => function($query) use ($request, $from, $to) {
             $query->analysis($request->city_id, null, null, ['delivered', 'finished'])
             ->testAccounts(false)
-            ->with(['orderRepresentatives.representative:id,fullname,phone', 'city', 'client:id,fullname,phone'])
+            ->with(['orderRepresentatives.representative:id,fullname,phone', 'city.translations', 'client:id,fullname,phone'])
             ->analysisRepresentatives(['technical', 'delivery'], $from, $to);
         }])
         ->whereHas('representativeOrders', function($orderQuery) use ($request, $from, $to) {
@@ -84,10 +99,25 @@ class OrderRepresentativesController extends Controller
     {
         $title              = trans('OrderRepresentative collective Analysis');
         $screen             = 'order-representatives-collective-analysis';
-        $cities             = \Core\Info\Models\City::with('translations')->get();
-        $allRepresentatives = User::whereHas('roles', function($roleQuery){
-            $roleQuery->whereIn('name', ['technical', 'driver']);
-        })->select(['id', 'fullname', 'phone'])->get();
+        $cities             = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
+        $allRepresentatives = DB::table('users')
+            ->join('model_has_roles', function ($join) {
+                $join->on('model_has_roles.model_id', '=', 'users.id')
+                    ->where('model_has_roles.model_type', '=', 'Core\\Users\\Models\\User');
+            })
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereIn('roles.name', ['technical', 'driver'])
+            ->whereNull('users.deleted_at')
+            ->select('users.id', 'users.fullname', 'users.phone')
+            ->distinct()
+            ->get();
 
         $from = $request->get('from', \Carbon\Carbon::now()->startOfMonth()->toDateString());
         $to   = $request->get('to', \Carbon\Carbon::now()->endOfMonth()->toDateString());

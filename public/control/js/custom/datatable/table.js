@@ -90,9 +90,9 @@ var KTUsersList = function () {
                     },
                     error: function (xhr, error, thrown) {
                         // Handle AJAX errors
-                        console.log(xhr, error, thrown);
-                        // Stop the processing spinner on error
-                        if (datatable) { datatable.processing(false); }
+                        if (datatable && typeof datatable.processing === 'function') { 
+                            datatable.processing(false); 
+                        }
                     }
 
                 },

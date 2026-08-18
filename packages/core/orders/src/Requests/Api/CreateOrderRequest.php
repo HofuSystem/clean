@@ -21,6 +21,27 @@ class CreateOrderRequest extends FormRequest
     return true;
   }
 
+  protected function prepareForValidation()
+  {
+    $booleans = ['perfume', 'request_address', 'hide_identity', 'wallet_used', 'points_used', 'is_delivery_free'];
+    $merge = [];
+    foreach ($booleans as $key) {
+      if ($this->has($key) && !is_null($this->input($key))) {
+        $val = $this->input($key);
+        if (is_string($val)) {
+          if (in_array(strtolower($val), ['true', '1'], true)) {
+            $merge[$key] = true;
+          } elseif (in_array(strtolower($val), ['false', '0'], true)) {
+            $merge[$key] = false;
+          }
+        }
+      }
+    }
+    if (!empty($merge)) {
+      $this->merge($merge);
+    }
+  }
+
   /**
    * Get the validation rules that apply to the request.
    *

@@ -35,7 +35,7 @@ class CategoryTypesService
     }
 
     public function get(int $id){
-        return  CategoryType::findOrFail($id);
+        return  CategoryType::with(['translations', 'category.translations'])->findOrFail($id);
     }
 
     public function delete(int $id,$final = false){
@@ -53,7 +53,7 @@ class CategoryTypesService
         $recordsTotal       = CategoryType::count();
         $recordsFiltered    = CategoryType::search()->count();
         $records            = CategoryType::select(['id','slug','category_id','hour_price','status'])
-        ->with(['category'])
+        ->with(['translations', 'category.translations'])
         ->search()->dataTable()->get();
         
         return [

@@ -193,7 +193,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                         $pImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="%2394a3b8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
                                     }
                                     
-                                    $pDescClean = e(strip_tags($pDesc));
+                                    $pDescClean = e(strip_tags($pDesc ?? ''));
                                     $customizations = is_string($item->customizations) ? json_decode($item->customizations, true) : $item->customizations;
                                 @endphp
 
@@ -538,12 +538,12 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                     <tbody>
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('total order') }}</th>
-                                            <td class="p-2">{{ number_format($order->order_price, 2) }} {{ trans('SAR')
+                                            <td class="p-2">{{ number_format((float)($order->order_price ?? 0), 2) }} {{ trans('SAR')
                                                 }} </td>
                                         </tr>
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('discount') }}</th>
-                                            <td class="p-2">{{ number_format($order->total_coupon, 2) }} {{ trans('SAR')
+                                            <td class="p-2">{{ number_format((float)($order->total_coupon ?? 0), 2) }} {{ trans('SAR')
                                                 }} </td>
                                         </tr>
 
@@ -551,13 +551,13 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
 
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('delivery charge') }}</th>
-                                            <td class="p-2"> {{ number_format($order->delivery_price, 2) }} {{
+                                            <td class="p-2"> {{ number_format((float)($order->delivery_price ?? 0), 2) }} {{
                                                 trans('SAR') }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('total') }}</th>
-                                            <td class="p-2">{{ number_format($order->total_price, 2) }} {{ trans('SAR')
+                                            <td class="p-2">{{ number_format((float)($order->total_price ?? 0), 2) }} {{ trans('SAR')
                                                 }} </td>
                                         </tr>
 
@@ -572,46 +572,46 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($order->wallet_amount_used > 0)
+                                        @if (($order->wallet_amount_used ?? 0) > 0)
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('paid with wallet') }}</th>
-                                            <td class="p-2">{{ number_format(abs($order->wallet_amount_used), 2) }}
+                                            <td class="p-2">{{ number_format(abs((float)($order->wallet_amount_used ?? 0)), 2) }}
                                                 {{ trans('SAR') }} </td>
                                         </tr>
                                         @endif
-                                        @if ($order->points_amount_used > 0)
+                                        @if (($order->points_amount_used ?? 0) > 0)
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('paid with points') }}</th>
-                                            <td class="p-2">{{ number_format(abs($order->points_amount_used), 2) }}
+                                            <td class="p-2">{{ number_format(abs((float)($order->points_amount_used ?? 0)), 2) }}
                                                 {{ trans('SAR') }} </td>
                                         </tr>
                                         @endif
-                                        @if ($order->cash_amount_used > 0)
+                                        @if (($order->cash_amount_used ?? 0) > 0)
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('paid with cash') }}</th>
-                                            <td class="p-2">{{ number_format(abs($order->cash_amount_used), 2) }}
+                                            <td class="p-2">{{ number_format(abs((float)($order->cash_amount_used ?? 0)), 2) }}
                                                 {{ trans('SAR') }} </td>
                                         </tr>
                                         @endif
-                                        @if ($order->card_amount_used > 0)
+                                        @if (($order->card_amount_used ?? 0) > 0)
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('paid with card') }}</th>
                                             <td class="p-2">
-                                                {{ number_format(abs($order->card_amount_used), 2) }}
+                                                {{ number_format(abs((float)($order->card_amount_used ?? 0)), 2) }}
                                                 {{ trans('SAR') }} </td>
                                         </tr>
                                         @endif
-                                        @if ($order->has_been_refunded > 0)
+                                        @if (($order->has_been_refunded ?? 0) > 0)
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('has been refunded amount') }}</th>
                                             <td class="p-2">
-                                                {{ number_format(abs($order->has_been_refunded), 2) }}
+                                                {{ number_format(abs((float)($order->has_been_refunded ?? 0)), 2) }}
                                                 {{ trans('SAR') }} </td>
                                         </tr>
                                         @endif
                                         <tr>
                                             <th scope="row" class="p-2">{{ trans('total paid') }}</th>
-                                            <td class="p-2">{{ number_format(abs($order->paid), 2) }} {{ trans('SAR') }}
+                                            <td class="p-2">{{ number_format(abs((float)($order->paid ?? 0)), 2) }} {{ trans('SAR') }}
                                             </td>
                                         </tr>
                                         @if ($order->total_price != $order->paid and $order->status != 'canceled')
@@ -619,7 +619,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                             <tr>
                                                 <th scope="row" class="p-2">{{ trans('remaining customer') }}</th>
                                                 <td class="p-2">
-                                                    {{ number_format(abs($order->total_price - $order->paid), 2) }}
+                                                    {{ number_format(abs((float)(($order->total_price ?? 0) - ($order->paid ?? 0))), 2) }}
                                                     {{ trans('SAR') }}
                                                 </td>
                                             </tr>
@@ -628,7 +628,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                                 <th scope="row" class="p-2">
                                                     {{ trans('Payment is required upon receipt') }}</th>
                                                 <td class="p-2">
-                                                    {{ number_format(abs($order->total_price - $order->paid), 2) }}
+                                                    {{ number_format(abs((float)(($order->total_price ?? 0) - ($order->paid ?? 0))), 2) }}
                                                     {{ trans('SAR') }}
                                                 </td>
                                             </tr>

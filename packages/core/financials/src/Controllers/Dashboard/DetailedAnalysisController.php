@@ -46,7 +46,13 @@ class DetailedAnalysisController extends Controller
         // Get payment method totals (entire year)
         $paymentMethods = $this->detailedAnalysisService->getPaymentMethodTotals($year, $cityId, $companyType);
 
-        $cities = City::get();
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
 
         return view('financials::pages.detailed-analysis', compact(
             'title',

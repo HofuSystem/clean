@@ -566,14 +566,30 @@ class OrdersService
     public function get($id)
     {
         return Order::with([
-            'client',
+            'client.profile.city.translations',
+            'client.profile.district.translations',
             'company',
-            'items.product.translations',
+            'branch',
+            'items' => fn($q) => $q->withTrashed()->with([
+                'product.translations',
+                'product.category.translations',
+                'product.subCategory.translations',
+                'qtyUpdates'
+            ]),
             'orderRepresentatives.representative',
+            'orderRepresentatives.items.product.translations',
+            'orderRepresentatives.address',
             'operator',
             'comments',
-            'histories'
-        ])->where('id', $id)->orWhere('reference_id', $id)->firstOrFail();
+            'histories',
+            'reports',
+            'city.translations',
+            'district.translations',
+            'coupon',
+            'electronicInvoice'
+        ])->where(function($q) use ($id) {
+            $q->where('id', $id)->orWhere('reference_id', $id);
+        })->firstOrFail();
     }
 
     public function delete(int $id, $final = false)

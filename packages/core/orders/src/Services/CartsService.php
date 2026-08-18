@@ -106,7 +106,13 @@ class CartsService
         ->whereHas('user')
         ->where('data','!=',null)
         ->where('data','!=','"[]"')
-        ->with(['user'])
+        ->with([
+            'user.profile.city.translations',
+            'user.profile.district.translations',
+            'user.orders',
+            'followUps',
+            'activeFollowUp'
+        ])
         ->search()->dataTable()->get();
 
         return [

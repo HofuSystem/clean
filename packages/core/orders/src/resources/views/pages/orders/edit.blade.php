@@ -83,7 +83,7 @@
                                 <span class="btn-text">{{ trans('B2B Financial Note') }}</span>
                             </a>
                         @endif
-                        @if ($order->reports()->exists())
+                        @if ($order->reports->isNotEmpty())
                             <a href="#" class="order-btn order-btn-info" id="returnOrderContinueBtn" data-id="{{ $order->id }}" title="{{ trans('return order continue') }}">
                                 <i class="fas fa-undo"></i>
                                 <span class="btn-text">{{ trans('return order continue') }}</span>
@@ -108,8 +108,8 @@
                             </a>
                         @endif
                         @if (in_array($order->status, ['finished', 'delivered']) && $order->electronicInvoice)
-                            <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" class="order-btn order-btn-dark" title="{{ trans('Electronic Invoice') }}">
-                                <i class="fas fa-file-invoice"></i>
+                            <a href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}" target="_blank" class="order-btn order-btn-dark" title="{{ trans('Electronic Invoice') }}">
+                                <i class="fas fa-file-invoice-dollar"></i>
                                 <span class="btn-text">{{ trans('Electronic Invoice') }}</span>
                             </a>
                         @endif
@@ -157,13 +157,13 @@
                             </li>
 
                             <li class="nav-item " role="presentation">
-                                <a class="nav-link" href="{{ route('dashboard.orders.invoice', $order->id) }}">
+                                <a class="nav-link" target="_blank" href="{{ route('dashboard.orders.invoice', $order->id) }}">
                                     {{ trans('invoice') }}</a>
 
                             </li>
                             @if (in_array($order->status, ['finished', 'delivered']) && $order->electronicInvoice)
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link" href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}">
+                                    <a class="nav-link" target="_blank" href="{{ route('dashboard.electronic-invoices.show', $order->electronicInvoice->id) }}">
                                         {{ trans('Electronic Invoice') }}</a>
                                 </li>
                             @endif

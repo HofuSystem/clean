@@ -48,7 +48,7 @@ class OrderReportsService
         $recordsTotal       = OrderReport::count();
         $recordsFiltered    = OrderReport::search()->count();
         $records            = OrderReport::select(['id','order_id','user_id','report_reason_id','desc_location'])
-        ->with(['order','user','reportReason'])
+        ->with(['order','user','reportReason.translations'])
         ->search()->dataTable()->get();
         
         return [

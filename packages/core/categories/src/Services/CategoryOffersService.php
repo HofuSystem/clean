@@ -18,7 +18,7 @@ class CategoryOffersService
         if(!in_array($value,["name","desc"])){
             $selected[] = $value;
         }
-        return CategoryOffer::select($selected)->get();
+        return CategoryOffer::select($selected)->with('translations')->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
@@ -30,7 +30,7 @@ class CategoryOffersService
     }
 
     public function get(int $id){
-        return  CategoryOffer::findOrFail($id);
+        return  CategoryOffer::with('translations')->findOrFail($id);
     }
 
     public function delete(int $id,$final = false){
@@ -48,6 +48,7 @@ class CategoryOffersService
         $recordsTotal       = CategoryOffer::count();
         $recordsFiltered    = CategoryOffer::search()->count();
         $records            = CategoryOffer::select(['id','price','sale_price','image','hours_num','workers_num','status','type'])
+        ->with(['translations'])
         ->search()->dataTable()->get();
         
         return [

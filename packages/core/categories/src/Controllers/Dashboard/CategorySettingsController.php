@@ -29,9 +29,32 @@ class CategorySettingsController extends Controller
         $screen     = $type.'-index';
         $total      = $this->categorySettingsService->totalCount($type);
         $trash      = $this->categorySettingsService->trashCount($type);
-		$categories = $this->categoriesService->selectable('id','name');
-		$cities     = $this->citiesService->selectable('id','name');
-		$parents    = $this->categorySettingsService->selectable('id','name',true);
+        $categories = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
+
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
+        $parents = DB::table('category_settings')
+            ->join('category_setting_translations', function ($join) {
+                $join->on('category_settings.id', '=', 'category_setting_translations.category_setting_id')
+                    ->where('category_setting_translations.locale', '=', app()->getLocale());
+            })
+            ->select('category_settings.id', 'category_setting_translations.name')
+            ->whereNull('category_settings.deleted_at')
+            ->whereNull('category_settings.parent_id')
+            ->get();
 
         return view('categories::pages.category-settings.list', compact('title','screen','type','categories','cities','parents',"total","trash"));
     }
@@ -42,9 +65,31 @@ class CategorySettingsController extends Controller
         $item       = isset($id)    ? $this->categorySettingsService->get($id) : null;
         $screen     = isset($item)  ? 'CategorySetting-edit'          : 'CategorySetting-create';
         $title      = isset($item)  ? trans("CategorySetting  edit")  : trans("CategorySetting  create");
-		$categories = $this->categoriesService->selectable('id','name');
-		$cities     = $this->citiesService->selectable('id','name');
-		$parents    = $this->categorySettingsService->selectable('id','name');
+        $categories = DB::table('categories')
+            ->join('category_translations', function ($join) {
+                $join->on('categories.id', '=', 'category_translations.category_id')
+                    ->where('category_translations.locale', '=', app()->getLocale());
+            })
+            ->select('categories.id', 'category_translations.name')
+            ->whereNull('categories.deleted_at')
+            ->get();
+
+        $cities = DB::table('cities')
+            ->join('city_translations', function ($join) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                    ->where('city_translations.locale', '=', app()->getLocale());
+            })
+            ->select('cities.id', 'city_translations.name')
+            ->get();
+
+        $parents = DB::table('category_settings')
+            ->join('category_setting_translations', function ($join) {
+                $join->on('category_settings.id', '=', 'category_setting_translations.category_setting_id')
+                    ->where('category_setting_translations.locale', '=', app()->getLocale());
+            })
+            ->select('category_settings.id', 'category_setting_translations.name')
+            ->whereNull('category_settings.deleted_at')
+            ->get();
 
 
         return view('categories::pages.category-settings.edit', compact('item','title','screen','type','categories','cities','parents') );

@@ -124,24 +124,19 @@ class OrdersController extends Controller
         $screen                 = $order->type;
         $title                  = trans($order->type)  ;
         $users                  = DB::table('users')
-            ->select('users.id', 'users.fullname', 'users.phone')
-            ->whereNull('users.deleted_at')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('model_has_roles')
-                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                    ->whereColumn('model_has_roles.model_id', 'users.id')
-                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
-                    ->whereIn('roles.name', ['technical', 'driver']);
+            ->join('model_has_roles', function ($join) {
+                $join->on('model_has_roles.model_id', '=', 'users.id')
+                    ->where('model_has_roles.model_type', '=', 'Core\\Users\\Models\\User');
             })
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereIn('roles.name', ['technical', 'driver'])
+            ->whereNull('users.deleted_at')
+            ->select('users.id', 'users.fullname', 'users.phone', DB::raw('GROUP_CONCAT(roles.name) as role_names'))
+            ->groupBy('users.id', 'users.fullname', 'users.phone')
             ->get()
             ->map(function ($u) {
-                $roleNames = DB::table('model_has_roles')
-                    ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                    ->where('model_has_roles.model_id', $u->id)
-                    ->where('model_has_roles.model_type', 'Core\\Users\\Models\\User')
-                    ->pluck('roles.name');
-                $u->roles = $roleNames->map(fn($r) => (object)['name' => $r]);
+                $roles = explode(',', $u->role_names ?? '');
+                $u->roles = collect($roles)->map(fn($r) => (object)['name' => $r]);
                 return $u;
             });
         $operators              = DB::table('users')
@@ -156,7 +151,7 @@ class OrdersController extends Controller
                     ->where('roles.name', 'operator');
             })
             ->get();
-        $orderItems             = $order->items()->withTrashed()->with(['product.translations'])->get();
+        $orderItems             = $order->items;
         $comments               = $order->comments()->where('parent_id',null)->get();
         $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
@@ -180,7 +175,7 @@ class OrdersController extends Controller
             ->whereNotNull('categories.parent_id')
             ->where('categories.type', OrderHelper::getOrderType($order->type))
             ->get();
-        $items                  = $this->orderItemsService->selectable('id','product_id',[['order_id',$order->id]]);
+        $items                  = $order->items;
         $reportReasons          = DB::table('report_reasons')
             ->join('report_reason_translations', function ($join) {
                 $join->on('report_reasons.id', '=', 'report_reason_translations.report_reason_id')
@@ -206,6 +201,11 @@ class OrdersController extends Controller
         $allowedRepresentatives =  [];
         $customerOrdersCount    = $order->client?->orders()?->count();
         $customerTire           = OrderHelper::getCustomerTier($customerOrdersCount);
+        $hasDeliveryRep         = $order->orderRepresentatives
+            ->where('type', 'delivery')
+            ->filter(fn($r) => !empty($r->representative_id))
+            ->isNotEmpty();
+
         if(in_array(OrderHelper::getOrderType($order->type),['maid','host','services'])){
             $allowedRepresentatives[] = 'technical';
         }else if($order->status == 'pending'){
@@ -213,10 +213,7 @@ class OrdersController extends Controller
         }else if(
             $order->status == 'order_has_been_delivered_to_admin'
             or
-            $order->status != "receiving_driver_accepted" and $order->orderRepresentatives()
-                ->whereType('delivery')
-                ->has('representative')
-                ->doesntExist()
+            ($order->status != "receiving_driver_accepted" and !$hasDeliveryRep)
         ){
             $allowedRepresentatives[] = 'delivery';
         }
@@ -503,14 +500,15 @@ class OrdersController extends Controller
     public function show($id){
         $title                      = trans('Order show');
         $screen                     = 'orders-show';
-        $order                      = $this->ordersService->get($id);;
+        $order                      = $this->ordersService->get($id);
         $comments                   = $order->comments()->where('parent_id',null)->get();
-        $orderItems                 = $order->items()->withTrashed()->get();
+        $orderItems                 = $order->items;
+        $items                      = $order->items;
         $customerOrdersCount        = $order->client?->orders()?->count();
         $customerTire               = OrderHelper::getCustomerTier($customerOrdersCount);
         $allowedRepresentatives     =[];
         $orderHistories             = $order->histories;
-        return view('orders::pages.orders.edit', compact('order','title','screen','customerOrdersCount','customerTire','allowedRepresentatives','comments','orderItems','orderHistories') );
+        return view('orders::pages.orders.edit', compact('order','title','screen','customerOrdersCount','customerTire','allowedRepresentatives','comments','orderItems','items','orderHistories') );
     }
 
 
