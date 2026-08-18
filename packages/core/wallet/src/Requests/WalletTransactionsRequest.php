@@ -37,6 +37,8 @@ class WalletTransactionsRequest extends FormRequest
 			 "iban_number"     =>  ['nullable','string'], 
 			 "user_id"         =>  ['nullable','exists:users,id'], 
 			 "added_by_id"     =>  ['nullable','exists:users,id'], 
+			 "transaction_type" => ['nullable','string'],
+			 "notes"           =>  ['nullable','string'],
 			 "package_id"      =>  ['nullable','exists:wallet_packages,id'], 
 			 "expired_at"      =>  ['nullable','date'], 
 			]; 
