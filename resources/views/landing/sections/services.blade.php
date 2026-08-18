@@ -1,5 +1,5 @@
 @php
-    $services = \Core\Pages\Models\Feature::where('section', 'services')->get();
+    $services = \Core\Pages\Models\Feature::with('translations')->where('section', 'services')->get();
 @endphp
 <section id="services" class="page-section bg-gray-50 py-20 md:py-32 relative overflow-hidden">
     

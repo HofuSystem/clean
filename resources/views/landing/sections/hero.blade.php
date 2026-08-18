@@ -1,6 +1,6 @@
 @php
-    $counters = \Core\Pages\Models\Counter::get();
-    $steps = \Core\Pages\Models\WorkStep::get();
+    $counters = \Core\Pages\Models\Counter::with('translations')->get();
+    $steps = \Core\Pages\Models\WorkStep::with('translations')->get();
 @endphp
 @if($section)
 <section id="home" class="page-section bg-white overflow-hidden pt-8 pb-16 lg:pt-20 lg:pb-24 relative">

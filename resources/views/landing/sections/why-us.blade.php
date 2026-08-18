@@ -1,5 +1,5 @@
 @php
-    $comparisons = \Core\Pages\Models\Comparison::all();
+    $comparisons = \Core\Pages\Models\Comparison::with('translations')->get();
 @endphp
 <section id="why-us" class="page-section bg-white py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4">

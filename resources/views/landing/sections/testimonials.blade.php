@@ -1,5 +1,5 @@
 @php
-    $testimonials = \Core\Pages\Models\Testimonial::all();
+    $testimonials = \Core\Pages\Models\Testimonial::with('translations')->get();
 @endphp
 <section id="testimonials" class="page-section bg-white py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4 text-center">

@@ -19,7 +19,7 @@ class CitiesService
         if(!in_array($value,["name"])){
             $selected[] = $value;
         }
-        return City::select($selected)->get();
+        return City::select($selected)->with('translations')->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){

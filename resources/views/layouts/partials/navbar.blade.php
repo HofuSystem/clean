@@ -21,23 +21,14 @@
             </div>
 
             <div class="flex items-center gap-2 md:gap-3">
-                {{-- Language Switcher using Laravel Localization --}}
-                <div class="relative" id="lang-switcher">
-                    <button onclick="toggleLangMenu()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors text-xs font-bold uppercase">
-                        {{ LaravelLocalization::getCurrentLocale() }}
-                    </button>
-                    <div id="lang-menu" class="hidden absolute right-0 rtl:right-auto rtl:left-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 animate-fade-in-down">
-                        @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-                            <a rel="alternate" hreflang="{{ $localeCode }}" href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium {{ LaravelLocalization::getCurrentLocale() == $localeCode ? 'bg-brand-50 text-brand-600' : 'text-gray-700 hover:bg-gray-50' }} transition-colors">
-                                <span class="w-6 h-6 rounded-full {{ LaravelLocalization::getCurrentLocale() == $localeCode ? 'bg-brand-100' : 'bg-gray-100' }} flex items-center justify-center text-xs font-bold uppercase">{{ $localeCode }}</span>
-                                <span>{{ $properties['native'] }}</span>
-                                @if(LaravelLocalization::getCurrentLocale() == $localeCode)
-                                    <i class="fa-solid fa-check text-brand-600 ml-auto rtl:ml-0 rtl:mr-auto text-xs"></i>
-                                @endif
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
+                {{-- Direct Language Switcher to the other language --}}
+                @php
+                    $otherLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'en' : 'ar';
+                @endphp
+                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-brand-50 hover:text-brand-600 border border-gray-200/60 flex items-center justify-center transition-all text-xs font-black uppercase text-gray-700 shadow-sm" title="{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}">
+                    {{ $otherLocale }}
+                </a>
+
                 @if(Route::is('b2b'))
                     <a href="{{ route('client.login') }}" class="hidden md:flex bg-brand-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-brand-700 transition-all shadow-lg shadow-brand-200">
                         {{ trans('login') }}
@@ -64,20 +55,16 @@
             <a href="{{ route('faq') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-circle-question w-6 text-center text-brand-500"></i> {{ trans('faq') }}</a>
             @if(Route::is('b2b'))
             <a href="{{ route('client.login') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-envelope w-6 text-center text-brand-500"></i> {{ trans('login') }}</a>
-                @endif
+            @endif
+            <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-brand-600 hover:bg-brand-50 border-t border-gray-100 mt-2">
+                <i class="fa-solid fa-globe w-6 text-center text-brand-500"></i>
+                <span>{{ $otherLocale === 'ar' ? 'العربية' : 'English' }} ({{ strtoupper($otherLocale) }})</span>
+            </a>
         </div>
     </div>
 </nav>
 
 <script>
-    // Language Switcher Toggle
-    function toggleLangMenu() {
-        const menu = document.getElementById('lang-menu');
-        menu.classList.toggle('hidden');
-    }
-
-  
-
     // Mobile Menu Toggle
     function toggleMobileMenu() {
         const menu = document.getElementById('mobile-menu');

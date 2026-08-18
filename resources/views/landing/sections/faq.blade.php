@@ -1,5 +1,5 @@
 @php
-        $faqs = \Core\Pages\Models\Faq::all();
+        $faqs = \Core\Pages\Models\Faq::with('translations')->get();
 @endphp
 <section id="faq-section" class="page-section bg-gray-50 py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

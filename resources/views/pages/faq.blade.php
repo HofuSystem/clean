@@ -10,7 +10,7 @@
 
 @push('scripts')
 @php
-    $faqsForSchema = \Core\Pages\Models\Faq::all();
+    $faqsForSchema = \Core\Pages\Models\Faq::with('translations')->get();
 @endphp
 <script type="application/ld+json">
 {

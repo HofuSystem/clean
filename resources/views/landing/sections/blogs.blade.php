@@ -1,6 +1,6 @@
 @php
     if (!isset($posts)) {
-        $posts = \Core\Blog\Models\Blog::where('status', 'publish')->latest()->take(6)->get();
+        $posts = \Core\Blog\Models\Blog::with('translations')->where('status', 'publish')->latest()->take(6)->get();
     }
 @endphp
 <section id="blogs" class="page-section bg-gray-50 py-20 md:py-32">

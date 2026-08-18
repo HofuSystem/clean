@@ -1,5 +1,5 @@
 @php
-    $b2bSectors = \Core\Pages\Models\Feature::where('section', 'b2b')->get();
+    $b2bSectors = \Core\Pages\Models\Feature::with('translations')->where('section', 'b2b')->get();
 @endphp
 <section id="b2b" class="page-section bg-gray-900 text-white py-20 md:py-32 relative overflow-hidden">
     
