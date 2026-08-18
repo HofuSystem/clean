@@ -71,8 +71,9 @@ class UsersController extends Controller
         $countries  = $this->countriesService->selectable('id','name');
 		$cities     = $this->citiesService->selectable('id','name');
 		$districts  = collect();
+        $orders     = isset($item) ? DB::table('orders')->select('id', 'reference_id')->where('user_id', $item->id)->whereNull('deleted_at')->latest('id')->get() : collect();
 
-        return view('users::pages.users.edit', compact('item','title','screen','roles','technicals','coupons','packages','countries','cities','districts') );
+        return view('users::pages.users.edit', compact('item','title','screen','roles','technicals','coupons','packages','countries','cities','districts','orders') );
     }
 
     public function storeOrUpdate(UsersRequest $request, $id = null){

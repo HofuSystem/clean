@@ -665,6 +665,16 @@
 
 
                                         <div class="form-group mb-3 col-md-6">
+                                            <label for="order_id">{{ trans('order') }}</label>
+                                            <select class="custom-select form-select advance-select" name="order_id" id="user_id-order_id">
+                                                <option value="">{{ trans('select order') }}</option>
+                                                @foreach ($orders ?? [] as $orderItem)
+                                                    <option value="{{ $orderItem->id }}">{{ $orderItem->reference_id }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
                                             <label for="expired_at">{{ trans('expire at') }}</label>
                                             <input type="date" name="expired_at" class="form-control "
                                                 placeholder="{{ trans('Enter expire at') }} " value="">

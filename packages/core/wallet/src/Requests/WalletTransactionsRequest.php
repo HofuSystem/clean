@@ -39,6 +39,7 @@ class WalletTransactionsRequest extends FormRequest
 			 "added_by_id"     =>  ['nullable','exists:users,id'], 
 			 "transaction_type" => ['nullable','string'],
 			 "notes"           =>  ['nullable','string'],
+			 "order_id"        =>  ['nullable','exists:orders,id'],
 			 "package_id"      =>  ['nullable','exists:wallet_packages,id'], 
 			 "expired_at"      =>  ['nullable','date'], 
 			]; 
