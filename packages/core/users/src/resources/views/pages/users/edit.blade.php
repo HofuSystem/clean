@@ -636,6 +636,23 @@
                                         </div>
 
                                         <div class="form-group mb-3 col-md-6">
+                                            <label for="transaction_type">{{ trans('transaction_type') }}</label>
+                                            <select class="custom-select form-select advance-select" name="transaction_type"
+                                                id="user_id-transaction_type">
+                                                <option value="">{{ trans('select transaction type') }}</option>
+                                                <option value="promotional_add">{{ trans('promotional_add') }}</option>
+                                                <option value="compensation_add">{{ trans('compensation_add') }}</option>
+                                                <option value="charge">{{ trans('charge') }}</option>
+                                                <option value="withdraw">{{ trans('withdraw') }}</option>
+                                                <option value="manual_admin_deduction">{{ trans('manual_admin_deduction') }}</option>
+                                                <option value="cashback">{{ trans('cashback') }}</option>
+                                                <option value="remaining_amount">{{ trans('remaining_amount') }}</option>
+                                                <option value="order_payment">{{ trans('order_payment') }}</option>
+                                                <option value="expiry_deduction">{{ trans('expiry_deduction') }}</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
                                             <label class="required" for="amount">{{ trans('amount') }}</label>
                                             <input type="number" name="amount" class="form-control "
                                                 placeholder="{{ trans('Enter amount') }} " value="">

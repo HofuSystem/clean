@@ -2424,6 +2424,7 @@
     "the order price is less than the coupon minimum": "سعر الطلب أقل من الحد الأدنى للكوبون",
     "transaction_type": "نوع العملية",
     "transaction type": "نوع العملية",
+    "select transaction type": "اختر نوع العملية",
     "charge": "شحن عميل",
     "compensation_add": "تعويض",
     "manual_admin_deduction": "خصم إداري",
