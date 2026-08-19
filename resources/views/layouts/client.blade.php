@@ -199,13 +199,13 @@
             <div class="footer-apps">
                 <p class="footer-text">{{ trans('client.download_app_message') }}</p>
                 <div class="app-buttons">
-                    <a href="{{ $g_app }}" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                         onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'client_footer' });"
                         class="app-button">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
                             alt="{{ trans('client.google_play') }}">
                     </a>
-                    <a href="{{ $apple_app }}" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                         onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'client_footer' });"
                         class="app-button">
                         <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"

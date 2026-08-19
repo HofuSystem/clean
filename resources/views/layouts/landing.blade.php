@@ -758,9 +758,9 @@
                   "alternateName": "Clean Station",
                   "operatingSystem": "iOS, Android",
                   "applicationCategory": "LifestyleApplication",
-                  "url": "https://cleanstation.app.link/download",
-                  "installUrl": "https://cleanstation.app.link/download",
-                  "downloadUrl": "https://cleanstation.app.link/download",
+                  "url": "https://cleanstation.app.link/?channel=website",
+                  "installUrl": "https://cleanstation.app.link/?channel=website",
+                  "downloadUrl": "https://cleanstation.app.link/?channel=website",
                   "description": "تطبيق كلين ستيشن يقدم خدمات الغسيل، الكوي، الدراي كلين، البطانيات، السجاد، الاستلام والتوصيل، والخدمة المنزلية لطلب الورود والهدايا داخل الرياض.",
                   "areaServed": { "@type": "City", "name": "Riyadh" },
                   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
@@ -901,9 +901,9 @@
                   "alternateName": "كلين ستيشن",
                   "operatingSystem": "iOS, Android",
                   "applicationCategory": "LifestyleApplication",
-                  "url": "https://cleanstation.app.link/download",
-                  "installUrl": "https://cleanstation.app.link/download",
-                  "downloadUrl": "https://cleanstation.app.link/download",
+                  "url": "https://cleanstation.app.link/?channel=website",
+                  "installUrl": "https://cleanstation.app.link/?channel=website",
+                  "downloadUrl": "https://cleanstation.app.link/?channel=website",
                   "description": "Clean Station app offers laundry, ironing, dry cleaning, blanket cleaning, carpet cleaning, doorstep pickup and delivery, plus a separate flowers and gifts ordering service in Riyadh.",
                   "areaServed": { "@type": "City", "name": "Riyadh" },
                   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
@@ -1116,7 +1116,7 @@
                 @endif
             </div>
         </div>
-        <a href="https://cleanstation.app.link/download" class="sticky-mobile-cta-btn btn-glow-pulse">
+        <a href="https://cleanstation.app.link/?channel=website" class="sticky-mobile-cta-btn btn-glow-pulse">
             @if(LaravelLocalization::getCurrentLocale() === 'ar')
                 حمّل التطبيق
             @else

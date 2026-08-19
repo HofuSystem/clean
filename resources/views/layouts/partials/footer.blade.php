@@ -60,8 +60,8 @@
             <p class="text-gray-500 text-sm">© {{ date('Y') }} {{ config('app.name') }}. {{ trans('all_rights_reserved') }}</p>
             <div class="flex gap-2 opacity-70 grayscale hover:grayscale-0 transition-all justify-center">
                 <div class="mt-6 flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    @if(setting('app_store_app'))<a href="{{ setting('app_store_app') }}" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" class="h-12"></a>@endif
-                    @if(setting('g_play_app'))<a href="{{ setting('g_play_app') }}" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-12"></a>@endif
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_footer' });" class="hover:scale-105 transition-transform"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" class="h-12"></a>
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_footer' });" class="hover:scale-105 transition-transform"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-12"></a>
                 </div>
             </div>
         </div>

@@ -31,8 +31,7 @@
                 </p>
 
                 <div class="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    @if(setting('app_store_app'))
-                    <a href="{{ setting('app_store_app') }}" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                        id="hero-appstore-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('ios', 'hero')"
                        class="w-full xs:w-auto">
@@ -40,9 +39,7 @@
                              alt="Download Clean Station on the App Store"
                              class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
                     </a>
-                    @endif
-                    @if(setting('g_play_app'))
-                    <a href="{{ setting('g_play_app') }}" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                        id="hero-googleplay-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('android', 'hero')"
                        class="w-full xs:w-auto">
@@ -50,7 +47,6 @@
                              alt="Download Clean Station on Google Play"
                              class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
                     </a>
-                    @endif
                 </div>
 
                 <div class="flex items-center justify-center lg:justify-start gap-4 pt-2">
@@ -251,7 +247,7 @@
 
         <!-- زر الطلب (تحميل التطبيق مباشرة عبر رابط الفرع الذكي) -->
         <div class="text-center relative z-10">
-            <a href="https://cleanstation.app.link/download" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+            <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 <span>اطلب هديتك عبر التطبيق</span>
             </a>
@@ -318,7 +314,7 @@
 
         <!-- Call to Action Button -->
         <div class="text-center relative z-10">
-            <a href="https://cleanstation.app.link/download" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+            <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 <span>Order Your Gift via App</span>
             </a>
