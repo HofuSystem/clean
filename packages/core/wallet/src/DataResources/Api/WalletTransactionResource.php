@@ -13,7 +13,6 @@ class WalletTransactionResource extends JsonResource
     {
         $orderNumber = $this->order?->reference_id ?? $this->order_id;
         $type = $this->transaction_type ?? $this->type;
-        $expiryText = $this->expired_at ? trans('wallet_msg_expires_at', ['date' => date('d-m-Y', strtotime($this->expired_at))]) : null;
 
         return [
             'id'                     => $this->id,
@@ -25,7 +24,6 @@ class WalletTransactionResource extends JsonResource
             'transaction_type_text'  => trans($type),
             'description'            => $this->formatDescription($type, $orderNumber),
             'order_id'               => $orderNumber,
-            'expiry_text'            => $expiryText,
             'add_date'               => $this->created_at->format('d-F-Y'),
             'expired_date'           => $this->expired_at ? date('d-m-Y H:i', strtotime($this->expired_at)) : null,
         ];
