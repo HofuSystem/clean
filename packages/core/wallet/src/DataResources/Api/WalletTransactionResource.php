@@ -22,7 +22,8 @@ class WalletTransactionResource extends JsonResource
             'after_charge'           => (int) $this->wallet_after,
             'type'                   => $this->type,
             'transaction_type'       => $type,
-            'transaction_type_text'  => $this->formatTransactionTypeText($type, $orderNumber),
+            'transaction_type_text'  => trans($type),
+            'description'            => $this->formatDescription($type, $orderNumber),
             'order_id'               => $orderNumber,
             'expiry_text'            => $expiryText,
             'add_date'               => $this->created_at->format('d-F-Y'),
@@ -31,9 +32,9 @@ class WalletTransactionResource extends JsonResource
     }
 
     /**
-     * Format a descriptive user-friendly message based on transaction type and order.
+     * Format a descriptive user-friendly message based on transaction type, order, and expiry.
      */
-    protected function formatTransactionTypeText($type, $orderNumber = null): string
+    protected function formatDescription($type, $orderNumber = null): ?string
     {
         if ($orderNumber) {
             return match ($type) {
@@ -42,10 +43,14 @@ class WalletTransactionResource extends JsonResource
                 'compensation_add' => trans('wallet_msg_compensation', ['order' => $orderNumber]),
                 'reward'           => trans('wallet_msg_reward_order', ['order' => $orderNumber]),
                 'cashback'         => trans('wallet_msg_cashback_order', ['order' => $orderNumber]),
-                default            => trans($type) . " ({$orderNumber})",
+                default            => null,
             };
         }
 
-        return trans($type);
+        if ($this->expired_at) {
+            return trans('wallet_msg_expires_at', ['date' => date('d-m-Y', strtotime($this->expired_at))]);
+        }
+
+        return $this->notes;
     }
 }
