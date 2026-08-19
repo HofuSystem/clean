@@ -96,7 +96,8 @@ class WalletTransactionsService
     }
     public function history($type = null)   {
         $user = auth('api')->user();
-        $transactions = WalletTransaction::where('user_id',$user->id)
+        $transactions = WalletTransaction::with('order')
+        ->where('user_id',$user->id)
         ->when($type and in_array($type,['deposit','withdraw']),function($query) use ($type){
             $query->where('type',$type);
         })

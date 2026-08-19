@@ -1,4 +1,11 @@
 {
+    "wallet_msg_order_payment": "Payment for order :order",
+    "wallet_msg_remaining_amount": "Remaining amount from order :order",
+    "wallet_msg_compensation": "Compensation for order :order",
+    "wallet_msg_reward_order": "Reward for order :order",
+    "wallet_msg_cashback_order": "Cashback for order :order",
+    "wallet_msg_expires_at": "Expires on :date",
+    "reward": "Reward",
     "order_payment": "Order Payment",
     "compensation_add": "Compensation",
     "promotional_add": "Promotional",
