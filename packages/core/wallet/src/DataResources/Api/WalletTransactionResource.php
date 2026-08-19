@@ -23,7 +23,6 @@ class WalletTransactionResource extends JsonResource
             'type'                   => $this->type,
             'transaction_type'       => $type,
             'transaction_type_text'  => $this->formatTransactionTypeText($type, $orderNumber),
-            'notes'                  => $this->notes,
             'order_id'               => $orderNumber,
             'expiry_text'            => $expiryText,
             'add_date'               => $this->created_at->format('d-F-Y'),
