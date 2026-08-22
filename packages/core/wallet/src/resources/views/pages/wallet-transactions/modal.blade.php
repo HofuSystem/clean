@@ -29,8 +29,8 @@
                             <label class="form-label fw-bold fs-7 text-gray-700 mb-0 required">
                                 {{ trans('ابحث عن العميل') }}
                             </label>
-                            <div class="badge badge-light-primary border border-primary border-opacity-25 px-3 py-2 fs-8 fw-bolder" id="customer_balance_badge">
-                                {{ trans('الرصيد الحالي') }}: <span id="customer_balance_val">0.00</span> {{ trans('ر.س') }}
+                            <div class="px-3 py-1 fw-bold rounded-2" id="customer_balance_badge" style="background-color: #eff6ff !important; color: #1d4ed8 !important; border: 1px solid #bfdbfe !important; font-size: 12px;">
+                                {{ trans('الرصيد الحالي') }}: <span id="customer_balance_val" class="fw-bolder" style="color: #1d4ed8 !important;">0.00</span> {{ trans('ر.س') }}
                             </div>
                         </div>
 
@@ -233,9 +233,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = e.params.data;
             if (data && typeof data.wallet !== 'undefined') {
                 $('#customer_balance_val').text(parseFloat(data.wallet).toFixed(2));
+            } else if (data && data.id) {
+                $.get('{{ route("dashboard.wallet-transactions.user-balance", ":id") }}'.replace(':id', data.id), function(res) {
+                    $('#customer_balance_val').text(parseFloat(res.wallet || 0).toFixed(2));
+                });
             }
-        }).on('select2:clear', function() {
-            $('#customer_balance_val').text('0.00');
+        }).on('select2:unselect select2:clearing select2:clear change', function() {
+            if (!$(this).val()) {
+                $('#customer_balance_val').text('0.00');
+            }
         });
     }
 
