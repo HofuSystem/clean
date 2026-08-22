@@ -67,7 +67,7 @@ class WalletTransactionsService
         $recordsTotal       = $recordsTotalQuery->count();
         $recordsFiltered    = WalletTransaction::search()->count();
         $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','notes'])
-        ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price,value','order:id,reference_id'])
+        ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price,value','order:id,reference_id','orderTransaction.order:id,reference_id'])
         ->search()->dataTable()->get();
 
         return [
@@ -123,8 +123,8 @@ class WalletTransactionsService
             COALESCE(SUM(CASE WHEN (transaction_type IN ('charge', 'deposit', 'remaining_amount') OR package_id IS NOT NULL OR (type = 'deposit' AND (transaction_type IS NULL OR transaction_type NOT IN ('compensation_add', 'promotional_add', 'cashback', 'reward')))) THEN amount ELSE 0 END), 0) as total_recharge,
             COUNT(DISTINCT CASE WHEN (transaction_type IN ('charge', 'deposit', 'remaining_amount') OR package_id IS NOT NULL OR (type = 'deposit' AND (transaction_type IS NULL OR transaction_type NOT IN ('compensation_add', 'promotional_add', 'cashback', 'reward')))) THEN user_id ELSE NULL END) as recharge_users_count,
 
-            COALESCE(SUM(CASE WHEN (type = 'withdraw' OR transaction_type IN ('order_payment', 'withdraw')) THEN amount ELSE 0 END), 0) as total_paid_from_wallet,
-            COUNT(CASE WHEN (type = 'withdraw' OR transaction_type IN ('order_payment', 'withdraw')) THEN 1 ELSE NULL END) as paid_orders_count,
+            COALESCE(SUM(CASE WHEN (transaction_type = 'order_payment' OR (type = 'withdraw' AND (transaction_type IS NULL OR transaction_type NOT IN ('expiry_deduction', 'manual_admin_deduction')))) THEN amount ELSE 0 END), 0) as total_paid_from_wallet,
+            COUNT(CASE WHEN (transaction_type = 'order_payment' OR (type = 'withdraw' AND (transaction_type IS NULL OR transaction_type NOT IN ('expiry_deduction', 'manual_admin_deduction')))) THEN 1 ELSE NULL END) as paid_orders_count,
 
             COALESCE(SUM(CASE WHEN transaction_type IN ('promotional_add', 'cashback', 'reward') THEN amount ELSE 0 END), 0) as total_promotional,
             COUNT(DISTINCT CASE WHEN transaction_type IN ('promotional_add', 'cashback', 'reward') THEN user_id ELSE NULL END) as promo_users_count,

@@ -926,13 +926,14 @@ class OrdersService
             $order->wallet_amount_used    = ($data['wallet_amount_used']);
             $order->update();
             if ($data['status'] != 'pending_payment') {
-                $beforeWalletCharge           = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment"];
-                $user->walletTransactions()->create($beforeWalletCharge);
+                $beforeWalletCharge           = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
+                $walletModel                  = $user->walletTransactions()->create($beforeWalletCharge);
 
                 //add order transaction for wallet payment
                 $order->transactions()->create([
                     'type'                  => 'wallet',
                     'amount'                => $data['wallet_amount_used'],
+                    'wallet_transaction_id' => $walletModel->id,
                     'notes'                 => 'pay normal order wallet payment for order : ' . $order->reference_id,
                 ]);
             }
@@ -1122,7 +1123,7 @@ class OrdersService
         $walletUsed        = ToolHelper::getBooleanValue($data['wallet_used'] ?? false);
         if (($walletUsed == true and  $data['wallet_amount_used'] > 0) and $user->wallet >= $data['wallet_amount_used']) {
             $alreadyWalletPaid  += $data['wallet_amount_used'];
-            $beforeWalletCharge = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment"];
+            $beforeWalletCharge = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
             $walletModel        = $user->walletTransactions()->create($beforeWalletCharge);
             //add to the order transactions
             $order->transactions()->create([
@@ -1217,7 +1218,7 @@ class OrdersService
             }
             if ($walletUsedAmount > 0) {
                 //add to the wallet records
-                $beforeWalletCharge = ['amount' => $walletUsedAmount, 'type' => 'withdraw', 'added_by_id' => $order->client->id, 'status' => 'accepted', "transaction_type" => "order_payment"];
+                $beforeWalletCharge = ['amount' => $walletUsedAmount, 'type' => 'withdraw', 'added_by_id' => $order->client->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
                 $walletModel        = $order->client?->walletTransactions()->create($beforeWalletCharge);
 
                 //add to the order transactions

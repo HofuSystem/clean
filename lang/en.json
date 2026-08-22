@@ -5643,5 +5643,9 @@
     "شحن عرض": "Offer Recharge",
     "المدفوع": "Paid",
     "بونص": "Bonus",
-    "شحن محفظة": "Wallet Recharge"
+    "شحن محفظة": "Wallet Recharge",
+    "أرصدة ترويجية منتهية الصلاحية": "Expired Promotional Balances",
+    "انتهاء صلاحية رصيد ترويجي": "Promotional Balance Expiry",
+    "خصم آلي لانتهاء الصلاحية": "Automatic Expiry Deduction",
+    "انتهاء الصلاحية": "Expiry Deduction"
 }

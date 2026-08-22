@@ -60,6 +60,10 @@ class WalletTransactionsResource extends JsonResource
             $typeLabel = trans('شحن عرض');
             $badgeBg = '#e8f4fd';
             $badgeColor = '#0d6efd';
+        } elseif ($txType === 'expiry_deduction') {
+            $typeLabel = trans('أرصدة ترويجية منتهية الصلاحية');
+            $badgeBg = '#fff4e6';
+            $badgeColor = '#d97706';
         } elseif (in_array($txType, ['charge', 'deposit'])) {
             $typeLabel = trans('شحن محفظة');
             $badgeBg = '#e8f4fd';
@@ -84,6 +88,9 @@ class WalletTransactionsResource extends JsonResource
 
         $typeBadgeHtml = '<span class="badge" style="background-color:' . $badgeBg . '; color:' . $badgeColor . '; font-weight:600; padding:6px 12px; border-radius:6px; font-size:11px;">' . $typeLabel . '</span>';
 
+        // Lookup linked order
+        $order = $this->order ?: $this->orderTransaction?->order;
+
         // Transaction Details
         $mainTitle = '';
         $subTitleHtml = '';
@@ -101,7 +108,10 @@ class WalletTransactionsResource extends JsonResource
                 ' . ($bonus > 0 ? '<span class="fw-bold" style="color: #0bb783;">+' . number_format($bonus, 2) . ' ' . $sar . ' ' . trans('بونص') . '</span>' : '') . '
             </div>
             <span class="text-muted fs-8 d-block mt-1">' . e($paymentMethod) . '</span>';
-        } elseif ($this->order_id && $this->order) {
+        } elseif ($txType === 'expiry_deduction') {
+            $mainTitle = trans('انتهاء صلاحية رصيد ترويجي');
+            $subTitleHtml = '<span class="text-muted fs-8">' . trans('خصم آلي لانتهاء الصلاحية') . '</span>';
+        } elseif ($order || $this->order_id) {
             if ($this->type == 'deposit' || $txType == 'remaining_amount') {
                 $mainTitle = trans('إرجاع مبلغ طلب ملغي إلى المحفظة');
                 $subTitleHtml = '<span class="text-muted fs-8">' . trans('استرداد داخلي') . '</span>';
@@ -151,9 +161,9 @@ class WalletTransactionsResource extends JsonResource
 
         // Reference
         $refHtml = '-';
-        if ($this->order_id && $this->order) {
-            $orderUrl = route('dashboard.orders.show', $this->order->id);
-            $refHtml = '<a href="' . $orderUrl . '" class="badge bg-light text-primary border px-2 py-1 fs-8 fw-bold">' . e($this->order->reference_id) . '</a>';
+        if ($order) {
+            $orderUrl = route('dashboard.orders.show', $order->id);
+            $refHtml = '<a href="' . $orderUrl . '" class="badge bg-light text-primary border px-2 py-1 fs-8 fw-bold">' . e($order->reference_id) . '</a>';
         } elseif ($this->transaction_id) {
             $refHtml = '<div class="d-flex flex-column align-items-center">
                 <span class="badge bg-light text-dark border px-2 py-1 fs-8 fw-bold">' . e($this->transaction_id) . '</span>
@@ -164,7 +174,10 @@ class WalletTransactionsResource extends JsonResource
         }
 
         // Added By
-        if ($package || ($this->transaction_id && !$this->addedBy)) {
+        if ($txType === 'expiry_deduction') {
+            $addedByTitle = trans('آلي (النظام)');
+            $addedBySub = trans('انتهاء الصلاحية');
+        } elseif ($package || ($this->transaction_id && !$this->addedBy)) {
             $addedByTitle = trans('آلي (النظام)');
             $addedBySub = $this->bank_name ?: trans('بوابة الدفع');
         } elseif ($this->addedBy) {

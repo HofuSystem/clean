@@ -62,13 +62,19 @@ class WalletTransaction extends CoreModel {
                 });
             } elseif ($tab === 'payments') {
                 $query->where(function($q) {
-                    $q->whereIn("transaction_type", ["order_payment", "withdraw"])
-                      ->orWhere("type", "withdraw");
+                    $q->where('transaction_type', 'order_payment')
+                      ->orWhere(function($sub) {
+                          $sub->where('type', 'withdraw')
+                              ->where(function($w) {
+                                  $w->whereNull('transaction_type')
+                                    ->orWhereNotIn('transaction_type', ['expiry_deduction', 'manual_admin_deduction']);
+                              });
+                      });
                 });
             } elseif ($tab === 'compensations') {
                 $query->where("transaction_type", "compensation_add");
             } elseif ($tab === 'promotions') {
-                $query->whereIn("transaction_type", ["promotional_add", "cashback", "reward"]);
+                $query->whereIn("transaction_type", ["promotional_add", "cashback", "reward", "expiry_deduction"]);
             }
         }
 
@@ -181,6 +187,10 @@ class WalletTransaction extends CoreModel {
     //start relations
     public function order(){
         return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
+
+    public function orderTransaction(){
+        return $this->hasOne(\Core\Orders\Models\OrderTransaction::class, 'wallet_transaction_id', 'id');
     }
     
     public function user(){

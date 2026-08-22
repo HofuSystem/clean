@@ -96,8 +96,11 @@ class AddressesController extends Controller
      */
     public function destroy(Request $request,$id){
         try {
+            $user = Auth::user();
+            $address = Address::where('user_id', $user->id)->findOrFail($id);
+
             DB::beginTransaction();
-            $record             = $this->addressesService->delete($id,$request->final);
+            $record = $this->addressesService->delete($address->id,$request->final);
             DB::commit();
             return $this->returnSuccessMessage(trans('address deleted'));
         }catch(ValidationException $e){
