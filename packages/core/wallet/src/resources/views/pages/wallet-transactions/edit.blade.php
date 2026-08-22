@@ -35,7 +35,7 @@
     <div class="post d-flex flex-column-fluid" id="kt_post">
         <div id="kt_content_container" class="container-fluid">
             
-            <div class="card border-0 shadow-sm mx-auto" style="max-width: 760px; border-radius: 16px; overflow: hidden;">
+            <div class="card border-0 shadow-sm w-100" style="border-radius: 16px; overflow: hidden;">
                 
                 <!-- Card Header -->
                 <div class="card-header border-bottom-0 pt-6 px-6 px-md-8 d-flex justify-content-between align-items-center bg-transparent">
