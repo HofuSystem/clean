@@ -274,12 +274,16 @@ class UsersController extends Controller
         }
     }
     public function search(Request $request){
-        $query = $request->get('q');
-        $users = \Core\Users\Models\User::where(function($q) use ($query) {
-                $q->where('fullname', 'LIKE', "%{$query}%")
-                  ->orWhere('phone', 'LIKE', "%{$query}%")
-                  ->orWhere('email', 'LIKE', "%{$query}%");
+        $query = $request->get('q') ?? $request->get('term') ?? $request->get('search');
+        $users = \Core\Users\Models\User::active()->underMyControl()
+            ->when($query, function($q) use ($query) {
+                $q->where(function($sub) use ($query) {
+                    $sub->where('fullname', 'LIKE', "%{$query}%")
+                        ->orWhere('phone', 'LIKE', "%{$query}%")
+                        ->orWhere('email', 'LIKE', "%{$query}%");
+                });
             })
+            ->latest('id')
             ->limit(20)
             ->get(['id', 'fullname', 'phone', 'image']);
 
@@ -287,8 +291,8 @@ class UsersController extends Controller
             'results' => $users->map(function($user) {
                 return [
                     'id' => $user->id,
-                    'text' => $user->fullname . ' (' . $user->phone . ')',
-                    'image' => $user->avatar_url // Using the attribute from User model
+                    'text' => $user->fullname . ($user->phone ? ' (' . $user->phone . ')' : ''),
+                    'image' => $user->avatar_url ?? null
                 ];
             })
         ]);

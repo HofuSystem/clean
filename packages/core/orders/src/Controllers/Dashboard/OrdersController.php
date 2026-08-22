@@ -152,8 +152,8 @@ class OrdersController extends Controller
             })
             ->get();
         $orderItems             = $order->items;
-        $comments               = $order->comments()->where('parent_id',null)->get();
-        $contract               = Contract::forCompany($order->company_id)->currentActive()->first();
+        $comments               = $order->comments->whereNull('parent_id');
+        $contract               = $order->company_id ? Contract::forCompany($order->company_id)->currentActive()->first() : null;
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
         $categories             = DB::table('categories')
             ->join('category_translations', function ($join) {
@@ -175,6 +175,9 @@ class OrdersController extends Controller
             ->whereNotNull('categories.parent_id')
             ->where('categories.type', OrderHelper::getOrderType($order->type))
             ->get();
+        $categoryNames          = DB::table('category_translations')
+            ->where('locale', app()->getLocale())
+            ->pluck('name', 'category_id');
         $items                  = $order->items;
         $reportReasons          = DB::table('report_reasons')
             ->join('report_reason_translations', function ($join) {
@@ -199,7 +202,7 @@ class OrdersController extends Controller
         $editMode               = true;
         $hasSize                = [55];
         $allowedRepresentatives =  [];
-        $customerOrdersCount    = $order->client?->orders()?->count();
+        $customerOrdersCount    = $order->client_id ? DB::table('orders')->where('client_id', $order->client_id)->whereNull('deleted_at')->count() : 0;
         $customerTire           = OrderHelper::getCustomerTier($customerOrdersCount);
         $hasDeliveryRep         = $order->orderRepresentatives
             ->where('type', 'delivery')
@@ -220,8 +223,18 @@ class OrdersController extends Controller
         if($order->type == 'sales'){
             $allowedRepresentatives = ['delivery'];
         }
-        $orderHistories             = $order->histories;
-        return view('orders::pages.orders.edit', compact('order','title','screen','customerOrdersCount','customerTire','editMode','users','operators','allowedRepresentatives','orderItems','subCategories','categories','comments','products','items','reportReasons','hasSize','coupons','orderHistories') );
+        $orderHistories         = DB::table('order_histories')
+            ->where('order_id', $order->id)
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function ($h) {
+                $h->old_value = $h->old_value ? json_decode($h->old_value, true) : null;
+                $h->new_value = $h->new_value ? json_decode($h->new_value, true) : null;
+                $h->changed_by = $h->changed_by ? json_decode($h->changed_by, true) : null;
+                $h->created_at = $h->created_at ? \Carbon\Carbon::parse($h->created_at) : null;
+                return $h;
+            });
+        return view('orders::pages.orders.edit', compact('order','title','screen','customerOrdersCount','customerTire','editMode','users','operators','allowedRepresentatives','orderItems','subCategories','categories','categoryNames','comments','products','items','reportReasons','hasSize','coupons','orderHistories') );
     }
     public function changeStatus(ChangeStatusRequest $request,$id){
         try {

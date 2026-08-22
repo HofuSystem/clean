@@ -165,8 +165,9 @@ class OrderHistoryService
     /**
      * Log representative change
      */
-    public function logRepresentativeChange(int $orderId, string $type, $oldRepId, $newRepId, $oldRepName = null, $newRepName = null): OrderHistory
+    public function logRepresentativeChange(int $orderId, ?string $type, $oldRepId, $newRepId, $oldRepName = null, $newRepName = null): OrderHistory
     {
+        $type = $type ?? 'delivery';
         $notes = trans(':type representative changed from :old to :new', [
             'type' => trans($type,[],'ar'),
             'old' => $oldRepName ?? $oldRepId ?? 'لا يوجد',
@@ -185,8 +186,9 @@ class OrderHistoryService
     /**
      * Log representative date/time change
      */
-    public function logRepresentativeDateTimeChange(int $orderId, string $type, $oldDate, $newDate, $oldTime = null, $newTime = null): OrderHistory
+    public function logRepresentativeDateTimeChange(int $orderId, ?string $type, $oldDate, $newDate, $oldTime = null, $newTime = null): OrderHistory
     {
+        $type = $type ?? 'delivery';
         $notes = trans(':type representative schedule changed', ['type' => trans($type,[],'ar')],'ar');
         
         return $this->log(
@@ -201,8 +203,9 @@ class OrderHistoryService
     /**
      * Log representative location change
      */
-    public function logRepresentativeLocationChange(int $orderId, string $type, $oldLocation, $newLocation): OrderHistory
+    public function logRepresentativeLocationChange(int $orderId, ?string $type, $oldLocation, $newLocation): OrderHistory
     {
+        $type = $type ?? 'delivery';
         $notes = trans(':type representative location changed', ['type' => trans($type,[],'ar')],'ar');
         
         return $this->log(

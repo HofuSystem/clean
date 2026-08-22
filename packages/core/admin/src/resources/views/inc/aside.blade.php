@@ -27,7 +27,7 @@
                 @else
                     <!-- Dashboards -->
                     <li class="menu-item @if ($item['active']) active open @endif">
-                        <a href="{{ $item['url'] ?? 'javascript:void(0);' }} " @if(!empty($item['url']) and !str_contains($item['url'], 'cleanstation.app')) target="_blank" @endif
+                        <a href="{{ $item['url'] ?? 'javascript:void(0);' }} " @if(!empty($item['url']) && is_string($item['url']) && !str_contains($item['url'], 'cleanstation.app')) target="_blank" @endif
                             class="menu-link @if (isset($item['sub']) and !empty($item['sub'])) menu-toggle @endif">
                             <i class="{{ $item['icon'] ?? '' }} mx-2"></i>
                             <div data-i18n="{{ $item['titleLocale'] ?? '' }}">{{ $item['titleLocale'] ?? '' }}</div>
@@ -37,7 +37,7 @@
                                 @foreach ($item['sub'] as $sub_item)
                                     @can($sub_item['permission'] ?? null)
                                         <li class="menu-item @if ($sub_item['active']) active @endif">
-                                            <a href="{{ $sub_item['url'] ?? '' }}" class="menu-link" @if(!empty($sub_item['url']) and !str_contains($sub_item['url'], 'cleanstation.app')) target="_blank" @endif>
+                                            <a href="{{ $sub_item['url'] ?? '' }}" class="menu-link" @if(!empty($sub_item['url']) && is_string($sub_item['url']) && !str_contains($sub_item['url'], 'cleanstation.app')) target="_blank" @endif>
                                                 <div data-i18n="{{ $sub_item['titleLocale'] ?? '' }}">
                                                     {{ $sub_item['titleLocale'] ?? '' }}
                                                 </div>

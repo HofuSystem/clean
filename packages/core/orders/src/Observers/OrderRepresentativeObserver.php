@@ -90,6 +90,7 @@ class OrderRepresentativeObserver
         if(isset($order)){
              // Check for representative change
              $orderHistoryService = app(OrderHistoryService::class);
+             $repType = $orderRepresentative->type ?? $orderRepresentative->getOriginal('type') ?? 'delivery';
              if ($orderRepresentative->isDirty('representative_id')) {
                 $oldRepId = $orderRepresentative->getOriginal('representative_id');
                 $newRepId = $orderRepresentative->representative_id;
@@ -97,7 +98,7 @@ class OrderRepresentativeObserver
                 $oldRep = User::find($oldRepId);
                 $orderHistoryService->logRepresentativeChange(
                     $orderRepresentative->order_id,
-                    $orderRepresentative->type,
+                    $repType,
                     $orderRepresentative->getOriginal('representative_id'),
                     $orderRepresentative->representative_id,
                     $oldRep?->fullname ?? $oldRep?->email ?? null,
@@ -109,7 +110,7 @@ class OrderRepresentativeObserver
             if ($orderRepresentative->isDirty('date') || $orderRepresentative->isDirty('time') || $orderRepresentative->isDirty('to_time')) {
                 $orderHistoryService->logRepresentativeDateTimeChange(
                     $orderRepresentative->order_id,
-                    $orderRepresentative->type,
+                    $repType,
                     $orderRepresentative->getOriginal('date'),
                     $orderRepresentative->date,
                     $orderRepresentative->getOriginal('time') . ($orderRepresentative->getOriginal('to_time') ? ' - ' . $orderRepresentative->getOriginal('to_time') : ''),
@@ -121,7 +122,7 @@ class OrderRepresentativeObserver
             if ($orderRepresentative->isDirty('location') || $orderRepresentative->isDirty('lat') || $orderRepresentative->isDirty('lng')) {
                 $orderHistoryService->logRepresentativeLocationChange(
                     $orderRepresentative->order_id,
-                    $orderRepresentative->type,
+                    $repType,
                     $orderRepresentative->getOriginal('location') ?? "({$orderRepresentative->getOriginal('lat')}, {$orderRepresentative->getOriginal('lng')})",
                     $orderRepresentative->location ?? "({$orderRepresentative->lat}, {$orderRepresentative->lng})"
                 );

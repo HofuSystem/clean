@@ -53,11 +53,13 @@
 
                             <div class="form-group mb-3 col-md-6">
                                 <label for="user_id">{{ trans("User") }}</label>
-                                <select class="custom-select form-select advance-select" name="user_id" id="user_id">
+                                <select class="custom-select form-select" name="user_id" id="user_id" data-placeholder="{{ trans('select user') }}">
                                     <option value="">{{ trans("select user") }}</option>
-                                    @foreach($users ?? [] as $user)
-                                        <option value="{{ $user->id }}" @selected(isset($item) && $item->user_id == $user->id)>{{ $user->fullname }}</option>
-                                    @endforeach
+                                    @if(isset($item) && $item->user)
+                                        <option value="{{ $item->user->id }}" selected>{{ $item->user->fullname }} @if($item->user->phone) ({{ $item->user->phone }}) @endif</option>
+                                    @elseif(old('user_id') && ($selectedUser = \Core\Users\Models\User::find(old('user_id'))))
+                                        <option value="{{ $selectedUser->id }}" selected>{{ $selectedUser->fullname }} @if($selectedUser->phone) ({{ $selectedUser->phone }}) @endif</option>
+                                    @endif
                                 </select>
                             </div>
 
@@ -156,9 +158,41 @@
     <script src="{{ asset('control') }}/js/custom/crud/form.js"></script>
     <script>
         $(document).ready(function() {
+            var select2Lang = $('html').attr('lang') === 'ar' ? {
+                noResults: function () { return "لا توجد نتائج"; },
+                searching: function () { return "جاري البحث..."; },
+                inputTooShort: function () { return "الرجاء كتابة حرف أو أكثر للبحث"; },
+                inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+            } : {};
+
+            $('#user_id').select2({
+                placeholder: "{{ trans('select user') }}",
+                allowClear: true,
+                width: '100%',
+                language: select2Lang,
+                minimumInputLength: 1,
+                ajax: {
+                    url: "{{ route('dashboard.users.search') }}",
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                }
+            });
+
             $('#company_id').on('change', function() {
                 if ($(this).val()) {
-                    $('#user_id').val('').trigger('change.select2');
+                    $('#user_id').val(null).trigger('change');
                 }
             });
             $('#user_id').on('change', function() {

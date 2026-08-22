@@ -7083,5 +7083,15 @@
     "Receiver Count": "عدد طلبات الاستلام",
     "RECEIVER COUNT": "عدد طلبات الاستلام",
     "select an option": "اختر من القائمة",
-    "Please fill all fields": "يرجى ملء جميع الحقول"
+    "Please fill all fields": "يرجى ملء جميع الحقول",
+    "Perfume": "تعطير الملابس",
+    "Starch Level": "مستوى النشا",
+    "none": "بدون",
+    "light": "خفيف",
+    "medium": "متوسط",
+    "heavy": "ثقيل",
+    "None": "بدون",
+    "Light": "خفيف",
+    "Medium": "متوسط",
+    "Heavy": "ثقيل"
 }

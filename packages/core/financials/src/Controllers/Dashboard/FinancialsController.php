@@ -26,9 +26,8 @@ class FinancialsController extends Controller
         $total = $this->financialsService->totalCount();
         $trash = $this->financialsService->trashCount();
         $companies = Company::underMyControl()->get(['id', 'fullname']);
-        $users = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
 
-        return view('financials::pages.financials.list', compact('title', 'screen', 'companies', 'users', 'total', 'trash'));
+        return view('financials::pages.financials.list', compact('title', 'screen', 'companies', 'total', 'trash'));
     }
 
     public function createOrEdit(Request $request, $id = null)
@@ -37,9 +36,8 @@ class FinancialsController extends Controller
         $screen = isset($item) ? 'financials-edit' : 'financials-create';
         $title = isset($item) ? trans("Financial Edit") : trans("Financial Create");
         $companies = Company::underMyControl()->get(['id', 'fullname']);
-        $users = \Core\Users\Models\User::active()->underMyControl()->get(['id', 'fullname']);
 
-        return view('financials::pages.financials.edit', compact('item', 'title', 'screen', 'companies', 'users'));
+        return view('financials::pages.financials.edit', compact('item', 'title', 'screen', 'companies'));
     }
 
     public function show($id)

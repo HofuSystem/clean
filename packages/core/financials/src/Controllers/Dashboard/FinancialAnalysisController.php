@@ -30,7 +30,7 @@ class FinancialAnalysisController extends Controller
         // Fetch monthly analysis from service
         $monthlyAnalysis = $this->financialAnalysisService->getMonthlyFinancialAnalysis($year, $cityId, $companyType);
 
-        $cities = City::get();
+        $cities = app(\Core\Info\Services\CitiesService::class)->selectable('id', 'name');
 
         return view('financials::pages.financial-analysis', compact(
             'title',
@@ -54,7 +54,7 @@ class FinancialAnalysisController extends Controller
         // Fetch daily analysis from service
         $dailyAnalysis = $this->financialAnalysisService->getDailyFinancialAnalysis($year, $month, $cityId, $companyType);
 
-        $cities = City::get();
+        $cities = app(\Core\Info\Services\CitiesService::class)->selectable('id', 'name');
         $monthName = date('F', mktime(0, 0, 0, (int)$month, 1));
 
         return view('financials::pages.financial-analysis-daily', compact(

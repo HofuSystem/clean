@@ -28,6 +28,10 @@ class OrderRepresentativesService
     public function storeOrUpdate(array $data = [],$id = null){
         $recordData = array_filter($data,fn($key) => in_array($key, ['order_id','representative_id','type','date','time','to_time','lat','lng','location','has_problem','for_all_items','translations']),ARRAY_FILTER_USE_KEY);
         
+        if (isset($id) && (empty($recordData['type']) || is_null($recordData['type']))) {
+            unset($recordData['type']);
+        }
+        
         // Get old record if updating
         $oldRecord = $id ? OrderRepresentative::find($id) : null;
         

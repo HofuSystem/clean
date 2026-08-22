@@ -10,15 +10,17 @@ class NationalitiesService
 {
     public function __construct(protected CommentingService $commentingService){}
 
-    public function selectable(string $key,string $value){
-        $selected = ['id'];
-        if(!in_array($key,["name"])){
-            $selected[] = $key;
-        }
-        if(!in_array($value,["name"])){
-            $selected[] = $value;
-        }
-        return Nationality::select($selected)->get();
+    public function selectable(string $key = 'id', string $value = 'name'){
+        $locale = app()->getLocale();
+        return \Illuminate\Support\Facades\DB::table('nationalities')
+            ->join('nationality_translations', function($join) use ($locale) {
+                $join->on('nationalities.id', '=', 'nationality_translations.nationality_id')
+                     ->where('nationality_translations.locale', '=', $locale);
+            })
+            ->whereNull('nationalities.deleted_at')
+            ->select('nationalities.id', 'nationality_translations.name')
+            ->orderBy('nationality_translations.name', 'asc')
+            ->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){

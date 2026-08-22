@@ -116,11 +116,11 @@
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="user_id" class="form-label">@lang("User")</label>
-                                        <select class="custom-select filter-input form-select advance-select" name="user_id" id="user_id">
+                                        <select class="custom-select filter-input form-select" name="user_id" id="user_id" data-placeholder="@lang('select user')">
                                             <option value="">@lang("select user")</option>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id }}" @selected($user->id == request("user_id"))>{{ $user->fullname }}</option>
-                                            @endforeach
+                                            @if(request('user_id') && ($selectedUser = \Core\Users\Models\User::find(request('user_id'))))
+                                                <option value="{{ $selectedUser->id }}" selected>{{ $selectedUser->fullname }} @if($selectedUser->phone) ({{ $selectedUser->phone }}) @endif</option>
+                                            @endif
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-3">
@@ -190,6 +190,44 @@
 @endsection
 @push('js')
 <script>
-    var deleteUrl = "{{ route('dashboard.financials.delete', ['id' => '%s', 'trash' => request()->trash]) }}"
+    var deleteUrl = "{{ route('dashboard.financials.delete', ['id' => '%s', 'trash' => request()->trash]) }}";
+
+    $(document).ready(function() {
+        var select2Lang = $('html').attr('lang') === 'ar' ? {
+            noResults: function () { return "لا توجد نتائج"; },
+            searching: function () { return "جاري البحث..."; },
+            inputTooShort: function () { return "الرجاء كتابة حرف أو أكثر للبحث"; },
+            inputTooLong: function () { return "الرجاء تقليل عدد الحروف"; }
+        } : {};
+
+        $('#user_id').select2({
+            placeholder: "@lang('select user')",
+            allowClear: true,
+            width: '100%',
+            language: select2Lang,
+            minimumInputLength: 1,
+            ajax: {
+                url: "{{ route('dashboard.users.search') }}",
+                dataType: 'json',
+                delay: 300,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.results
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('[data-kt-user-table-filter="reset"]').on('click', function() {
+            $('#user_id').val(null).trigger('change');
+        });
+    });
 </script>
 @endpush

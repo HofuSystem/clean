@@ -43,14 +43,16 @@ Route::group(
         Route::view('/allInfo', 'allInfo')->name('allInfo');
         Route::get('sitemap.xml', [PageController::class , 'siteMap']);
         Route::post('/newsletter', function () {
+            $data = request()->validate([
+                'email' => 'required|email|max:255',
+            ]);
             DB::table('news_letters')
                 ->updateOrInsert(
-            ['email' => request('email')],
-            ['updated_at' => now(), 'created_at' => now()]
-            );
-            return redirect()->back()->with('success', 'Thank you for subscribing to our newsletter');
-        }
-        )->name('newsletter');
+                    ['email' => $data['email']],
+                    ['updated_at' => now(), 'created_at' => now()]
+                );
+            return redirect()->back()->with('success', trans('Thank you for subscribing to our newsletter'));
+        })->name('newsletter');
 
 
 

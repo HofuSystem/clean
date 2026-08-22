@@ -608,11 +608,19 @@ class Order extends CoreModel
     }
     public function getAddressAttribute()
     {
+        if ($this->relationLoaded('orderRepresentatives')) {
+            $rep = $this->orderRepresentatives->first(fn($r) => $r->address !== null);
+            return $rep?->address;
+        }
         $rep = $this->orderRepresentatives()->whereHas('address')->first();
         return $rep?->address;
     }
     public function getAddressDescriptionAttribute()
     {
+        if ($this->relationLoaded('orderRepresentatives')) {
+            $rep = $this->orderRepresentatives->first(fn($r) => !empty($r->address?->description));
+            return $rep?->address?->description;
+        }
         $rep = $this->orderRepresentatives()->whereHas('address', function ($addressQuery) {
             $addressQuery->whereNotNull('description');
         })->first();
@@ -650,6 +658,22 @@ class Order extends CoreModel
     public function getOrderTrackingAttribute()
     {
        return OrderHelper::orderStatusTimes($this);
+    }
+    public function setStarchLevelAttribute($value)
+    {
+        $val = is_string($value) ? trim($value) : $value;
+        if (empty($val) || $val === 'null') {
+            $this->attributes['starch_level'] = 'none';
+        } else {
+            $this->attributes['starch_level'] = $val;
+        }
+    }
+    public function getStarchLevelAttribute($value)
+    {
+        if (empty($value) || $value === 'null') {
+            return 'none';
+        }
+        return $value;
     }
     //end Attributes
     protected static function booted()

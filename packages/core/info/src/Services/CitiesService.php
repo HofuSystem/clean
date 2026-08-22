@@ -11,15 +11,17 @@ class CitiesService
 {
     public function __construct(protected CommentingService $commentingService,protected DistrictsService $districtsService){}
 
-    public function selectable(string $key,string $value){
-        $selected = ['id'];
-        if(!in_array($key,["name"])){
-            $selected[] = $key;
-        }
-        if(!in_array($value,["name"])){
-            $selected[] = $value;
-        }
-        return City::select($selected)->with('translations')->get();
+    public function selectable(string $key = 'id', string $value = 'name'){
+        $locale = app()->getLocale();
+        return \Illuminate\Support\Facades\DB::table('cities')
+            ->join('city_translations', function($join) use ($locale) {
+                $join->on('cities.id', '=', 'city_translations.city_id')
+                     ->where('city_translations.locale', '=', $locale);
+            })
+            ->whereNull('cities.deleted_at')
+            ->select('cities.id', 'city_translations.name')
+            ->orderBy('city_translations.name', 'asc')
+            ->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){

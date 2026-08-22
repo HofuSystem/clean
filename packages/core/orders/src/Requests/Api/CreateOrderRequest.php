@@ -37,6 +37,16 @@ class CreateOrderRequest extends FormRequest
         }
       }
     }
+
+    if ($this->has('starch_level')) {
+      $starch = is_string($this->input('starch_level')) ? trim($this->input('starch_level')) : $this->input('starch_level');
+      if (empty($starch) || $starch === 'null') {
+        $merge['starch_level'] = 'none';
+      }
+    } else {
+      $merge['starch_level'] = 'none';
+    }
+
     if (!empty($merge)) {
       $this->merge($merge);
     }

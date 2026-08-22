@@ -12,15 +12,16 @@ class RolesService
 {
     public function __construct(protected CommentingService $commentingService){}
 
-    public function selectable(string $key,string $value){
-        $selected = ['id'];
-        if(!in_array($key,["title"])){
-            $selected[] = $key;
-        }
-        if(!in_array($value,["title"])){
-            $selected[] = $value;
-        }
-        return Role::select($selected)->get();
+    public function selectable(string $key = 'id', string $value = 'title'){
+        $locale = app()->getLocale();
+        return \Illuminate\Support\Facades\DB::table('roles')
+            ->leftJoin('role_translations', function($join) use ($locale) {
+                $join->on('roles.id', '=', 'role_translations.role_id')
+                     ->where('role_translations.locale', '=', $locale);
+            })
+            ->whereNull('roles.deleted_at')
+            ->select('roles.id', 'roles.name', \Illuminate\Support\Facades\DB::raw('COALESCE(role_translations.title, roles.name) as title'))
+            ->get();
     }
 
     public function storeOrUpdate(array $data = [],$id = null){

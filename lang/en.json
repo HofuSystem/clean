@@ -5574,5 +5574,15 @@
     "RECEIVER COUNT": "Receiver Count",
     "Select an option": "Select an option",
     "select an option": "Select an option",
-    "Please fill all fields": "Please fill all fields"
+    "Please fill all fields": "Please fill all fields",
+    "Perfume": "Perfume",
+    "Starch Level": "Starch Level",
+    "none": "None",
+    "light": "Light",
+    "medium": "Medium",
+    "heavy": "Heavy",
+    "None": "None",
+    "Light": "Light",
+    "Medium": "Medium",
+    "Heavy": "Heavy"
 }

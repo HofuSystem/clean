@@ -63,6 +63,18 @@ class PurchaseProvidersService
         ];
     }
 
+    public function getCounts()
+    {
+        $counts = PurchaseProvider::withoutGlobalScopes()
+            ->selectRaw('SUM(CASE WHEN deleted_at IS NULL THEN 1 ELSE 0 END) as total, SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) as trash')
+            ->first();
+
+        return [
+            'total' => (int) ($counts->total ?? 0),
+            'trash' => (int) ($counts->trash ?? 0),
+        ];
+    }
+
     public function totalCount()
     {
         return PurchaseProvider::count();

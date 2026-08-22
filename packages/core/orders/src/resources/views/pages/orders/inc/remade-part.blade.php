@@ -253,12 +253,12 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             </td>
                             <td>{{ $item?->product?->category?->name ??
                                 (isset(json_decode($item->product_data)->category_id) ?
-                                Core\Categories\Models\Category::whereId(json_decode($item->product_data)->category_id)->first()?->name
+                                ($categoryNames[json_decode($item->product_data)->category_id] ?? '')
                                 : '') }}
                             </td>
                             <td>{{ $item?->product?->subCategory?->name ??
                                 (isset(json_decode($item->product_data)->sub_category_id) ?
-                                Core\Categories\Models\Category::whereId(json_decode($item->product_data)->sub_category_id)->first()?->name
+                                ($categoryNames[json_decode($item->product_data)->sub_category_id] ?? '')
                                 : '') }}
                             </td>
                             <td>{{ trans('SAR') }} {{ $item->product_price }}</td>

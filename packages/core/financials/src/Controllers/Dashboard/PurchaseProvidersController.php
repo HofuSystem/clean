@@ -29,8 +29,9 @@ class PurchaseProvidersController extends Controller
     public function index(){
         $title      = trans('Purchase providers index');
         $screen     = 'purchase-providers-index';
-        $total      = $this->purchaseProvidersService->totalCount();
-        $trash      = $this->purchaseProvidersService->trashCount();
+        $counts     = $this->purchaseProvidersService->getCounts();
+        $total      = $counts['total'];
+        $trash      = $counts['trash'];
         
         $cities = $this->citiesService->selectable('id','name');
         $districts = $this->districtsService->selectable('id','name');

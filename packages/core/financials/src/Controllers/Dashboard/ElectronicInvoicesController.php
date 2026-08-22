@@ -30,18 +30,29 @@ class ElectronicInvoicesController extends Controller
         $title = trans('Electronic Invoices');
         $screen = 'electronic-invoices-index';
 
-        // Summary counts (for cards) - Approximate global totals
-        $countB2B = Invoice::where('type', 'B2B')->count();
-        $countB2C = Invoice::where('type', 'B2C')->count();
-        $countCredit = Financial::where('type', 'owed')->count();
-        
-        $totalInvoices = Invoice::sum('total');
-        $totalCredit = Financial::where('type', 'owed')->sum('amount');
-        
+        $invoicesStats = Invoice::selectRaw("
+            SUM(CASE WHEN type = 'B2B' THEN 1 ELSE 0 END) as count_b2b,
+            SUM(CASE WHEN type = 'B2C' THEN 1 ELSE 0 END) as count_b2c,
+            SUM(total) as total_invoices,
+            SUM(vat_amount) as vat_invoices
+        ")->first();
+
+        $creditStats = Financial::where('type', 'owed')
+            ->selectRaw("
+                COUNT(*) as count_credit,
+                SUM(amount) as total_credit
+            ")->first();
+
+        $countB2B = (int) ($invoicesStats->count_b2b ?? 0);
+        $countB2C = (int) ($invoicesStats->count_b2c ?? 0);
+        $countCredit = (int) ($creditStats->count_credit ?? 0);
+
+        $totalInvoices = (float) ($invoicesStats->total_invoices ?? 0);
+        $totalCredit = (float) ($creditStats->total_credit ?? 0);
         $totalIncludingTax = $totalInvoices - $totalCredit;
-        
-        $vatInvoices = Invoice::sum('vat_amount');
-        $vatCredit = Financial::where('type', 'owed')->get()->sum('amount');
+
+        $vatInvoices = (float) ($invoicesStats->vat_invoices ?? 0);
+        $vatCredit = $totalCredit;
         $totalVat = $vatInvoices - $vatCredit;
 
         return view('financials::pages.electronic-invoices.index', compact(
@@ -153,6 +164,7 @@ class ElectronicInvoicesController extends Controller
         return redirect()->route('dashboard.electronic-invoices.show', $invoice->id)
                          ->with('success', trans('Taxable invoice generated successfully'));
     }
+
     /**
      * Display the ZATCA Tax Declaration Report.
      */
@@ -162,45 +174,50 @@ class ElectronicInvoicesController extends Controller
         $title = trans('Tax Declaration') . ' - ' . $year;
         $screen = 'electronic-invoices-declaration';
 
-        // Helper to get totals for a date range
+        // Helper to get totals for a date range using direct SQL aggregate queries (0 Eloquent hydration)
         $getTotals = function($startDate, $endDate) {
-            $invoices = Invoice::whereBetween('filed_at', [$startDate, $endDate])->get();
-            
-            $b2c = $invoices->where('type', 'B2C');
-            $b2b = $invoices->where('type', 'B2B');
-            
+            $invoices = Invoice::whereBetween('filed_at', [$startDate, $endDate])
+                ->selectRaw("
+                    SUM(CASE WHEN type = 'B2C' THEN subtotal ELSE 0 END) as b2c_sales,
+                    SUM(CASE WHEN type = 'B2C' THEN vat_amount ELSE 0 END) as b2c_vat,
+                    SUM(CASE WHEN type = 'B2B' THEN subtotal ELSE 0 END) as b2b_sales,
+                    SUM(CASE WHEN type = 'B2B' THEN vat_amount ELSE 0 END) as b2b_vat
+                ")
+                ->first();
+
+            $b2cSales = (float) ($invoices->b2c_sales ?? 0);
+            $b2cVat   = (float) ($invoices->b2c_vat ?? 0);
+            $b2bSales = (float) ($invoices->b2b_sales ?? 0);
+            $b2bVat   = (float) ($invoices->b2b_vat ?? 0);
+
             // Adjustments (Credit Notes)
-            $adjustments = Financial::where('type', 'owed')
+            $adjAmount = (float) Financial::where('type', 'owed')
                 ->whereBetween('collection_date', [$startDate, $endDate])
-                ->get();
-            
-            // Purchases (Domestic Purchases)
-            $purchases = Purchase::whereBetween('collection_date', [$startDate, $endDate])->get();
-            
-            $b2cSales = $b2c->sum('subtotal');
-            $b2cVat = $b2c->sum('vat_amount');
-            
-            $b2bSales = $b2b->sum('subtotal');
-            $b2bVat = $b2b->sum('vat_amount');
-            
-            $adjAmount = $adjustments->sum('amount');
+                ->sum('amount');
             $adjVat = $adjAmount * 0.15;
-            
-            $purchasesAmount = $purchases->sum('value_before_tax');
-            $purchasesVat = $purchases->sum('tax_value');
-        
-            
+
+            // Purchases (Domestic Purchases)
+            $purchases = Purchase::whereBetween('collection_date', [$startDate, $endDate])
+                ->selectRaw("
+                    SUM(value_before_tax) as purchases_amount,
+                    SUM(tax_value) as purchases_vat
+                ")
+                ->first();
+
+            $purchasesAmount = (float) ($purchases->purchases_amount ?? 0);
+            $purchasesVat    = (float) ($purchases->purchases_vat ?? 0);
+
             return [
-                'b2c_sales' => $b2cSales,
-                'b2c_vat' => $b2cVat,
-                'b2b_sales' => $b2bSales,
-                'b2b_vat' => $b2bVat,
-                'net_vat' => $b2cVat + $b2bVat,
-                'adj_amount' => $adjAmount,
-                'adj_vat' => $adjVat,
-                'net_sales' => $b2cSales + $b2bSales,
+                'b2c_sales'        => $b2cSales,
+                'b2c_vat'          => $b2cVat,
+                'b2b_sales'        => $b2bSales,
+                'b2b_vat'          => $b2bVat,
+                'net_vat'          => $b2cVat + $b2bVat,
+                'adj_amount'       => $adjAmount,
+                'adj_vat'          => $adjVat,
+                'net_sales'        => $b2cSales + $b2bSales,
                 'purchases_amount' => $purchasesAmount,
-                'purchases_vat' => $purchasesVat,
+                'purchases_vat'    => $purchasesVat,
             ];
         };
 
@@ -208,32 +225,45 @@ class ElectronicInvoicesController extends Controller
         for ($q = 1; $q <= 4; $q++) {
             $start = \Carbon\Carbon::create($year, ($q - 1) * 3 + 1, 1)->startOfDay();
             $end = $start->copy()->addMonths(3)->subSecond();
-            
+
             if ($start->isFuture()) {
                 $quarters[$q] = null;
                 continue;
             }
-            
+
             $quarters[$q] = $getTotals($start, $end);
             $quarters[$q]['due_date'] = $end->format('j F');
         }
 
         // Summary for current quarter or last active one
-        $currentQ = ceil(date('n') / 3);
+        $currentQ = (int) ceil(date('n') / 3);
         $summary = $quarters[$currentQ] ?? $quarters[count(array_filter($quarters)) ?: 1];
 
         // System Totals
         $actualCurrentYear = date('Y');
-        $actualCurrentQ = ceil(date('n') / 3);
-        $currentQStart = \Carbon\Carbon::create($actualCurrentYear, ($actualCurrentQ - 1) * 3 + 1, 1)->startOfDay();
-        $currentQEnd = $currentQStart->copy()->addMonths(3)->subSecond();
-        
-        $currentQTotals = $getTotals($currentQStart, $currentQEnd);
+        $actualCurrentQ = (int) ceil(date('n') / 3);
+
+        if ($year == $actualCurrentYear && isset($quarters[$actualCurrentQ]) && $quarters[$actualCurrentQ] !== null) {
+            $currentQTotals = $quarters[$actualCurrentQ];
+        } else {
+            $currentQStart = \Carbon\Carbon::create($actualCurrentYear, ($actualCurrentQ - 1) * 3 + 1, 1)->startOfDay();
+            $currentQEnd = $currentQStart->copy()->addMonths(3)->subSecond();
+            $currentQTotals = $getTotals($currentQStart, $currentQEnd);
+        }
+
+        $invoicesOverall = Invoice::selectRaw("
+            SUM(vat_amount) as total_vat,
+            SUM(CASE WHEN type = 'B2B' THEN subtotal ELSE 0 END) as total_b2b_sales,
+            SUM(CASE WHEN type = 'B2C' THEN subtotal ELSE 0 END) as total_b2c_sales
+        ")->first();
+
+        $totalPurchasesVat = (float) Purchase::sum('tax_value');
+
         $systemTotals = [
-            'current_quarter_vat' => $currentQTotals['net_vat'] - ($currentQTotals['purchases_vat'] ?? 0),
-            'total_vat_overall' => Invoice::sum('vat_amount') - Purchase::sum('tax_value'),
-            'total_b2b_sales' => Invoice::where('type', 'B2B')->sum('subtotal'),
-            'total_b2c_sales' => Invoice::where('type', 'B2C')->sum('subtotal'),
+            'current_quarter_vat' => ($currentQTotals['net_vat'] ?? 0) - ($currentQTotals['purchases_vat'] ?? 0),
+            'total_vat_overall'   => (float) ($invoicesOverall->total_vat ?? 0) - $totalPurchasesVat,
+            'total_b2b_sales'     => (float) ($invoicesOverall->total_b2b_sales ?? 0),
+            'total_b2c_sales'     => (float) ($invoicesOverall->total_b2c_sales ?? 0),
         ];
 
         return view('financials::pages.electronic-invoices.declaration', compact(
