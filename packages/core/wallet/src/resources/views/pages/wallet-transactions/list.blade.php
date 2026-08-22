@@ -20,9 +20,9 @@
         <!-- Left: Action Button & Period Selector -->
         <div class="d-flex flex-column align-items-end gap-2 position-relative">
             @can('dashboard.wallet-transactions.create')
-                <a href="{{ route('dashboard.wallet-transactions.create') }}" class="btn text-white fw-bold px-4 py-2" style="background-color: #244b7d; border-radius: 8px; font-size: 14px;">
+                <button type="button" class="btn text-white fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#wallet-adjustment-modal" style="background-color: #244b7d; border-radius: 8px; font-size: 14px;">
                     <span class="me-1 fw-bolder">+</span> {{ trans('Add / Deduct Balance') }}
-                </a>
+                </button>
             @endcan
 
             <!-- Period dropdown -->
@@ -628,4 +628,5 @@
         }
     });
 </script>
+@include('wallet::pages.wallet-transactions.modal')
 @endpush

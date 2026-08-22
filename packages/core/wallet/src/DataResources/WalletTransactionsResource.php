@@ -199,9 +199,13 @@ class WalletTransactionsResource extends JsonResource
 
         // Actions
         $showUrl = route('dashboard.wallet-transactions.show', $this->id);
-        $actionsHtml = '<div class="d-flex justify-content-center">
-            <a href="' . $showUrl . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" title="' . trans('Show') . '">
+        $editUrl = route('dashboard.wallet-transactions.edit', $this->id);
+        $actionsHtml = '<div class="d-flex justify-content-center align-items-center gap-1">
+            <a href="' . $showUrl . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" title="' . trans('Show') . '">
                 <i class="fa fa-eye text-primary"></i>
+            </a>
+            <a href="' . $editUrl . '" class="btn btn-icon btn-bg-light btn-active-color-success btn-sm" title="' . trans('Edit') . '">
+                <i class="fa fa-edit text-success"></i>
             </a>
         </div>';
 

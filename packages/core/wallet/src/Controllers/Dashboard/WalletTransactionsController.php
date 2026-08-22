@@ -50,6 +50,45 @@ class WalletTransactionsController extends Controller
         return response()->json($stats);
     }
 
+    public function searchUsers(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+        $users = DB::table('users')
+            ->whereNull('deleted_at')
+            ->when($q, function($query) use ($q) {
+                $query->where(function($sub) use ($q) {
+                    $sub->where('fullname', 'LIKE', "%{$q}%")
+                        ->orWhere('phone', 'LIKE', "%{$q}%")
+                        ->orWhere('email', 'LIKE', "%{$q}%");
+                });
+            })
+            ->select('id', 'fullname', 'phone', 'email', 'wallet')
+            ->orderBy('id', 'desc')
+            ->limit(40)
+            ->get()
+            ->map(function($u) {
+                $display = $u->fullname ?: 'بدون اسم';
+                if ($u->phone) {
+                    $display .= ' (' . $u->phone . ')';
+                } elseif ($u->email) {
+                    $display .= ' (' . $u->email . ')';
+                }
+                return [
+                    'id' => $u->id,
+                    'text' => $display,
+                    'wallet' => (float) $u->wallet
+                ];
+            });
+
+        return response()->json(['results' => $users]);
+    }
+
+    public function userBalance($id)
+    {
+        $wallet = (float) DB::table('users')->where('id', $id)->value('wallet');
+        return response()->json(['wallet' => $wallet]);
+    }
+
 
     public function createOrEdit(Request $request,$id = null){
         $item       = isset($id)    ? $this->walletTransactionsService->get($id) : null;

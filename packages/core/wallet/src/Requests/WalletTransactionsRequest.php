@@ -21,6 +21,16 @@ class WalletTransactionsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->has('order_reference') && !empty($this->order_reference)) {
+            $orderId = \Core\Orders\Models\Order::where('reference_id', trim($this->order_reference))->value('id');
+            if ($orderId) {
+                $this->merge(['order_id' => $orderId]);
+            }
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,18 +40,20 @@ class WalletTransactionsRequest extends FormRequest
     {
       return [ 
 			 "type"            =>  ['required','in:deposit,withdraw'], 
-			 "amount"          =>  ['required','numeric'], 
+			 "amount"          =>  ['required','numeric','min:0.01'], 
 			 "transaction_id"  =>  ['nullable','string'], 
 			 "bank_name"       =>  ['nullable','string'], 
 			 "account_number"  =>  ['nullable','string'], 
 			 "iban_number"     =>  ['nullable','string'], 
-			 "user_id"         =>  ['nullable','exists:users,id'], 
+			 "user_id"         =>  ['required','exists:users,id'], 
 			 "added_by_id"     =>  ['nullable','exists:users,id'], 
 			 "transaction_type" => ['nullable','string'],
 			 "notes"           =>  ['nullable','string'],
 			 "order_id"        =>  ['nullable','exists:orders,id'],
+			 "order_reference" =>  ['nullable','string'],
 			 "package_id"      =>  ['nullable','exists:wallet_packages,id'], 
 			 "expired_at"      =>  ['nullable','date'], 
+			 "send_notification" => ['nullable'],
 			]; 
 
     }

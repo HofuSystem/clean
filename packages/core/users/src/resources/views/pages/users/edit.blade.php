@@ -422,13 +422,13 @@
                                 </div>
                                 <div class="tab-pane fade" id="pills-contact" role="tabpanel"
                                     aria-labelledby="pills-contact-tab" tabindex="0">
-                                    <div class="mt-3  ">
-                                        <div class="items-container mb-3" data-items-on = "user_id"
-                                            data-items-name = "walletTransactions" data-items-from ="wallet-transactions">
-                                            <button class="btn-operation create-new-items"><i
-                                                    class="fas fa-plus"></i></button>
+                                    <div class="mt-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h3 class="text-dark mb-0">{{ trans('wallet transactions') }}</h3>
+                                            <button type="button" class="btn text-white fw-bold px-3 py-2" data-bs-toggle="modal" data-bs-target="#wallet-adjustment-modal" style="background-color: #244b7d; border-radius: 8px; font-size: 13px;">
+                                                <i class="fas fa-plus me-1 text-white"></i> {{ trans('Add / Deduct Balance') }}
+                                            </button>
                                         </div>
-                                        <h3 class="text-dark">{{ trans('wallet transactions') }}</h3>
                                         <div class="table-responsive">
                                             <!--begin::Table-->
                                             <table
@@ -607,94 +607,7 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="wallet-transactionsModal" aria-hidden="true"
-                    aria-labelledby="wallet-transactionsModalLabel"
-                    data-store="{{ route('dashboard.wallet-transactions.create') }}">
-                    <div class="modal-dialog modal-xl">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="wallet-transactionsModalLabel">
-                                    {{ trans('WalletTransaction') }}</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form class="modal-form items-modal-form">
-                                    <div class="row">
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label class="required" for="type">{{ trans('type') }}</label>
-                                            <select class="custom-select  form-select advance-select" name="type"
-                                                id="user_id-type">
-
-                                                <option value="">{{ trans('select type') }}</option>
-                                                <option value="deposit" @selected(isset($item) and $item->type == 'deposit')>
-                                                    {{ trans('deposit') }}</option>
-                                                <option value="withdraw" @selected(isset($item) and $item->type == 'withdraw')>
-                                                    {{ trans('withdraw') }}</option>
-
-                                            </select>
-
-                                        </div>
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label for="transaction_type">{{ trans('transaction_type') }}</label>
-                                            <select class="custom-select form-select advance-select" name="transaction_type"
-                                                id="user_id-transaction_type">
-                                                <option value="">{{ trans('select transaction type') }}</option>
-                                                <option value="promotional_add">{{ trans('promotional_add') }}</option>
-                                                <option value="compensation_add">{{ trans('compensation_add') }}</option>
-                                                <option value="charge">{{ trans('charge') }}</option>
-                                                <option value="withdraw">{{ trans('withdraw') }}</option>
-                                                <option value="manual_admin_deduction">{{ trans('manual_admin_deduction') }}</option>
-                                                <option value="cashback">{{ trans('cashback') }}</option>
-                                                <option value="remaining_amount">{{ trans('remaining_amount') }}</option>
-                                                <option value="order_payment">{{ trans('order_payment') }}</option>
-                                                <option value="expiry_deduction">{{ trans('expiry_deduction') }}</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label class="required" for="amount">{{ trans('amount') }}</label>
-                                            <input type="number" name="amount" class="form-control "
-                                                placeholder="{{ trans('Enter amount') }} " value="">
-
-                                        </div>
-
-
-
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label for="order_id">{{ trans('order') }}</label>
-                                            <select class="custom-select form-select advance-select" name="order_id" id="user_id-order_id">
-                                                <option value="">{{ trans('select order') }}</option>
-                                                @foreach ($orders ?? [] as $orderItem)
-                                                    <option value="{{ $orderItem->id }}">{{ $orderItem->reference_id }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label for="expired_at">{{ trans('expire at') }}</label>
-                                            <input type="date" name="expired_at" class="form-control "
-                                                placeholder="{{ trans('Enter expire at') }} " value="">
-
-                                        </div>
-
-
-
-
-                                        <div class="col-lg-9 ml-lg-auto">
-                                            <button type="submit"
-                                                class="btn btn-primary font-weight-bold mr-2">{{ trans('Submit') }}</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+                @include('wallet::pages.wallet-transactions.modal', ['fixedUser' => $item])
                 <div class="modal fade" id="pointsModal" aria-hidden="true" aria-labelledby="pointsModalLabel"
                     data-store="{{ route('dashboard.points.create') }}">
                     <div class="modal-dialog modal-xl">

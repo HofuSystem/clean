@@ -45,6 +45,8 @@ Route::group(
                 Route::group(['prefix' => 'wallet-transactions', 'as' => 'wallet-transactions.' ], function () {
                     Route::get('', [WalletTransactionsController::class,'index'])->name('index');
                     Route::get('stats', [WalletTransactionsController::class,'stats'])->name('stats');
+                    Route::get('search-users', [WalletTransactionsController::class,'searchUsers'])->name('search-users');
+                    Route::get('user-balance/{id}', [WalletTransactionsController::class,'userBalance'])->name('user-balance');
                     Route::post('', [WalletTransactionsController::class,'dataTable'])->name('index');
                     Route::get('create', [WalletTransactionsController::class,'createOrEdit'])->name('create');
                     Route::post('create', [WalletTransactionsController::class,'storeOrUpdate'])->name('create');
