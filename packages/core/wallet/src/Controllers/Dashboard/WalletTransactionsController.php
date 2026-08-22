@@ -29,33 +29,25 @@ class WalletTransactionsController extends Controller
         protected OrdersService $ordersService
     ){}
 
-    public function index(){
-        $title      = trans('WalletTransaction index');
+    public function index(Request $request){
+        $title      = trans('Wallet Transactions Summary');
         $screen     = 'wallet-transactions-index';
         $total      = $this->walletTransactionsService->totalCount();
         $trash      = $this->walletTransactionsService->trashCount();
+        $period     = $request->get('period', 'all');
+        $fromDate   = $request->get('from_created_at');
+        $toDate     = $request->get('to_created_at');
+        $stats      = $this->walletTransactionsService->getSummaryStats($period, $fromDate, $toDate);
 
-        $users = DB::table('users')
-            ->select('id', 'fullname')
-            ->whereIn('id', DB::table('wallet_transactions')->select('user_id')->whereNotNull('user_id'))
-            ->get();
+        return view('wallet::pages.wallet-transactions.list', compact('title','screen',"total","trash","stats","period"));
+    }
 
-        $addedBies = DB::table('users')
-            ->select('id', 'fullname')
-            ->whereIn('id', DB::table('wallet_transactions')->select('added_by_id')->whereNotNull('added_by_id'))
-            ->get();
-
-        $packages = DB::table('wallet_packages')
-            ->select('id', 'price')
-            ->whereNull('deleted_at')
-            ->get();
-
-        $orders = DB::table('orders')
-            ->select('id', 'reference_id')
-            ->whereIn('id', DB::table('wallet_transactions')->select('order_id')->whereNotNull('order_id'))
-            ->get();
-
-        return view('wallet::pages.wallet-transactions.list', compact('title','screen','users','addedBies','packages',"total","trash","orders"));
+    public function stats(Request $request){
+        $period   = $request->get('period', 'all');
+        $fromDate = $request->get('from_date') ?: $request->get('from_created_at');
+        $toDate   = $request->get('to_date') ?: $request->get('to_created_at');
+        $stats    = $this->walletTransactionsService->getSummaryStats($period, $fromDate, $toDate);
+        return response()->json($stats);
     }
 
 

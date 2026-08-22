@@ -23,6 +23,63 @@ class WalletTransaction extends CoreModel {
     //start Scopes
     function scopeSearch($query){
         
+        // General search for customer name, phone, order reference, transaction_id, etc.
+        if (request()->has("filters.search") && !empty(request("filters.search"))) {
+            $search = request("filters.search");
+            $query->where(function($q) use ($search) {
+                $q->where("transaction_id", "LIKE", "%{$search}%")
+                  ->orWhere("bank_name", "LIKE", "%{$search}%")
+                  ->orWhere("account_number", "LIKE", "%{$search}%")
+                  ->orWhere("iban_number", "LIKE", "%{$search}%")
+                  ->orWhere("notes", "LIKE", "%{$search}%")
+                  ->orWhereHas("user", function($uq) use ($search) {
+                      $uq->where("fullname", "LIKE", "%{$search}%")
+                         ->orWhere("phone", "LIKE", "%{$search}%")
+                         ->orWhere("email", "LIKE", "%{$search}%");
+                  })
+                  ->orWhereHas("order", function($oq) use ($search) {
+                      $oq->where("reference_id", "LIKE", "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by Quick Tab (pills)
+        if (request()->has("filters.tab") && !empty(request("filters.tab")) && request("filters.tab") !== 'all') {
+            $tab = request("filters.tab");
+            if ($tab === 'recharges') {
+                $query->where(function($q) {
+                    $q->whereIn("transaction_type", ["charge", "deposit", "remaining_amount"])
+                      ->orWhereNotNull("package_id")
+                      ->orWhere("type", "deposit");
+                });
+            } elseif ($tab === 'payments') {
+                $query->where(function($q) {
+                    $q->whereIn("transaction_type", ["order_payment", "withdraw"])
+                      ->orWhere("type", "withdraw");
+                });
+            } elseif ($tab === 'compensations') {
+                $query->where("transaction_type", "compensation_add");
+            } elseif ($tab === 'promotions') {
+                $query->whereIn("transaction_type", ["promotional_add", "cashback", "reward"]);
+            }
+        }
+
+        // Filter by period preset
+        if (request()->has("filters.period") && !empty(request("filters.period")) && request("filters.period") !== 'all') {
+            $period = request("filters.period");
+            if ($period === 'today') {
+                $query->whereDate("created_at", Carbon::today());
+            } elseif ($period === 'this_month') {
+                $query->whereBetween("created_at", [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
+            } elseif ($period === 'last_month') {
+                $query->whereBetween("created_at", [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()]);
+            } elseif ($period === 'last_3_months') {
+                $query->where("created_at", ">=", Carbon::now()->subMonths(3)->startOfDay());
+            } elseif ($period === 'this_year') {
+                $query->whereBetween("created_at", [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()]);
+            }
+        }
+
         //filter select on  type
         if((request()->has("filters.type")) and !empty(request("filters.type"))){
             $query->where("type",request("filters.type"));

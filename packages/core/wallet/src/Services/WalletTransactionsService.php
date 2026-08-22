@@ -51,8 +51,8 @@ class WalletTransactionsService
 
         $recordsTotal       = WalletTransaction::count();
         $recordsFiltered    = WalletTransaction::search()->count();
-        $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type'])
-        ->with(['user','addedBy','package','order'])
+        $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','notes'])
+        ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price','order:id,reference_id'])
         ->search()->dataTable()->get();
 
         return [
@@ -60,6 +60,68 @@ class WalletTransactionsService
             'recordsTotal'      => $recordsTotal,
             'recordsFiltered'   => $recordsFiltered,
             'data'              => WalletTransactionsResource::collection($records)
+        ];
+    }
+
+    public function getSummaryStats($period = 'all', $fromDate = null, $toDate = null)
+    {
+        // 1. Total Current Balances of all active clients (not bound by date)
+        $totalClientsBalance = (float) \Illuminate\Support\Facades\DB::table('users')
+            ->whereNull('deleted_at')
+            ->sum('wallet');
+
+        // Date constraints based on period
+        $query = \Illuminate\Support\Facades\DB::table('wallet_transactions')
+            ->whereNull('deleted_at');
+
+        if ($period === 'custom' && ($fromDate || $toDate)) {
+            if ($fromDate) {
+                $query->whereDate('created_at', '>=', \Carbon\Carbon::parse($fromDate));
+            }
+            if ($toDate) {
+                $query->whereDate('created_at', '<=', \Carbon\Carbon::parse($toDate));
+            }
+        } elseif ($period === 'today') {
+            $query->whereDate('created_at', \Carbon\Carbon::today());
+        } elseif ($period === 'this_month') {
+            $query->whereBetween('created_at', [\Carbon\Carbon::now()->startOfMonth(), \Carbon\Carbon::now()->endOfMonth()]);
+        } elseif ($period === 'last_month') {
+            $query->whereBetween('created_at', [\Carbon\Carbon::now()->subMonth()->startOfMonth(), \Carbon\Carbon::now()->subMonth()->endOfMonth()]);
+        } elseif ($period === 'last_3_months') {
+            $query->where('created_at', '>=', \Carbon\Carbon::now()->subMonths(3)->startOfDay());
+        } elseif ($period === 'this_year') {
+            $query->whereBetween('created_at', [\Carbon\Carbon::now()->startOfYear(), \Carbon\Carbon::now()->endOfYear()]);
+        }
+
+        // Consolidated aggregate query in 1 single shot!
+        $stats = (clone $query)->selectRaw("
+            COALESCE(SUM(CASE WHEN (transaction_type IN ('charge', 'deposit', 'remaining_amount') OR package_id IS NOT NULL OR (type = 'deposit' AND (transaction_type IS NULL OR transaction_type NOT IN ('compensation_add', 'promotional_add', 'cashback', 'reward')))) THEN amount ELSE 0 END), 0) as total_recharge,
+            COUNT(DISTINCT CASE WHEN (transaction_type IN ('charge', 'deposit', 'remaining_amount') OR package_id IS NOT NULL OR (type = 'deposit' AND (transaction_type IS NULL OR transaction_type NOT IN ('compensation_add', 'promotional_add', 'cashback', 'reward')))) THEN user_id ELSE NULL END) as recharge_users_count,
+
+            COALESCE(SUM(CASE WHEN (type = 'withdraw' OR transaction_type IN ('order_payment', 'withdraw')) THEN amount ELSE 0 END), 0) as total_paid_from_wallet,
+            COUNT(CASE WHEN (type = 'withdraw' OR transaction_type IN ('order_payment', 'withdraw')) THEN 1 ELSE NULL END) as paid_orders_count,
+
+            COALESCE(SUM(CASE WHEN transaction_type IN ('promotional_add', 'cashback', 'reward') THEN amount ELSE 0 END), 0) as total_promotional,
+            COUNT(DISTINCT CASE WHEN transaction_type IN ('promotional_add', 'cashback', 'reward') THEN user_id ELSE NULL END) as promo_users_count,
+
+            COALESCE(SUM(CASE WHEN transaction_type = 'compensation_add' THEN amount ELSE 0 END), 0) as total_compensations,
+            COUNT(CASE WHEN transaction_type = 'compensation_add' THEN 1 ELSE NULL END) as compensations_count
+        ")->first();
+
+        $totalPromotional = (float) ($stats->total_promotional ?? 0);
+        $promoUsersCount = (int) ($stats->promo_users_count ?? 0);
+        $avgPromotional = $promoUsersCount > 0 ? ($totalPromotional / $promoUsersCount) : 0;
+
+        return [
+            'total_clients_balance'   => $totalClientsBalance,
+            'total_recharge'          => (float) ($stats->total_recharge ?? 0),
+            'recharge_users_count'    => (int) ($stats->recharge_users_count ?? 0),
+            'total_paid_from_wallet'  => (float) ($stats->total_paid_from_wallet ?? 0),
+            'paid_orders_count'       => (int) ($stats->paid_orders_count ?? 0),
+            'total_promotional'       => $totalPromotional,
+            'avg_promotional_per_user'=> $avgPromotional,
+            'total_compensations'     => (float) ($stats->total_compensations ?? 0),
+            'compensations_count'     => (int) ($stats->compensations_count ?? 0),
         ];
     }
 
