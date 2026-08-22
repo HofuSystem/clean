@@ -67,7 +67,7 @@ class WalletTransactionsService
         $recordsTotal       = $recordsTotalQuery->count();
         $recordsFiltered    = WalletTransaction::search()->count();
         $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','notes'])
-        ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price','order:id,reference_id'])
+        ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price,value','order:id,reference_id'])
         ->search()->dataTable()->get();
 
         return [

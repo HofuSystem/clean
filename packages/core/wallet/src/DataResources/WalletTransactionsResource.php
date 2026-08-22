@@ -46,8 +46,22 @@ class WalletTransactionsResource extends JsonResource
         $badgeBg = '#f1f1f5';
         $badgeColor = '#5e6278';
 
-        if (in_array($txType, ['charge', 'deposit']) || $this->package_id) {
-            $typeLabel = $this->package_id ? trans('شحن عرض') : trans('شحن محفظة');
+        // Check if package charge
+        $package = $this->package;
+        if (!$package && ($this->package_id || in_array($txType, ['charge', 'deposit']))) {
+            if ($this->package_id) {
+                $package = \Core\Wallet\Models\WalletPackage::find($this->package_id);
+            } elseif ($this->amount > 0 && in_array($txType, ['charge'])) {
+                $package = \Core\Wallet\Models\WalletPackage::where('value', $this->amount)->first();
+            }
+        }
+
+        if ($package || $this->package_id) {
+            $typeLabel = trans('شحن عرض');
+            $badgeBg = '#e8f4fd';
+            $badgeColor = '#0d6efd';
+        } elseif (in_array($txType, ['charge', 'deposit'])) {
+            $typeLabel = trans('شحن محفظة');
             $badgeBg = '#e8f4fd';
             $badgeColor = '#0d6efd';
         } elseif (in_array($txType, ['order_payment', 'withdraw'])) {
@@ -72,28 +86,38 @@ class WalletTransactionsResource extends JsonResource
 
         // Transaction Details
         $mainTitle = '';
-        $subTitle = '';
+        $subTitleHtml = '';
 
-        if ($this->package_id && $this->package) {
-            $mainTitle = trans('شراء باقة رصيد') . ' ' . number_format($this->package->price, 0) . ' ' . $sar . ' (' . trans('عرض') . ')';
-            $subTitle = ($this->bank_name ?: trans('بوابة الدفع'));
+        if ($package || $this->package_id) {
+            $packageValue = (float) ($package ? $package->value : $this->amount);
+            $packagePrice = (float) ($package ? $package->price : ($packageValue * 0.9));
+            $bonus = max(0, $packageValue - $packagePrice);
+
+            $mainTitle = trans('شراء باقة رصيد') . ' ' . number_format($packageValue, 0) . ' ' . $sar . ' (' . trans('عرض') . ')';
+            $paymentMethod = $this->bank_name ?: trans('بوابة الدفع');
+
+            $subTitleHtml = '<div class="d-flex flex-wrap align-items-center gap-1 mt-1 fs-8">
+                <span class="text-muted">' . trans('المدفوع') . ': ' . number_format($packagePrice, 2) . ' ' . $sar . '</span>
+                ' . ($bonus > 0 ? '<span class="fw-bold" style="color: #0bb783;">+' . number_format($bonus, 2) . ' ' . $sar . ' ' . trans('بونص') . '</span>' : '') . '
+            </div>
+            <span class="text-muted fs-8 d-block mt-1">' . e($paymentMethod) . '</span>';
         } elseif ($this->order_id && $this->order) {
             if ($this->type == 'deposit' || $txType == 'remaining_amount') {
                 $mainTitle = trans('إرجاع مبلغ طلب ملغي إلى المحفظة');
-                $subTitle = trans('استرداد داخلي');
+                $subTitleHtml = '<span class="text-muted fs-8">' . trans('استرداد داخلي') . '</span>';
             } else {
                 $mainTitle = trans('دفع قيمة الطلب من رصيد المحفظة');
-                $subTitle = trans('خصم آلي');
+                $subTitleHtml = '<span class="text-muted fs-8">' . trans('خصم آلي') . '</span>';
             }
         } elseif ($txType === 'compensation_add') {
             $mainTitle = $this->notes ?: trans('تعويض خدمة');
-            $subTitle = trans('إضافة إدارية');
+            $subTitleHtml = '<span class="text-muted fs-8">' . trans('إضافة إدارية') . '</span>';
         } elseif (in_array($txType, ['promotional_add', 'cashback', 'reward'])) {
             $mainTitle = $this->notes ?: trans('رصيد ترويجي');
-            $subTitle = trans('إضافة إدارية');
+            $subTitleHtml = '<span class="text-muted fs-8">' . trans('إضافة إدارية') . '</span>';
         } else {
             $mainTitle = $this->notes ?: trans($txType);
-            $subTitle = $this->bank_name ?: '';
+            $subTitleHtml = $this->bank_name ? '<span class="text-muted fs-8">' . e($this->bank_name) . '</span>' : '';
         }
 
         $expiryHtml = '';
@@ -104,7 +128,7 @@ class WalletTransactionsResource extends JsonResource
 
         $detailsHtml = '<div class="d-flex flex-column text-start">
             <span class="text-dark fw-bold fs-7">' . e($mainTitle) . '</span>
-            ' . ($subTitle ? '<span class="text-muted fs-8">' . e($subTitle) . '</span>' : '') . '
+            ' . $subTitleHtml . '
             ' . $expiryHtml . '
         </div>';
 
@@ -131,14 +155,25 @@ class WalletTransactionsResource extends JsonResource
             $orderUrl = route('dashboard.orders.show', $this->order->id);
             $refHtml = '<a href="' . $orderUrl . '" class="badge bg-light text-primary border px-2 py-1 fs-8 fw-bold">' . e($this->order->reference_id) . '</a>';
         } elseif ($this->transaction_id) {
-            $refHtml = '<span class="badge bg-light text-dark border px-2 py-1 fs-8 fw-bold">' . e($this->transaction_id) . '</span>';
-        } elseif ($this->package_id) {
-            $refHtml = '<span class="badge bg-light text-secondary border px-2 py-1 fs-8">Offer #' . $this->package_id . '</span>';
+            $refHtml = '<div class="d-flex flex-column align-items-center">
+                <span class="badge bg-light text-dark border px-2 py-1 fs-8 fw-bold">' . e($this->transaction_id) . '</span>
+                ' . ($package ? '<span class="text-muted fs-8 mt-1">Offer #' . ($this->package_id ?: $package->id) . '</span>' : '') . '
+            </div>';
+        } elseif ($package || $this->package_id) {
+            $refHtml = '<span class="badge bg-light text-secondary border px-2 py-1 fs-8">Offer #' . ($this->package_id ?: $package->id) . '</span>';
         }
 
         // Added By
-        $addedByTitle = $this->addedBy ? e($this->addedBy->fullname) : trans('System (Auto)');
-        $addedBySub = $this->addedBy ? e($this->addedBy->email ?? '') : ($this->bank_name ?: trans('Payment Gateway'));
+        if ($package || ($this->transaction_id && !$this->addedBy)) {
+            $addedByTitle = trans('آلي (النظام)');
+            $addedBySub = $this->bank_name ?: trans('بوابة الدفع');
+        } elseif ($this->addedBy) {
+            $addedByTitle = e($this->addedBy->fullname);
+            $addedBySub = e($this->addedBy->email ?? '');
+        } else {
+            $addedByTitle = trans('آلي (النظام)');
+            $addedBySub = $this->bank_name ?: trans('بوابة الدفع');
+        }
         $addedByHtml = '<div class="d-flex flex-column text-start">
             <span class="text-dark fw-bold fs-7">' . $addedByTitle . '</span>
             <span class="text-muted fs-8">' . $addedBySub . '</span>
