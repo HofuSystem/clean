@@ -35,11 +35,51 @@ class WalletTransactionsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','transaction_type','user_id','added_by_id','package_id','translations','expired_at','order_id']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','transaction_type','user_id','added_by_id','package_id','translations','expired_at','order_id','notes']),ARRAY_FILTER_USE_KEY);
         if(!isset($recordData['status'])){
             $recordData['status'] = 'accepted';
         }
-        $record     = WalletTransaction::updateOrCreate(['id' => $id],$recordData);
+
+        if (empty($recordData['order_id']) && !empty($data['order_reference'])) {
+            $recordData['order_id'] = \Core\Orders\Models\Order::where('reference_id', trim($data['order_reference']))->value('id');
+        }
+
+        $record = WalletTransaction::updateOrCreate(['id' => $id],$recordData);
+
+        // Send Push Notification if toggled
+        if (!empty($data['send_notification']) && $record->user_id) {
+            $user = User::find($record->user_id);
+            if ($user) {
+                $amountFormatted = number_format(abs((float) $record->amount), 2);
+                $balanceFormatted = number_format((float) $user->wallet, 2);
+
+                if ($record->type === 'withdraw') {
+                    $title = trans('تحديث في رصيد المحفظة');
+                    $message = trans('تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س', [
+                        'amount' => $amountFormatted,
+                        'balance' => $balanceFormatted
+                    ]);
+                } else {
+                    $title = trans('رصيد جديد في محفظتك!');
+                    $message = trans('تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س', [
+                        'amount' => $amountFormatted,
+                        'balance' => $balanceFormatted
+                    ]);
+                }
+
+                try {
+                    \Core\Notification\Helpers\NotificationsManger::getInstance()
+                        ->setUsers(collect([$user]))
+                        ->setTitle($title)
+                        ->setMessage($message)
+                        ->setSendTypes(['apps'])
+                        ->send();
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
+
         return $record;
     }
 

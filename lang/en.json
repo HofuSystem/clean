@@ -5647,5 +5647,9 @@
     "أرصدة ترويجية منتهية الصلاحية": "Expired Promotional Balances",
     "انتهاء صلاحية رصيد ترويجي": "Promotional Balance Expiry",
     "خصم آلي لانتهاء الصلاحية": "Automatic Expiry Deduction",
-    "انتهاء الصلاحية": "Expiry Deduction"
+    "انتهاء الصلاحية": "Expiry Deduction",
+    "تحديث في رصيد المحفظة": "Wallet Balance Update",
+    "رصيد جديد في محفظتك!": "New Credit in Your Wallet!",
+    "تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س": ":amount SAR added to your wallet, your current balance: :balance SAR",
+    "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س": ":amount SAR deducted from your wallet, your current balance: :balance SAR"
 }
