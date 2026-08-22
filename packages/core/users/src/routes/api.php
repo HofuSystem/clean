@@ -17,6 +17,9 @@ Route::group([
 ], function () {
     Route::post('update_fcm', [UserController::class, 'updateFcm']);
     Route::post('delete_account', [UserController::class, 'deleteAccount']);
+    Route::apiResource('addresses', AddressesController::class);
+    Route::post('addresses/{id}/delete', [AddressesController::class, 'destroy']);
+    Route::post('addresses/delete/{id}', [AddressesController::class, 'destroy']);
 });
 
 //all client routes
@@ -54,6 +57,8 @@ Route::group([
     Route::post('/logout', [AuthenticationController::class, 'logout']);
 
     Route::apiResource('addresses', AddressesController::class);
+    Route::post('addresses/{id}/delete', [AddressesController::class, 'destroy']);
+    Route::post('addresses/delete/{id}', [AddressesController::class, 'destroy']);
 
 });
 
