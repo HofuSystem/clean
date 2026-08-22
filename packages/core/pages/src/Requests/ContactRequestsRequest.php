@@ -21,6 +21,15 @@ class ContactRequestsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (!$this->has('type') || empty($this->type)) {
+            $this->merge([
+                'type' => 'general',
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

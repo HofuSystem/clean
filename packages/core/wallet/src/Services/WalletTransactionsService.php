@@ -3,6 +3,7 @@
 namespace Core\Wallet\Services;
 
 use Core\Comments\Services\CommentingService;
+use Core\Settings\Services\SettingsService;
 use Core\Users\Models\User;
 use Core\Wallet\DataResources\Api\WalletTransactionResource;
 use Core\Wallet\Models\WalletPackage;
@@ -12,6 +13,15 @@ use Core\Wallet\DataResources\WalletTransactionsResource;
 class WalletTransactionsService
 {
     public function __construct(protected CommentingService $commentingService){}
+
+    public function getTestAccountIds(): array
+    {
+        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+        if (is_string($testAccounts)) {
+            $testAccounts = json_decode($testAccounts, true) ?? [];
+        }
+        return is_array($testAccounts) ? array_filter($testAccounts) : [];
+    }
 
     public function selectable(string $key,string $value){
         $selected = ['id'];
@@ -48,8 +58,13 @@ class WalletTransactionsService
     }
 
     public function dataTable($draw){
+        $testAccounts = $this->getTestAccountIds();
 
-        $recordsTotal       = WalletTransaction::count();
+        $recordsTotalQuery = WalletTransaction::query();
+        if (!empty($testAccounts)) {
+            $recordsTotalQuery->whereNotIn('user_id', $testAccounts);
+        }
+        $recordsTotal       = $recordsTotalQuery->count();
         $recordsFiltered    = WalletTransaction::search()->count();
         $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','notes'])
         ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price','order:id,reference_id'])
@@ -65,14 +80,24 @@ class WalletTransactionsService
 
     public function getSummaryStats($period = 'all', $fromDate = null, $toDate = null)
     {
-        // 1. Total Current Balances of all active clients (not bound by date)
-        $totalClientsBalance = (float) \Illuminate\Support\Facades\DB::table('users')
-            ->whereNull('deleted_at')
-            ->sum('wallet');
+        $testAccounts = $this->getTestAccountIds();
+
+        // 1. Total Current Balances of all active non-test clients (not bound by date)
+        $usersQuery = \Illuminate\Support\Facades\DB::table('users')
+            ->whereNull('deleted_at');
+        if (!empty($testAccounts)) {
+            $usersQuery->whereNotIn('id', $testAccounts);
+        }
+        $totalClientsBalance = (float) $usersQuery->sum('wallet');
 
         // Date constraints based on period
         $query = \Illuminate\Support\Facades\DB::table('wallet_transactions')
             ->whereNull('deleted_at');
+
+        // Exclude testing accounts
+        if (!empty($testAccounts)) {
+            $query->whereNotIn('user_id', $testAccounts);
+        }
 
         if ($period === 'custom' && ($fromDate || $toDate)) {
             if ($fromDate) {
@@ -146,10 +171,20 @@ class WalletTransactionsService
        );
     }
     public function totalCount(){
-        return WalletTransaction::count();
+        $testAccounts = $this->getTestAccountIds();
+        $query = WalletTransaction::query();
+        if (!empty($testAccounts)) {
+            $query->whereNotIn('user_id', $testAccounts);
+        }
+        return $query->count();
     }
     public function trashCount(){
-        return WalletTransaction::onlyTrashed()->count();
+        $testAccounts = $this->getTestAccountIds();
+        $query = WalletTransaction::onlyTrashed();
+        if (!empty($testAccounts)) {
+            $query->whereNotIn('user_id', $testAccounts);
+        }
+        return $query->count();
     }
     public function restore(int $id){
         $record = WalletTransaction::onlyTrashed()->findOrFail($id);

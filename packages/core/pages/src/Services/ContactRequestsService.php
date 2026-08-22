@@ -20,6 +20,9 @@ class ContactRequestsService
 
     public function storeOrUpdate(array $data = [],$id = null){
         $recordData = array_filter($data,fn($key) => in_array($key, ['name','phone','email','type','notes','translations']),ARRAY_FILTER_USE_KEY);
+        if (!isset($recordData['type']) || empty($recordData['type'])) {
+            $recordData['type'] = 'general';
+        }
         $record     = ContactRequest::updateOrCreate(['id' => $id],$recordData);
 
 

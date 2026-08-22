@@ -14,7 +14,9 @@ class ContactRequestObserver
      */
     public function creating(ContactRequest $contactRequest)
     {
-    
+        if (empty($contactRequest->type)) {
+            $contactRequest->type = 'general';
+        }
     }
     /**
      * Handle the ContactRequest "created" event.

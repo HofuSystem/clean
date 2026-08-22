@@ -109,6 +109,11 @@ class ContactRequest extends CoreModel {
     public function getItemDataAttribute(){
         return $this->getItemData('contact-requests');
     }
+
+    public function setTypeAttribute($value)
+    {
+        $this->attributes['type'] = !empty($value) ? $value : 'general';
+    }
     //end Attributes
 
 }
