@@ -149,28 +149,46 @@ class CategoriesController extends Controller
     {
         try {
             $locale = app()->getLocale();
-            $category = \Illuminate\Support\Facades\Cache::remember("api_category_clothes_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
-                return Category::with(['translations', 'subCategories.productsSub.translations'])
-                    ->active()
-                    ->with([
-                        'subCategories' => function ($query) {
-                            $query->active()
-                                ->orderBy('categories.sort', 'asc')
-                                ->with([
-                                    'productsSub' => function ($query) {
-                                        $query->active();
-                                    }
-                                ]);
-                        }
-                    ])
-                    ->where('type', 'clothes')
-                    ->where('is_package', false)
-                    ->findOrFail($categoryId);
+            $userId = auth('api')->id() ?? 'guest';
+            $cityId = auth('api')->user()?->profile?->city_id ?? ($request->city_id ?? 'all');
+            $cacheKey = "api_category_clothes_details_v3_{$categoryId}_{$cityId}_{$locale}_{$userId}";
+
+            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function () use ($categoryId, $request) {
+                $category = Category::with([
+                    'translations',
+                    'subCategories' => function ($query) {
+                        $query->active()
+                            ->orderBy('categories.sort', 'asc')
+                            ->with([
+                                'translations',
+                                'cities',
+                                'productsSub' => function ($query) {
+                                    $query->active()
+                                        ->with([
+                                            'translations',
+                                            'prices',
+                                            'category.translations',
+                                            'subCategory.translations',
+                                            'favers',
+                                            'productSettings' => function ($sq) {
+                                                $sq->whereNull('parent_id')->active()->with('translations', 'productSettings.translations');
+                                            }
+                                        ]);
+                                }
+                            ]);
+                    }
+                ])
+                ->where('type', 'clothes')
+                ->where('is_package', false)
+                ->active()
+                ->findOrFail($categoryId);
+
+                return [
+                    'status' => 'success',
+                    'data' => (new ClothesDetailsResource($category))->toArray($request)
+                ];
             });
-            $data = [
-                'status' => 'success',
-                'data' => new ClothesDetailsResource($category)
-            ];
+
             return $this->returnData(trans('categories are loaded'), $data);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);

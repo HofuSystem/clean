@@ -26,20 +26,30 @@ class SimpleProductResource extends JsonResource
         ProductsService::setCurrentContract($company);
         $data = ProductsService::getProductData($company,'client',$cityId,$this->resource);
 
-        $productSettings = $this->productSettings()
-            ->whereNull('parent_id')
-            ->active()
-            ->with([
-                'translations',
-                'productSettings' => function ($q) {
-                    $q->active()
-                        ->whereHas('products', function ($pq) {
-                            $pq->where('products.id', $this->id);
-                        })
-                        ->with('translations');
-                }
-            ])
-            ->get();
+        $productSettings = $this->relationLoaded('productSettings')
+            ? $this->productSettings
+            : $this->productSettings()
+                ->whereNull('parent_id')
+                ->active()
+                ->with([
+                    'translations',
+                    'productSettings' => function ($q) {
+                        $q->active()
+                            ->whereHas('products', function ($pq) {
+                                $pq->where('products.id', $this->id);
+                            })
+                            ->with('translations');
+                    }
+                ])
+                ->get();
+
+        $userId = auth('api')->id();
+        $isFav = false;
+        if ($userId) {
+            $isFav = $this->relationLoaded('favers')
+                ? $this->favers->contains('user_id', $userId)
+                : $this->favers()->where('user_id', $userId)->exists();
+        }
 
         return [
             'id'                => $this->id,
@@ -55,7 +65,7 @@ class SimpleProductResource extends JsonResource
             'desc_en'           => $this->translate('en')->desc,
             // 'delivery_price'    => (double)$this->delivery_price,
             'available_quantity'=> (int)$this->quantity ,
-            'is_fav'            => $this->favers()->where('user_id',auth('api')->id())->first() ? true : false ,
+            'is_fav'            => $isFav,
             'category'          => $this->category?->name,
             'sub_category'      => $this->subCategory?->name,
             'sub_category_ar'   => $this->subCategory?->translate('ar')->name,

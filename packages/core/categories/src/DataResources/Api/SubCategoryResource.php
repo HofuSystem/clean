@@ -19,7 +19,7 @@ class SubCategoryResource extends JsonResource
      */
     public function toArray($request)
     {
-        $cities      = $this->cities->pluck('id')->toArray(); 
+        $cities      = $this->relationLoaded('cities') ? $this->cities->pluck('id')->toArray() : $this->cities()->pluck('id')->toArray();
         $isAvailable = (($this->for_all_cities || in_array(auth('api')->user()?->profile?->city_id,$cities)) and $this->status == "active");
         $message     = (!$isAvailable) ? SettingsService::getDataBaseSetting('not_available_message_'.config('app.locale')) : null;
        
