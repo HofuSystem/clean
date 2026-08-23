@@ -64,26 +64,26 @@ class OrderDetailsResource extends JsonResource
             'day'                   => $delivery ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),
             'date'                  => $delivery ? Carbon::parse($delivery?->date)->format('Y-m-d') : Carbon::parse($receiver?->date)->format('Y-m-d'),
             'from_time'             => $delivery ? Carbon::parse($delivery?->time)->format('H:i') : Carbon::parse($receiver?->time)->format('H:i'),
-            'to_time'               => $delivery ? Carbon::parse($delivery->to_time)->format('H:i') : Carbon::parse($receiver?->to_time)->format('H:i'),
+            'to_time'               => $delivery ? Carbon::parse($delivery?->to_time)->format('H:i') : Carbon::parse($receiver?->to_time)->format('H:i'),
 
            
 
             'receiving_day'         => $receiver ? Carbon::parse($receiver?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
             'receiving_date'        => $receiver ? Carbon::parse($receiver?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
             'receiving_from_time'   => $receiver ? Carbon::parse($receiver?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
-            'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
+            'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
             
             'lat'                   => $lat,
             'lng'                   => $lng,
             'location'              => $location,
-            'building_image'        => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($this->address?->image ?? $delivery?->address?->image ?? $receiver?->address?->image),
+            'building_image'        => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($delivery?->address?->image ?? $receiver?->address?->image),
 
             'created_at'            => $this->created_at->format('d-m-Y'),
             'category'              => ($this->relationLoaded('items') ? $this->items->first() : $this->items()->first())?->product?->category?->name ?? '',
             'category_type'         => $this->type ,
             'pay_type'              => $this->pay_type ,
             'total_price'           => (int)$this->total_price ,
-            'returned_to_customer'  => (double)abs(($this->relationLoaded('transactions') ? $this->transactions : $this->transactions())->where('amount','<',0)->sum('amount')) ?? 0 ,
+            'returned_to_customer'  => (double)abs(($this->relationLoaded('transactions') ? $this->transactions->where('amount', '<', 0)->sum('amount') : $this->transactions()->where('amount', '<', 0)->sum('amount')) ?? 0),
             'status'                => $this->status,
             'is_report'             => $is_report ,
             'pay_type_method'       => $this->pay_type,

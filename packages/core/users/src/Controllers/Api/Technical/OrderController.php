@@ -49,7 +49,6 @@ class OrderController extends Controller
             'company',
             'coupon',
             'items.product.category.translations',
-            'address',
             'transactions',
             'reports'
         ])->findOrFail($order_id);
