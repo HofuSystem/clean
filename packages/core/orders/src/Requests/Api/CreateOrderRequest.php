@@ -47,6 +47,18 @@ class CreateOrderRequest extends FormRequest
       $merge['starch_level'] = 'none';
     }
 
+    if ($this->has('service_type') && empty($this->input('desc'))) {
+      $serviceType = $this->input('service_type');
+      $serviceTypeMap = [
+        'iron_only'   => 'كوي فقط',
+        'wash_only'   => 'غسيل فقط',
+        'wash_iron'   => 'غسيل وكوي',
+        'wash_and_iron' => 'غسيل وكوي',
+        'dry_clean'   => 'تنظيف جاف',
+      ];
+      $merge['desc'] = $serviceTypeMap[$serviceType] ?? $serviceType;
+    }
+
     if (!empty($merge)) {
       $this->merge($merge);
     }
@@ -61,6 +73,7 @@ class CreateOrderRequest extends FormRequest
   {
     $data = [
       'type'                          => 'required|in:clothes,fastorder,sales,services,host,care,selfcare,maidflex,maidscheduled,maidPackage,maidoffer',
+      'service_type'                  => 'nullable|string',
       'desc'                          => 'nullable|string',
       'receiving_day'                 => 'nullable|string',
       'receiving_date'                => 'nullable|date|date_format:Y-m-d|after_or_equal:' . now()->format('Y-m-d'),
