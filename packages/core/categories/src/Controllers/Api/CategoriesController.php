@@ -610,12 +610,24 @@ class CategoriesController extends Controller
                 return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
 
+            $subCategoryIds = Category::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
+            $allCategoryIds = array_merge([$mainCategory->id], $subCategoryIds);
+
+            $subCatId = $request->sub_category_id;
+            $hasSpecificSubCat = !empty($subCatId) && $subCatId !== 'all' && $subCatId !== '0';
+
             $products = Product::with(['translations', 'prices', 'media'])
                 ->active()
-                ->when($request->sub_category_id, function ($q) use ($request) {
-                    $q->where('sub_category_id', $request->sub_category_id);
-                }, function ($q) use ($mainCategory) {
-                    $q->where('category_id', $mainCategory->id);
+                ->when($hasSpecificSubCat, function ($q) use ($subCatId) {
+                    $q->where(function ($sq) use ($subCatId) {
+                        $sq->where('sub_category_id', $subCatId)
+                           ->orWhere('category_id', $subCatId);
+                    });
+                }, function ($q) use ($allCategoryIds) {
+                    $q->where(function ($sq) use ($allCategoryIds) {
+                        $sq->whereIn('category_id', $allCategoryIds)
+                           ->orWhereIn('sub_category_id', $allCategoryIds);
+                    });
                 })
                 ->where(function ($q) {
                     $q->where('display_as', 'main')->orWhereNull('display_as');
