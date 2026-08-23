@@ -47,12 +47,13 @@ class OrderController extends Controller
         }
         $order->update(['status' => 'technical_accepted', 'order_status_times' => ['technical_accepted' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_technical_deliverd_order', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_technical_deliverd_order', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_technical_deliverd_order', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_technical_deliverd_order', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => 'technical',
             'sender_data'       => $senderData,
@@ -83,12 +84,13 @@ class OrderController extends Controller
         }
         $order->update(['status' => 'in_the_way', 'order_status_times' => ['in_the_way' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_technical_in_the_way', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_technical_in_the_way', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_technical_in_the_way', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_technical_in_the_way', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => 'technical',
             'sender_data'       => $senderData,
@@ -118,12 +120,13 @@ class OrderController extends Controller
         $order->update(['status' => 'started', 'order_status_times' => ['started' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_technical_in_the_way', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_technical_in_the_way', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_technical_in_the_way', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_technical_in_the_way', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => 'technical',
             'sender_data'       => $senderData,
@@ -197,13 +200,14 @@ class OrderController extends Controller
         $order->update(['status' => 'finished', 'order_status_times' => ['finished' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key' => "order",
             'key_id' => $order->id,
             'status' => $order->status,
             // 'main_order_type' => $this->order->type,
-            'title' => trans('title_technical_finished', ['order_id' => $order->id], 'ar'),
-            'body' => trans('body_technical_finished', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], 'ar'),
+            'title' => trans('title_technical_finished', ['order_id' => $order->id], $clientLang),
+            'body' => trans('body_technical_finished', ['order_id' => $order->id, 'technical_name' => auth('api')->user()->fullname], $clientLang),
             'order_id' => $order->id,
             'order_driver_type' => 'technical',
             'sender_data'       => $senderData,
@@ -241,11 +245,11 @@ class OrderController extends Controller
                     'key'     => "order",
                     'key_id'  => $order->id,
                     'status'  => $order->status,
-                    'title'   => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], 'ar'),
-                    'body'    => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints,'technical_name' => auth('api')->user()->fullname], 'ar'),
+                    'title'   => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], $clientLang),
+                    'body'    => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints,'technical_name' => auth('api')->user()->fullname], $clientLang),
                 ]),
-                'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id,'points' => $totalPoints], 'ar'),
-                'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints,'technical_name' => auth('api')->user()->fullname], 'ar'),
+                'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id,'points' => $totalPoints], $clientLang),
+                'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints,'technical_name' => auth('api')->user()->fullname], $clientLang),
                 'sender_id' => auth('api')->user()->id,
                 'order_id'  => $order->id,
             ]);
@@ -271,8 +275,8 @@ class OrderController extends Controller
                 'key'               => "order",
                 'key_id'            => $order->id,
                 'status'            => $order->status,
-                'title'             => trans('title_remaining_amount', ['order_id' => $order->id,'amount' => $order->paid - $order->total_price], 'ar'),
-                'body'              => trans('body_remaining_amount', ['order_id' => $order->id, 'amount' => $order->paid - $order->total_price], 'ar'),
+                'title'             => trans('title_remaining_amount', ['order_id' => $order->id,'amount' => $order->paid - $order->total_price], $clientLang),
+                'body'              => trans('body_remaining_amount', ['order_id' => $order->id, 'amount' => $order->paid - $order->total_price], $clientLang),
                 'order_id'          => $order->id,
                 'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
                 'sender_data'       => $senderData,
