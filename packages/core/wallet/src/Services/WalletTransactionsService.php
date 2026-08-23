@@ -50,30 +50,43 @@ class WalletTransactionsService
         if (!empty($data['send_notification']) && $record->user_id) {
             $user = User::find($record->user_id);
             if ($user) {
+                $clientLang = $user->default_language ?: 'ar';
                 $amountFormatted = number_format(abs((float) $record->amount), 2);
                 $balanceFormatted = number_format((float) $user->wallet, 2);
 
                 if ($record->type === 'withdraw') {
-                    $title = trans('تحديث في رصيد المحفظة');
+                    $title = trans('تحديث في رصيد المحفظة', [], $clientLang);
                     $message = trans('تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س', [
                         'amount' => $amountFormatted,
                         'balance' => $balanceFormatted
-                    ]);
+                    ], $clientLang);
                 } else {
-                    $title = trans('رصيد جديد في محفظتك!');
+                    $title = trans('رصيد جديد في محفظتك!', [], $clientLang);
                     $message = trans('تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س', [
                         'amount' => $amountFormatted,
                         'balance' => $balanceFormatted
-                    ]);
+                    ], $clientLang);
                 }
 
+                $payloadData = [
+                    'key'           => 'wallet',
+                    'key_id'        => $record->id,
+                    'type'          => $record->type,
+                    'amount'        => $record->amount,
+                    'title'         => $title,
+                    'body'          => $message,
+                ];
+
                 try {
-                    \Core\Notification\Helpers\NotificationsManger::getInstance()
-                        ->setUsers(collect([$user]))
-                        ->setTitle($title)
-                        ->setMessage($message)
-                        ->setSendTypes(['apps'])
-                        ->send();
+                    \Core\Notification\Models\Notification::create([
+                        'types'     => json_encode(['apps']),
+                        'for'       => 'users',
+                        'for_data'  => json_encode([$user->id]),
+                        'payload'   => json_encode($payloadData),
+                        'title'     => $title,
+                        'body'      => $message,
+                        'sender_id' => auth()->id() ?? null,
+                    ]);
                 } catch (\Throwable $e) {
                     report($e);
                 }
