@@ -15,6 +15,10 @@ class CategoryObserver
                 Cache::tags(['categories_api'])->flush();
             } else {
                 Cache::forget('categories_api');
+                foreach (['ar', 'en'] as $lang) {
+                    Cache::forget("home_economy_bags_{$lang}");
+                    Cache::forget("home_services_sales_{$lang}");
+                }
             }
         } catch (\Throwable $e) {
             Log::warning('Failed to flush category cache: ' . $e->getMessage());

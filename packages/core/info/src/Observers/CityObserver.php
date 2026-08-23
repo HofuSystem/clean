@@ -67,7 +67,7 @@ class CityObserver
      */
     public function saved(City $city)
     {
-
+        $this->clearCache($city);
     }
 
     /**
@@ -78,7 +78,7 @@ class CityObserver
      */
     public function deleted(City $city)
     {
-      
+        $this->clearCache($city);
     }
 
     /**
@@ -89,7 +89,7 @@ class CityObserver
      */
     public function restored(City $city)
     {
-        //
+        $this->clearCache($city);
     }
 
     /**
@@ -100,6 +100,14 @@ class CityObserver
      */
     public function forceDeleted(City $city)
     {
-        //
+        $this->clearCache($city);
+    }
+
+    protected function clearCache(City $city)
+    {
+        foreach (['ar', 'en'] as $lang) {
+            \Illuminate\Support\Facades\Cache::forget("api_cities_active_{$lang}");
+            \Illuminate\Support\Facades\Cache::forget("api_districts_city_{$city->id}_{$lang}");
+        }
     }
 }

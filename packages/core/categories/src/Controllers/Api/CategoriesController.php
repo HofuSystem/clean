@@ -148,22 +148,25 @@ class CategoriesController extends Controller
     public function details(Request $request, $categoryId)
     {
         try {
-            $category = Category::with(['translations', 'subCategories.productsSub.translations'])
-                ->active()
-                ->with([
-                    'subCategories' => function ($query) {
-                        $query->active()
-                            ->orderBy('categories.sort', 'asc')
-                            ->with([
-                                'productsSub' => function ($query) {
-                                    $query->active();
-                                }
-                            ]);
-                    }
-                ])
-                ->where('type', 'clothes')
-                ->where('is_package', false)
-                ->findOrFail($categoryId);
+            $locale = app()->getLocale();
+            $category = \Illuminate\Support\Facades\Cache::remember("api_category_clothes_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+                return Category::with(['translations', 'subCategories.productsSub.translations'])
+                    ->active()
+                    ->with([
+                        'subCategories' => function ($query) {
+                            $query->active()
+                                ->orderBy('categories.sort', 'asc')
+                                ->with([
+                                    'productsSub' => function ($query) {
+                                        $query->active();
+                                    }
+                                ]);
+                        }
+                    ])
+                    ->where('type', 'clothes')
+                    ->where('is_package', false)
+                    ->findOrFail($categoryId);
+            });
             $data = [
                 'status' => 'success',
                 'data' => new ClothesDetailsResource($category)
@@ -181,17 +184,19 @@ class CategoriesController extends Controller
     public function packageDetails(Request $request, $categoryId)
     {
         try {
-
-            $category = Category::with(['translations', 'products.translations'])
-                ->active()
-                ->with([
-                    'products' => function ($query) {
-                        $query->active();
-                    }
-                ])
-                ->where('type', 'clothes')
-                ->where('is_package', true)
-                ->findOrFail($categoryId);
+            $locale = app()->getLocale();
+            $category = \Illuminate\Support\Facades\Cache::remember("api_package_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+                return Category::with(['translations', 'products.translations'])
+                    ->active()
+                    ->with([
+                        'products' => function ($query) {
+                            $query->active();
+                        }
+                    ])
+                    ->where('type', 'clothes')
+                    ->where('is_package', true)
+                    ->findOrFail($categoryId);
+            });
             $data = [
                 'status' => 'success',
                 'data' => new PackageDetailsResource($category)
@@ -211,19 +216,31 @@ class CategoriesController extends Controller
     public function servicesIndex(Request $request)
     {
         try {
-            $slider = Slider::where('type', 'services')
-                ->active()
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->latest()->get();
-            $servicesCategory = Category::where('type', 'services')
-                ->active()
-                ->whereNull('parent_id')
-                ->orderBy('sort', 'asc')
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->get();
-            $sales = CategoryOffer::whereType('service_category_sale')->latest()->get();
+            $cityId = $request->city_id ?? 'all';
+            $locale = app()->getLocale();
+
+            $slider = \Illuminate\Support\Facades\Cache::remember("home_services_slider_{$cityId}_{$locale}", 600, function () use ($request) {
+                return Slider::where('type', 'services')
+                    ->active()
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->latest()->get();
+            });
+
+            $servicesCategory = \Illuminate\Support\Facades\Cache::remember("home_services_categories_{$cityId}_{$locale}", 600, function () use ($request) {
+                return Category::where('type', 'services')
+                    ->active()
+                    ->whereNull('parent_id')
+                    ->orderBy('sort', 'asc')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
+            });
+
+            $sales = \Illuminate\Support\Facades\Cache::remember("home_services_sales_{$locale}", 600, function () {
+                return CategoryOffer::whereType('service_category_sale')->latest()->get();
+            });
+
             $data = [
                 'slider' => SliderResource::collection($slider),
                 'services_category' => ServicesCategoryResource::collection($servicesCategory),
@@ -242,15 +259,18 @@ class CategoriesController extends Controller
     public function servicesDetails(Request $request, $categoryId)
     {
         try {
-            $category = Category::with(['translations', 'products.translations', 'appFeatures.translations'])
-                ->active()
-                ->with([
-                    'products' => function ($query) {
-                        $query->active();
-                    }
-                ])
-                ->where('type', 'services')
-                ->findOrFail($categoryId);
+            $locale = app()->getLocale();
+            $category = \Illuminate\Support\Facades\Cache::remember("api_services_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+                return Category::with(['translations', 'products.translations', 'appFeatures.translations'])
+                    ->active()
+                    ->with([
+                        'products' => function ($query) {
+                            $query->active();
+                        }
+                    ])
+                    ->where('type', 'services')
+                    ->findOrFail($categoryId);
+            });
             $data = [
                 'status' => 'success',
                 'data' => new ServicesDetailsResource($category)
