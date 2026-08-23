@@ -17,7 +17,9 @@ class OrderItemResource extends JsonResource
      */
     public function toArray($request)
     {
-        $originalQuantity   = $this->qtyUpdates()->first()?->from;
+        $originalQuantity = $this->relationLoaded('qtyUpdates')
+            ? $this->qtyUpdates->first()?->from
+            : $this->qtyUpdates()->first()?->from;
         $data =[
             'id'                    => $this->id ,
             'price'                 => $this->product_price,

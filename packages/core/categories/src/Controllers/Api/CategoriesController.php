@@ -60,45 +60,60 @@ class CategoriesController extends Controller
     public function index(Request $request)
     {
         try {
-            $slider = Slider::with('city.translations', 'category.translations')
-                ->active()
-                ->where('type', 'clothes')
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->latest()->get();
+            $cityId = $request->city_id ?? 'all';
+            $locale = app()->getLocale();
 
-            $clothesCategory = Category::with('translations')
-                ->whereNull('parent_id')
-                ->where('type', 'clothes')
-                ->where('is_package', false)
-                ->active()
-                ->orderBy('sort', 'asc')
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })->get();
-            $economyBags = Category::with(['translations', 'products.translations', 'products.prices'])
-                ->active()
-                ->with([
-                    'products' => function ($query) {
-                        $query->active();
-                    }
-                ])
-                ->where('type', 'clothes')
-                ->where('is_package', true)->get();
+            $slider = \Illuminate\Support\Facades\Cache::remember("home_slider_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
+                return Slider::with('city.translations', 'category.translations')
+                    ->active()
+                    ->where('type', 'clothes')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->latest()->get();
+            });
+
+            $clothesCategory = \Illuminate\Support\Facades\Cache::remember("home_categories_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
+                return Category::with('translations')
+                    ->whereNull('parent_id')
+                    ->where('type', 'clothes')
+                    ->where('is_package', false)
+                    ->active()
+                    ->orderBy('sort', 'asc')
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })->get();
+            });
+
+            $economyBags = \Illuminate\Support\Facades\Cache::remember("home_economy_bags_{$locale}", 600, function () {
+                return Category::with(['translations', 'products.translations', 'products.prices'])
+                    ->active()
+                    ->with([
+                        'products' => function ($query) {
+                            $query->active();
+                        }
+                    ])
+                    ->where('type', 'clothes')
+                    ->where('is_package', true)->get();
+            });
 
             $notifications = collect();
             if (auth('api')->check()) {
                 $userId = auth('api')->id();
+                $nowStr = now()->format("Y-m-d H:i:s");
                 $notifications = BannerNotification::active()
-                    ->where('publish_date', '<=', now())
-                    ->where('expired_date', '>=', now())
-                    ->WhereHas('users', function ($userNotificationQuery) use ($userId) {
-                        $userNotificationQuery->where('users.id', $userId)
-                            ->where('users_notifications.next_vision_date', '<=', now()->format("Y-m-d h:i:s"))
-                            ->orWhereNull('users_notifications.next_vision_date');
-                    })
-                    ->orWhereDoesntHave('users', function ($userNotificationQuery) use ($userId) {
-                        $userNotificationQuery->where('users.id', $userId);
+                    ->where('publish_date', '<=', $nowStr)
+                    ->where('expired_date', '>=', $nowStr)
+                    ->where(function ($q) use ($userId, $nowStr) {
+                        $q->whereHas('users', function ($userNotificationQuery) use ($userId, $nowStr) {
+                            $userNotificationQuery->where('users.id', $userId)
+                                ->where(function ($subQ) use ($nowStr) {
+                                    $subQ->where('users_notifications.next_vision_date', '<=', $nowStr)
+                                         ->orWhereNull('users_notifications.next_vision_date');
+                                });
+                        })
+                        ->orWhereDoesntHave('users', function ($userNotificationQuery) use ($userId) {
+                            $userNotificationQuery->where('users.id', $userId);
+                        });
                     })
                     ->get();
                 foreach ($notifications as $notification) {
@@ -108,8 +123,8 @@ class CategoriesController extends Controller
                         'notifications_id' => $notification->id,
                     ], [
                         'status' => 'sent',
-                        'read_at' => now()->format("Y-m-d h:i:s"),
-                        'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d h:i:s"),
+                        'read_at' => $nowStr,
+                        'next_vision_date' => now()->addHours($notification->next_vision_hour)->format("Y-m-d H:i:s"),
                     ]);
                 }
             }

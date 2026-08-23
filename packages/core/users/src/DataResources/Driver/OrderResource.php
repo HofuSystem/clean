@@ -60,6 +60,8 @@ class OrderResource extends JsonResource
             'coupon_minimum'        => $couponMinmum,
             'order_went_below_coupon_level' => $orderWentBelowCopounLevel,
             'note'                          =>  $this->note,
+            'perfume'                       =>  $this->perfume,
+            'starch_level'                  =>  $this->starch_level,
             'location'              => $location,
             'total_price'           => $this->total_price,
             

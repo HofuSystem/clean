@@ -903,9 +903,9 @@ class OrdersService
             'points_amount_used' => 0,
         ]);
 
-        $createOrderData['note']    = $createOrderData['desc'] ?? null;
-        $createOrderData['note']    .= ' - ' . $user->contract_note;
-        $order                      = Order::create($createOrderData);
+        $noteParts = array_filter([$createOrderData['desc'] ?? null, $user->contract_note ?? null]);
+        $createOrderData['note'] = !empty($noteParts) ? implode(' - ', $noteParts) : null;
+        $order = Order::create($createOrderData);
 
 
         if ($data['pay_type'] == 'card') {

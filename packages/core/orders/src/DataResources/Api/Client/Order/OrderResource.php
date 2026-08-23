@@ -33,11 +33,11 @@ class OrderResource extends JsonResource
             'reference_id'          => $this->reference_id ,
             'type'                  => $this->type,
             'status'                => $this->status,
-            'order_items'           => OrderItemResource::collection($this->items()->withTrashed()->where('final_delete', false)->get()),
+            'order_items'           => OrderItemResource::collection($this->relationLoaded('items') ? $this->items->where('final_delete', false) : $this->items()->withTrashed()->where('final_delete', false)->get()),
             'city'                  => new CityResource($this->whenLoaded('city')),
             'district'              => new DistrictResource($this->whenLoaded('district')),
             'created_at'            => $this->created_at?->format('d-m-Y'),
-            'category'              => $this->items()->where('final_delete', false)->first()?->product()->first()?->category?->name ?? '',
+            'category'              => ($this->relationLoaded('items') ? $this->items->where('final_delete', false)->first() : $this->items()->where('final_delete', false)->first())?->product?->category?->name ?? '',
             'category_type'         => $this->type,
 
             'day'                   => $delivery ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),

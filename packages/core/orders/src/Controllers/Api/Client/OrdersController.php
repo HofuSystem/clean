@@ -40,17 +40,19 @@ class OrdersController extends Controller
     public function myOrders(Request $request)
     {
         try {
-            $orders = Order::with(['orderRepresentatives'])
-                ->when($request->type == 'sales', function ($clothesOrderQuery) {
-                    $clothesOrderQuery->with('items.product')->whereIn('type', ['sales']);
-                })->when($request->type == 'clothes', function ($clothesOrderQuery) {
-                    $clothesOrderQuery->with('items.product')->whereIn('type', ['clothes', 'fastorder']);
-                })->when(($request->type != 'clothes' && $request->type != 'sales'), function ($notClothesOrderQuery) {
-                    $notClothesOrderQuery->with('moreDatas')->whereNotIn('type', ['clothes', 'fastorder', 'sales']);
-                })
-                ->where('client_id', $request->user()->id)
-                ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
-                ->latest()->paginate(10);
+            $orders = Order::with([
+                'orderRepresentatives',
+                'items' => function ($q) {
+                    $q->withTrashed()->where('final_delete', false)->with(['product.category.translations', 'qtyUpdates']);
+                },
+                'coupon.gift',
+                'city.translations',
+                'district.translations',
+                'moreDatas'
+            ])
+            ->where('client_id', $request->user()->id)
+            ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
+            ->latest()->paginate(10);
             if (in_array($request->type, ['clothes', 'fastorder', 'services', 'sales'])) {
                 return OrderResource::collection($orders)->additional(['status' => 'success', 'message' => '']);
             } else {
