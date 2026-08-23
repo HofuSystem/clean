@@ -136,6 +136,8 @@
                                         <th class="text-center">{{ trans('Online Amount') }}</th>
                                         <th class="text-center">{{ trans('Cash Operations') }}</th>
                                         <th class="text-center">{{ trans('Cash Amount') }}</th>
+                                        <th class="text-center">{{ trans('Wallet Operations') }}</th>
+                                        <th class="text-center">{{ trans('Wallet Amount') }}</th>
                                         <th class="text-center">{{ trans('Online % of Revenue') }}</th>
                                         <th class="text-center">{{ trans('Complaints') }}</th>
                                         <th class="text-center">{{ trans('Compensations') }}</th>
@@ -168,6 +170,8 @@
                                             <td class="text-center text-primary">{{ number_format($month['raw_online_ops_amount'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center">{{ number_format($month['raw_cash_ops_count']) }}</td>
                                             <td class="text-center text-secondary">{{ number_format($month['raw_cash_ops_amount'], 2) }} {{ trans('SAR') }}</td>
+                                            <td class="text-center">{{ number_format($month['raw_wallet_ops_count']) }}</td>
+                                            <td class="text-center text-dark fw-bold">{{ number_format($month['raw_wallet_ops_amount'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center fw-bold text-info">{{ number_format($month['raw_online_percentage'], 2) }}%</td>
                                             <td class="text-center text-danger">{{ number_format($month['raw_complaints_count']) }}</td>
                                             <td class="text-center text-danger fw-bold">{{ number_format($month['raw_compensations_amount'], 2) }} {{ trans('SAR') }}</td>
@@ -192,6 +196,8 @@
                                         $totalOnlineOpsAmount = collect($monthlyAnalysis)->sum('raw_online_ops_amount');
                                         $totalCashOps = collect($monthlyAnalysis)->sum('raw_cash_ops_count');
                                         $totalCashOpsAmount = collect($monthlyAnalysis)->sum('raw_cash_ops_amount');
+                                        $totalWalletOps = collect($monthlyAnalysis)->sum('raw_wallet_ops_count');
+                                        $totalWalletOpsAmount = collect($monthlyAnalysis)->sum('raw_wallet_ops_amount');
                                         $totalComplaints = collect($monthlyAnalysis)->sum('raw_complaints_count');
                                         $totalCompensations = collect($monthlyAnalysis)->sum('raw_compensations_amount');
                                         
@@ -218,6 +224,8 @@
                                         <td class="text-center text-primary">{{ number_format($totalOnlineOpsAmount, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center">{{ number_format($totalCashOps) }}</td>
                                         <td class="text-center text-secondary">{{ number_format($totalCashOpsAmount, 2) }} {{ trans('SAR') }}</td>
+                                        <td class="text-center">{{ number_format($totalWalletOps) }}</td>
+                                        <td class="text-center text-dark">{{ number_format($totalWalletOpsAmount, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center text-info">{{ number_format($totalOnlinePercentage, 2) }}%</td>
                                         <td class="text-center text-danger">{{ number_format($totalComplaints) }}</td>
                                         <td class="text-center text-danger">{{ number_format($totalCompensations, 2) }} {{ trans('SAR') }}</td>

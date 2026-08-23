@@ -33,6 +33,8 @@ class MonthlyFinancialExport implements FromArray, WithHeadings
                 $row['raw_online_ops_amount'],
                 $row['raw_cash_ops_count'],
                 $row['raw_cash_ops_amount'],
+                $row['raw_wallet_ops_count'],
+                $row['raw_wallet_ops_amount'],
                 number_format($row['raw_online_percentage'], 2) . '%',
                 $row['raw_complaints_count'],
                 $row['raw_compensations_amount'],
@@ -52,6 +54,8 @@ class MonthlyFinancialExport implements FromArray, WithHeadings
         $totalOnlineOpsAmount = collect($this->data)->sum('raw_online_ops_amount');
         $totalCashOps = collect($this->data)->sum('raw_cash_ops_count');
         $totalCashOpsAmount = collect($this->data)->sum('raw_cash_ops_amount');
+        $totalWalletOps = collect($this->data)->sum('raw_wallet_ops_count');
+        $totalWalletOpsAmount = collect($this->data)->sum('raw_wallet_ops_amount');
         $totalComplaints = collect($this->data)->sum('raw_complaints_count');
         $totalCompensations = collect($this->data)->sum('raw_compensations_amount');
         $totalRemaining = collect($this->data)->sum('raw_remaining_delivery');
@@ -75,6 +79,8 @@ class MonthlyFinancialExport implements FromArray, WithHeadings
             $totalOnlineOpsAmount,
             $totalCashOps,
             $totalCashOpsAmount,
+            $totalWalletOps,
+            $totalWalletOpsAmount,
             number_format($totalOnlinePercentage, 2) . '%',
             $totalComplaints,
             $totalCompensations,
@@ -100,6 +106,8 @@ class MonthlyFinancialExport implements FromArray, WithHeadings
             trans('Online Amount'),
             trans('Cash Operations'),
             trans('Cash Amount'),
+            trans('Wallet Operations'),
+            trans('Wallet Amount'),
             trans('Online % of Revenue'),
             trans('Complaints'),
             trans('Compensations'),

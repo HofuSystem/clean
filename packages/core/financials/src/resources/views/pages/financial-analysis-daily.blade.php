@@ -145,6 +145,8 @@
                                         <th class="text-center">{{ trans('Online Amount') }}</th>
                                         <th class="text-center">{{ trans('Cash Operations') }}</th>
                                         <th class="text-center">{{ trans('Cash Amount') }}</th>
+                                        <th class="text-center">{{ trans('Wallet Operations') }}</th>
+                                        <th class="text-center">{{ trans('Wallet Amount') }}</th>
                                         <th class="text-center">{{ trans('Average per Delivery') }}</th>
                                         <th class="text-center">{{ trans('Complaints') }}</th>
                                         
@@ -171,6 +173,8 @@
                                             <td class="text-center text-primary">{{ number_format($day['raw_online_ops_amount'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center">{{ number_format($day['raw_cash_ops_count']) }}</td>
                                             <td class="text-center text-secondary">{{ number_format($day['raw_cash_ops_amount'], 2) }} {{ trans('SAR') }}</td>
+                                            <td class="text-center">{{ number_format($day['raw_wallet_ops_count']) }}</td>
+                                            <td class="text-center text-dark fw-bold">{{ number_format($day['raw_wallet_ops_amount'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center">{{ number_format($day['raw_avg_delivery_revenue'], 2) }} {{ trans('SAR') }}</td>
                                             <td class="text-center text-danger">{{ number_format($day['raw_complaints_count']) }}</td>
                                           
@@ -190,6 +194,8 @@
                                         $totalOnlineOpsAmount = collect($dailyAnalysis)->sum('raw_online_ops_amount');
                                         $totalCashOps = collect($dailyAnalysis)->sum('raw_cash_ops_count');
                                         $totalCashOpsAmount = collect($dailyAnalysis)->sum('raw_cash_ops_amount');
+                                        $totalWalletOps = collect($dailyAnalysis)->sum('raw_wallet_ops_count');
+                                        $totalWalletOpsAmount = collect($dailyAnalysis)->sum('raw_wallet_ops_amount');
                                         $totalComplaints = collect($dailyAnalysis)->sum('raw_complaints_count');
                                         $totalCompensations = collect($dailyAnalysis)->sum('raw_compensations_amount');
                                         
@@ -218,11 +224,11 @@
                                         <td class="text-center text-primary">{{ number_format($totalOnlineOpsAmount, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center">{{ number_format($totalCashOps) }}</td>
                                         <td class="text-center text-secondary">{{ number_format($totalCashOpsAmount, 2) }} {{ trans('SAR') }}</td>
+                                        <td class="text-center">{{ number_format($totalWalletOps) }}</td>
+                                        <td class="text-center text-dark">{{ number_format($totalWalletOpsAmount, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center">{{ number_format($totalAvgDeliveryRevenue, 2) }} {{ trans('SAR') }}</td>
                                         <td class="text-center text-danger">{{ number_format($totalComplaints) }}</td>
                                         
-                                    </tr>
-                                </tbody>
                                     </tr>
                                 </tfoot>
                             </table>

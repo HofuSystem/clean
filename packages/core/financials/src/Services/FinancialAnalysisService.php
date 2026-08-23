@@ -80,8 +80,8 @@ class FinancialAnalysisService
             ->get()
             ->keyBy('m');
 
-        // 4. Online and Cash transactions grouped by month
-        $txByMonth = OrderTransaction::whereIn('order_transactions.type', ['card', 'cash'])
+        // 4. Online, Cash, and Wallet transactions grouped by month
+        $txByMonth = OrderTransaction::whereIn('order_transactions.type', ['card', 'cash', 'wallet'])
             ->join('orders', 'order_transactions.order_id', '=', 'orders.id')
             ->join('order_representatives', function($join) {
                 $join->on('orders.id', '=', 'order_representatives.order_id')
@@ -105,7 +105,9 @@ class FinancialAnalysisService
                 SUM(CASE WHEN order_transactions.type = 'card' THEN 1 ELSE 0 END) as online_count,
                 COALESCE(SUM(CASE WHEN order_transactions.type = 'card' THEN order_transactions.amount ELSE 0 END), 0) as online_amount,
                 SUM(CASE WHEN order_transactions.type = 'cash' THEN 1 ELSE 0 END) as cash_count,
-                COALESCE(SUM(CASE WHEN order_transactions.type = 'cash' THEN order_transactions.amount ELSE 0 END), 0) as cash_amount
+                COALESCE(SUM(CASE WHEN order_transactions.type = 'cash' THEN order_transactions.amount ELSE 0 END), 0) as cash_amount,
+                SUM(CASE WHEN order_transactions.type = 'wallet' AND order_transactions.amount > 0 THEN 1 ELSE 0 END) as wallet_count,
+                COALESCE(SUM(CASE WHEN order_transactions.type = 'wallet' AND order_transactions.amount > 0 THEN order_transactions.amount ELSE 0 END), 0) as wallet_amount
             ")
             ->groupBy(\Illuminate\Support\Facades\DB::raw("MONTH(order_representatives.date)"))
             ->get()
@@ -184,6 +186,8 @@ class FinancialAnalysisService
             $onlineOpsAmount = (float) ($tx->online_amount ?? 0);
             $cashOpsCount = (int) ($tx->cash_count ?? 0);
             $cashOpsAmount = (float) ($tx->cash_amount ?? 0);
+            $walletOpsCount = (int) ($tx->wallet_count ?? 0);
+            $walletOpsAmount = (float) ($tx->wallet_amount ?? 0);
 
             $complaintsCount = (int) ($complaints->complaints_count ?? 0);
             $compensationsAmount = (float) ($compensations->compensations_amount ?? 0);
@@ -216,6 +220,8 @@ class FinancialAnalysisService
                 'raw_online_ops_amount' => $onlineOpsAmount,
                 'raw_cash_ops_count' => $cashOpsCount,
                 'raw_cash_ops_amount' => $cashOpsAmount,
+                'raw_wallet_ops_count' => $walletOpsCount,
+                'raw_wallet_ops_amount' => $walletOpsAmount,
                 'raw_online_percentage' => $rawOnlinePercentage,
                 'raw_complaints_count' => $complaintsCount,
                 'raw_compensations_amount' => $compensationsAmount,
@@ -308,8 +314,8 @@ class FinancialAnalysisService
             ->get()
             ->keyBy('d');
 
-        // 4. Online & Cash transactions grouped by day
-        $txByDay = OrderTransaction::whereIn('order_transactions.type', ['card', 'cash'])
+        // 4. Online, Cash, and Wallet transactions grouped by day
+        $txByDay = OrderTransaction::whereIn('order_transactions.type', ['card', 'cash', 'wallet'])
             ->join('orders', 'order_transactions.order_id', '=', 'orders.id')
             ->join('order_representatives', function($join) {
                 $join->on('orders.id', '=', 'order_representatives.order_id')
@@ -334,7 +340,9 @@ class FinancialAnalysisService
                 SUM(CASE WHEN order_transactions.type = 'card' THEN 1 ELSE 0 END) as online_count,
                 COALESCE(SUM(CASE WHEN order_transactions.type = 'card' THEN order_transactions.amount ELSE 0 END), 0) as online_amount,
                 SUM(CASE WHEN order_transactions.type = 'cash' THEN 1 ELSE 0 END) as cash_count,
-                COALESCE(SUM(CASE WHEN order_transactions.type = 'cash' THEN order_transactions.amount ELSE 0 END), 0) as cash_amount
+                COALESCE(SUM(CASE WHEN order_transactions.type = 'cash' THEN order_transactions.amount ELSE 0 END), 0) as cash_amount,
+                SUM(CASE WHEN order_transactions.type = 'wallet' AND order_transactions.amount > 0 THEN 1 ELSE 0 END) as wallet_count,
+                COALESCE(SUM(CASE WHEN order_transactions.type = 'wallet' AND order_transactions.amount > 0 THEN order_transactions.amount ELSE 0 END), 0) as wallet_amount
             ")
             ->groupBy(\Illuminate\Support\Facades\DB::raw("DAY(order_representatives.date)"))
             ->get()
@@ -414,6 +422,8 @@ class FinancialAnalysisService
             $onlineOpsAmount = (float) ($tx->online_amount ?? 0);
             $cashOpsCount = (int) ($tx->cash_count ?? 0);
             $cashOpsAmount = (float) ($tx->cash_amount ?? 0);
+            $walletOpsCount = (int) ($tx->wallet_count ?? 0);
+            $walletOpsAmount = (float) ($tx->wallet_amount ?? 0);
 
             $complaintsCount = (int) ($complaints->complaints_count ?? 0);
             $compensationsAmount = (float) ($compensations->compensations_amount ?? 0);
@@ -444,6 +454,8 @@ class FinancialAnalysisService
                 'raw_online_ops_amount' => $onlineOpsAmount,
                 'raw_cash_ops_count' => $cashOpsCount,
                 'raw_cash_ops_amount' => $cashOpsAmount,
+                'raw_wallet_ops_count' => $walletOpsCount,
+                'raw_wallet_ops_amount' => $walletOpsAmount,
                 'raw_online_percentage' => $rawOnlinePercentage,
                 'raw_complaints_count' => $complaintsCount,
                 'raw_compensations_amount' => $compensationsAmount,

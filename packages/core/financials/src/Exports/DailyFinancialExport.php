@@ -33,6 +33,8 @@ class DailyFinancialExport implements FromArray, WithHeadings
                 $row['raw_online_ops_amount'],
                 $row['raw_cash_ops_count'],
                 $row['raw_cash_ops_amount'],
+                $row['raw_wallet_ops_count'],
+                $row['raw_wallet_ops_amount'],
                 $row['raw_avg_delivery_revenue'],
                 $row['raw_complaints_count'],
             ];
@@ -52,6 +54,8 @@ class DailyFinancialExport implements FromArray, WithHeadings
         $totalOnlineOpsAmount = collect($this->data)->sum('raw_online_ops_amount');
         $totalCashOps = collect($this->data)->sum('raw_cash_ops_count');
         $totalCashOpsAmount = collect($this->data)->sum('raw_cash_ops_amount');
+        $totalWalletOps = collect($this->data)->sum('raw_wallet_ops_count');
+        $totalWalletOpsAmount = collect($this->data)->sum('raw_wallet_ops_amount');
         $totalComplaints = collect($this->data)->sum('raw_complaints_count');
 
 
@@ -73,6 +77,8 @@ class DailyFinancialExport implements FromArray, WithHeadings
             $totalOnlineOpsAmount,
             $totalCashOps,
             $totalCashOpsAmount,
+            $totalWalletOps,
+            $totalWalletOpsAmount,
             $totalAvgDeliveryRevenue,
             $totalComplaints,
         ];
@@ -97,6 +103,8 @@ class DailyFinancialExport implements FromArray, WithHeadings
             trans('Online Amount'),
             trans('Cash Operations'),
             trans('Cash Amount'),
+            trans('Wallet Operations'),
+            trans('Wallet Amount'),
             trans('Average per Delivery'),
             trans('Complaints'),
         ];
