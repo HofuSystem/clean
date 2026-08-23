@@ -37,6 +37,7 @@ class EditProfileRequest extends FormRequest
            'other_city_name'    => 'nullable',
            'lat'                => 'nullable',
            'lng'                => 'nullable',
+           'default_language'   => 'nullable|in:ar,en',
         ];
     }
 

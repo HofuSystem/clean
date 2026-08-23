@@ -146,6 +146,14 @@ class AuthenticationController extends Controller
         ], [
             'device_token' => $request->device_token
         ]);
+
+        $langHeader = $request->header('Accept-Language') ?: $request->input('default_language');
+        if ($langHeader) {
+            $parsedLang = strtolower(substr($langHeader, 0, 2));
+            if (in_array($parsedLang, ['ar', 'en'])) {
+                $user->update(['default_language' => $parsedLang]);
+            }
+        }
         if ($request->secretKey) {
             $json = json_decode(base64_decode($request->secretKey), true);
             if (isset($json['user_id'])) {

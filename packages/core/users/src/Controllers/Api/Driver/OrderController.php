@@ -80,12 +80,13 @@ class OrderController extends Controller
 
 
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_first_driver_accepte_order', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_first_driver_accepte_order', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_first_driver_accepte_order', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_first_driver_accepte_order', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -118,12 +119,13 @@ class OrderController extends Controller
         $order->update(['status' => 'order_has_been_delivered_to_admin', 'order_status_times' => ['order_has_been_delivered_to_admin' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $order->items()->update(['is_picked' => true]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_order_has_been_delivered_to_admin', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_order_has_been_delivered_to_admin', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_order_has_been_delivered_to_admin', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_order_has_been_delivered_to_admin', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -155,13 +157,14 @@ class OrderController extends Controller
         $order->update(['status' => 'ready_to_delivered', 'order_status_times' => ['ready_to_delivered' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
 
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_in_the_way', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_in_the_way', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_ready_to_delivered', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_ready_to_delivered', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -190,13 +193,14 @@ class OrderController extends Controller
         }
         $order->update(['status' => 'in_the_way', 'order_status_times' => ['in_the_way' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
 
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_ready_to_pay', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_ready_to_pay', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_in_the_way', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_in_the_way', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -225,12 +229,13 @@ class OrderController extends Controller
         }
         $order->update(['status' => 'delivered', 'order_status_times' => ['delivered' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_delivered', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_delivered', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_delivered', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_delivered', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -345,12 +350,13 @@ class OrderController extends Controller
             ]);
         }
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
+        $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_finished', ['order_id' => $order->id], 'ar'),
-            'body'              => trans('body_finished', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], 'ar'),
+            'title'             => trans('title_finished', ['order_id' => $order->id], $clientLang),
+            'body'              => trans('body_finished', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
