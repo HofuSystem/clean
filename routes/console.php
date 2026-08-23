@@ -25,6 +25,7 @@ Schedule::command('app:daily-summary-off-added-or-removed-items')->dailyAt('23:5
 Schedule::command('app:send-celebrate-birthday-notification')->dailyAt('15:00');
 Schedule::command('app:send-no-order-period-notification')->dailyAt('12:00');
 Schedule::command('app:create-scheduled-orders')->dailyAt('18:00');
+Schedule::command('app:prune-system-records')->dailyAt('02:00');
 Schedule::command('telescope:prune --hours=48')->daily();
 
 //queue
