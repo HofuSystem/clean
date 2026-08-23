@@ -536,36 +536,47 @@ class CategoriesController extends Controller
     public function flowersAndGiftsIndex(Request $request)
     {
         try {
-            $category = Category::where('slug', 'gifts-and-flowers')->active()->first();
+            $cityId = $request->city_id ?? 'all';
+            $locale = app()->getLocale();
 
-            if (!$category) {
+            $data = \Illuminate\Support\Facades\Cache::remember("home_flowers_and_gifts_{$cityId}_{$locale}", 600, function () use ($request) {
+                $category = Category::with('translations')->where('slug', 'gifts-and-flowers')->active()->first();
+
+                if (!$category) {
+                    return null;
+                }
+
+                $sliders = Slider::with('city.translations', 'category.translations')
+                    ->active()
+                    ->where('category_id', $category->id)
+                    ->when($request->city_id, function ($q) use ($request) {
+                        $q->where('city_id', $request->city_id);
+                    })
+                    ->latest()
+                    ->get();
+
+                $subCategories = Category::with('translations')
+                    ->where('parent_id', $category->id)
+                    ->active()
+                    ->orderBy('sort', 'asc')
+                    ->get();
+
+                return [
+                    'category' => SampleCategoryResource::make($category),
+                    'sliders' => SliderResource::collection($sliders),
+                    'sub_categories' => SampleCategoryResource::collection($subCategories),
+                ];
+            });
+
+            if (!$data) {
                 return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
-
-            $sliders = Slider::with('city.translations', 'category.translations')
-                ->active()
-                ->where('category_id', $category->id)
-                ->when($request->city_id, function ($q) use ($request) {
-                    $q->where('city_id', $request->city_id);
-                })
-                ->latest()
-                ->get();
-
-            $subCategories = Category::with('translations')
-                ->where('parent_id', $category->id)
-                ->active()
-                ->orderBy('sort', 'asc')
-                ->get();
-
-            $data = [
-                'category' => SampleCategoryResource::make($category),
-                'sliders' => SliderResource::collection($sliders),
-                'sub_categories' => SampleCategoryResource::collection($subCategories),
-            ];
 
             return $this->returnData(trans('flowers and gifts loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
+        } catch (ModelNotFoundException $e) {
+            abort(404);
         } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
@@ -581,7 +592,8 @@ class CategoriesController extends Controller
                 return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
 
-            $products = Product::active()
+            $products = Product::with(['translations', 'prices', 'media'])
+                ->active()
                 ->when($request->sub_category_id, function ($q) use ($request) {
                     $q->where('sub_category_id', $request->sub_category_id);
                 }, function ($q) use ($mainCategory) {
@@ -595,6 +607,8 @@ class CategoriesController extends Controller
             return SimpleProductResource::collection($products);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
+        } catch (ModelNotFoundException $e) {
+            abort(404);
         } catch (\Throwable $e) {
             report($e);
             return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);

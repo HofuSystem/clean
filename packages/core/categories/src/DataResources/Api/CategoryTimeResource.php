@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class CategoryTimeResource extends JsonResource
 {
     public static $for;
+    public static $preloadedCounts = null;
     
     /**
      * Static array to cache order counts grouped by type
@@ -37,32 +38,50 @@ class CategoryTimeResource extends JsonResource
         // Create base cache key (without type)
         $baseKey = "{$date}_{$from}_{$to}";
         
-        // Get all counts grouped by type in a single query
+        // Get all counts grouped by type in a single query or from preloaded collection
         if (!isset(self::$dateCounts[$baseKey])) {
-            // Get test account IDs to exclude
-            $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-            
-            // Query order_representatives and get distinct order_ids grouped by type, excluding test accounts
-            $countsByType = OrderRepresentative::where('date', $date)
-                ->whereTime('time', '<=', $from)
-                ->whereTime('to_time', '>=', $to)
-                ->whereHas('order', function($orderQuery) use ($testAccounts) {
-                    if (!empty($testAccounts)) {
-                        $orderQuery->whereNotIn('client_id', $testAccounts);
-                    }
-                })
-                ->selectRaw('type, COUNT(DISTINCT order_id) as count')
-                ->groupBy('type')
-                ->pluck('count', 'type')
-                ->toArray();
+            if (self::$preloadedCounts !== null) {
+                // Read from preloaded collection in memory
+                $formattedFrom = Carbon::parse($from)->format('H:i:s');
+                $formattedTo = Carbon::parse($to)->format('H:i:s');
 
-            
-            // Store all counts in cache
-            self::$dateCounts[$baseKey] = [
-                'receiver' => $countsByType['receiver'] ?? 0,
-                'delivery' => $countsByType['delivery'] ?? 0,
-                'all' => ($countsByType['receiver'] ?? 0) + ($countsByType['delivery'] ?? 0),
-            ];
+                $matching = self::$preloadedCounts->filter(function ($item) use ($date, $formattedFrom, $formattedTo) {
+                    return $item->date == $date
+                        && $item->time <= $formattedFrom
+                        && $item->to_time >= $formattedTo;
+                });
+
+                $receiverCount = (int) $matching->where('type', 'receiver')->sum('count');
+                $deliveryCount = (int) $matching->where('type', 'delivery')->sum('count');
+
+                self::$dateCounts[$baseKey] = [
+                    'receiver' => $receiverCount,
+                    'delivery' => $deliveryCount,
+                    'all'      => $receiverCount + $deliveryCount,
+                ];
+            } else {
+                // Fallback for isolated single calls
+                $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+                
+                $countsByType = OrderRepresentative::where('date', $date)
+                    ->whereTime('time', '<=', $from)
+                    ->whereTime('to_time', '>=', $to)
+                    ->whereHas('order', function($orderQuery) use ($testAccounts) {
+                        if (!empty($testAccounts)) {
+                            $orderQuery->whereNotIn('client_id', $testAccounts);
+                        }
+                    })
+                    ->selectRaw('type, COUNT(DISTINCT order_id) as count')
+                    ->groupBy('type')
+                    ->pluck('count', 'type')
+                    ->toArray();
+
+                self::$dateCounts[$baseKey] = [
+                    'receiver' => $countsByType['receiver'] ?? 0,
+                    'delivery' => $countsByType['delivery'] ?? 0,
+                    'all' => ($countsByType['receiver'] ?? 0) + ($countsByType['delivery'] ?? 0),
+                ];
+            }
         }
          // Determine type based on self::$for
          if (self::$for == 'receiver') {

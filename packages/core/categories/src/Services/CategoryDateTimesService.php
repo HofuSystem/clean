@@ -266,10 +266,33 @@ class CategoryDateTimesService
         }
         return $categoryDates;
     }
-    public static function getDateTimesFormatted($for = 'all', $categoryDates){
-        $dates =  $categoryDates->pluck('date')->unique();
+    public static function getDateTimesFormatted($for = 'all', $categoryDates = null){
+        if (!$categoryDates) {
+            return [];
+        }
+        $dates = $categoryDates->pluck('date')->unique()->filter()->values()->toArray();
         $dateTimes  =   [];
         CategoryTimeResource::$for = $for;
+
+        // Batch pre-fetch all order representative counts for the date range
+        if (!empty($dates)) {
+            $minDate = min($dates);
+            $maxDate = max($dates);
+            $testAccounts = \Core\Settings\Services\SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+
+            CategoryTimeResource::$preloadedCounts = \Core\Orders\Models\OrderRepresentative::whereBetween('date', [$minDate, $maxDate])
+                ->whereHas('order', function($orderQuery) use ($testAccounts) {
+                    if (!empty($testAccounts)) {
+                        $orderQuery->whereNotIn('client_id', $testAccounts);
+                    }
+                })
+                ->selectRaw('date, time, to_time, type, COUNT(DISTINCT order_id) as count')
+                ->groupBy('date', 'time', 'to_time', 'type')
+                ->get();
+        } else {
+            CategoryTimeResource::$preloadedCounts = collect();
+        }
+
         foreach ($dates as $date) {
             $times          = $categoryDates->sortBy('from')->filter(function ($item) use ($date) {
                 return $item->date == $date;
@@ -291,6 +314,10 @@ class CategoryDateTimesService
                 $dateTimes[] = $datetime;
             }
         }
+
+        // Reset static property
+        CategoryTimeResource::$preloadedCounts = null;
+
         return $dateTimes;
     }
 
