@@ -604,40 +604,21 @@ class CategoriesController extends Controller
     public function flowersAndGiftsProducts(Request $request)
     {
         try {
-            $mainCategory = Category::whereIn('slug', ['gifts-and-flowers', 'flowers-and-gifts'])
-                ->orWhere(function ($q) {
-                    $q->where('type', 'sales')->whereNull('parent_id');
-                })
-                ->active()
-                ->first();
+            $mainCategory = Category::where('slug', 'gifts-and-flowers')->active()->first();
 
-            $subCategoryIds = [];
-            $allCategoryIds = [];
-            if ($mainCategory) {
-                $subCategoryIds = Category::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
-                $allCategoryIds = array_merge([$mainCategory->id], $subCategoryIds);
+            if (!$mainCategory) {
+                return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
 
-            $subCatId = $request->sub_category_id ?? $request->category_id;
-            $hasSpecificSubCat = !empty($subCatId) && $subCatId !== 'all' && $subCatId !== '0';
-
-            $products = Product::with(['translations', 'prices', 'media'])
+            $products = Product::with(['translations', 'prices'])
                 ->active()
-                ->when($hasSpecificSubCat, function ($q) use ($subCatId) {
-                    $q->where(function ($sq) use ($subCatId) {
-                        $sq->where('sub_category_id', $subCatId)
-                           ->orWhere('category_id', $subCatId);
-                    });
-                }, function ($q) use ($allCategoryIds) {
-                    if (!empty($allCategoryIds)) {
-                        $q->where(function ($sq) use ($allCategoryIds) {
-                            $sq->whereIn('category_id', $allCategoryIds)
-                               ->orWhereIn('sub_category_id', $allCategoryIds)
-                               ->orWhere('type', 'sales');
-                        });
-                    } else {
-                        $q->where('type', 'sales');
-                    }
+                ->when($request->sub_category_id, function ($q) use ($request) {
+                    $q->where('sub_category_id', $request->sub_category_id);
+                }, function ($q) use ($mainCategory) {
+                    $q->where('category_id', $mainCategory->id);
+                })
+                ->where(function ($q) {
+                    $q->where('display_as', 'main')->orWhereNull('display_as');
                 })
                 ->paginate();
 
