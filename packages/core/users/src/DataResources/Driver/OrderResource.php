@@ -51,7 +51,7 @@ class OrderResource extends JsonResource
             'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
 
             'created_at'            => $this->created_at->format('d-m-Y'),
-            'category'              => $this->items()->first()?->product()->first()?->category?->name ?? '',
+            'category'              => ($this->relationLoaded('items') ? $this->items->first() : $this->items()->first())?->product?->category?->name ?? '',
             'category_type'         => $this->type ,
             'status'                => $this->status,
             'address_description'   => $this->addressDescription,

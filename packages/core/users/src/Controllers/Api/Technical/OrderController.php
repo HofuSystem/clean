@@ -22,14 +22,37 @@ class OrderController extends Controller
     use ApiResponse;
     public function index(Request $request)
     {
-        $orders = Order::where('is_admin_accepted', true)->whereIn('type', ['services', 'maidflex', 'maidscheduled', 'maidPackage', 'maidoffer', 'host', 'care', 'selfcare'])->hasRepresentatives('technical',auth('api')->id())->latest()->paginate(10);
+        $orders = Order::with([
+            'orderRepresentatives.address.city.translations',
+            'orderRepresentatives.address.district.translations',
+            'client.profile',
+            'company',
+            'coupon',
+            'items.product.category.translations',
+            'transactions'
+        ])
+            ->where('is_admin_accepted', true)
+            ->whereIn('type', ['services', 'maidflex', 'maidscheduled', 'maidPackage', 'maidoffer', 'host', 'care', 'selfcare'])
+            ->hasRepresentatives('technical', auth('api')->id())
+            ->latest()
+            ->paginate(10);
         return $this->returnData('data', OrderResource::collection($orders)->response()->getData(true));
 
     }
 
     public function show($order_id)
     {
-        $order = Order::with('transactions')->findOrFail($order_id);
+        $order = Order::with([
+            'orderRepresentatives.address.city.translations',
+            'orderRepresentatives.address.district.translations',
+            'client.profile',
+            'company',
+            'coupon',
+            'items.product.category.translations',
+            'address',
+            'transactions',
+            'reports'
+        ])->findOrFail($order_id);
         if($order->type=='services'){
             $order = new OrderDetailsResource($order);
         }else{

@@ -22,7 +22,16 @@ class OrderController extends Controller
     use ApiResponse;
     public function index(Request $request)
     {
-        $orders = Order::where('is_admin_accepted', true)
+        $orders = Order::with([
+            'orderRepresentatives.address.city.translations',
+            'orderRepresentatives.address.district.translations',
+            'client.profile',
+            'company',
+            'coupon',
+            'items.product.category.translations',
+            'transactions'
+        ])
+            ->where('is_admin_accepted', true)
             ->when($request->status_type == 'receipt', function ($q) use ($request) {
                 $q->hasRepresentatives('receiver', auth('api')->id())
                     ->whereIn('orders.type', ['clothes', 'fastorder'])
@@ -64,7 +73,17 @@ class OrderController extends Controller
 
     public function show($order_id)
     {
-        $order = Order::with('transactions')->findOrFail($order_id);
+        $order = Order::with([
+            'orderRepresentatives.address.city.translations',
+            'orderRepresentatives.address.district.translations',
+            'client.profile',
+            'company',
+            'coupon',
+            'items.product.category.translations',
+            'address',
+            'transactions',
+            'reports'
+        ])->findOrFail($order_id);
         return $this->returnData('data', ['data' =>  new OrderDetailsResource($order)]);
     }
 

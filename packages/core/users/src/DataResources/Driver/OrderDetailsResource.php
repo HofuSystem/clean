@@ -22,7 +22,9 @@ class OrderDetailsResource extends JsonResource
     public function toArray($request)
     {
         $is_report = false ;
-        $report = OrderReport::where('order_id',$this->id)->where('user_id',auth('api')->id())->first();
+        $report = $this->relationLoaded('reports')
+            ? $this->reports->where('user_id', auth('api')->id())->first()
+            : OrderReport::where('order_id', $this->id)->where('user_id', auth('api')->id())->first();
         if($report){
             $is_report = true ;
         }
@@ -57,7 +59,7 @@ class OrderDetailsResource extends JsonResource
             'reference_id'          => $this->reference_id,
             'type'                  => $this->type ,
             'client'                => new SimpleUserResource($this->client),
-            'order_items'           => OrderItemResource::collection($this->items()->withTrashed()->get()),
+            'order_items'           => OrderItemResource::collection($this->relationLoaded('items') ? $this->items : $this->items()->withTrashed()->get()),
 
             'day'                   => $delivery ? Carbon::parse($delivery?->date)->format('l') : Carbon::parse($receiver?->date)->format('l'),
             'date'                  => $delivery ? Carbon::parse($delivery?->date)->format('Y-m-d') : Carbon::parse($receiver?->date)->format('Y-m-d'),
@@ -69,7 +71,7 @@ class OrderDetailsResource extends JsonResource
             'receiving_day'         => $receiver ? Carbon::parse($receiver?->date)->format('l') : Carbon::parse($delivery?->date)->format('l'),
             'receiving_date'        => $receiver ? Carbon::parse($receiver?->date)->format('Y-m-d') : Carbon::parse($delivery?->date)->format('Y-m-d'),
             'receiving_from_time'   => $receiver ? Carbon::parse($receiver?->time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
-            'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->to_time)->format('H:i'),
+            'receiving_to_time'     => $receiver ? Carbon::parse($receiver?->to_time)->format('H:i') : Carbon::parse($delivery?->time)->format('H:i'),
             
             'lat'                   => $lat,
             'lng'                   => $lng,
@@ -77,11 +79,11 @@ class OrderDetailsResource extends JsonResource
             'building_image'        => \Core\MediaCenter\Helpers\MediaCenterHelper::getImagesUrl($this->address?->image ?? $delivery?->address?->image ?? $receiver?->address?->image),
 
             'created_at'            => $this->created_at->format('d-m-Y'),
-            'category'              => $this->items()->first()?->product()->first()?->category?->name ?? '',
+            'category'              => ($this->relationLoaded('items') ? $this->items->first() : $this->items()->first())?->product?->category?->name ?? '',
             'category_type'         => $this->type ,
             'pay_type'              => $this->pay_type ,
             'total_price'           => (int)$this->total_price ,
-            'returned_to_customer'  => (double)abs($this->transactions()->where('amount','<',0)->sum('amount')) ?? 0 ,
+            'returned_to_customer'  => (double)abs(($this->relationLoaded('transactions') ? $this->transactions : $this->transactions())->where('amount','<',0)->sum('amount')) ?? 0 ,
             'status'                => $this->status,
             'is_report'             => $is_report ,
             'pay_type_method'       => $this->pay_type,
