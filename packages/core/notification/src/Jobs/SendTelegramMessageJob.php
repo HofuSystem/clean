@@ -28,11 +28,15 @@ class SendTelegramMessageJob implements ShouldQueue
             $botToken = "7970295502:AAHmfUgGNGPyHp8RoDKiEZ4G6vdrdiMg0B0";
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
 
-            Http::timeout(10)->post($url, [
+            $response = Http::timeout(10)->post($url, [
                 'chat_id'    => $this->chatId,
                 'text'       => $this->message,
                 'parse_mode' => 'HTML',
             ]);
+
+            if ($response->failed()) {
+                Log::error('Telegram API Error: ' . $response->body());
+            }
         } catch (\Throwable $e) {
             Log::error('SendTelegramMessageJob failed: ' . $e->getMessage());
         }
