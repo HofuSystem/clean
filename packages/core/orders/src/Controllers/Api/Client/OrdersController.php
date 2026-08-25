@@ -52,6 +52,17 @@ class OrdersController extends Controller
             ])
             ->where('client_id', $request->user()->id)
             ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
+            ->when($request->type, function ($query) use ($request) {
+                if ($request->type == 'clothes') {
+                    $query->whereIn('type', ['clothes', 'fastorder']);
+                } elseif ($request->type == 'services') {
+                    $query->where('type', 'services');
+                } elseif ($request->type == 'sales') {
+                    $query->where('type', 'sales');
+                } else {
+                    $query->where('type', $request->type);
+                }
+            })
             ->latest()->paginate(10);
             if (in_array($request->type, ['clothes', 'fastorder', 'services', 'sales'])) {
                 return OrderResource::collection($orders)->additional(['status' => 'success', 'message' => '']);
