@@ -20,29 +20,27 @@ class FCMService
         return new static();
     }
 
-    public function getFcmConfigFromFile()
+    public  function getFcmConfigFromFile()
     {
-        return \Illuminate\Support\Facades\Cache::rememberForever('fcm_config_file', function () {
-            $filePath = base_path('fcm.json');
-            if (file_exists($filePath)) {
-                return json_decode(file_get_contents($filePath), true);
-            }
-            return [];
-        });
+        $fileBath = base_path('fcm.json');
+       
+        if (file_exists($fileBath)) {
+            $content = file_get_contents($fileBath);
+            return json_decode($content, true);
+        }
+        return [];
     }
-
     public function getAccessToken($config)
     {
-        // Cache access token for 50 minutes (Google tokens expire in 60 min)
-        return \Illuminate\Support\Facades\Cache::remember('fcm_access_token', 50 * 60, function () use ($config) {
-            $client = new Client();
-            $client->setAuthConfig($config);
-            $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-            return $client->fetchAccessTokenWithAssertion()['access_token'];
-        });
+        $client = new Client();
+        $client->setAuthConfig($config);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        return  $client->fetchAccessTokenWithAssertion()['access_token'];
     }
     public function manageTopicSubscription(string $type = 'add', array $deviceTokens, string $topic, string $accessToken)
-    {
+    {   
+        $message = "manageTopicSubscription: $type: $topic: of ".count($deviceTokens)." tokens";
+        app(TelegramNotificationService::class)->sendMessage('@itcleanstation',$message);
         $url    = ($type == "add") ? "https://iid.googleapis.com/iid/v1:batchAdd" : "https://iid.googleapis.com/iid/v1:batchRemove";
         $data   = [
             'to' => "/topics/" . $topic,

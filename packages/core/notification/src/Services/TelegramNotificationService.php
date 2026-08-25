@@ -1,4 +1,4 @@
-`<?php
+<?php
 
 namespace Core\Notification\Services;
 
@@ -8,8 +8,6 @@ use Core\Settings\Helpers\ToolHelper;
 use Core\Users\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
-use Core\Notification\Jobs\SendTelegramMessageJob;
 
 class TelegramNotificationService
 {
@@ -32,10 +30,17 @@ class TelegramNotificationService
             return;
         }
 
-        // Dispatch to queue instead of blocking the HTTP request
-        SendTelegramMessageJob::dispatch($chatId, $message);
+        try {
+            $url = "https://api.telegram.org/bot{$this->botToken}/sendMessage";
+            $respnse = Http::timeout(5)->post($url, [
+                'chat_id' => $chatId,
+                'text' => $message,
+                'parse_mode' => 'HTML',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send Telegram notification: ' . $e->getMessage());
+        }
     }
-
 
     public function formatExceptionMessage(\Throwable $exception): string
     {

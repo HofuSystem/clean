@@ -149,9 +149,9 @@ class CategoriesController extends Controller
     {
         try {
             $locale = app()->getLocale();
+            $userId = auth('api')->id() ?? 'guest';
             $cityId = auth('api')->user()?->profile?->city_id ?? ($request->city_id ?? 'all');
-            // Note: userId removed from cache key — product data is the same for all users
-            $cacheKey = "api_category_clothes_details_v3_{$categoryId}_{$cityId}_{$locale}";
+            $cacheKey = "api_category_clothes_details_v3_{$categoryId}_{$cityId}_{$locale}_{$userId}";
 
             $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function () use ($categoryId, $request) {
                 $category = Category::with([
@@ -308,32 +308,23 @@ class CategoriesController extends Controller
     public function homeMaidIndex(Request $request)
     {
         try {
-            $cityId = $request->city_id ?? 'all';
-            $locale = app()->getLocale();
+            $slider = Slider::with(['city.translations', 'category.translations'])
+                ->where('type', 'maid')
+                ->when($request->city_id, function ($q) use ($request) {
+                    $q->where('city_id', $request->city_id);
+                })->latest()->get();
 
-            [$slider, $sales, $childs] = \Illuminate\Support\Facades\Cache::remember("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
-                $slider = Slider::with(['city.translations', 'category.translations'])
-                    ->where('type', 'maid')
-                    ->when($request->city_id, function ($q) use ($request) {
-                        $q->where('city_id', $request->city_id);
-                    })->latest()->get();
-
-                $sales = CategoryOffer::with('translations')
-                    ->active()
-                    ->whereType('home_maid_sale')->get();
-
-                $childs = Category::with('translations')
-                    ->whereNotNull('parent_id')
-                    ->whereHas('parent', function ($parentQuery) {
-                        $parentQuery->where('slug', 'maid-host');
-                    })->get();
-
-                return [$slider, $sales, $childs];
-            });
-
+            $sales = CategoryOffer::with('translations')
+                ->active()
+                ->whereType('home_maid_sale')->get();
+            $childs = Category::with('translations')
+                ->whereNotNull('parent_id')
+                ->whereHas('parent', function ($parentQuery) {
+                    $parentQuery->where('slug', 'maid-host');
+                })->get();
             $data = [
-                'slider'       => SliderResource::collection($slider),
-                'sales'        => HomeMaidSaleResource::collection($sales),
+                'slider' => SliderResource::collection($slider),
+                'sales' => HomeMaidSaleResource::collection($sales),
                 'sub_services' => SubServiceResource::collection($childs),
             ];
 
@@ -437,40 +428,38 @@ class CategoriesController extends Controller
     public function hostIndex(Request $request)
     {
         try {
-            $cityId = $request->city_id ?? 'all';
-            $locale = app()->getLocale();
+            $slider = Slider::where('type', 'host')
+                ->active()
+                ->when($request->city_id, function ($q) use ($request) {
+                    $q->where('city_id', $request->city_id);
+                })
+                ->latest()->get();
 
-            [$slider, $careHost, $sales] = \Illuminate\Support\Facades\Cache::remember("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
-                $slider = Slider::where('type', 'host')
-                    ->active()
-                    ->when($request->city_id, function ($q) use ($request) {
-                        $q->where('city_id', $request->city_id);
-                    })
-                    ->latest()->get();
+            $sales = CategoryOffer::whereType('host_care_sale')
+                ->active()
+                ->where('sale_price', '!=', 'null')
+                ->when($request->city_id, function ($q) use ($request) {
+                    $q->where('city_id', $request->city_id);
+                })->get();
 
-                $careHost = Category::whereIn('slug', ['hospitality-services', 'care-service', 'selfcare-service'])
-                    ->active()
-                    ->with([
-                        'translations',
-                        'subCategories' => function ($query) {
-                            $query->active()->with('translations');
-                        }
-                    ])
-                    ->when($request->city_id, function ($q) use ($request) {
-                        $q->where('city_id', $request->city_id);
-                    })->get();
+            $careHost = Category::whereIn('slug', ['hospitality-services', 'care-service', 'selfcare-service'])
+                ->active()
+                ->with([
+                    'subCategories' => function ($query) {
+                        $query->active();
+                    }
+                ])
+                ->when($request->city_id, function ($q) use ($request) {
+                    $q->where('city_id', $request->city_id);
+                })->get();
 
-                $sales = CategoryOffer::active()->whereType('care_host_sale')->with('translations')->get();
-
-                return [$slider, $careHost, $sales];
-            });
+            $sales = CategoryOffer::active()->whereType('care_host_sale')->get();
 
             $data = [
-                'slider'    => SliderResource::collection($slider),
+                'slider' => SliderResource::collection($slider),
                 'care_host' => CareHostServiceResource::collection($careHost),
-                'sales'     => HomeMaidSaleResource::collection($sales),
+                'sales' => HomeMaidSaleResource::collection($sales),
             ];
-
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
