@@ -24,6 +24,7 @@ class SendTelegramMessageJob implements ShouldQueue
 
     public function handle(): void
     {
+        Log::info('Telegram Job Started for chat: ' . $this->chatId);
         try {
             $botToken = "7970295502:AAHmfUgGNGPyHp8RoDKiEZ4G6vdrdiMg0B0";
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
