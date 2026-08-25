@@ -311,7 +311,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            $data = \Illuminate\Support\Facades\Cache::remember("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
+            [$slider, $sales, $childs] = \Illuminate\Support\Facades\Cache::remember("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
                 $slider = Slider::with(['city.translations', 'category.translations'])
                     ->where('type', 'maid')
                     ->when($request->city_id, function ($q) use ($request) {
@@ -328,12 +328,14 @@ class CategoriesController extends Controller
                         $parentQuery->where('slug', 'maid-host');
                     })->get();
 
-                return [
-                    'slider'       => SliderResource::collection($slider),
-                    'sales'        => HomeMaidSaleResource::collection($sales),
-                    'sub_services' => SubServiceResource::collection($childs),
-                ];
+                return [$slider, $sales, $childs];
             });
+
+            $data = [
+                'slider'       => SliderResource::collection($slider),
+                'sales'        => HomeMaidSaleResource::collection($sales),
+                'sub_services' => SubServiceResource::collection($childs),
+            ];
 
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
@@ -438,7 +440,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            $data = \Illuminate\Support\Facades\Cache::remember("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
+            [$slider, $careHost, $sales] = \Illuminate\Support\Facades\Cache::remember("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
                 $slider = Slider::where('type', 'host')
                     ->active()
                     ->when($request->city_id, function ($q) use ($request) {
@@ -460,12 +462,14 @@ class CategoriesController extends Controller
 
                 $sales = CategoryOffer::active()->whereType('care_host_sale')->with('translations')->get();
 
-                return [
-                    'slider'    => SliderResource::collection($slider),
-                    'care_host' => CareHostServiceResource::collection($careHost),
-                    'sales'     => HomeMaidSaleResource::collection($sales),
-                ];
+                return [$slider, $careHost, $sales];
             });
+
+            $data = [
+                'slider'    => SliderResource::collection($slider),
+                'care_host' => CareHostServiceResource::collection($careHost),
+                'sales'     => HomeMaidSaleResource::collection($sales),
+            ];
 
             return $this->returnData(trans('services are loaded'), ['data' => $data]);
         } catch (ValidationException $e) {
