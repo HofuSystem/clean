@@ -8,6 +8,7 @@ use Core\Info\DataResources\Api\DistrictResource;
 use Core\Orders\Models\OrderReport;
 use Core\Orders\DataResources\Api\Client\Order\OrderTransactionsResource;
 use Core\Users\DataResources\Api\SimpleUserResource;
+use Core\Users\DataResources\Driver\OrderItemResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderDetailsResource extends JsonResource
