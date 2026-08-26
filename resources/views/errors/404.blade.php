@@ -42,7 +42,7 @@
             justify-content: center;
         }
         .logo {
-            height: 60px;
+            height: 95px;
             object-fit: contain;
             opacity: 0.95;
         }
