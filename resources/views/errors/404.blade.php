@@ -8,79 +8,136 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            --brand-color: #0ea5e9;
+            --brand-hover: #0284c7;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #f8fafc;
+        }
         body {
+            margin: 0;
+            padding: 0;
             font-family: 'Tajawal', 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            direction: {{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }};
         }
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0px, 0px) scale(1); }
+        .container {
+            max-width: 600px;
+            padding: 40px 20px;
+            background: transparent;
         }
-        .animate-blob {
-            animation: blob 7s infinite;
+        .logo-container {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
         }
-        .animation-delay-2000 {
-            animation-delay: 2s;
+        .logo {
+            height: 60px;
+            object-fit: contain;
+            opacity: 0.95;
         }
-        .animation-delay-4000 {
-            animation-delay: 4s;
+        .error-code {
+            font-size: 140px;
+            font-weight: 300;
+            line-height: 1;
+            margin: 0;
+            color: var(--brand-color);
+            letter-spacing: -4px;
+        }
+        .error-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--text-main);
+        }
+        .error-desc {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px; /* Pill shape for a modern look */
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background-color: var(--brand-color);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
+        }
+        .btn-primary:hover {
+            background-color: var(--brand-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-muted);
+            border-color: #e5e7eb;
+        }
+        .btn-secondary:hover {
+            border-color: #d1d5db;
+            color: var(--text-main);
+            background-color: #ffffff;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 480px) {
+            .error-code { font-size: 90px; letter-spacing: -2px; }
+            .error-title { font-size: 22px; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
-<body class="antialiased bg-brand-50 min-h-screen flex items-center justify-center relative overflow-hidden">
-    
-    <!-- Decorative background elements -->
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-    <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-accent-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-    <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-
-    <div class="relative z-10 text-center px-4 md:px-0 w-full max-w-4xl mx-auto">
-        
-        <!-- Logo -->
-        <div class="mb-12 flex justify-center">
+<body>
+    <div class="container">
+        <div class="logo-container">
             @if(config('app.logo'))
-                <img src="{{ config('app.logo') }}" alt="Clean Station Logo" class="h-20 md:h-24 object-contain drop-shadow-md">
+                <img src="{{ config('app.logo') }}" alt="Clean Station" class="logo">
             @else
-                <h2 class="text-4xl font-extrabold text-brand-800 tracking-wider">Clean Station</h2>
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--brand-color); margin: 0;">Clean Station</h2>
             @endif
         </div>
 
-        <!-- 404 Text -->
-        <div class="relative inline-block">
-            <h1 class="text-9xl md:text-[14rem] font-black tracking-tighter mb-2 text-transparent bg-clip-text bg-gradient-to-br from-brand-600 to-brand-400 drop-shadow-2xl select-none" style="line-height: 1;">
-                404
-            </h1>
-            <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-full h-4 bg-black opacity-10 blur-md rounded-[100%]"></div>
-        </div>
+        <h1 class="error-code">404</h1>
         
-        <!-- Messages -->
-        <div class="space-y-5 mb-12 mt-8">
-            <h3 class="text-3xl md:text-5xl font-extrabold text-dark-900 drop-shadow-sm">
-                عفواً! يبدو أن هذه المحطة غير موجودة.
-            </h3>
-            <p class="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                الصفحة التي تبحث عنها ربما تم إزالتها، أو تغير اسمها، أو غير متاحة مؤقتاً. دعنا نعود بك إلى المحطة الرئيسية.
-            </p>
-        </div>
+        <h3 class="error-title">عفواً، الصفحة غير موجودة</h3>
+        
+        <p class="error-desc">
+            يبدو أن الصفحة التي تحاول الوصول إليها قد تم نقلها أو أنها غير متاحة حالياً. لا تقلق، دعنا نعود بك إلى بر الأمان.
+        </p>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-            <a href="{{ url('/') }}" class="group relative inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 text-lg font-bold text-white transition-all duration-300 bg-brand-600 border border-transparent rounded-2xl hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-600 shadow-[0_8px_30px_rgb(14,165,233,0.3)] hover:shadow-[0_8px_30px_rgb(14,165,233,0.5)] transform hover:-translate-y-1">
-                <span>العودة للرئيسية</span>
-                <svg class="w-5 h-5 ml-2 mr-3 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
-            
-            <button onclick="window.history.back()" class="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 text-lg font-bold text-brand-700 transition-all duration-300 bg-white border border-brand-200 rounded-2xl hover:bg-brand-50 hover:border-brand-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-200 shadow-sm transform hover:-translate-y-1">
-                الرجوع للخلف
-            </button>
+        <div class="actions">
+            <a href="{{ url('/') }}" class="btn btn-primary">العودة للرئيسية</a>
+            <button onclick="window.history.back()" class="btn btn-secondary">الرجوع للخلف</button>
         </div>
     </div>
 </body>
