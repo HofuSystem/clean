@@ -29,6 +29,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * @group 1. Client App
+ * @subgroup Auth
+ * @unauthenticated
+ */
 class AuthenticationController extends Controller
 {
     use ApiResponse;
@@ -90,15 +95,18 @@ class AuthenticationController extends Controller
             if ($notifyTypes and !empty($notifyTypes)) {
                 $message = trans('verified_code_is : ') . $code;
                 $title = 'verify message';
-                Notification::create([
-                    'types' => json_encode($notifyTypes),
-                    'for' => 'users',
-                    'for_data' => json_encode([$user->id]),
-                    'payload' => json_encode([]),
-                    'title' => $title,
-                    'body' => $message,
-                    'sender_id' => null,
-                ]);
+                $notification = \Core\Notification\Models\Notification::withoutEvents(function () use ($notifyTypes, $user, $title, $message) {
+                    return \Core\Notification\Models\Notification::create([
+                        'types' => json_encode($notifyTypes),
+                        'for' => 'users',
+                        'for_data' => json_encode([$user->id]),
+                        'payload' => json_encode([]),
+                        'title' => $title,
+                        'body' => $message,
+                        'sender_id' => null,
+                    ]);
+                });
+                \Core\Notification\Helpers\NotificationsManger::getInstance()->sendNotification($notification);
             }
             $user->update(['verified_code' => $code]);
 
@@ -195,15 +203,18 @@ class AuthenticationController extends Controller
                     $code = mt_rand(1111, 9999); // random code
                     $message = trans('verified_code_is : ') . $code;
                     $title = 'verify message';
-                    Notification::create([
-                        'types' => json_encode($notifyTypes),
-                        'for' => 'users',
-                        'for_data' => json_encode([$user->id]),
-                        'payload' => json_encode([]),
-                        'title' => $title,
-                        'body' => $message,
-                        'sender_id' => null,
-                    ]);
+                    $notification = \Core\Notification\Models\Notification::withoutEvents(function () use ($notifyTypes, $user, $title, $message) {
+                        return \Core\Notification\Models\Notification::create([
+                            'types' => json_encode($notifyTypes),
+                            'for' => 'users',
+                            'for_data' => json_encode([$user->id]),
+                            'payload' => json_encode([]),
+                            'title' => $title,
+                            'body' => $message,
+                            'sender_id' => null,
+                        ]);
+                    });
+                    \Core\Notification\Helpers\NotificationsManger::getInstance()->sendNotification($notification);
                 }
             }
             $user->update(['verified_code' => $code]);
