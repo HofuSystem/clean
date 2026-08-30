@@ -86,7 +86,15 @@ Route::get('/docs.openapi', function () {
     if (!file_exists($path)) {
         abort(404, 'OpenAPI spec not found.');
     }
-    return response()->file($path, [
+    
+    $content = file_get_contents($path);
+    $appUrl = config('app.url');
+    // Replace the hardcoded server URL dynamically
+    $content = preg_replace('/(servers:\s*-\s*url:\s*)[\'"].*?[\'"]/', '$1\'' . $appUrl . '\'', $content);
+    // Fallback replace any other instances
+    $content = str_replace('http://localhost:8000', $appUrl, $content);
+    
+    return response($content, 200, [
         'Content-Type' => 'text/yaml'
     ]);
 })->name('docs.openapi');
