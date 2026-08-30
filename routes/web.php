@@ -58,7 +58,7 @@ Route::group(
 
     });
 
-$protectDocs = function ($request, $next) {
+Route::get('/api-docs', function () {
     $username = env('API_DOCS_USERNAME', 'admin');
     $password = env('API_DOCS_PASSWORD', 'cleanstation');
 
@@ -68,19 +68,25 @@ $protectDocs = function ($request, $next) {
         echo 'You are not authorized to view the API documentation.';
         exit;
     }
-    return $next($request);
-};
+    return view('api-docs');
+})->name('api-docs');
 
-Route::middleware($protectDocs)->group(function () {
-    Route::view('/api-docs', 'api-docs')->name('api-docs');
-    
-    Route::get('/docs.openapi', function () {
-        $path = storage_path('app/private/scribe/openapi.yaml');
-        if (!file_exists($path)) {
-            abort(404, 'OpenAPI spec not found.');
-        }
-        return response()->file($path, [
-            'Content-Type' => 'text/yaml'
-        ]);
-    })->name('docs.openapi');
-});
+Route::get('/docs.openapi', function () {
+    $username = env('API_DOCS_USERNAME', 'admin');
+    $password = env('API_DOCS_PASSWORD', 'cleanstation');
+
+    if (!isset($_SERVER['PHP_AUTH_USER']) || $_SERVER['PHP_AUTH_USER'] !== $username || $_SERVER['PHP_AUTH_PW'] !== $password) {
+        header('WWW-Authenticate: Basic realm="CleanStation API Docs"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo 'You are not authorized to view the API documentation.';
+        exit;
+    }
+
+    $path = storage_path('app/private/scribe/openapi.yaml');
+    if (!file_exists($path)) {
+        abort(404, 'OpenAPI spec not found.');
+    }
+    return response()->file($path, [
+        'Content-Type' => 'text/yaml'
+    ]);
+})->name('docs.openapi');
