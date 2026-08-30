@@ -30,8 +30,17 @@ class OrderDetailsResource extends JsonResource
             $is_report = true ;
         }
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
+        if ($receiver && $receiver->address) {
+            $receiver->address->loadMissing(['city', 'district']);
+        }
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
+        if ($delivery && $delivery->address) {
+            $delivery->address->loadMissing(['city', 'district']);
+        }
         $technical = $this->orderRepresentatives->where('type','technical')->first();
+        if ($technical && $technical->address) {
+            $technical->address->loadMissing(['city', 'district']);
+        }
         if($technical){
             $delivery = $technical;
         }

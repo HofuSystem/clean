@@ -10,6 +10,10 @@ use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @group 1. Client App
+ * @subgroup Coupons & Gifts
+ */
 class GiftsController extends Controller
 {
     use ApiResponse;
@@ -50,8 +54,12 @@ class GiftsController extends Controller
                 'data' => new GiftApiResource($gift)
             ]);
         }
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->returnErrorMessage(trans('Gift not found'), [], [], 404);
+        }
         catch (\Exception $e) {
-            return $this->returnErrorMessage($e->getMessage(), [], [], $e->getCode());
+            $statusCode = is_numeric($e->getCode()) && $e->getCode() >= 100 && $e->getCode() < 600 ? $e->getCode() : 400;
+            return $this->returnErrorMessage($e->getMessage(), [], [], $statusCode);
         }
     }
 

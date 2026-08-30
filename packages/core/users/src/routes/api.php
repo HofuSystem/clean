@@ -91,5 +91,5 @@ Route::group([
 ], function () {
     Route::get('/profile', [TechnicalAuthController::class, 'profile']);
     Route::post('/edit_profile', [TechnicalAuthController::class, 'edit_profile']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [TechnicalAuthController::class, 'logout']);
 });

@@ -17,20 +17,31 @@ use Core\Users\Models\Point;
 use Core\Users\Requests\Api\OrderReportRequest;
 use Core\Wallet\Models\WalletTransaction;
 
+/**
+ * @group 3. Technician App
+ * @subgroup Orders
+ */
 class OrderController extends Controller
 {
+    public const EAGER_LOADS = [
+        'orderRepresentatives.address.city.translations',
+        'orderRepresentatives.address.district.translations',
+        'client.profile.city.translations',
+        'client.profile.district.translations',
+        'company',
+        'coupon',
+        'items.product.category.translations',
+        'items.product.subCategory.translations',
+        'items.product.prices',
+        'items.product.translations',
+        'transactions',
+        'reports'
+    ];
+
     use ApiResponse;
     public function index(Request $request)
     {
-        $orders = Order::with([
-            'orderRepresentatives.address.city.translations',
-            'orderRepresentatives.address.district.translations',
-            'client.profile',
-            'company',
-            'coupon',
-            'items.product.category.translations',
-            'transactions'
-        ])
+        $orders = Order::with(self::EAGER_LOADS)
             ->where('is_admin_accepted', true)
             ->whereIn('type', ['services', 'maidflex', 'maidscheduled', 'maidPackage', 'maidoffer', 'host', 'care', 'selfcare'])
             ->hasRepresentatives('technical', auth('api')->id())
@@ -42,16 +53,12 @@ class OrderController extends Controller
 
     public function show($order_id)
     {
-        $order = Order::with([
-            'orderRepresentatives.address.city.translations',
-            'orderRepresentatives.address.district.translations',
-            'client.profile',
-            'company',
-            'coupon',
-            'items.product.category.translations',
-            'transactions',
-            'reports'
-        ])->findOrFail($order_id);
+        $order = Order::with(self::EAGER_LOADS)->find($order_id);
+        
+        if (!$order) {
+            return $this->returnErrorMessage(trans('order_not_found'), [], [], 404);
+        }
+
         if($order->type=='services'){
             $order = new OrderDetailsResource($order);
         }else{
@@ -94,6 +101,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_accepted'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -130,6 +138,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_change_status'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -166,6 +175,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_change_status'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -324,6 +334,7 @@ class OrderController extends Controller
             ]);
         }
         
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_finished'), ['data' =>  new OrderDetailsResource($order)]);
     }
 

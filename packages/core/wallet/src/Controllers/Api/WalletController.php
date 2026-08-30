@@ -17,6 +17,10 @@ use Core\Wallet\Services\WalletTransactionsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+/**
+ * @group 1. Client App
+ * @subgroup Wallet
+ */
 class WalletController extends Controller
 {
     use ApiResponse;

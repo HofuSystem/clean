@@ -369,12 +369,12 @@ class User extends Authenticatable
     }
     public function notifications()
     {
-        return $this->morphedByMany(Notification::class, 'notifications', 'users_notifications');
+        return $this->morphedByMany(Notification::class, 'notifications', 'users_notifications')->withPivot('read_at');
     }
 
     public function bannerNotifications()
     {
-        return $this->morphedByMany(BannerNotification::class, 'notifications', 'users_notifications');
+        return $this->morphedByMany(BannerNotification::class, 'notifications', 'users_notifications')->withPivot('read_at');
     }
 
     public function unreadNotifications()

@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
+/**
+ * @group 1. Client App
+ * @subgroup Profile
+ */
 class AddressesController extends Controller
 {
     use ApiResponse;
@@ -25,7 +29,7 @@ class AddressesController extends Controller
     {
         try {
             $user = Auth::user();
-            $addresses = $user->addresses()->latest('updated_at')->get();
+            $addresses = $user->addresses()->with(['city.translations', 'district.translations'])->latest('updated_at')->get();
 
             return $this->returnData(trans('addresses'),['data'=>AddressesResource::collection($addresses)]);
         }catch(ValidationException $e){
@@ -51,6 +55,7 @@ class AddressesController extends Controller
                 ->first();
             DB::beginTransaction();
             $record = $this->addressesService->storeOrUpdate($data,$address?->id);
+            $record->load(['city.translations', 'district.translations']);
             DB::commit();
             return $this->returnData(trans('address add successfully'),['data'=>new AddressesResource($record)]);
         }catch(ValidationException $e){
@@ -71,6 +76,7 @@ class AddressesController extends Controller
         try {
             DB::beginTransaction();
             $record = $this->addressesService->storeOrUpdate($data,$id);
+            $record->load(['city.translations', 'district.translations']);
             DB::commit();
             return $this->returnData(trans('address update successfully'),['data'=>new AddressesResource($record)]);
         }catch(ValidationException $e){

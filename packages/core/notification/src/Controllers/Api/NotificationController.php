@@ -14,6 +14,10 @@ use Core\Users\DataResources\UserProfileResource;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @group 4. General & Settings
+ * @subgroup Settings
+ */
 class NotificationController extends Controller
 {
     use ApiResponse;
@@ -45,20 +49,31 @@ class NotificationController extends Controller
 
     public function show($id)
     {
-        $notification = auth('api')->user()->notifications()->findOrFail($id);
-        if (is_null($notification->read_at)) {
-            $notification->update(['read_at' => now()]);
+        try {
+            $notification = auth('api')->user()->notifications()->findOrFail($id);
+            if (is_null($notification->pivot->read_at)) {
+                $notification->pivot->update(['read_at' => now()]);
+            }
+            return $this->returnData(trans('notification'),['data'=>new NotificationsResource($notification)]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->returnErrorMessage(trans('Notification not found'), [], [], 404);
+        } catch (\Exception $e) {
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
         }
-        return $this->returnData(trans('notification'),['data'=>new NotificationsResource($notification)]);
-
     }
 
 
     public function destroy($id)
     {
-        $notification = Notification::findOrFail($id);
-        $notification->delete();
-        return $this->returnSuccessMessage(trans('deleted successfully'));
+        try {
+            $notification = Notification::findOrFail($id);
+            $notification->delete();
+            return $this->returnSuccessMessage(trans('deleted successfully'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->returnErrorMessage(trans('Notification not found'), [], [], 404);
+        } catch (\Exception $e) {
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], [], 422);
+        }
     }
 
     public function allow_notify(Request $request){

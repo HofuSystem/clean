@@ -9,6 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Profile\EditProfileRequest;
 
 
+/**
+ * @group 1. Client App
+ * @subgroup Auth
+ */
 class UserController extends Controller
 {
     use ApiResponse;

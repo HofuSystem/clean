@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 
+/**
+ * @group 1. Client App
+ * @subgroup Profile
+ */
 class FavsController extends Controller
 {
     use ApiResponse;

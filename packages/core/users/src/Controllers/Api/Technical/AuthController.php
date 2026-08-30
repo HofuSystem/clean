@@ -12,6 +12,10 @@ use Core\Users\Requests\Api\ProviderLoginRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @group 3. Technician App
+ * @subgroup Auth
+ */
 class AuthController extends Controller
 {
     use ApiResponse;

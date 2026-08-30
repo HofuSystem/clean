@@ -31,6 +31,10 @@ use Core\Users\Models\Address;
 use Illuminate\Validation\ValidationException;
 use Core\PaymentGateways\Services\MyFatoorahService;
 
+/**
+ * @group 1. Client App
+ * @subgroup Orders & Cart
+ */
 class OrdersController extends Controller
 {
     use ApiResponse;
@@ -41,7 +45,7 @@ class OrdersController extends Controller
     {
         try {
             $orders = Order::with([
-                'orderRepresentatives',
+                'orderRepresentatives.address',
                 'items' => function ($q) {
                     $q->withTrashed()->where('final_delete', false)->with(['product.category.translations', 'qtyUpdates']);
                 },

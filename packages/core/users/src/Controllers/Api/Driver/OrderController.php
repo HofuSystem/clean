@@ -17,20 +17,31 @@ use Core\Wallet\Models\WalletTransaction;
 use Illuminate\Http\Request;
 
 
+/**
+ * @group 2. Driver App
+ * @subgroup Orders
+ */
 class OrderController extends Controller
 {
+    public const EAGER_LOADS = [
+        'orderRepresentatives.address.city.translations',
+        'orderRepresentatives.address.district.translations',
+        'client.profile.city.translations',
+        'client.profile.district.translations',
+        'company',
+        'coupon',
+        'items.product.category.translations',
+        'items.product.subCategory.translations',
+        'items.product.prices',
+        'items.product.translations',
+        'transactions',
+        'reports'
+    ];
+
     use ApiResponse;
     public function index(Request $request)
     {
-        $orders = Order::with([
-            'orderRepresentatives.address.city.translations',
-            'orderRepresentatives.address.district.translations',
-            'client.profile',
-            'company',
-            'coupon',
-            'items.product.category.translations',
-            'transactions'
-        ])
+        $orders = Order::with(self::EAGER_LOADS)
             ->where('is_admin_accepted', true)
             ->when($request->status_type == 'receipt', function ($q) use ($request) {
                 $q->hasRepresentatives('receiver', auth('api')->id())
@@ -73,16 +84,13 @@ class OrderController extends Controller
 
     public function show($order_id)
     {
-        $order = Order::with([
-            'orderRepresentatives.address.city.translations',
-            'orderRepresentatives.address.district.translations',
-            'client.profile',
-            'company',
-            'coupon',
-            'items.product.category.translations',
-            'transactions',
-            'reports'
-        ])->findOrFail($order_id);
+        $order = Order::with(self::EAGER_LOADS)->find($order_id);
+        
+        if (!$order) {
+            return $this->returnErrorMessage(trans('order_not_found'), [], [], 404);
+        }
+
+        $order->load(self::EAGER_LOADS);
         return $this->returnData('data', ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -124,6 +132,7 @@ class OrderController extends Controller
             ]);
         }
 
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_accepted'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -161,6 +170,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_delivered'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -200,6 +210,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_accepted'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -236,6 +247,7 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_change_status'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -311,6 +323,7 @@ class OrderController extends Controller
                 ]);
             }
         }
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_delivered'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
@@ -430,6 +443,7 @@ class OrderController extends Controller
             ]);
         }
 
+        $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_finished'), ['data' =>  new OrderDetailsResource($order)]);
     }
 

@@ -49,6 +49,10 @@ use Core\Products\DataResources\Api\SimpleProductResource;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Products\DataResources\Api\ProductServiceSettingResource;
 
+/**
+ * @group 1. Client App
+ * @subgroup Categories
+ */
 class CategoriesController extends Controller
 {
     use ApiResponse;
@@ -64,7 +68,7 @@ class CategoriesController extends Controller
             $locale = app()->getLocale();
 
             $slider = \Illuminate\Support\Facades\Cache::remember("home_slider_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
-                return Slider::with('city.translations', 'category.translations')
+                return Slider::with('city.translations', 'category.translations', 'currentSliderView')
                     ->active()
                     ->where('type', 'clothes')
                     ->when($request->city_id, function ($q) use ($request) {
@@ -73,7 +77,7 @@ class CategoriesController extends Controller
             });
 
             $clothesCategory = \Illuminate\Support\Facades\Cache::remember("home_categories_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
-                return Category::with('translations')
+                return Category::with(['translations', 'cities'])
                     ->whereNull('parent_id')
                     ->where('type', 'clothes')
                     ->where('is_package', false)
@@ -85,7 +89,7 @@ class CategoriesController extends Controller
             });
 
             $economyBags = \Illuminate\Support\Facades\Cache::remember("home_economy_bags_{$locale}", 600, function () {
-                return Category::with(['translations', 'products.translations', 'products.prices'])
+                return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations'])
                     ->active()
                     ->with([
                         'products' => function ($query) {
@@ -238,7 +242,8 @@ class CategoriesController extends Controller
             $locale = app()->getLocale();
 
             $slider = \Illuminate\Support\Facades\Cache::remember("home_services_slider_{$cityId}_{$locale}", 600, function () use ($request) {
-                return Slider::where('type', 'services')
+                return Slider::with('city.translations', 'category.translations', 'currentSliderView')
+                    ->where('type', 'services')
                     ->active()
                     ->when($request->city_id, function ($q) use ($request) {
                         $q->where('city_id', $request->city_id);
@@ -246,7 +251,8 @@ class CategoriesController extends Controller
             });
 
             $servicesCategory = \Illuminate\Support\Facades\Cache::remember("home_services_categories_{$cityId}_{$locale}", 600, function () use ($request) {
-                return Category::where('type', 'services')
+                return Category::with(['translations', 'cities'])
+                    ->where('type', 'services')
                     ->active()
                     ->whereNull('parent_id')
                     ->orderBy('sort', 'asc')
@@ -279,7 +285,7 @@ class CategoriesController extends Controller
         try {
             $locale = app()->getLocale();
             $category = \Illuminate\Support\Facades\Cache::remember("api_services_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
-                return Category::with(['translations', 'products.translations', 'appFeatures.translations'])
+                return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations', 'appFeatures.translations'])
                     ->active()
                     ->with([
                         'products' => function ($query) {
@@ -312,7 +318,7 @@ class CategoriesController extends Controller
             $locale = app()->getLocale();
 
             [$slider, $sales, $childs] = \Illuminate\Support\Facades\Cache::remember("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
-                $slider = Slider::with(['city.translations', 'category.translations'])
+                $slider = Slider::with(['city.translations', 'category.translations', 'currentSliderView'])
                     ->where('type', 'maid')
                     ->when($request->city_id, function ($q) use ($request) {
                         $q->where('city_id', $request->city_id);
@@ -322,7 +328,7 @@ class CategoriesController extends Controller
                     ->active()
                     ->whereType('home_maid_sale')->get();
 
-                $childs = Category::with('translations')
+                $childs = Category::with(['translations', 'cities'])
                     ->whereNotNull('parent_id')
                     ->whereHas('parent', function ($parentQuery) {
                         $parentQuery->where('slug', 'maid-host');
@@ -441,7 +447,8 @@ class CategoriesController extends Controller
             $locale = app()->getLocale();
 
             [$slider, $careHost, $sales] = \Illuminate\Support\Facades\Cache::remember("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
-                $slider = Slider::where('type', 'host')
+                $slider = Slider::with(['city.translations', 'category.translations', 'currentSliderView'])
+                    ->where('type', 'host')
                     ->active()
                     ->when($request->city_id, function ($q) use ($request) {
                         $q->where('city_id', $request->city_id);
@@ -453,7 +460,7 @@ class CategoriesController extends Controller
                     ->with([
                         'translations',
                         'subCategories' => function ($query) {
-                            $query->active()->with('translations');
+                            $query->active()->with(['translations', 'cities']);
                         }
                     ])
                     ->when($request->city_id, function ($q) use ($request) {
@@ -504,7 +511,7 @@ class CategoriesController extends Controller
     public function hostOrderDetails($serviceId)
     {
         try {
-            $service = Category::active()
+            $service = Category::with(['translations', 'categoryTypes.translations'])->active()
                 ->findOrFail($serviceId);
             return (new HostOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
         } catch (ValidationException $e) {
@@ -520,7 +527,7 @@ class CategoriesController extends Controller
     public function careOrderDetails($serviceId)
     {
         try {
-            $service = Category::active()
+            $service = Category::with(['translations', 'categoryTypes.translations'])->active()
                 ->findOrFail($serviceId);
             return (new CareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
         } catch (ValidationException $e) {
@@ -535,7 +542,7 @@ class CategoriesController extends Controller
     public function selfCareOrderDetails($serviceId)
     {
         try {
-            $service = Category::active()->findOrFail($serviceId);
+            $service = Category::with(['translations', 'categoryTypes.translations'])->active()->findOrFail($serviceId);
             return (new SelfCareOrderDetailsResource($service))->additional(['status' => 'success', 'message' => '']);
         } catch (ValidationException $e) {
             return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
@@ -568,13 +575,13 @@ class CategoriesController extends Controller
             $locale = app()->getLocale();
 
             $data = \Illuminate\Support\Facades\Cache::remember("home_flowers_and_gifts_{$cityId}_{$locale}", 600, function () use ($request) {
-                $category = Category::with('translations')->where('slug', 'gifts-and-flowers')->active()->first();
+                $category = Category::with(['translations', 'cities'])->where('slug', 'gifts-and-flowers')->active()->first();
 
                 if (!$category) {
                     return null;
                 }
 
-                $sliders = Slider::with('city.translations', 'category.translations')
+                $sliders = Slider::with(['city.translations', 'category.translations', 'currentSliderView'])
                     ->active()
                     ->where('category_id', $category->id)
                     ->when($request->city_id, function ($q) use ($request) {
@@ -583,7 +590,7 @@ class CategoriesController extends Controller
                     ->latest()
                     ->get();
 
-                $subCategories = Category::with('translations')
+                $subCategories = Category::with(['translations', 'cities'])
                     ->where('parent_id', $category->id)
                     ->active()
                     ->orderBy('sort', 'asc')
@@ -620,7 +627,7 @@ class CategoriesController extends Controller
                 return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
 
-            $products = Product::with(['translations', 'prices'])
+            $products = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
                 ->active()
                 ->when($request->sub_category_id, function ($q) use ($request) {
                     $q->where('sub_category_id', $request->sub_category_id);
@@ -646,7 +653,9 @@ class CategoriesController extends Controller
     public function flowersAndGiftsProductDetails(Request $request, $id)
     {
         try {
-            $product = Product::active()->findOrFail($id);
+            $product = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
+                ->active()
+                ->findOrFail($id);
 
             $productSettings = ProductSetting::whereNull('parent_id')
                 ->active()
@@ -672,7 +681,8 @@ class CategoriesController extends Controller
                 ])
                 ->get();
 
-            $addons = Product::active()
+            $addons = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
+                ->active()
                 ->where('display_as', 'addon')
                 ->where('category_id', $product->category_id)
                 ->get();

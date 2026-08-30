@@ -16,7 +16,7 @@ class CareOrderDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $additionalFeatures = CategorySetting::whereHas('category',function($categoryQuery){
+        $additionalFeatures = CategorySetting::with(['addonPrices', 'translations', 'categorySettings.translations', 'categorySettings.addonPrices'])->whereHas('category',function($categoryQuery){
             $categoryQuery->where('slug','care-service');
         })
         ->where('addon_price','!=',null)
@@ -24,13 +24,13 @@ class CareOrderDetailsResource extends JsonResource
         ->active()
         ->get();
 
-        $careDuration  = CategorySetting::whereHas('parent',function($parentQuery){
+        $careDuration  = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','care-duration');
         })
         ->active()
         ->get();
 
-        $period         = CategorySetting::whereHas('parent',function($parentQuery){
+        $period         = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','period');
         })
         ->active()

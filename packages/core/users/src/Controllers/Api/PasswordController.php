@@ -16,6 +16,10 @@ use Core\Users\Models\Device;
 use Core\Users\Models\PasswordRestCode;
 use Core\Users\Models\User;
 
+/**
+ * @group 1. Client App
+ * @subgroup Auth
+ */
 class PasswordController extends Controller
 {
     use ApiResponse;

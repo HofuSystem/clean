@@ -7,6 +7,10 @@ use Core\Info\Services\CoverageNotificationService;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group 4. General & Settings
+ * @subgroup Geography
+ */
 class CoverageNotificationController extends Controller
 {
     use ApiResponse;

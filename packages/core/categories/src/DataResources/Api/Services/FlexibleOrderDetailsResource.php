@@ -17,18 +17,18 @@ class FlexibleOrderDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $workersNumber = CategorySetting::whereHas('parent',function($parentQuery){
+        $workersNumber = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','workers-number');
         })
         ->active()
         ->get();
-        $hoursNumber   = CategorySetting::whereHas('parent',function($parentQuery){
+        $hoursNumber   = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','number-of-service-hours');
         })
         ->active()
         ->get();
 
-        $nationalities   = CategorySetting::whereHas('parent',function($parentQuery){
+        $nationalities   = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','nationalities');
         })
         ->active()

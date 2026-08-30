@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Core\Orders\Services\CartsService;
 
+/**
+ * @group 1. Client App
+ * @subgroup Orders & Cart
+ */
 class CartsController extends Controller
 {
     use ApiResponse;

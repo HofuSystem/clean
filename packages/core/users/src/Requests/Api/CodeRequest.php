@@ -4,6 +4,10 @@ namespace Core\Users\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @bodyParam phone string required
+ * @bodyParam code string required
+ */
 class CodeRequest extends FormRequest
 {
     /**

@@ -12,6 +12,10 @@ use Core\Info\Services\CitiesService;
 use Illuminate\Http\Request;
 
 
+/**
+ * @group 4. General & Settings
+ * @subgroup Geography
+ */
 class DistrictsController extends Controller
 {
     use ApiResponse;

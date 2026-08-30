@@ -18,7 +18,7 @@ class MonthlyPackagesOrderDetailsResource extends JsonResource
     public function toArray($request)
     {
         $workers            = Worker::where('status','active')->get();
-        $contractDuration   = CategorySetting::whereHas('parent',function($parentQuery){
+        $contractDuration   = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','contract duration');
         })
         ->active()

@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 
+/**
+ * @group 1. Client App
+ * @subgroup Profile
+ */
 class PointsController extends Controller
 {
     use ApiResponse;

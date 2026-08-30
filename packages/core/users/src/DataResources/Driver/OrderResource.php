@@ -20,7 +20,13 @@ class OrderResource extends JsonResource
     public function toArray($request)
     { 
         $receiver = $this->orderRepresentatives->where('type','receiver')->first();
+        if ($receiver && $receiver->address) {
+            $receiver->address->loadMissing(['city', 'district']);
+        }
         $delivery = $this->orderRepresentatives->where('type','delivery')->first();
+        if ($delivery && $delivery->address) {
+            $delivery->address->loadMissing(['city', 'district']);
+        }
         $driverStatus = in_array($this->status, ['pending', 'receiving_driver_accepted', 'order_has_been_delivered_to_admin']) ? 'receiver' : 'delivery';
         if($this->type =='sales'){
             $driverStatus = 'delivery';

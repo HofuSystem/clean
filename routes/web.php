@@ -57,3 +57,17 @@ Route::group(
 
 
     });
+
+Route::get('/api-docs', function () {
+    $username = env('API_DOCS_USERNAME', 'admin');
+    $password = env('API_DOCS_PASSWORD', 'cleanstation');
+
+    if (!isset($_SERVER['PHP_AUTH_USER']) || $_SERVER['PHP_AUTH_USER'] !== $username || $_SERVER['PHP_AUTH_PW'] !== $password) {
+        header('WWW-Authenticate: Basic realm="CleanStation API Docs"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo 'You are not authorized to view the API documentation.';
+        exit;
+    }
+
+    return view('api-docs');
+})->name('api-docs');

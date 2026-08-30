@@ -16,7 +16,7 @@ class SelfCareOrderDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $additionalFeatures = CategorySetting::whereHas('category',function($categoryQuery){
+        $additionalFeatures = CategorySetting::with(['addonPrices', 'translations', 'categorySettings.translations', 'categorySettings.addonPrices'])->whereHas('category',function($categoryQuery){
             $categoryQuery->where('slug','selfcare-service');
         })
         ->where('addon_price','!=',null)
@@ -24,7 +24,7 @@ class SelfCareOrderDetailsResource extends JsonResource
         ->active()
         ->get();
 
-        $serviceDuration = CategorySetting::whereHas('parent',function($parentQuery){
+        $serviceDuration = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','service-duration');
         })
         ->active()

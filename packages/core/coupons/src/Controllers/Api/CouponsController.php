@@ -12,11 +12,23 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @group 1. Client App
+ * @subgroup Coupons & Gifts
+ */
 class CouponsController extends Controller
 {
     use ApiResponse;
     public function __construct(protected CouponsService $couponsService) {}
 
+    /**
+     * Get Coupon
+     * 
+     * @queryParam code string required The coupon code. Example: BACK75
+     * @queryParam order_type string required The order type. Example: clothes
+     * @queryParam products_ids int[] The products ids.
+     * @queryParam order_total numeric required The order total. Example: 190
+     */
     public function get(FindCouponsRequest $request) {
         $userId = Auth::user()->id;
         $code = $request->code;

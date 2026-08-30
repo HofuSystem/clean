@@ -18,19 +18,19 @@ class HostOrderDetailsResource extends JsonResource
     public function toArray($request)
     {
    
-        $uniform       = CategorySetting::whereHas('parent',function($parentQuery){
+        $uniform       = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','uniform');
         })
         ->active()
         ->get();
         
-        $workers_num  = CategorySetting::whereHas('parent',function($parentQuery){
+        $workers_num  = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','number-of-workers');
         })
         ->active()
         ->get();
         
-        $period       = CategorySetting::whereHas('parent',function($parentQuery){
+        $period       = CategorySetting::with(['addonPrices', 'translations'])->whereHas('parent',function($parentQuery){
             $parentQuery->where('slug','period');
         })
         ->active()

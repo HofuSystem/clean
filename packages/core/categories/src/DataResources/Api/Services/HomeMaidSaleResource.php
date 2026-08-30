@@ -19,11 +19,11 @@ class HomeMaidSaleResource extends JsonResource
     public function toArray($request)
     {
         if($this->type=='home_maid_sale'){
-            $cities = Category::whereSlug('maid-host')
+            $cities = Category::with('cities')->whereSlug('maid-host')
             ->active()->first()
             ->cities->pluck('id');
         }elseif($this->type=='care_host_sale'){
-            $cities = Category::whereIn('slug',['host-service','care-service','selfcare-service'])
+            $cities = Category::with('cities')->whereIn('slug',['host-service','care-service','selfcare-service'])
             ->active()->first()
             ->cities->pluck('id');
         }

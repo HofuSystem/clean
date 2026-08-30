@@ -31,7 +31,7 @@ class ServiceSettingResource extends JsonResource
             'color'         => $this->color ,
             'price'         => ToolHelper::getPriceBasedOnCurrentWeekDay($price),
             'cost'          => $cost,
-            'sub_settings'  => ServiceSettingResource::collection($this->categorySettings),
+            'sub_settings'  => $this->relationLoaded('categorySettings') && $this->categorySettings->isNotEmpty() ? ServiceSettingResource::collection($this->categorySettings) : [],
         ];
     }
 }

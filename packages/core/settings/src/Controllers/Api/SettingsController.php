@@ -8,6 +8,10 @@ use Core\Settings\Services\SettingsService;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group 4. General & Settings
+ * @subgroup Settings
+ */
 class SettingsController extends Controller
 {
     use ApiResponse;

@@ -5,6 +5,9 @@ namespace Core\Users\Requests\Api;
 use Core\Settings\Services\SettingsService;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @bodyParam phone string required
+ */
 class LoginRequest extends FormRequest
 {
     /**
