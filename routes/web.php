@@ -58,7 +58,7 @@ Route::group(
 
     });
 
-Route::get('/api-docs', function () {
+$protectDocs = function ($request, $next) {
     $username = env('API_DOCS_USERNAME', 'admin');
     $password = env('API_DOCS_PASSWORD', 'cleanstation');
 
@@ -68,6 +68,19 @@ Route::get('/api-docs', function () {
         echo 'You are not authorized to view the API documentation.';
         exit;
     }
+    return $next($request);
+};
 
-    return view('api-docs');
-})->name('api-docs');
+Route::middleware($protectDocs)->group(function () {
+    Route::view('/api-docs', 'api-docs')->name('api-docs');
+    
+    Route::get('/docs.openapi', function () {
+        $path = storage_path('app/private/scribe/openapi.yaml');
+        if (!file_exists($path)) {
+            abort(404, 'OpenAPI spec not found.');
+        }
+        return response()->file($path, [
+            'Content-Type' => 'text/yaml'
+        ]);
+    })->name('docs.openapi');
+});
