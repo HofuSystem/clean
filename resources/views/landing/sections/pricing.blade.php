@@ -308,9 +308,24 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-[13px] pagination-container">
                                 @php
-                                    $groupedProducts = $category->products->groupBy(function($p) {
-                                        $enName = $p->translate('en') ? $p->translate('en')->name : $p->name;
-                                        return strtolower(trim($enName));
+                                    $filteredProducts = $category->products->filter(function($p) {
+                                        $n = mb_strtolower($p->name);
+                                        return $p->price > 0 && !str_contains($n, 'استرداد') && !str_contains($n, 'رسوم') && !str_contains($n, 'fee');
+                                    });
+
+                                    $groupedProducts = $filteredProducts->groupBy(function($p) use ($isRtl) {
+                                        if ($isRtl) {
+                                            $arName = $p->translate('ar') ? $p->translate('ar')->name : $p->name;
+                                            $s = mb_strtolower(trim($arName));
+                                            $s = preg_replace('/[أإآ]/u', 'ا', $s);
+                                            $s = preg_replace('/[ة]/u', 'ه', $s);
+                                            $s = preg_replace('/[ى]/u', 'ي', $s);
+                                            $s = preg_replace('/\s+/u', ' ', $s);
+                                            return $s;
+                                        } else {
+                                            $enName = $p->translate('en') ? $p->translate('en')->name : $p->name;
+                                            return strtolower(trim(preg_replace('/\s+/', ' ', $enName)));
+                                        }
                                     });
                                 @endphp
                                 
@@ -320,17 +335,20 @@
                                         $washIron = $products->first(function($p) {
                                             if (!$p->subCategory) return true;
                                             $slug = strtolower($p->subCategory->slug);
-                                            return str_contains($slug, 'wash') && str_contains($slug, 'iron');
+                                            $name = strtolower($p->subCategory->name ?? '');
+                                            return ($slug === 'carpet' || str_contains($slug, 'wash') || str_contains($name, 'غسيل') || str_contains($name, 'wash')) && !str_contains($slug, 'dry') && !str_contains($name, 'جاف');
                                         });
                                         $ironOnly = $products->first(function($p) {
                                             if (!$p->subCategory) return false;
                                             $slug = strtolower($p->subCategory->slug);
-                                            return str_contains($slug, 'iron') && !str_contains($slug, 'wash');
+                                            $name = strtolower($p->subCategory->name ?? '');
+                                            return (str_contains($slug, 'iron') || str_contains($name, 'كوي') || str_contains($name, 'كي')) && !str_contains($slug, 'wash') && !str_contains($name, 'غسيل');
                                         });
                                         $dryClean = $products->first(function($p) {
                                             if (!$p->subCategory) return false;
                                             $slug = strtolower($p->subCategory->slug);
-                                            return str_contains($slug, 'dry');
+                                            $name = strtolower($p->subCategory->name ?? '');
+                                            return str_contains($slug, 'dry') || str_contains($name, 'جاف') || str_contains($name, 'dry');
                                         });
                                         
                                         if (!$washIron && !$ironOnly && !$dryClean) {
