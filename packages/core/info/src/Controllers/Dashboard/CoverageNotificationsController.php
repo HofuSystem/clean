@@ -17,8 +17,8 @@ class CoverageNotificationsController extends Controller
         $title  = trans('Coverage Requests');
         $screen = 'coverage-notifications-index';
         $total  = CoverageNotification::count();
-        $cities = \Core\Info\Models\City::all();
-        $districts = \Core\Info\Models\District::all();
+        $cities = \Core\Info\Models\City::with('translations')->get();
+        $districts = \Core\Info\Models\District::with('translations')->get();
 
         return view('info::pages.coverage_notifications.list', compact('title', 'screen', 'total', 'cities', 'districts'));
     }

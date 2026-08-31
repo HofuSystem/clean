@@ -79,6 +79,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \Core\Orders\Commands\UpdateOrdersWashTypes::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(\App\Http\Middleware\RedirectLegacyUrls::class);
+
         // Add route-record to the API middleware group
         $middleware->group('api', [
             \Core\Admin\Http\Middleware\RouteRecordMiddleware::class,

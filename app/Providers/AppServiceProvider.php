@@ -27,8 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
-        // Prevent lazy loading in non-production environments to catch N+1 queries early
-        Model::preventLazyLoading(! app()->isProduction());
+        // Model::preventLazyLoading(! app()->isProduction());
         // Register the global observer for all models
         Coupon::observe(GlobalModelObserver::class);
     }

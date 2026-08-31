@@ -44,7 +44,7 @@ class ComparisonsService
 
         $recordsTotal       = Comparison::underMyControl()->count();
         $recordsFiltered    = Comparison::underMyControl()->search()->count();
-        $records            = Comparison::underMyControl()->select(['id','order','is_active'])
+        $records            = Comparison::underMyControl()->with('translations')->select(['id','order','is_active'])
         ->search()->dataTable()->get();
         
         return [

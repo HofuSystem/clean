@@ -44,7 +44,7 @@ class WorkStepsService
 
         $recordsTotal       = WorkStep::underMyControl()->count();
         $recordsFiltered    = WorkStep::underMyControl()->search()->count();
-        $records            = WorkStep::underMyControl()->select(['id','icon','order','is_active'])
+        $records            = WorkStep::underMyControl()->with('translations')->select(['id','icon','order','is_active'])
         ->search()->dataTable()->get();
         
         return [

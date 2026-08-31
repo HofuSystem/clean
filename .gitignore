@@ -26,3 +26,9 @@ yarn-error.log
 .qodo
 fcm.json
 testingfiles/*
+/cleanstation.app
+/scratch
+*.docx
+categories_dump.txt
+/.agents
+CleanStation_Master_*.md

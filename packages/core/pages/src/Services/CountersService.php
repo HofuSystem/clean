@@ -44,7 +44,7 @@ class CountersService
 
         $recordsTotal       = Counter::underMyControl()->count();
         $recordsFiltered    = Counter::underMyControl()->search()->count();
-        $records            = Counter::underMyControl()->select(['id','count','is_active'])
+        $records            = Counter::underMyControl()->with('translations')->select(['id','count','is_active'])
         ->search()->dataTable()->get();
         
         return [

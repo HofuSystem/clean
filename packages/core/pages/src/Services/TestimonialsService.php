@@ -44,7 +44,7 @@ class TestimonialsService
 
         $recordsTotal       = Testimonial::underMyControl()->count();
         $recordsFiltered    = Testimonial::underMyControl()->search()->count();
-        $records            = Testimonial::underMyControl()->select(['id','avatar','rating','is_active'])
+        $records            = Testimonial::underMyControl()->with('translations')->select(['id','avatar','rating','is_active'])
         ->search()->dataTable()->get();
         
         return [

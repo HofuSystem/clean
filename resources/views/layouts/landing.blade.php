@@ -174,18 +174,7 @@
                 lti('pageloaded');
 
                 // 5. Google Analytics (gtag.js)
-                var gaScript1 = document.createElement('script');
-                gaScript1.async = true;
-                gaScript1.src = 'https://www.googletagmanager.com/gtag/js?id=G-X8KY7HG0VB';
-                var firstScrGa = document.getElementsByTagName('script')[0];
-                firstScrGa.parentNode.insertBefore(gaScript1, firstScrGa);
-                gtag('config', 'G-X8KY7HG0VB');
-
-                var gaScript2 = document.createElement('script');
-                gaScript2.async = true;
-                gaScript2.src = 'https://www.googletagmanager.com/gtag/js?id=G-JM4ZEBBXSJ';
-                firstScrGa.parentNode.insertBefore(gaScript2, firstScrGa);
-                gtag('config', 'G-JM4ZEBBXSJ');
+                // GA4 tags removed to prevent double page_view. GTM (GTM-WQTQ9CV) is the primary management layer.
             }
 
             var trackingTimeout = setTimeout(initTracking, 4000);
@@ -650,6 +639,7 @@
     {{-- ============================================================ --}}
     {{-- Schema Markup / JSON-LD – Rich Snippets                     --}}
     {{-- ============================================================ --}}
+    @yield('schema')
 
     @if(request()->routeIs('home'))
         @if(LaravelLocalization::getCurrentLocale() === 'ar')

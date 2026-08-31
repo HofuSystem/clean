@@ -44,7 +44,7 @@ class ReasonsService
 
         $recordsTotal       = Reason::underMyControl()->count();
         $recordsFiltered    = Reason::underMyControl()->search()->count();
-        $records            = Reason::underMyControl()->select(['id'])
+        $records            = Reason::underMyControl()->with('translations')->select(['id'])
         ->search()->dataTable()->get();
 
         return [

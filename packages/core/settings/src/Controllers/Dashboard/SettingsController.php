@@ -19,7 +19,7 @@ class SettingsController extends Controller
         $screen     = 'settings-index';
         $settings   = Setting::all()->keyBy('key')->map(function($settings){return $settings->value;}); 
         $users      = User::select('id','fullname','phone')->get();
-        $cities     = \Core\Info\Models\City::all();
+        $cities     = \Core\Info\Models\City::with('translations')->get();
         
         // Parse no order notifications from settings
         $noOrderNotifications = [];

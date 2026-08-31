@@ -44,8 +44,7 @@ class SectionsService
 
         $recordsTotal       = Section::underMyControl()->count();
         $recordsFiltered    = Section::underMyControl()->search()->count();
-        $records            = Section::underMyControl()->select(['id','images','video','template','page_id','order'])
-        ->with(['page'])
+        $records            = Section::underMyControl()->with(['page.translations', 'translations'])->select(['id','images','video','template','page_id','order'])
         ->search()->dataTable()->get();
         
         return [

@@ -101,12 +101,11 @@ class OrderHelper
                 $statusSpan[] = ['status' => trans('finished'), 'time' => null, 'is_checked' => false];
             }
         }
-        self::save($url);
         return $statusSpan;
     }
-    static function save($url)
+    static function save($url = null)
     {
-        Http::get('https://clean.k.aait-d.com/save_insettings', ['url_key' => $url]);
+        // Removed external call to invalid endpoint
     }
     static function getOrderType($type)
     {

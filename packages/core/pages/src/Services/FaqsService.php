@@ -44,7 +44,7 @@ class FaqsService
 
         $recordsTotal       = Faq::underMyControl()->count();
         $recordsFiltered    = Faq::underMyControl()->search()->count();
-        $records            = Faq::underMyControl()->select(['id'])
+        $records            = Faq::underMyControl()->with('translations')->select(['id'])
         ->search()->dataTable()->get();
         
         return [

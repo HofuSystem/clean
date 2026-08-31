@@ -44,7 +44,7 @@ class FeaturesService
 
         $recordsTotal       = Feature::underMyControl()->count();
         $recordsFiltered    = Feature::underMyControl()->search()->count();
-        $records            = Feature::underMyControl()->select(['id','icon','section','is_active'])
+        $records            = Feature::underMyControl()->with('translations')->select(['id','icon','section','is_active'])
         ->search()->dataTable()->get();
         
         return [

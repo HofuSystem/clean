@@ -994,7 +994,7 @@
                                             <select name="tax_district" id="tax_district" class="form-select select2">
                                                 <option value="">{{ trans('Select District') }}</option>
                                                 @if(isset($settings['tax_city']))
-                                                    @foreach(\Core\Info\Models\District::where('city_id', $settings['tax_city'])->get() as $district)
+                                                    @foreach(\Core\Info\Models\District::with('translations')->where('city_id', $settings['tax_city'])->get() as $district)
                                                         <option value="{{ $district->id }}" @selected(($settings['tax_district'] ?? null) == $district->id)>{{ $district->name }}</option>
                                                     @endforeach
                                                 @endif

@@ -28,6 +28,9 @@ Route::group(
         Route::get('/blogs', [PageController::class , 'blog'])->name('blog');
         Route::get('/blogs/{slug}', [PageController::class , 'blogPost'])->name('blogs-single');
         Route::get('/services', [PageController::class , 'services'])->name('services');
+        Route::get('/services/{slug}', [PageController::class , 'servicePost'])->name('services.single');
+        Route::get('/pricing', [PageController::class , 'pricing'])->name('pricing');
+        Route::get('/riyadh', [PageController::class , 'coverage'])->name('coverage');
         Route::get('/contact-us', [PageController::class , 'contactUs'])->name('contact');
         Route::post('/contact-us', [PageController::class , 'contactUsRequest'])->name('contact');
         Route::get('/faq', [PageController::class , 'faq'])->name('faq');

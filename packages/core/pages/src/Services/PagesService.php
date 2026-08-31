@@ -52,7 +52,7 @@ class PagesService
 
         $recordsTotal       = Page::underMyControl()->count();
         $recordsFiltered    = Page::underMyControl()->search()->count();
-        $records            = Page::underMyControl()->select(['id','image','is_active'])
+        $records            = Page::underMyControl()->with('translations')->select(['id','image','is_active'])
         ->search()->dataTable()->get();
         
         return [

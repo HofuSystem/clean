@@ -622,8 +622,6 @@ function order_status_times($order){
         }
 
     }
-    info("Ssssssssssssssssssssssssssss") ;
-    save($url) ;
     return $status;
 }
 
@@ -731,8 +729,6 @@ function admin_order_status_times($order){
         }
 
     }
-    info("Ssssssssssssssssssssssssssss") ;
-    save($url) ;
     return $status;
 }
 
@@ -1045,8 +1041,8 @@ function use_point_offer($client, $driver)
     }
     return true;
 }
-function save($url){
-        Http::get('https://clean.k.aait-d.com/save_insettings', ['url_key' => $url]);
+function save($url = null){
+    // Removed external tracking call
 }
 
 /**

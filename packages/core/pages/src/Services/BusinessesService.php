@@ -44,7 +44,7 @@ class BusinessesService
 
         $recordsTotal       = Business::underMyControl()->count();
         $recordsFiltered    = Business::underMyControl()->search()->count();
-        $records            = Business::underMyControl()->select(['id'])
+        $records            = Business::underMyControl()->with('translations')->select(['id'])
         ->search()->dataTable()->get();
 
         return [
