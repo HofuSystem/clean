@@ -232,7 +232,7 @@
                             @endforeach
 
                             <!-- Extra items add-on -->
-                            <div class="bg-sky-50 rounded-3xl p-6 border border-sky-200 col-span-1 sm:col-span-2 md:col-span-3 flex flex-col sm:flex-row items-center justify-between gap-4 {{ $isRtl ? 'text-right' : 'text-left' }}">
+                            <div class="bg-sky-50 rounded-3xl p-6 border border-sky-200 col-span-1 sm:col-span-2 md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-4 {{ $isRtl ? 'text-right' : 'text-left' }}">
                                 <div>
                                     <h4 class="font-bold text-slate-900 text-sm mb-1">{{ $isRtl ? 'قطع إضافية فوق سعة الحقيبة:' : 'Extra items beyond bag capacity:' }}</h4>
                                     <p class="text-xs text-gray-600">{{ $isRtl ? 'تقدر تضيف أي عدد قطع إضافية على الحقيبة الاقتصادية بسعر رمزي:' : 'You can add any extra pieces to your economic bag at a nominal price:' }}</p>
