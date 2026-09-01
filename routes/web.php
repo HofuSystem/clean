@@ -21,12 +21,6 @@ use Core\Settings\Helpers\ToolHelper;
 // One-hop redirects; no chain through localization middleware.
 // ============================================================
 
-// /public/ duplicates
-Route::get('/public/ar/services', fn() => redirect('https://cleanstation.app/ar/services', 301))->name('redirect.public.ar.services');
-Route::get('/public/en/services', fn() => redirect('https://cleanstation.app/en/services', 301))->name('redirect.public.en.services');
-Route::get('/public/ar/{any?}',   fn($any = '') => redirect('https://cleanstation.app/ar/' . $any, 301))->where('any', '.*')->name('redirect.public.ar');
-Route::get('/public/en/{any?}',   fn($any = '') => redirect('https://cleanstation.app/en/' . $any, 301))->where('any', '.*')->name('redirect.public.en');
-
 // .html extension removals
 Route::get('/ar/services.html',            fn() => redirect('https://cleanstation.app/ar/services', 301));
 Route::get('/en/services.html',            fn() => redirect('https://cleanstation.app/en/services', 301));

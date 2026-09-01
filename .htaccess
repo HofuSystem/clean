@@ -12,7 +12,14 @@ Header always set Content-Security-Policy "upgrade-insecure-requests;"
 
 <IfModule mod_rewrite.c>
     RewriteEngine on
-    RewriteCond %{REQUEST_URI} !^public
+
+    # 301 Redirect: Remove /public/ from URLs (CS-01/CS-05)
+    # Using THE_REQUEST ensures we only catch external requests, not internal rewrites
+    RewriteCond %{THE_REQUEST} \s/+public/(\S*) [NC]
+    RewriteRule ^public/(.*)$ https://cleanstation.app/$1 [L,R=301]
+
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{REQUEST_URI} !^public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
