@@ -14,6 +14,11 @@
     RewriteCond %{HTTP_HOST} ^www\.cleanstation\.app [NC]
     RewriteRule ^(.*)$ https://cleanstation.app/$1 [L,R=301]
 
+    # 301 Redirect: Remove /public/ from URLs (CS-01/CS-05)
+    # Using THE_REQUEST ensures we only catch external requests, not internal rewrites
+    RewriteCond %{THE_REQUEST} \s/+public/(\S*) [NC]
+    RewriteRule ^ https://cleanstation.app/%1 [L,R=301,NE]
+
     # ============================================================
     # 301 Redirects – Old URL mapping (preserve SEO equity)
     # ============================================================
