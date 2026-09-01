@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // District Live Search
     if (searchInput) {
+        var coverageSearchDebounce = null;
         searchInput.addEventListener('input', function(e) {
             var q = e.target.value.trim().toLowerCase();
             var cards = document.querySelectorAll('.district-card');
@@ -251,13 +252,27 @@ document.addEventListener('DOMContentLoaded', function() {
             soonBanner.classList.add('hidden');
             grid.classList.remove('hidden');
 
+            var visibleCount = 0;
             cards.forEach(function(card) {
                 var name = (card.dataset.name || '').toLowerCase();
                 var text = card.textContent.toLowerCase();
-                card.style.display = (q === '' || name.includes(q) || text.includes(q)) ? '' : 'none';
+                var visible = (q === '' || name.includes(q) || text.includes(q));
+                card.style.display = visible ? '' : 'none';
+                if (visible) visibleCount++;
             });
+
+            // Tracking: coverage_search (debounced) + coverage_result
+            clearTimeout(coverageSearchDebounce);
+            if (q.length >= 2) {
+                coverageSearchDebounce = setTimeout(function() {
+                    window.cleanTrack && window.cleanTrack.coverageSearch(q);
+                    var status = visibleCount > 0 ? 'active' : 'not_available';
+                    window.cleanTrack && window.cleanTrack.coverageResult(status, q);
+                }, 400);
+            }
         });
     }
 });
+
 </script>
 @endpush

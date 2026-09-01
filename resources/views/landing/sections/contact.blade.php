@@ -54,3 +54,15 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var contactForm = document.querySelector('form[action="{{ route('contact') }}"]');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function() {
+            // Fires on form submit — real backend POST is triggered after this
+            window.cleanTrack && window.cleanTrack.contactFormConfirmed();
+        });
+    }
+});
+</script>

@@ -215,3 +215,19 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var b2bForm = document.querySelector('form[action="{{ route('client.register.store') }}"]');
+    if (b2bForm) {
+        b2bForm.addEventListener('submit', function() {
+            var sector = b2bForm.querySelector('select[name="type"]');
+            var volume = b2bForm.querySelector('select[name="monthly_items"]');
+            window.cleanTrack && window.cleanTrack.b2bLeadSubmit(
+                sector ? sector.value : 'unknown',
+                volume ? volume.value : 'unknown'
+            );
+        });
+    }
+});
+</script>

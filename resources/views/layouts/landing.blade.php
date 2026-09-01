@@ -1045,8 +1045,97 @@
                 'page_path': path,
                 'page_title': title
             });
+        },
+
+        /**
+         * pricing_search — when user searches/filters the pricing table.
+         * @param {string} query            - search term
+         * @param {string} serviceCategory  - active category tab
+         */
+        pricingSearch: function(query, serviceCategory) {
+            dataLayer.push({
+                'event': 'pricing_search',
+                'search_query': query || '',
+                'service_category': serviceCategory || 'all',
+                'page_path': window.location.pathname,
+                'language': document.documentElement.lang || 'ar'
+            });
+        },
+
+        /**
+         * pricing_cta_click — when user clicks "order" from pricing page.
+         * @param {string} itemOrService - item/service name
+         * @param {string} placement     - e.g. 'table_row', 'header_cta'
+         */
+        pricingCta: function(itemOrService, placement) {
+            dataLayer.push({
+                'event': 'pricing_cta_click',
+                'item_service': itemOrService || '',
+                'placement': placement || 'unknown',
+                'page_path': window.location.pathname
+            });
+        },
+
+        /**
+         * coverage_search — when user searches for a district/city.
+         * @param {string} query - search term
+         */
+        coverageSearch: function(query) {
+            dataLayer.push({
+                'event': 'coverage_search',
+                'search_query': query || '',
+                'page_path': window.location.pathname,
+                'language': document.documentElement.lang || 'ar'
+            });
+        },
+
+        /**
+         * coverage_result — after search returns results.
+         * @param {string} status  - 'active' | 'coming_soon' | 'not_available'
+         * @param {string} district - district/city name searched
+         */
+        coverageResult: function(status, district) {
+            dataLayer.push({
+                'event': 'coverage_result',
+                'coverage_status': status || 'unknown',
+                'district_city': district || '',
+                'page_path': window.location.pathname
+            });
+        },
+
+        /**
+         * b2b_lead_submit — after B2B form is successfully sent.
+         * @param {string} sector     - e.g. 'hotel', 'restaurant'
+         * @param {string} volumeBand - e.g. 'small', 'medium', 'large'
+         */
+        b2bLeadSubmit: function(sector, volumeBand) {
+            dataLayer.push({
+                'event': 'b2b_lead_submit',
+                'lead_sector': sector || 'unknown',
+                'volume_band': volumeBand || 'unknown',
+                'page_path': window.location.pathname,
+                'language': document.documentElement.lang || 'ar'
+            });
+            if (typeof ttq !== 'undefined') {
+                ttq.track('SubmitForm', { description: 'b2b_lead_' + (sector || '') });
+            }
+        },
+
+        /**
+         * contact_form_confirmed — only after user confirms sending via WhatsApp/form backend.
+         */
+        contactFormConfirmed: function() {
+            dataLayer.push({
+                'event': 'contact_form_confirmed',
+                'page_path': window.location.pathname,
+                'language': document.documentElement.lang || 'ar'
+            });
+            if (typeof ttq !== 'undefined') {
+                ttq.track('Contact', { description: 'contact_form_confirmed' });
+            }
         }
     };
+
     </script>
     
     {{-- SweetAlert flash messages: success, error, or validation errors --}}
@@ -1096,7 +1185,7 @@
     <div id="smart-mobile-cta" class="sticky-mobile-cta">
         <div class="cta-content">
             <div class="stars">
-                ★ ★ ★ ★ ★ <span style="color: #64748b; font-size: 10px;">(12k+)</span>
+                ★ ★ ★ ★ ★
             </div>
             <div class="sticky-mobile-cta-title">
                 @if(LaravelLocalization::getCurrentLocale() === 'ar')

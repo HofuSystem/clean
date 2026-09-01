@@ -16,6 +16,39 @@ use Core\Orders\Models\Order;
 use Core\Orders\Models\OrderTransaction;
 use Core\Settings\Helpers\ToolHelper;
 
+// ============================================================
+// Legacy 301 Redirects — CS-01 / CS-05
+// One-hop redirects; no chain through localization middleware.
+// ============================================================
+
+// /public/ duplicates
+Route::get('/public/ar/services', fn() => redirect('https://cleanstation.app/ar/services', 301))->name('redirect.public.ar.services');
+Route::get('/public/en/services', fn() => redirect('https://cleanstation.app/en/services', 301))->name('redirect.public.en.services');
+Route::get('/public/ar/{any?}',   fn($any = '') => redirect('https://cleanstation.app/ar/' . $any, 301))->where('any', '.*')->name('redirect.public.ar');
+Route::get('/public/en/{any?}',   fn($any = '') => redirect('https://cleanstation.app/en/' . $any, 301))->where('any', '.*')->name('redirect.public.en');
+
+// .html extension removals
+Route::get('/ar/services.html',            fn() => redirect('https://cleanstation.app/ar/services', 301));
+Route::get('/en/services.html',            fn() => redirect('https://cleanstation.app/en/services', 301));
+Route::get('/ar/blogs/{slug}.html',        fn($slug) => redirect('https://cleanstation.app/ar/blogs/' . $slug, 301))->where('slug', '[^/]+');
+Route::get('/en/blogs/{slug}.html',        fn($slug) => redirect('https://cleanstation.app/en/blogs/' . $slug, 301))->where('slug', '[^/]+');
+
+// Old service slugs → canonical service slugs
+Route::get('/ar/services/mens-laundry',         fn() => redirect('https://cleanstation.app/ar/services/wash-and-iron', 301));
+Route::get('/en/services/mens-laundry',         fn() => redirect('https://cleanstation.app/en/services/wash-and-iron', 301));
+Route::get('/ar/services/womens-laundry',       fn() => redirect('https://cleanstation.app/ar/services/wash-and-iron', 301));
+Route::get('/en/services/womens-laundry',       fn() => redirect('https://cleanstation.app/en/services/wash-and-iron', 301));
+Route::get('/ar/services/carpets-furnishings',  fn() => redirect('https://cleanstation.app/ar/services/carpet-upholstery-cleaning', 301));
+Route::get('/en/services/carpets-furnishings',  fn() => redirect('https://cleanstation.app/en/services/carpet-upholstery-cleaning', 301));
+Route::get('/ar/services/medical-military',     fn() => redirect('https://cleanstation.app/ar/b2b', 301));
+Route::get('/en/services/medical-military',     fn() => redirect('https://cleanstation.app/en/b2b', 301));
+
+// /about-us → /why-us
+Route::get('/ar/about-us', fn() => redirect('https://cleanstation.app/ar/why-us', 301));
+Route::get('/en/about-us', fn() => redirect('https://cleanstation.app/en/why-us', 301));
+
+// ============================================================
+
 Route::group(
 [
     'prefix' => LaravelLocalization::setLocale(),

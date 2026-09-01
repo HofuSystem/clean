@@ -475,6 +475,7 @@
         // Live Search logic
         const searchInput = document.getElementById('priceSearch');
         if(searchInput) {
+            let pricingSearchDebounce = null;
             searchInput.addEventListener('input', function(e) {
                 const query = e.target.value.toLowerCase().trim();
                 
@@ -500,6 +501,16 @@
                         row.classList.add('search-hidden');
                     }
                 });
+
+                // Tracking: fire pricing_search after user stops typing (400ms debounce)
+                clearTimeout(pricingSearchDebounce);
+                if(query.length >= 2) {
+                    pricingSearchDebounce = setTimeout(function() {
+                        const activeTab = document.querySelector('.pricing-tab.active');
+                        const category = activeTab ? (activeTab.dataset.tab || 'all') : 'all';
+                        window.cleanTrack && window.cleanTrack.pricingSearch(query, category);
+                    }, 400);
+                }
             });
         }
 
