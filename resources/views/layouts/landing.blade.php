@@ -199,6 +199,11 @@
         if ($pathSuffix === '') {
             $pathSuffix = '/';
         }
+
+        $socialShareImagePath = \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_image');
+        $socialShareImageUrl = $socialShareImagePath
+            ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('social_share_image')
+            : asset('assets/images/social-share-cover.jpg');
     @endphp
 
     <title>{{ $metaTitle }}</title>
@@ -223,15 +228,17 @@
     <meta property="og:locale:alternate" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'en_US' : 'ar_SA' }}">
     <meta property="og:title" content="{{ $metaTitle ?? 'Clean Station | أفضل تطبيق غسيل ملابس في السعودية' }}">
     <meta property="og:description" content="{{ $actualDesc ?: 'اطلب غسيل ملابسك وتتبع المندوب لحظياً. غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
-    <meta property="og:image" content="https://cleanstation.app/assets/images/social-share-cover.jpg">
+    <meta property="og:image" content="{{ $socialShareImageUrl }}">
+    <meta property="og:image:secure_url" content="{{ $socialShareImageUrl }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $metaTitle ?? 'Clean Station' }}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@CleanStationSA">
     <meta name="twitter:title" content="{{ $metaTitle ?? 'Clean Station | تطبيق غسيل الملابس رقم 1' }}">
     <meta name="twitter:description" content="{{ $actualDesc ?: 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
-    <meta name="twitter:image" content="https://cleanstation.app/assets/images/social-share-cover.jpg">
+    <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap"

@@ -498,6 +498,29 @@
 
                                         </div>
 
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label for="social_share_image" class="fw-semibold">
+                                                {{ app()->getLocale() === 'ar' ? 'صورة معاينة رابط الموقع' : 'Website link preview image' }}
+                                            </label>
+                                            <div class="text-muted fs-7 mb-2">
+                                                {{ app()->getLocale() === 'ar'
+                                                    ? 'تظهر عند مشاركة أي رابط من الموقع على واتساب ومنصات التواصل. المقاس الموصى به 1200 × 630 بكسل.'
+                                                    : 'Shown when any website link is shared on WhatsApp or social platforms. Recommended size: 1200 × 630 pixels.' }}
+                                            </div>
+                                            <div class="media-center-group form-control" data-max="1" data-type="image">
+                                                <input type="text" hidden="hidden" class="form-control"
+                                                    id="social_share_image" name="social_share_image"
+                                                    value="{{ $settings['social_share_image'] ?? null }}">
+                                                <button type="button" class="btn btn-secondary media-center-load"
+                                                    style="margin-top: 10px;"
+                                                    aria-label="{{ app()->getLocale() === 'ar' ? 'اختيار صورة معاينة الرابط' : 'Choose link preview image' }}">
+                                                    <i class="fa fa-file-upload" aria-hidden="true"></i>
+                                                    <span class="ms-1">{{ app()->getLocale() === 'ar' ? 'اختيار الصورة' : 'Choose image' }}</span>
+                                                </button>
+                                                <div class="input-gallery"></div>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group mb-3 col-md-6">
                                             <label class="" for="ios_link">{{ trans('ios link') }}</label>
                                             <input type="text" name="app_store_app" class="form-control "

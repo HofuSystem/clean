@@ -45,6 +45,7 @@ class SettingsRequest extends FormRequest
 			"about_ar" => ['required', 'string'],
 			"about_en" => ['required', 'string'],
 			"logo" => ['nullable', 'string'],
+			"social_share_image" => ['nullable', 'string'],
 			"facebook" => ['nullable', 'string'],
 			"twitter" => ['nullable', 'string'],
 			"youtube" => ['nullable', 'string'],
