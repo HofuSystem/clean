@@ -245,7 +245,7 @@
 
                                         </div>
 
-                                      
+
 
                                         <div class="form-group mb-3 col-md-12">
                                             <label class="" for="logo">{{ trans('logo') }}</label>
@@ -499,7 +499,7 @@
                                         </div>
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label for="social_share_image" class="fw-semibold">
+                                            <label for="social_share_image" class="form-control">
                                                 {{ app()->getLocale() === 'ar' ? 'صورة معاينة رابط الموقع' : 'Website link preview image' }}
                                             </label>
                                             <div class="text-muted fs-7 mb-2">
@@ -1645,32 +1645,32 @@
                 const newRow = `
                             <tr data-index="${notificationIndex}">
                                 <td>
-                                    <input type="number" name="no_order_notifications[${notificationIndex}][days]" 
+                                    <input type="number" name="no_order_notifications[${notificationIndex}][days]"
                                            class="form-control" min="1" required>
                                 </td>
                                 <td>
-                                    <input type="text" name="no_order_notifications[${notificationIndex}][notification_title]" 
+                                    <input type="text" name="no_order_notifications[${notificationIndex}][notification_title]"
                                            class="form-control" required>
                                 </td>
                                 <td>
-                                    <textarea name="no_order_notifications[${notificationIndex}][notification_body]" 
+                                    <textarea name="no_order_notifications[${notificationIndex}][notification_body]"
                                               class="form-control" rows="2" required></textarea>
                                 </td>
                                 <td>
-                                    <input type="number" name="no_order_notifications[${notificationIndex}][added_points]" 
+                                    <input type="number" name="no_order_notifications[${notificationIndex}][added_points]"
                                            class="form-control" min="0" placeholder="0" value="0" step="0.01">
                                 </td>
                                 <td>
-                                    <input type="number" name="no_order_notifications[${notificationIndex}][money_expiry_days]" 
+                                    <input type="number" name="no_order_notifications[${notificationIndex}][money_expiry_days]"
                                            class="form-control" min="1" placeholder="30" value="30">
                                 </td>
                                 <td>
-                                    <input type="text" name="no_order_notifications[${notificationIndex}][notes]" 
+                                    <input type="text" name="no_order_notifications[${notificationIndex}][notes]"
                                            class="form-control" placeholder="Notes" value="">
                                 </td>
                                 <td>
                                     <div class="form-check">
-                                        <input type="checkbox" name="no_order_notifications[${notificationIndex}][is_active]" 
+                                        <input type="checkbox" name="no_order_notifications[${notificationIndex}][is_active]"
                                                class="form-check-input" value="1" checked>
                                     </div>
                                 </td>
@@ -1848,11 +1848,11 @@
                 const newRow = `
                     <tr class="maid-scheduled-row">
                         <td>
-                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][from]" 
+                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][from]"
                                    class="form-control" required>
                         </td>
                         <td>
-                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][to]" 
+                            <input type="time" name="maid_scheduled[${maidScheduledIndex}][to]"
                                    class="form-control" required>
                         </td>
                         <td>
