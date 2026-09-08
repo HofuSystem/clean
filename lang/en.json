@@ -5697,5 +5697,13 @@
     "تحديث في رصيد المحفظة": "Wallet Balance Update",
     "رصيد جديد في محفظتك!": "New Credit in Your Wallet!",
     "تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س": ":amount SAR added to your wallet, your current balance: :balance SAR",
-    "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س": ":amount SAR deducted from your wallet, your current balance: :balance SAR"
+    "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س": ":amount SAR deducted from your wallet, your current balance: :balance SAR",
+    "Media library": "Media library",
+    "Upload new media or choose from your library": "Upload new media or choose from your library",
+    "Uploaded media is selected automatically": "Uploaded media is selected automatically",
+    "Ready to use": "Ready to use",
+    "Select media below or upload a new file": "Select media below or upload a new file",
+    "Click a thumbnail to select it": "Click a thumbnail to select it",
+    "No media to display": "No media to display",
+    "Use selected media": "Use selected media"
 }

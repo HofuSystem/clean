@@ -7230,5 +7230,13 @@
     "تحديث في رصيد المحفظة": "تحديث في رصيد المحفظة",
     "رصيد جديد في محفظتك!": "رصيد جديد في محفظتك!",
     "تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س": "تمت إضافة :amount ر.س إلى رصيد محفظتك، رصيدك الحالي: :balance ر.س",
-    "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س": "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س"
+    "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س": "تم خصم :amount ر.س من رصيد محفظتك، رصيدك الحالي: :balance ر.س",
+    "Media library": "مكتبة الوسائط",
+    "Upload new media or choose from your library": "ارفع صورًا جديدة أو اختر من مكتبتك",
+    "Uploaded media is selected automatically": "تُختار الوسائط تلقائيًا بعد اكتمال الرفع",
+    "Ready to use": "جاهزة للاستخدام",
+    "Select media below or upload a new file": "اختر من المكتبة أدناه أو ارفع ملفًا جديدًا",
+    "Click a thumbnail to select it": "اضغط على الصورة لاختيارها",
+    "No media to display": "لا توجد وسائط لعرضها",
+    "Use selected media": "استخدام المحدد"
 }
