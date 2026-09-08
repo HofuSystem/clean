@@ -499,7 +499,7 @@
                                         </div>
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label for="social_share_image" class="form-control">
+                                            <label for="social_share_image" class="fw-bold">
                                                 {{ app()->getLocale() === 'ar' ? 'صورة معاينة رابط الموقع' : 'Website link preview image' }}
                                             </label>
                                             <div class="text-muted fs-7 mb-2">
