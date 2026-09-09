@@ -97,22 +97,13 @@ class WalletController extends Controller
     public function withdraw(WithdrawRequest $request)
     {
         try {
-            $user = User::find(379);
-            //$user = auth()->user();
-            if($request->validated()['amount'] > $user->wallet){
-                return $this->returnErrorMessage(trans('There is not enough balance'),[],['status' =>'fail'],422);
-            }
-            DB::beginTransaction();
-            $record = $this->walletTransactionsService->withdraw($request->validated());
-            DB::commit();
-            return $this->returnData(trans('wallet charge successfully'),$record);
-        }catch(ValidationException $e){
-            DB::rollback();
-            return $this->returnErrorMessage($e->getMessage(),$e->errors(),['status' =>'fail'],422);
+            $record = $this->walletTransactionsService->withdraw($request->validated(), $request->user());
+            return $this->returnData(trans('wallet charge successfully'), $record);
+        } catch (ValidationException $e) {
+            return $this->returnErrorMessage($e->getMessage(), $e->errors(), ['status' => 'fail'], 422);
         } catch (\Throwable $e) {
-            DB::rollback();
             report($e);
-            return $this->returnErrorMessage(trans('system Error please try again later'),[],['status' =>'fail'],422);
+            return $this->returnErrorMessage(trans('system Error please try again later'), [], ['status' => 'fail'], 422);
         }
     }
 }

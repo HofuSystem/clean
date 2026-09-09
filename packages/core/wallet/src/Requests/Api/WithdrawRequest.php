@@ -27,9 +27,9 @@ class WithdrawRequest extends FormRequest
     {
         return [
             'amount'=> 'required|integer|gte:1',
-            'bank_name' => 'required|string',
-            'account_number' => 'required|string',
-            'iban_number' => 'required|string',
+            'bank_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'iban_number' => 'required|string|max:255',
         ];
     }
 }

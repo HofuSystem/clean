@@ -9,6 +9,9 @@ use Core\Wallet\DataResources\Api\WalletTransactionResource;
 use Core\Wallet\Models\WalletPackage;
 use Core\Wallet\Models\WalletTransaction;
 use Core\Wallet\DataResources\WalletTransactionsResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class WalletTransactionsService
 {
@@ -281,16 +284,37 @@ class WalletTransactionsService
         return $transaction;
     }
 
-    public function withdraw(array $data)
+    public function withdraw(array $data, User $user)
     {
-        $user = auth('api')->user();
-        $amount = $data['amount'];
-        $wallet = $user->wallet;
-        $before_wallet_charge = ['wallet_before' => $wallet, 'wallet_after' => ($wallet - $amount) , 'transaction_type' => 'withdraw' , 'added_by_id' => $user->id , 'status' => 'pending'];
-        $transaction = $user->walletTransactions()->create($data + $before_wallet_charge);
-        $transaction = WalletTransactionResource::make($transaction);
-        $user->update(['wallet' => $transaction->wallet_after]);
-        return $transaction;
+        $validated = Validator::make($data, [
+            'amount' => 'required|integer|gte:1',
+            'bank_name' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'iban_number' => 'required|string|max:255',
+        ])->validate();
+
+        return DB::transaction(function () use ($validated, $user) {
+            // Re-read under a lock: a second withdrawal must see the first one's balance.
+            $user = User::whereKey($user->getKey())->lockForUpdate()->firstOrFail();
+            $amount = $validated['amount'];
+            if ($amount > $user->wallet) {
+                throw ValidationException::withMessages(['amount' => trans('There is not enough balance')]);
+            }
+            $transaction = $user->walletTransactions()->create([
+                'amount' => $amount,
+                'bank_name' => $validated['bank_name'],
+                'account_number' => $validated['account_number'],
+                'iban_number' => $validated['iban_number'],
+                'type' => 'withdraw',
+                'transaction_type' => 'withdraw',
+                'status' => 'pending',
+                'added_by_id' => $user->id,
+                'wallet_before' => $user->wallet,
+                'wallet_after' => $user->wallet - $amount,
+            ]);
+            // WalletTransactionObserver reserves the amount and updates the balance.
+            return WalletTransactionResource::make($transaction);
+        });
     }
     public static function updateUserWallet($userId){
         $depositWallet = WalletTransaction::where('user_id', $userId)->where('type', 'deposit')->sum('amount');
