@@ -1,6 +1,6 @@
 @php
     if (!isset($posts)) {
-        $posts = \Core\Blog\Models\Blog::with('translations')->where('status', 'publish')->latest()->take(6)->get();
+        $posts = \Core\Blog\Models\Blog::published()->with('translations')->latest()->take(6)->get();
     }
 @endphp
 <section id="blogs" class="page-section bg-gray-50 py-20 md:py-32">
@@ -17,7 +17,7 @@
             <div class="grid lg:grid-cols-2 gap-8 mb-12" data-aos="fade-up">
                 <a href="{{ route('blogs-single', $posts[0]->slug) }}" class="relative h-[300px] lg:h-[400px] rounded-3xl overflow-hidden group shadow-xl cursor-pointer block">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10"></div>
-                    <img src="{{ $posts[0]->image_url }}"
+                    <img src="{{ $posts[0]->image_url }}" alt="{{ $posts[0]->title }}"
                         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
                     <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
                         <span
@@ -25,7 +25,7 @@
                         <h3 class="text-2xl md:text-4xl font-bold text-white mb-2 leading-tight drop-shadow-lg">{{ $posts[0]->title }}</h3>
                         <div class="text-gray-200 text-sm flex items-center gap-4">
                             <span><i class="fa-regular fa-calendar"></i>
-                                {{ $posts[0]->created_at->format('M d, Y') }}</span>
+                                @include('partials.blog-date', ['post' => $posts[0]])</span>
                         </div>
                     </div>
                 </a>
@@ -34,7 +34,7 @@
                         <a href="{{ route('blogs-single', $post->slug) }}"
                             class="bg-white rounded-3xl p-6 flex flex-col md:flex-row gap-6 shadow-md hover:shadow-xl transition-all group cursor-pointer border border-gray-100 h-full block">
                             <div class="w-full md:w-1/3 h-48 md:h-full rounded-2xl overflow-hidden relative">
-                                <img src="{{ $post->image_url }}"
+                                <img src="{{ $post->image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async"
                                     class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="flex-1 flex flex-col justify-center">
@@ -46,7 +46,7 @@
                                     {{ $post->title }}
                                 </h4>
                                 <p class="text-gray-500 text-sm line-clamp-2 mb-4">{!! Str::limit(strip_tags($post->content), 80) !!}</p>
-                                <div class="text-xs text-gray-400 mt-auto">{{ $post->created_at->diffForHumans() }}
+                                <div class="text-xs text-gray-400 mt-auto">@include('partials.blog-date', ['post' => $post])
                                 </div>
                             </div>
                         </a>
@@ -59,11 +59,13 @@
                 <a href="{{ route('blogs-single', $post->slug) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all group border border-gray-100 block"
                     data-aos="fade-up">
                     <div class="h-48 overflow-hidden relative">
+                        @if($post->is_recently_published)
                         <div
                             class="absolute top-4 right-4 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold z-10 shadow-sm">
                             <i class="fa-solid fa-bolt text-brand-500"></i> {{ trans('new') }}
                         </div>
-                        <img src="{{ $post->image_url }}"
+                        @endif
+                        <img src="{{ $post->image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async"
                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                     </div>
                     <div class="p-6">
@@ -72,7 +74,7 @@
                             {{ $post->title }}
                         </h4>
                         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                            <span class="text-xs text-gray-400">{{ $post->created_at->format('M d') }}</span>
+                            <span class="text-xs text-gray-400">@include('partials.blog-date', ['post' => $post])</span>
                             <span class="text-brand-600 text-xs font-bold cursor-pointer hover:underline">{{ trans('read more') }}</span>
                         </div>
                     </div>

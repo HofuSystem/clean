@@ -92,6 +92,23 @@ class Blog extends CoreModel implements TranslatableContract{
     //end relations
 
     //start Attributes
+    public function getPublicationDateAttribute(): ?Carbon
+    {
+        $date = $this->published_at ?? $this->created_at;
+
+        return $date ? Carbon::parse($date) : null;
+    }
+
+    public function getIsRecentlyPublishedAttribute(): bool
+    {
+        $date = $this->publication_date;
+        $now = now();
+
+        return $this->status === 'publish' && $date !== null
+            && $date->lessThanOrEqualTo($now)
+            && $date->greaterThan($now->copy()->subDays(10));
+    }
+
     public function getImageUrlAttribute(){
         return MediaCenterHelper::getImagesUrl($this->image);
     }

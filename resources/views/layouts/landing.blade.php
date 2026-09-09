@@ -225,7 +225,7 @@
     {{-- ============================================================ --}}
     {{-- Open Graph & Twitter Card (Social Sharing Meta)             --}}
     {{-- ============================================================ --}}
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ isset($blog) ? 'article' : 'website' }}">
     <meta property="og:url" content="{{ $resolvedCanonicalUrl }}">
     <meta property="og:site_name" content="Clean Station">
     <meta property="og:locale" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
@@ -966,6 +966,9 @@
         window.addEventListener('touchstart', loadKarzounChat, { passive: true });
         setTimeout(loadKarzounChat, 4000);
     </script>
+    @if(isset($blog))
+        @include('partials.blog-structured-data')
+    @endif
 </head>
 
 <body

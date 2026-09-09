@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'لماذا نحن | Clean Station')
+@section('title', $blog->title . ' | Clean Station')
 
 @section('content')
     <div class="pt-24">

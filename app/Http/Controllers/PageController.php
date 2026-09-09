@@ -606,9 +606,7 @@ class PageController extends Controller
     }
     public function siteMap(){
          $content = view('sitemap', [
-            'pages' => Page::with('translations')->where('is_active', true)->get(),
-            'services' => Category::with('translations')->where('status','active')->whereNull('parent_id')->get(),
-            'blogs' => Blog::published()->with('translations')->get(),
+            'blogs' => Blog::published()->select(['id', 'slug', 'updated_at'])->get(),
         ])->render();
 
         return response($content, 200)
