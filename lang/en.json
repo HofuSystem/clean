@@ -5705,5 +5705,7 @@
     "Select media below or upload a new file": "Select media below or upload a new file",
     "Click a thumbnail to select it": "Click a thumbnail to select it",
     "No media to display": "No media to display",
-    "Use selected media": "Use selected media"
+    "Use selected media": "Use selected media",
+    "Payment is still pending": "Payment is still pending",
+    "Please check your order status before trying another payment.": "Please check your order status before trying another payment."
 }

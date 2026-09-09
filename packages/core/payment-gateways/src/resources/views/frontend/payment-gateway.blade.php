@@ -136,7 +136,8 @@
             border: 1px solid #6ee7b7;
         }
 
-        .status-message.cancel {
+        .status-message.cancel,
+        .status-message.pending {
             background: #fef3c7;
             color: #92400e;
             border: 1px solid #fcd34d;
@@ -340,6 +341,11 @@
                 <div>
                     <strong>{{ __('Payment Successful!') }}</strong>
                     <p>{{ __('Your payment has been processed successfully.') }}</p>
+                </div>
+                @elseif($status == 'pending')
+                <div role="status">
+                    <strong>{{ __('Payment is still pending') }}</strong>
+                    <p>{{ __('Please check your order status before trying another payment.') }}</p>
                 </div>
                 @elseif($status == 'cancel')
                 <span class="status-icon">⚠</span>

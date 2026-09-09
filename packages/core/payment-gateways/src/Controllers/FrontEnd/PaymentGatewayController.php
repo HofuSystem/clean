@@ -9,6 +9,9 @@ use Core\PaymentGateways\Services\MyFatoorahService;
 use Core\Orders\Services\OrdersService;
 use Core\Wallet\Services\WalletTransactionsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Core\Users\Models\User;
+use Core\PaymentGateways\Services\PaymentResultVerifier;
 
 class PaymentGatewayController extends Controller
 {
@@ -207,49 +210,57 @@ class PaymentGatewayController extends Controller
     {
         try {
             $transaction = PaymentTransaction::where('transaction_id', $transaction_id)->firstOrFail();
-            // MyFatoorah can send different parameter names
-            $paymentId = $request->input('paymentId')
-                ?? $request->input('Id')
-                ?? $request->input('InvoiceId')
-                ?? $transaction->gateway_transaction_id; // Fallback to stored invoice ID
-            if (!$paymentId) {
-                return redirect()->route('payment-gateway.web', [
-                    'transaction_id' => $transaction_id,
-                    'status' => 'failed',
-                    'message' => __('Payment ID not found'),
-                ]);
+            if ($transaction->status === 'success') {
+                return $this->successfulPaymentRedirect($transaction);
+            }
+            $paymentId = $request->input('paymentId') ?? $request->input('Id')
+                ?? $request->input('InvoiceId') ?? $transaction->gateway_transaction_id;
+            if (! is_scalar($paymentId) || (string) $paymentId === '') {
+                throw new \UnexpectedValueException('Payment ID not found');
+            }
+            // The existing embedded page also puts the stored InvoiceId in paymentId.
+            $keyType = $request->filled('paymentId') && (string) $paymentId !== (string) $transaction->gateway_transaction_id
+                ? 'PaymentId' : 'InvoiceId';
+            $result = $this->myfatoorahService->getPaymentStatus((string) $paymentId, $keyType);
+            if (! ($result['success'] ?? false) || ! is_array($result['data'] ?? null)) {
+                throw new \UnexpectedValueException('Unable to verify payment status');
             }
 
-            $result = $this->myfatoorahService->getPaymentStatus($paymentId);
-            if ($result['success']) {
-                $transaction->payment_response = json_encode($result['data']);
-                $transaction->gateway_transaction_id = $paymentId;
-                $paymentStatus = $result['status'];
-
-                if ($paymentStatus === 'Paid') {
-                    return $this->handleSuccessPayment($transaction);
-                } elseif ($paymentStatus === 'Failed') {
-                    $message = $this->myfatoorahService->getMessage($result);
-                    return $this->handleFailedPayment($transaction, $message);
-                } else {
-                    $message = $this->myfatoorahService->getMessage($result);
-                    return $this->handleCancelPayment($transaction, $message);
+            // Do network I/O before locking, then re-read to serialize repeated callbacks.
+            return DB::transaction(function () use ($transaction, $result) {
+                $transaction = PaymentTransaction::whereKey($transaction->id)->lockForUpdate()->firstOrFail();
+                if ($transaction->status === 'success') {
+                    return $this->successfulPaymentRedirect($transaction);
                 }
-            }
-            return redirect()->route('payment-gateway.web', [
-                'transaction_id' => $transaction->transaction_id,
-                'status' => 'failed',
-                'message' => __($result['error'] ?? __('Unable to verify payment status')),
-            ]);
+                (new PaymentResultVerifier)->verify($transaction, $result['data']);
+                $transaction->payment_response = json_encode($result['data'], JSON_THROW_ON_ERROR);
+                $transaction->gateway_transaction_id = (string) $result['data']['InvoiceId'];
+                $status = $result['data']['InvoiceStatus'] ?? null;
+                if ($status === 'Paid') {
+                    return $this->handleSuccessPayment($transaction);
+                }
+                if ($status === 'Failed') {
+                    return $this->handleFailedPayment($transaction, $this->myfatoorahService->getMessage($result));
+                }
+                if (in_array($status, ['Canceled', 'Cancelled'], true)) {
+                    return $this->handleCancelPayment($transaction, $this->myfatoorahService->getMessage($result));
+                }
+                // A pending invoice is not evidence of cancellation.
+                $transaction->save();
+                return redirect()->route('payment-gateway.web', [
+                    'transaction_id' => $transaction->transaction_id,
+                    'status' => 'pending',
+                    'message' => __('Payment is still pending'),
+                ]);
+            });
         } catch (\Throwable $th) {
             report($th);
             return redirect()->route('payment-gateway.web', [
                 'transaction_id' => $transaction_id,
                 'status' => 'failed',
-                'message' => __($th->getMessage()),
+                'message' => __('Unable to verify payment status'),
             ]);
         }
-
     }
 
     /**
@@ -257,23 +268,42 @@ class PaymentGatewayController extends Controller
      */
     private function handleSuccessPayment($transaction)
     {
-        $requestData = json_decode($transaction->request_data, true);
-        $transaction->status = 'success';
-        $transaction->save();
-        if ($transaction->for == 'order_payment') {
+        $requestData = json_decode($transaction->request_data, true, 512, JSON_THROW_ON_ERROR);
+        $user = User::whereKey($transaction->user_id)->lockForUpdate()->firstOrFail();
+        if (in_array($transaction->for, ['order_payment', 'fast_payment'], true)) {
+            $order = Order::whereKey($requestData['order_id'])->where('client_id', $user->id)->lockForUpdate()->firstOrFail();
+            if ($transaction->for === 'order_payment' && in_array($order->status, ['failed_payment', 'cancel_payment'], true)) {
+                // A later verified payment can recover an earlier failed/canceled callback.
+                $order->update(['status' => 'pending_payment']);
+            }
+        }
+        $requestData['transaction_id'] = $transaction->transaction_id;
+        if ($transaction->for === 'order_payment') {
             $this->ordersService->updateStatus($requestData['order_id'], [
                 'status' => 'pending',
                 'transaction_id' => $transaction->transaction_id,
-                'online_payment_method' => $transaction->payment_method
+                'online_payment_method' => $transaction->payment_method,
             ]);
-
-        } elseif ($transaction->for == 'fast_payment') {
-            $requestData['transaction_id'] = $transaction->transaction_id;
+        } elseif ($transaction->for === 'fast_payment') {
             $requestData['online_payment_method'] = $transaction->payment_method;
-            $this->ordersService->payFastOrder($requestData['order_id'], $requestData, $transaction->user);
-        } elseif ($transaction->for == 'wallet_charge') {
-            $this->walletTransactionsService->charge($requestData, $transaction->user);
+            $requestData['paid'] = $transaction->amount;
+            $this->ordersService->payFastOrder($requestData['order_id'], $requestData, $user);
+        } elseif ($transaction->for === 'wallet_charge') {
+            $requestData['amount'] = $transaction->amount;
+            $this->walletTransactionsService->charge($requestData, $user);
+        } else {
+            throw new \UnexpectedValueException('Unsupported payment purpose.');
         }
+
+        // Success and its financial effects commit or roll back together.
+        $transaction->status = 'success';
+        $transaction->save();
+
+        return $this->successfulPaymentRedirect($transaction);
+    }
+
+    private function successfulPaymentRedirect(PaymentTransaction $transaction)
+    {
         return redirect()->route('payment-gateway.web', [
             'transaction_id' => $transaction->transaction_id,
             'status' => 'success',
@@ -291,8 +321,8 @@ class PaymentGatewayController extends Controller
 
         if ($transaction->for == 'order_payment') {
             $requestData = json_decode($transaction->request_data, true);
-            $order = Order::where('id', $requestData['order_id'])->first();
-            if ($order->status == 'pending_payment') {
+            $order = Order::where('id', $requestData['order_id'])->lockForUpdate()->first();
+            if ($order && $order->status == 'pending_payment') {
                 $order->update(['status' => 'failed_payment']);
             }
         }
@@ -313,8 +343,8 @@ class PaymentGatewayController extends Controller
 
         if ($transaction->for == 'order_payment') {
             $requestData = json_decode($transaction->request_data, true);
-            $order = Order::where('id', $requestData['order_id'])->first();
-            if ($order->status == 'pending_payment') {
+            $order = Order::where('id', $requestData['order_id'])->lockForUpdate()->first();
+            if ($order && $order->status == 'pending_payment') {
                 $order->update(['status' => 'cancel_payment']);
             }
         }

@@ -7238,5 +7238,7 @@
     "Select media below or upload a new file": "اختر من المكتبة أدناه أو ارفع ملفًا جديدًا",
     "Click a thumbnail to select it": "اضغط على الصورة لاختيارها",
     "No media to display": "لا توجد وسائط لعرضها",
-    "Use selected media": "استخدام المحدد"
+    "Use selected media": "استخدام المحدد",
+    "Payment is still pending": "الدفع قيد التحقق",
+    "Please check your order status before trying another payment.": "راجع حالة طلبك قبل محاولة الدفع مرة أخرى."
 }
