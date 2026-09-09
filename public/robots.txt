@@ -5,6 +5,9 @@ Allow: /
 Disallow: /control/
 Disallow: /admin/
 Disallow: /storage/
+Allow: /storage/images/
+Allow: /storage/gallery/
+Allow: /storage/thumbnails/
 Disallow: /vendor/
 Disallow: /bootstrap/
 Disallow: /config/

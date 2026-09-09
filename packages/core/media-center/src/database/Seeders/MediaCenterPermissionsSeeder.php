@@ -15,7 +15,12 @@ class MediaCenterPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        foreach(['dashboard.mediacenter.mymedia'] as $permission) {
+        foreach ([
+            'dashboard.mediacenter.mymedia',
+            'dashboard.media-center.list',
+            'dashboard.media-center.add-new',
+            'dashboard.media-center.delete',
+        ] as $permission) {
             Permission::firstOrCreate(['name'=>$permission]);
         }
     }

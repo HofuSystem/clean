@@ -5,6 +5,7 @@ use Core\Orders\Controllers\Api\Client\OrdersController;
 use Core\Orders\Controllers\Api\Client\ReportReasonController;
 use Core\Users\Controllers\Api\Driver\OrderController  as DriverOrderController;
 use Core\Users\Controllers\Api\Technical\OrderController  as TechnicalOrderController;
+use Core\Orders\Middleware\EnsureClientOwnsOrder;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -40,10 +41,10 @@ Route::group([
         Route::post("update-order", [OrdersController::class, 'updateOrder']);
         Route::post("update-order-flowers", [OrdersController::class, 'updateOrderFlowers']);
         Route::post("", [OrdersController::class, 'createOrder']);
-        Route::get("{id}", [OrdersController::class, 'myOrder']);
-        Route::post("update_status/{id}", [OrdersController::class, 'updateStatus']);
+        Route::get("{id}", [OrdersController::class, 'myOrder'])->middleware(EnsureClientOwnsOrder::class);
+        Route::post("update_status/{id}", [OrdersController::class, 'updateStatus'])->middleware(EnsureClientOwnsOrder::class);
     });
-    Route::group(['prefix' => 'pay_fastorder/{id}'], function () {
+    Route::group(['prefix' => 'pay_fastorder/{id}', 'middleware' => [EnsureClientOwnsOrder::class]], function () {
         Route::post("", [OrdersController::class, 'payFastOrder']);
         Route::post("v2", [OrdersController::class, 'payFastOrderV2']);
     });

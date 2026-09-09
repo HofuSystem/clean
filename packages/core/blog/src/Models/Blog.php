@@ -18,7 +18,7 @@ class Blog extends CoreModel implements TranslatableContract{
 	protected $table             = 'blogs';
 	protected $fillable          = ['slug','image', 'gallery', 'category_id', 'status', 'published_at', 'creator_id', 'updater_id'];
     protected $guarded           = [];
-    public $translatedAttributes = ["title","content","meta"];
+    public $translatedAttributes = ["title","content","meta","meta_title","meta_description"];
 
     //start Scopes
     function scopeSearch($query){
@@ -75,7 +75,10 @@ class Blog extends CoreModel implements TranslatableContract{
         }
     }
     function scopePublished($query){
-        return $query->where('status','publish')->orWhere('published_at','<=',Carbon::now());
+        return $query->where('status', 'publish')
+            ->where(function ($query) {
+                $query->whereNull('published_at')->orWhere('published_at', '<=', Carbon::now());
+            });
     }
 
     //end Scopes

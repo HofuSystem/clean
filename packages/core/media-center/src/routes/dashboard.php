@@ -12,7 +12,7 @@ Route::group(
     function () {
 
         Route::group(['prefix' => 'admin', 'as' => 'dashboard.'], function () {
-            Route::group(['middleware' => []], function () {
+            Route::group(['middleware' => ['auth', 'active', 'checkPermission']], function () {
 
                 // Settings Routes
                 Route::group([

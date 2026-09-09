@@ -206,10 +206,14 @@
             : asset('assets/images/social-share-cover.jpg');
     @endphp
 
-    <title>{{ $metaTitle }}</title>
+    @php
+        $resolvedCanonicalUrl = $canonicalUrl ?? \App\Support\CanonicalUrl::fromRequest(request(), config('app.url'));
+        $resolvedMetaTitle = trim($metaTitle ?? '') ?: (trim($title ?? '') ?: 'Clean Station');
+    @endphp
+    <title>{{ $resolvedMetaTitle }}</title>
     <meta name="description" content="{{ $actualDesc }}">
     <meta name="keywords" content="{{ $actualKeywords }}">
-    <link rel="canonical" href="{{ $canonicalUrl ?? rtrim(config('app.url'), '/') . request()->getRequestUri() }}">
+    <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
 
     {{-- ============================================================ --}}
     {{-- Hreflang – bilingual site (AR default, EN alternate)        --}}
@@ -222,7 +226,7 @@
     {{-- Open Graph & Twitter Card (Social Sharing Meta)             --}}
     {{-- ============================================================ --}}
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ rtrim(config('app.url'), '/') . request()->getRequestUri() }}">
+    <meta property="og:url" content="{{ $resolvedCanonicalUrl }}">
     <meta property="og:site_name" content="Clean Station">
     <meta property="og:locale" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
     <meta property="og:locale:alternate" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'en_US' : 'ar_SA' }}">

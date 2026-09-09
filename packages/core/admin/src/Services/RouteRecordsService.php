@@ -3,6 +3,7 @@
 namespace Core\Admin\Services;
 
 
+use App\Support\RequestLogSanitizer;
 use Core\Admin\Models\RoutesRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +18,9 @@ class RouteRecordsService
   {
     //start Scan
     $uri                = $request->route()->uri();
-    $attributes         = array_merge($request->route()->originalParameters(), $request->all());
+    $attributes         = RequestLogSanitizer::attributes(array_merge($request->route()->originalParameters(), $request->all()));
     $user               = Auth::check() ? Auth::user() : null;
-    $headers           = $request->header();
+    $headers           = RequestLogSanitizer::headers($request->header());
     $method            = $request->method();
     if($user){
       $user->update(['appear_at' => Carbon::now()]);

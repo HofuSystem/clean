@@ -93,6 +93,7 @@ class OrdersController extends Controller
                 'district'
             ])
                 ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
+                ->where('client_id', $request->user()->id)
                 ->findorFail($id);
             if (in_array($order->type, ['clothes', 'fastorder', 'services', 'sales'])) {
                 return (new OrderDetailsResource($order))->additional(['status' => 'success', 'message' => '']);

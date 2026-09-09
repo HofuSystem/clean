@@ -40,6 +40,15 @@ class CheckPermissions
             $spaceRoute,
         ];
 
+        // Preserve the media permission already assigned to existing staff.
+        if (in_array($routeName, [
+            'dashboard.media-center.list',
+            'dashboard.media-center.add-new',
+            'dashboard.media-center.delete',
+        ], true)) {
+            $possiblePermissions[] = 'dashboard.mediacenter.mymedia';
+        }
+
         if (str_ends_with($routeName, '.update-password')) {
             $possiblePermissions[] = str_replace('.update-password', '.edit', $routeName);
             $possiblePermissions[] = str_replace('dashboard.', '', str_replace('.update-password', '.edit', $routeName));
