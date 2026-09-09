@@ -6,6 +6,7 @@ use Core\PaymentGateways\Models\PaymentTransaction;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Core\Wallet\Services\WalletChargePricing;
 
 class MyFatoorahService
 {
@@ -33,12 +34,20 @@ class MyFatoorahService
      */
     public function createTransaction($amount, $orderId, $requestData, $userId, $for, $prefix = null)
     {
+        $paymentData = null;
+        if ($for === 'wallet_charge') {
+            $quote = (new WalletChargePricing)->quote($amount, $requestData['check_id'] ?? null);
+            $amount = $quote['paid_amount'];
+            $paymentData = json_encode(['wallet_quote' => $quote], JSON_THROW_ON_ERROR);
+            $requestData = ['amount' => $amount, 'check_id' => $quote['package_id']];
+        }
         $requestData['order_id'] = $orderId;
         $paymentTransaction      = PaymentTransaction::create([
             'transaction_id' => $prefix ? $prefix . Str::random(2) : Str::random(10),
             'for'            => $for,
             'status'         => 'pending',
             'request_data'   => json_encode($requestData),
+            'payment_data'   => $paymentData,
             'amount'         => $amount,
             'user_id'        => $userId,
         ]);

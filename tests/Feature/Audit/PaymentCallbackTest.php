@@ -41,6 +41,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             $table->decimal('amount', 10, 2);
             $table->text('request_data');
             $table->text('payment_response')->nullable();
+            $table->text('payment_data')->nullable();
             $table->string('payment_method')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->softDeletes();

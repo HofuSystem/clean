@@ -7240,5 +7240,7 @@
     "No media to display": "لا توجد وسائط لعرضها",
     "Use selected media": "استخدام المحدد",
     "Payment is still pending": "الدفع قيد التحقق",
-    "Please check your order status before trying another payment.": "راجع حالة طلبك قبل محاولة الدفع مرة أخرى."
+    "Please check your order status before trying another payment.": "راجع حالة طلبك قبل محاولة الدفع مرة أخرى.",
+    "The wallet package is unavailable or its price has changed.": "الباقة غير متاحة أو تغيّر سعرها. حدّث قائمة الباقات وحاول مرة أخرى.",
+    "Invalid wallet payment details.": "تعذّر التحقق من بيانات شحن المحفظة. تواصل مع خدمة العملاء."
 }

@@ -5707,5 +5707,7 @@
     "No media to display": "No media to display",
     "Use selected media": "Use selected media",
     "Payment is still pending": "Payment is still pending",
-    "Please check your order status before trying another payment.": "Please check your order status before trying another payment."
+    "Please check your order status before trying another payment.": "Please check your order status before trying another payment.",
+    "The wallet package is unavailable or its price has changed.": "The wallet package is unavailable or its price has changed.",
+    "Invalid wallet payment details.": "Invalid wallet payment details."
 }

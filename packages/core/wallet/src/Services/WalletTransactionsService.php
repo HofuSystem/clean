@@ -262,16 +262,21 @@ class WalletTransactionsService
 
     public function charge(array $data,$user)
     {
-        if(isset($data['check_id'])){
-            $package = WalletPackage::find($data['check_id']);
-            if($package){
-                $data['amount'] = $package->value;
-            }
-        }
-        $amount                 = $data['amount'];
-        $wallet                 = $user->wallet;
-        $before_wallet_charge   = ['wallet_before' => $wallet, 'wallet_after' => ($wallet + $amount) , 'transaction_type' => 'charge' , 'added_by_id' => $user->id , 'status' => 'accepted' ];
-        $transaction            = $user->walletTransactions()->create($data + $before_wallet_charge);
+        $quote = (new WalletChargePricing)->quote($data['amount'] ?? null, $data['check_id'] ?? null);
+        $amount = $quote['credit_amount'];
+        $wallet = $user->wallet;
+        // Only trusted financial fields reach the ledger; input cannot override them.
+        $transaction = $user->walletTransactions()->create([
+            'amount' => $amount,
+            'transaction_id' => $data['transaction_id'] ?? null,
+            'package_id' => $quote['package_id'] ?? ($data['package_id'] ?? null),
+            'type' => 'deposit',
+            'wallet_before' => $wallet,
+            'wallet_after' => $wallet + $amount,
+            'transaction_type' => 'charge',
+            'added_by_id' => $user->id,
+            'status' => 'accepted',
+        ]);
         $transaction            = WalletTransactionResource::make($transaction);
         return $transaction;
     }

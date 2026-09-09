@@ -8,6 +8,7 @@ use Core\PaymentGateways\Models\PaymentTransaction;
 use Core\PaymentGateways\Services\MyFatoorahService;
 use Core\Orders\Services\OrdersService;
 use Core\Wallet\Services\WalletTransactionsService;
+use Core\Wallet\Services\WalletChargePricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Core\Users\Models\User;
@@ -289,8 +290,8 @@ class PaymentGatewayController extends Controller
             $requestData['paid'] = $transaction->amount;
             $this->ordersService->payFastOrder($requestData['order_id'], $requestData, $user);
         } elseif ($transaction->for === 'wallet_charge') {
-            $requestData['amount'] = $transaction->amount;
-            $this->walletTransactionsService->charge($requestData, $user);
+            $chargeData = (new WalletChargePricing)->ledgerData($transaction);
+            $this->walletTransactionsService->charge($chargeData, $user);
         } else {
             throw new \UnexpectedValueException('Unsupported payment purpose.');
         }
