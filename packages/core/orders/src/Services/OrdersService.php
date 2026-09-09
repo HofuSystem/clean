@@ -903,8 +903,17 @@ class OrdersService
             'points_amount_used' => 0,
         ]);
 
-        $noteParts = array_filter([$createOrderData['desc'] ?? null, $user->contract_note ?? null]);
-        $createOrderData['note'] = !empty($noteParts) ? implode(' - ', $noteParts) : null;
+        if (($createOrderData['type'] ?? null) === 'clothes') {
+            $serviceTypeValues = ['iron_only', 'wash_only', 'wash_iron', 'wash_and_iron', 'dry_clean', 'كوي فقط', 'غسيل فقط', 'غسيل وكوي', 'تنظيف جاف'];
+            if (isset($createOrderData['desc']) && in_array(trim((string)$createOrderData['desc']), $serviceTypeValues, true)) {
+                $createOrderData['desc'] = null;
+            }
+        }
+
+        $noteParts = array_filter([$createOrderData['desc'] ?? null, $user->contract_note ?? null], function ($part) {
+            return !is_null($part) && trim((string)$part) !== '';
+        });
+        $createOrderData['note'] = !empty($noteParts) ? implode(' - ', array_map('trim', $noteParts)) : null;
         $order = Order::create($createOrderData);
 
 

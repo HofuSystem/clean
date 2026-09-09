@@ -47,16 +47,23 @@ class CreateOrderRequest extends FormRequest
       $merge['starch_level'] = 'none';
     }
 
-    if ($this->has('service_type') && empty($this->input('desc'))) {
-      $serviceType = $this->input('service_type');
-      $serviceTypeMap = [
-        'iron_only'   => 'كوي فقط',
-        'wash_only'   => 'غسيل فقط',
-        'wash_iron'   => 'غسيل وكوي',
-        'wash_and_iron' => 'غسيل وكوي',
-        'dry_clean'   => 'تنظيف جاف',
-      ];
-      $merge['desc'] = $serviceTypeMap[$serviceType] ?? $serviceType;
+    if ($this->input('type') === 'fastorder') {
+      if ($this->has('service_type') && empty($this->input('desc'))) {
+        $serviceType = $this->input('service_type');
+        $serviceTypeMap = [
+          'iron_only'     => 'كوي فقط',
+          'wash_only'     => 'غسيل فقط',
+          'wash_iron'     => 'غسيل وكوي',
+          'wash_and_iron' => 'غسيل وكوي',
+          'dry_clean'     => 'تنظيف جاف',
+        ];
+        $merge['desc'] = $serviceTypeMap[$serviceType] ?? $serviceType;
+      }
+    } elseif ($this->input('type') === 'clothes') {
+      $serviceTypeValues = ['iron_only', 'wash_only', 'wash_iron', 'wash_and_iron', 'dry_clean', 'كوي فقط', 'غسيل فقط', 'غسيل وكوي', 'تنظيف جاف'];
+      if ($this->has('desc') && in_array(trim((string)$this->input('desc')), $serviceTypeValues, true)) {
+        $merge['desc'] = null;
+      }
     }
 
     if (!empty($merge)) {

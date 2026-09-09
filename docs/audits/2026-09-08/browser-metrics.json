@@ -1,0 +1,436 @@
+[
+  {
+    "url": "https://cleanstation.app/ar",
+    "lcp": 10904,
+    "cls": 0.1750718761932571,
+    "longTasks": 4489,
+    "ready": "interactive",
+    "viewport": 390,
+    "overflow": false,
+    "h1": [
+      "غسيلك... \n                    \n                     أذكى وأنظف!"
+    ],
+    "navigation": [
+      {
+        "ttfb": 3255.600000023842,
+        "start": 2866.7000000178814,
+        "dcl": 8543.800000011921,
+        "load": 0,
+        "bytes": 19377
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap",
+        "bytes": 1181,
+        "duration": 342.19999998807907
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "bytes": 19052,
+        "duration": 390.2000000178814
+      },
+      {
+        "url": "https://unpkg.com/aos@2.3.1/dist/aos.css",
+        "bytes": 0,
+        "duration": 288.30000001192093
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css",
+        "bytes": 5074,
+        "duration": 351.09999999403954
+      },
+      {
+        "url": "https://cleanstation.app/build/assets/app-BVm4ZHOx.css",
+        "bytes": 13328,
+        "duration": 526.5999999940395
+      },
+      {
+        "url": "https://cleanstation.app/build/assets/app-CIomGrQN.js",
+        "bytes": 18022,
+        "duration": 583.0999999940395
+      },
+      {
+        "url": "https://cleanstation.app/storage/images/dl29CO1MJ5yWzinJI34Gy1j9NrePLaJt78kX0W1h.png",
+        "bytes": 306506,
+        "duration": 7077.5
+      },
+      {
+        "url": "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83",
+        "bytes": 0,
+        "duration": 2683.399999976158
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg",
+        "bytes": 3289,
+        "duration": 2185.5999999940395
+      },
+      {
+        "url": "https://i.pravatar.cc/100?img=11",
+        "bytes": 0,
+        "duration": 1899.6000000238419
+      },
+      {
+        "url": "https://i.pravatar.cc/100?img=12",
+        "bytes": 0,
+        "duration": 1898.6000000238419
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=80&w=400",
+        "bytes": 25959,
+        "duration": 1860.699999988079
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=400",
+        "bytes": 14708,
+        "duration": 1354.0999999940395
+      },
+      {
+        "url": "https://unpkg.com/aos@2.3.1/dist/aos.js",
+        "bytes": 0,
+        "duration": 736.5999999940395
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js",
+        "bytes": 44322,
+        "duration": 2485.2000000178814
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/sweetalert2@11",
+        "bytes": 21597,
+        "duration": 1354.199999988079
+      },
+      {
+        "url": "https://cleanstation.app/vendor/flasher/flasher.min.js?id=aa16aaa1cf4481da81e2392eed0a5804",
+        "bytes": 4258,
+        "duration": 307.7000000178814
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtm.js?id=GTM-WQTQ9CV",
+        "bytes": 0,
+        "duration": 3103.5
+      },
+      {
+        "url": "https://sc-static.net/scevent.min.js",
+        "bytes": 0,
+        "duration": 920.0999999940395
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CKPTFQ3C77U1BIIGBE10&lib=ttq",
+        "bytes": 0,
+        "duration": 579.5
+      },
+      {
+        "url": "https://assets.production.linktr.ee/ltpixel/ltpix.min.js?t=1788912000000",
+        "bytes": 0,
+        "duration": 529.0999999940395
+      },
+      {
+        "url": "https://app.karzoun.chat/packs/js/sdk.js",
+        "bytes": 0,
+        "duration": 424.59999999403954
+      },
+      {
+        "url": "https://ltp.linktr.ee/stream",
+        "bytes": 0,
+        "duration": 451
+      },
+      {
+        "url": "https://tr.snapchat.com/config/app/3da29568-b309-48dd-86d1-84323f2e2699.js?v=3.60.0-2608111919",
+        "bytes": 0,
+        "duration": 2138.399999976158
+      },
+      {
+        "url": "https://tr.snapchat.com/cm/i?pid=3da29568-b309-48dd-86d1-84323f2e2699&u_scsid=bcda9627-7df9-43a5-9a99-b9049d3358b6&u_sclid=265b80db-6f2b-4373-b032-f85a171ade61",
+        "bytes": 0,
+        "duration": 10533.59999999404
+      },
+      {
+        "url": "https://app.karzoun.chat/widget?website_token=NXcdSvd43X7vBeZLRQTBdaBt",
+        "bytes": 0,
+        "duration": 10384.800000011921
+      },
+      {
+        "url": "https://tr.snapchat.com/p",
+        "bytes": 0,
+        "duration": 1985.199999988079
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtag/destination?id=G-HS2DLGQS43&cx=c&gtm=4e6921",
+        "bytes": 0,
+        "duration": 3779.800000011921
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtag/js?id=%09%20G-JM4ZEBBXSJ&cx=c&gtm=4e6921",
+        "bytes": 0,
+        "duration": 5248.299999982119
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D0LKQNBC77UAQ078QKUG&lib=ttq",
+        "bytes": 0,
+        "duration": 1390.5
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2JGLCRC77UCRM9QKRU0&lib=ttq",
+        "bytes": 0,
+        "duration": 1410.7000000178814
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2K1EFJC77U7BITDHLCG&lib=ttq",
+        "bytes": 0,
+        "duration": 1402
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2K1HMJC77UCCBANK7QG&lib=ttq",
+        "bytes": 0,
+        "duration": 1405.9000000059605
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CKPTFQ3C77U1BIIGBE10&lib=ttq",
+        "bytes": 0,
+        "duration": 1391.699999988079
+      },
+      {
+        "url": "https://ad.doubleclick.net/ccm/s/collect?auid=644678980.1788871173&gtm=45He6921v898946637za200zd898946637xea&fmt=8",
+        "bytes": 0,
+        "duration": 3008.4000000059605
+      },
+      {
+        "url": "https://tr6.snapchat.com/p",
+        "bytes": 0,
+        "duration": 2025.5
+      },
+      {
+        "url": "https://tr.snapchat.com/p",
+        "bytes": 0,
+        "duration": 1166.7999999821186
+      },
+      {
+        "url": "https://www.googleadservices.com/ccm/conversion/11048847013/?random=1788871180280&cv=11&fst=1788871180280&fmt=3&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45je6921v898837150za20gzb898946637zd898946637xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616985~115938465~115938469~118897920~118897930~120213116~120385423~120469145~120469153&u_w=390&u_h=844&url=https%3A%2F%2Fcleanstation.app%2Far&rcb=2&frm=0&tiba=%D9%83%D9%84%D9%8A%D9%86%20%D8%B3%D8%AA%D9%8A%D8%B4%D9%86%20%7C%20%D8%BA%D8%B3%D9%8A%D9%84%20%D8%A7%D9%84%D9%85%D9%84%D8%A7%D8%A8%D8%B3%20%D9%88%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9%20%D8%A8%D8%A7%D9%84%D9%85%D9%81%D8%B1%D9%88%D8%B4%D8%A7%D8%AA%20&npa=0&pscdl=noapi&auid=644678980.1788871173&label=_XtoCLqKlPwDEKWNwJQp&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B152.0.7977.82%7CNot%253FA_Brand%3B24.0.0.0%7CGoogle%2520Chrome%3B152.0.7977.82&uamb=0&uam=&uap=Windows&uapv=19.0.0&uaw=0&ec_mode=a&oid=1913915466.1788871180&oidsrc=3&ecsid2=835018833.1788871180&_tu=BBA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&em=tv.1&emd=tvd.1",
+        "bytes": 0,
+        "duration": 244.7000000178814
+      }
+    ],
+    "brokenImages": [],
+    "unlabeledButtons": 1,
+    "failures": [
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      }
+    ]
+  },
+  {
+    "url": "https://cleanstation.app/ar/blogs",
+    "lcp": 5544,
+    "cls": 0,
+    "longTasks": 2859,
+    "ready": "interactive",
+    "viewport": 390,
+    "overflow": false,
+    "h1": [],
+    "navigation": [
+      {
+        "ttfb": 929.5,
+        "start": 281.69999998807907,
+        "dcl": 5195.899999976158,
+        "load": 0,
+        "bytes": 14760
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap",
+        "bytes": 1181,
+        "duration": 302.59999999403954
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "bytes": 19052,
+        "duration": 368.19999998807907
+      },
+      {
+        "url": "https://unpkg.com/aos@2.3.1/dist/aos.css",
+        "bytes": 0,
+        "duration": 297.80000001192093
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css",
+        "bytes": 5074,
+        "duration": 251.09999999403954
+      },
+      {
+        "url": "https://cleanstation.app/build/assets/app-BVm4ZHOx.css",
+        "bytes": 13328,
+        "duration": 645.6999999880791
+      },
+      {
+        "url": "https://cleanstation.app/build/assets/app-CIomGrQN.js",
+        "bytes": 18022,
+        "duration": 523.7000000178814
+      },
+      {
+        "url": "https://cleanstation.app/storage/images/dl29CO1MJ5yWzinJI34Gy1j9NrePLaJt78kX0W1h.png",
+        "bytes": 306506,
+        "duration": 11693.09999999404
+      },
+      {
+        "url": "https://cleanstation.app/storage/images/v5XLzTlEPeH5qUU8myuPFBU6dX4E1P2vHKxLLUtr.webp",
+        "bytes": 92020,
+        "duration": 5522.699999988079
+      },
+      {
+        "url": "https://cleanstation.app/storage/images/y8o5o0zVB8C0yR8nYupAOGrivz2f3hgFmg0EwS0d.webp",
+        "bytes": 99684,
+        "duration": 5943.9000000059605
+      },
+      {
+        "url": "https://cleanstation.app/storage/images/1fUNPxaH8pwTZUlkqgGTtQApZX3WlYdj1J8on0yV.webp",
+        "bytes": 95236,
+        "duration": 6546.699999988079
+      },
+      {
+        "url": "https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83",
+        "bytes": 0,
+        "duration": 4728.5999999940395
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg",
+        "bytes": 3289,
+        "duration": 1277.2000000178814
+      },
+      {
+        "url": "https://unpkg.com/aos@2.3.1/dist/aos.js",
+        "bytes": 0,
+        "duration": 973.2999999821186
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js",
+        "bytes": 44322,
+        "duration": 2884.699999988079
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/npm/sweetalert2@11",
+        "bytes": 21597,
+        "duration": 1893.7000000178814
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtm.js?id=GTM-WQTQ9CV",
+        "bytes": 0,
+        "duration": 5656.0999999940395
+      },
+      {
+        "url": "https://sc-static.net/scevent.min.js",
+        "bytes": 0,
+        "duration": 1550.4000000059605
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CKPTFQ3C77U1BIIGBE10&lib=ttq",
+        "bytes": 0,
+        "duration": 544
+      },
+      {
+        "url": "https://assets.production.linktr.ee/ltpixel/ltpix.min.js?t=1788912000000",
+        "bytes": 0,
+        "duration": 331.80000001192093
+      },
+      {
+        "url": "https://ltp.linktr.ee/stream",
+        "bytes": 0,
+        "duration": 238
+      },
+      {
+        "url": "https://app.karzoun.chat/packs/js/sdk.js",
+        "bytes": 0,
+        "duration": 572.9000000059605
+      },
+      {
+        "url": "https://app.karzoun.chat/widget?website_token=NXcdSvd43X7vBeZLRQTBdaBt&cw_conversation=eyJhbGciOiJIUzI1NiJ9.eyJzb3VyY2VfaWQiOiI1M2RmMTc1My0xMWIyLTQwMjItYWVjNi0xMjYyNmQ0MDVmNGIiLCJpbmJveF9pZCI6MTc2NywiZXhwIjoxODA0NDIzMTcyLCJpYXQiOjE3ODg4NzExNzJ9.XAGK6rKpbQC9IlDtkCeuGux_i_uv0Uyt_g7UzKz-KO0",
+        "bytes": 0,
+        "duration": 771
+      },
+      {
+        "url": "https://tr.snapchat.com/config/app/3da29568-b309-48dd-86d1-84323f2e2699.js?v=3.60.0-2608111919",
+        "bytes": 0,
+        "duration": 326.7999999821186
+      },
+      {
+        "url": "https://tr.snapchat.com/p",
+        "bytes": 0,
+        "duration": 221.5
+      },
+      {
+        "url": "https://tr6.snapchat.com/p",
+        "bytes": 0,
+        "duration": 208.89999997615814
+      },
+      {
+        "url": "https://tr.snapchat.com/p",
+        "bytes": 0,
+        "duration": 258.90000000596046
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D0LKQNBC77UAQ078QKUG&lib=ttq",
+        "bytes": 0,
+        "duration": 750.8000000119209
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2JGLCRC77UCRM9QKRU0&lib=ttq",
+        "bytes": 0,
+        "duration": 792.1000000238419
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2K1EFJC77U7BITDHLCG&lib=ttq",
+        "bytes": 0,
+        "duration": 810.2999999821186
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=D2K1HMJC77UCCBANK7QG&lib=ttq",
+        "bytes": 0,
+        "duration": 832.6999999880791
+      },
+      {
+        "url": "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CKPTFQ3C77U1BIIGBE10&lib=ttq",
+        "bytes": 0,
+        "duration": 834.5
+      },
+      {
+        "url": "https://www.google.com/ccm/collect?rcb=5&frm=0&apvc=1&ae=g&auid=644678980.1788871173&dt=%D9%85%D8%AF%D9%88%D9%86%D8%A9%20%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9%20%D8%A8%D8%A7%D9%84%D9%85%D9%84%D8%A7%D8%A8%D8%B3%20%D9%88%D8%A7%D9%84%D9%85%D9%81%D8%B1%D9%88%D8%B4%D8%A7%D8%AA%20%7C%20%D9%83%D9%84%D9%8A%D9%86%20%D8%B3%D8%AA%D9%8A%D8%B4%D9%86&en=page_view&dl=https%3A%2F%2Fcleanstation.app%2Far%2Fblogs&scrsrc=www.googletagmanager.com&rnd=1495636563.1788871198&navt=n&npa=0&ep.ads_data_redaction=0&gtm=45He6921v898946637za200zd898946637xea&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~120385423~120469145~120469153&tft=1788871198504&tfd=12998&fmt=8",
+        "bytes": 0,
+        "duration": 582.5
+      }
+    ],
+    "brokenImages": [],
+    "unlabeledButtons": 1,
+    "failures": [
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      },
+      {
+        "error": "net::ERR_ABORTED",
+        "canceled": true
+      }
+    ]
+  }
+]
