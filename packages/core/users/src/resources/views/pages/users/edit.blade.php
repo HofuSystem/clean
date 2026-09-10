@@ -437,24 +437,20 @@
                                                 <!--begin::Table head-->
                                                 <thead class="table-primary">
                                                     <!--begin::Table row-->
-                                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                                         <th class="orderable text-center py-2" data-name="created_at">
                                                             @lang('added at')</th>
-                                                        <th class="orderable text-center py-2" data-name="type">
-                                                            @lang('type')</th>
                                                         <th class="orderable text-center py-2" data-name="transaction_type">
-                                                            @lang('transaction_type')</th>
+                                                            @lang('type')</th>
+                                                        <th class="orderable text-center py-2" data-name="details">
+                                                            @lang('details')</th>
                                                         <th class="orderable text-center py-2" data-name="amount">
                                                             @lang('amount')</th>
-                                                        <th class="orderable text-center py-2" data-name="wallet_before">
-                                                            @lang('wallet before')</th>
                                                         <th class="orderable text-center py-2" data-name="wallet_after">
                                                             @lang('wallet after')</th>
                                                         <th class="orderable text-center py-2" data-name="status">
                                                             @lang('status')</th>
-                                                        <th class="orderable text-center py-2" data-name="expired_at">
-                                                            @lang('expire at')</th>
-                                                        <th class="orderable text-center py-2" data-name="order_id">
+                                                        <th class="orderable text-center py-2" data-name="reference">
                                                             @lang('order')</th>
                                                         <th class="orderable text-center py-2" data-name="actions">
                                                             @lang('actions')</th>
