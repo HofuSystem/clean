@@ -14,9 +14,9 @@
             <div class="modal-body">
                 <div class="image-container">
                     <span class="media-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 17H6a4 4 0 0 1-.9-7.9A7 7 0 0 1 18.6 8a4.5 4.5 0 0 1-.1 9H17M12 21V11m-4 4 4-4 4 4"/></svg></span>
-                    <input type="file" id="upload-button" multiple accept="image/*" />
+                    <input type="file" id="upload-button" multiple accept=".jpg,.jpeg,.png,.webp,.gif" />
                     <label id="upload-lable" for="upload-button">{{ trans('Choose Or Drop Photos') }}</label>
-                    <p class="media-upload-hint">{{ trans('Uploaded media is selected automatically') }}</p>
+                    <p class="media-upload-hint">{{ trans('Uploaded media is selected automatically') }}<br>{{ trans('Up to 10 files, 5 MB each, 20 MB total. SVG is not supported.') }}</p>
                     <div id="image-display" aria-live="polite"></div>
                 </div>
                 <div id="error" role="alert"></div>

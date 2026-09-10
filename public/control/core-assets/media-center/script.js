@@ -100,8 +100,10 @@ function uploadMediaFiles(files) {
         ? mediaText('اكتمل الرفع. بقيت الملفات الزائدة في المكتبة لأنك وصلت لحد الاختيار.', 'Upload complete. Extra files remain in the library because the selection limit was reached.')
         : uploaded.length ? mediaText('اكتمل الرفع وتم اختيار الوسائط تلقائيًا.', 'Upload complete. Media selected automatically.') : '');
     },
-    error: function () {
-      error.innerText = mediaText('تعذّر رفع الملفات. حاول مرة أخرى.', 'Upload failed. Please try again.');
+    error: function (xhr) {
+      error.innerText = (xhr.status === 422 && typeof xhr.responseJSON?.message === 'string')
+        ? xhr.responseJSON.message
+        : mediaText('تعذّر رفع الملفات. حاول مرة أخرى.', 'Upload failed. Please try again.');
       $('#media-status').text('');
     },
     complete: function () {
@@ -272,11 +274,11 @@ $('.media-center-load').click(function (e) {
   $('#mediaModal').data('max', max)
 
   if (type === 'file') {
-    $('#upload-button').attr('accept', '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*');
+    $('#upload-button').attr('accept', '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.gif');
     let labelText = $('#mediaModal').data('trans-files') || 'Choose Or Drop Files';
     $('#upload-lable').text(labelText);
   } else {
-    $('#upload-button').attr('accept', 'image/*');
+    $('#upload-button').attr('accept', '.jpg,.jpeg,.png,.webp,.gif');
     let labelText = $('#mediaModal').data('trans-photos') || 'Choose Or Drop Photos';
     $('#upload-lable').text(labelText);
   }

@@ -5709,5 +5709,8 @@
     "Payment is still pending": "Payment is still pending",
     "Please check your order status before trying another payment.": "Please check your order status before trying another payment.",
     "The wallet package is unavailable or its price has changed.": "The wallet package is unavailable or its price has changed.",
-    "Invalid wallet payment details.": "Invalid wallet payment details."
+    "Invalid wallet payment details.": "Invalid wallet payment details.",
+    "Up to 10 files, 5 MB each, 20 MB total. SVG is not supported.": "Up to 10 files, 5 MB each, 20 MB total. SVG is not supported.",
+    "The image must be valid, at most 6000 pixels per side and 16 megapixels in total.": "The image must be valid, at most 6000 pixels per side and 16 megapixels in total.",
+    "The total upload size must not exceed 20 MB.": "The total upload size must not exceed 20 MB."
 }

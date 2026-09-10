@@ -7242,5 +7242,8 @@
     "Payment is still pending": "الدفع قيد التحقق",
     "Please check your order status before trying another payment.": "راجع حالة طلبك قبل محاولة الدفع مرة أخرى.",
     "The wallet package is unavailable or its price has changed.": "الباقة غير متاحة أو تغيّر سعرها. حدّث قائمة الباقات وحاول مرة أخرى.",
-    "Invalid wallet payment details.": "تعذّر التحقق من بيانات شحن المحفظة. تواصل مع خدمة العملاء."
+    "Invalid wallet payment details.": "تعذّر التحقق من بيانات شحن المحفظة. تواصل مع خدمة العملاء.",
+    "Up to 10 files, 5 MB each, 20 MB total. SVG is not supported.": "حتى 10 ملفات، 5 ميغابايت لكل ملف، و20 ميغابايت للمجموع. صيغة SVG غير مدعومة.",
+    "The image must be valid, at most 6000 pixels per side and 16 megapixels in total.": "يجب أن تكون الصورة سليمة، وبحد أقصى 6000 بكسل لكل جانب و16 ميغابكسل للمجموع.",
+    "The total upload size must not exceed 20 MB.": "يجب ألا يتجاوز مجموع أحجام الملفات 20 ميغابايت."
 }

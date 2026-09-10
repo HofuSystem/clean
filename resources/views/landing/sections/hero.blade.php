@@ -36,7 +36,7 @@
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('ios', 'hero')"
                        class="w-full xs:w-auto">
                         <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
-                             alt="Download Clean Station on the App Store"
+                             width="250" height="83" decoding="async" alt="Download Clean Station on the App Store"
                              class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
                     </a>
                     <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
@@ -44,15 +44,15 @@
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('android', 'hero')"
                        class="w-full xs:w-auto">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                             alt="Download Clean Station on Google Play"
+                             width="250" height="83" decoding="async" alt="Download Clean Station on Google Play"
                              class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
                     </a>
                 </div>
 
                 <div class="flex items-center justify-center lg:justify-start gap-4 pt-2">
                     <div class="flex -space-x-3 space-x-reverse">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=11">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=12">
+                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=11" width="32" height="32" alt="{{ trans('trusted client') }}" loading="lazy" decoding="async">
+                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=12" width="32" height="32" alt="{{ trans('trusted client') }}" loading="lazy" decoding="async">
                         <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-900 text-white flex items-center justify-center text-[10px] font-bold">+11k</div>
                     </div>
                     <div class="text-start">
@@ -65,7 +65,7 @@
             <div class="relative order-1 lg:order-2 flex justify-center perspective-1000 mt-8 lg:mt-0" data-aos="zoom-in">
                 <div class="relative w-[260px] md:w-[300px] h-[540px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
                     @if($section->image_url)
-                        <img src="{{ $section->image_url }}" width="300" height="600" fetchpriority="high" class="w-full h-full object-cover">
+                        <img src="{{ $section->image_url }}" width="300" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">{{ trans('app screen') }}</div>
                     @endif
@@ -220,7 +220,7 @@
             <!-- الكرت الأول: باقات الورد -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=80&w=400" alt="Rose Bouquet" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=400" alt="Rose Bouquet" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -233,7 +233,7 @@
             <!-- الكرت الثاني: فازات ورد (صورة عالية الجودة وموثوقة) -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=400" alt="Rose Vases" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=400" alt="Rose Vases" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -287,7 +287,7 @@
             <!-- Card 1: Rose Bouquets -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=80&w=400" alt="Rose Bouquet" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=400" alt="Rose Bouquet" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -300,7 +300,7 @@
             <!-- Card 2: Luxury Rose Vases -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=400" alt="Rose Vases" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=400" alt="Rose Vases" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>

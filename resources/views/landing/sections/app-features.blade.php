@@ -8,7 +8,7 @@
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="order-2 lg:order-1 flex justify-center" data-aos="fade-right">
                 <div class="relative w-[300px] bg-gray-800 rounded-[3rem] border-[8px] border-gray-700 shadow-2xl overflow-hidden transform hover:rotate-1 transition duration-500">
-                    <img id="app-feature-screen" src="{{ $defaultFeatureImage }}" width="300" height="600" loading="lazy" alt="" class="w-full h-full object-cover transition-opacity duration-300">
+                    <img id="app-feature-screen" src="{{ $defaultFeatureImage }}" width="300" height="600" loading="lazy" decoding="async" alt="{{ $appFeatures->first()?->title ?? trans('app feature') }}" class="w-full h-full object-cover transition-opacity duration-300">
                 </div>
             </div>
             <div class="order-1 lg:order-2 text-center lg:text-start" data-aos="fade-left">
@@ -31,8 +31,8 @@
                     @endforeach
                 </div>
                 <div class="mt-6 flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" class="h-12"></a>
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-12"></a>
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" width="250" height="83" loading="lazy" decoding="async" alt="Download Clean Station on the App Store" class="h-12"></a>
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="250" height="83" loading="lazy" decoding="async" alt="Download Clean Station on Google Play" class="h-12"></a>
                 </div>
             </div>
         </div>
