@@ -155,6 +155,20 @@ class WalletTransactionsController extends Controller
 
     public function dataTable(Request $request){
         try {
+            $postFilters = $request->post('filters');
+            if (is_string($postFilters)) {
+                $postFilters = json_decode($postFilters, true) ?? [];
+            } elseif (!is_array($postFilters)) {
+                $postFilters = [];
+            }
+            
+            $queryFilters = $request->query('filters', []);
+            if (!is_array($queryFilters)) {
+                $queryFilters = [];
+            }
+            
+            $request->merge(['filters' => array_merge($queryFilters, $postFilters)]);
+
             $data             = $this->walletTransactionsService->dataTable($request->draw);
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
