@@ -596,19 +596,24 @@ $(document).ready(function () {
             filters[name] = value;
         });
         filtersValues = filters;
-        // Parse the URL
+        // Parse the URL and extract filters[] parameters
         const myUrl     = new URL(url);
         const params    = new URLSearchParams(myUrl.search);
-        // Filter and log only `filters` parameters
         for (const [key, value] of params.entries()) {
             const match = key.match(/^filters(?:\[(\w+)\])?(?:\[(\d+)\])?$/);
             if (match) {
-                const [, group, index] = match;
-                if (!filtersValues[group]) {
-                    filtersValues[group] = [];
-                }
-                if (!filtersValues[group].includes(value)) {                        
-                    filtersValues[group].push(value);
+                const [, group, idx] = match;
+                if (idx !== undefined) {
+                    // filters[group][0] = value → treat as array
+                    if (!Array.isArray(filtersValues[group])) {
+                        filtersValues[group] = [];
+                    }
+                    if (!filtersValues[group].includes(value)) {
+                        filtersValues[group].push(value);
+                    }
+                } else {
+                    // filters[group] = value → treat as scalar
+                    filtersValues[group] = value;
                 }
             }
         }
