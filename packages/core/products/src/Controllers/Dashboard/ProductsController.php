@@ -153,6 +153,9 @@ class ProductsController extends Controller
             $isSales = $request->routeIs('dashboard.products.sales');
             if ($isSales) {
                 $filters = $request->input('filters', []);
+                if (is_string($filters)) {
+                    $filters = json_decode($filters, true) ?? [];
+                }
                 $filters['type'] = 'sales';
                 $request->merge(['filters' => $filters]);
             }

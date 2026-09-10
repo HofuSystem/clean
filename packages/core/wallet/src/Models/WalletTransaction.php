@@ -146,17 +146,17 @@ class WalletTransaction extends CoreModel {
         
         //filter select on  user
         if((request()->has("filters.user_id")) and !empty(request("filters.user_id"))){
-            $query->whereRelation("user","id",request("filters.user_id"));
+            $query->where("user_id", request("filters.user_id"));
         }
         
         //filter select on  addedBy
         if((request()->has("filters.added_by_id")) and !empty(request("filters.added_by_id"))){
-            $query->whereRelation("addedBy","id",request("filters.added_by_id"));
+            $query->where("added_by_id", request("filters.added_by_id"));
         }
         
         //filter select on  package
         if((request()->has("filters.package_id")) and !empty(request("filters.package_id"))){
-            $query->whereRelation("package","id",request("filters.package_id"));
+            $query->where("package_id", request("filters.package_id"));
         }
         
         //filter date on  created_at

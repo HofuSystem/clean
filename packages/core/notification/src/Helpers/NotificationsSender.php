@@ -40,7 +40,7 @@ class NotificationsSender
                     "url_button"    => "1561",
                 ];
                 $url    = "https://api.karzoun.app/CloudApi.php?".http_build_query($data);
-                $res    = Http::timeout(5)->connectTimeout(3)->retry(1, 100)->post($url, $data);
+                $res    = Http::timeout(15)->connectTimeout(10)->retry(1, 100)->post($url, $data);
                 
                 $responseBody = $res->json();
                 $isFailed = !$res->successful() || (isset($responseBody['error']) && !empty($responseBody['error']));
