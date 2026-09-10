@@ -167,7 +167,7 @@ class WalletTransactionsController extends Controller
                 $queryFilters = [];
             }
             
-            $request->merge(['filters' => array_merge($queryFilters, $postFilters)]);
+            $request->merge(['filters' => array_merge($postFilters, $queryFilters)]);
 
             $data             = $this->walletTransactionsService->dataTable($request->draw);
             return $this->returnData(trans('data founded'),$data);

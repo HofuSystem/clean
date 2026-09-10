@@ -146,7 +146,12 @@ class WalletTransaction extends CoreModel {
         
         //filter select on  user
         if((request()->has("filters.user_id")) and !empty(request("filters.user_id"))){
-            $query->where("user_id", request("filters.user_id"));
+            $userId = request("filters.user_id");
+            if (is_array($userId)) {
+                $query->whereIn("user_id", $userId);
+            } else {
+                $query->where("user_id", $userId);
+            }
         }
         
         //filter select on  addedBy
