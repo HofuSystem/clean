@@ -23,12 +23,17 @@ class WalletTransaction extends CoreModel {
     //start Scopes
     function scopeSearch($query){
         // Exclude test accounts defined in general settings
-        $testAccounts = \Core\Settings\Services\SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        if (is_string($testAccounts)) {
-            $testAccounts = json_decode($testAccounts, true) ?? [];
-        }
-        if (!empty($testAccounts) && is_array($testAccounts)) {
-            $query->whereNotIn('user_id', array_filter($testAccounts));
+        // But ONLY when not filtering by a specific user_id (admin viewing that user's wallet)
+        $isFilteringByUser = request()->has("filters.user_id") && !empty(request("filters.user_id"));
+        
+        if (!$isFilteringByUser) {
+            $testAccounts = \Core\Settings\Services\SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+            if (is_string($testAccounts)) {
+                $testAccounts = json_decode($testAccounts, true) ?? [];
+            }
+            if (!empty($testAccounts) && is_array($testAccounts)) {
+                $query->whereNotIn('user_id', array_filter($testAccounts));
+            }
         }
 
         // General search for customer name, phone, order reference, transaction_id, etc.

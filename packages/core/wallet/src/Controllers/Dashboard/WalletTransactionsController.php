@@ -155,12 +155,6 @@ class WalletTransactionsController extends Controller
 
     public function dataTable(Request $request){
         try {
-            \Illuminate\Support\Facades\Log::error('WalletDataTable filters', [
-                'all'   => $request->all(),
-                'input' => $request->input('filters'),
-                'query' => $request->query('filters'),
-                'post'  => $request->post('filters'),
-            ]);
             $data             = $this->walletTransactionsService->dataTable($request->draw);
             return $this->returnData(trans('data founded'),$data);
         }catch(ValidationException $e){
