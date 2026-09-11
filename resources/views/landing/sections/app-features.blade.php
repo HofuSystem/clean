@@ -1,6 +1,7 @@
 @php
  $appFeatures = \Core\Pages\Models\Feature::with('translations')->where('section', 'b2c')->get();
  $defaultFeatureImage = $appFeatures->first()?->image_url ?? $section->image_url ?? '';
+ $defaultFeatureImage = str_contains($defaultFeatureImage, 'A1mdwqIM5Ujl4iNF5s0mXoljZr4F36NJGvqpnzxm.png') ? asset('assets/images/optimized/feature.webp') : $defaultFeatureImage;
 @endphp
 <section id="app-features" class="bg-gray-900 text-white py-24 relative overflow-hidden">
     <div class="absolute inset-0 bg-brand-900/20"></div>

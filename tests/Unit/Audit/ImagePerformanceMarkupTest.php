@@ -15,7 +15,8 @@ class ImagePerformanceMarkupTest extends TestCase
     {
         $hero = file_get_contents($this->projectPath('resources/views/landing/sections/hero.blade.php'));
         $this->assertStringContainsString('fetchpriority="high" decoding="async"', $hero);
-        $this->assertStringContainsString('width="300" height="600"', $hero);
+        $this->assertStringContainsString('width="277" height="600"', $hero);
+        $this->assertStringContainsString('assets/images/optimized/hero.webp', $hero);
         $this->assertSame(6, substr_count($hero, 'loading="lazy" decoding="async"'));
         $this->assertSame(0, substr_count($hero, '?auto=format&fit=crop&q=80&w=400'));
         $this->assertSame(4, substr_count($hero, 'width="400" height="400"'));
