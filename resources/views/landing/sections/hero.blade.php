@@ -65,12 +65,7 @@
             <div class="relative order-2 flex justify-center perspective-1000 mt-4 lg:mt-0">
                 <div class="relative w-[220px] md:w-[300px] h-[440px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
                     @if($section->image_url)
-                        @php
-                            $heroImage = str_contains($section->image_url, 'usKhlo1HcfP4cp1w95zeiNEUirjoHnlSjMHiHPW4.png')
-                                ? asset('assets/images/optimized/hero.webp')
-                                : $section->image_url;
-                        @endphp
-                        <img src="{{ $heroImage }}" width="277" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
+                        <img src="{{ $section->image_url }}" width="300" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">{{ trans('app screen') }}</div>
                     @endif

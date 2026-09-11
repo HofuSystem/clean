@@ -28,7 +28,7 @@ class MediaCenterHelper
      * @param string $disk
      * @return string|false
      */
-    public static function saveMedias($filesOrUrls, $type = 'media', $quality = 60, $disk = 'public')
+    public static function saveMedias($filesOrUrls, $type = 'media', $quality = 82, $disk = 'public')
     {
         $data = collect();
         foreach ($filesOrUrls as  $fileOrUrl) {
@@ -47,7 +47,7 @@ class MediaCenterHelper
      * @param string $disk
      * @return string|false
      */
-    public static function saveMedia($fileOrUrl, $type = 'media', $quality = 60, $disk = 'public')
+    public static function saveMedia($fileOrUrl, $type = 'media', $quality = 82, $disk = 'public')
     {
         if (is_string($fileOrUrl)) {
             $file = self::downloadFile($fileOrUrl);
@@ -213,7 +213,7 @@ class MediaCenterHelper
      * @param int $quality
      * @return mixed
      */
-    public static function compressImage($image, $extension = null, $quality = 60)
+    public static function compressImage($image, $extension = null, $quality = 82)
     {
         // Get the original image dimensions.
         $width = $image->width();
@@ -221,11 +221,11 @@ class MediaCenterHelper
 
         // Calculate the new image dimensions based on the aspect ratio.
         if ($width > $height) {
-            $newWidth = 1024;
+            $newWidth = 1920;
             $newHeight = null;
         } else {
             $newWidth = null;
-            $newHeight = 1024;
+            $newHeight = 1920;
         }
 
         // Resize the image.
