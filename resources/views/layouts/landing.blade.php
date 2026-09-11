@@ -177,15 +177,20 @@
                 // GA4 tags removed to prevent double page_view. GTM (GTM-WQTQ9CV) is the primary management layer.
             }
 
-            var trackingTimeout = setTimeout(initTracking, 4000);
+            // Keep third-party pixels out of the critical 10-second load window.
+            // Interaction still starts tracking immediately when intent is clear.
+            var trackingTimeout = setTimeout(initTracking, 12000);
             window.addEventListener('scroll', initTracking, { passive: true });
             window.addEventListener('touchstart', initTracking, { passive: true });
         })();
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ config('app.icon') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     @php
         $actualDesc = $metaDescription ?? '';
@@ -248,8 +253,8 @@
         href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
 
     @if(config('app.env') === 'local')
         <script src="https://cdn.tailwindcss.com"></script>
@@ -1000,7 +1005,7 @@
     {{-- End Google Tag Manager (noscript) --}}
 
     @if (setting('whatsapp'))
-        <a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" class="floating-wa"
+        <a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" rel="noopener" aria-label="{{ trans('Contact us on WhatsApp') }}" class="floating-wa"
            id="floating-whatsapp-btn"
            onclick="window.cleanTrack && window.cleanTrack.contact('whatsapp')"><i
                 class="fa-brands fa-whatsapp text-3xl"></i></a>
@@ -1014,22 +1019,23 @@
 
     @include('layouts.partials.footer')
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <script>
-        if (window.AOS && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        function initLandingAnimations() {
+            if (!window.AOS || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             try {
-                AOS.init({
-                    duration: 800,
-                    easing: 'ease-in-out',
-                    once: true,
-                    mirror: false
-                });
+                AOS.init({ duration: 800, easing: 'ease-in-out', once: true, mirror: false });
                 document.documentElement.classList.add('aos-ready');
             } catch (error) {
                 document.documentElement.classList.remove('aos-ready');
             }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLandingAnimations, { once: true });
+        } else {
+            initLandingAnimations();
         }
     </script>
 
