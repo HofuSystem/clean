@@ -29,7 +29,7 @@ Schedule::command('app:prune-system-records')->dailyAt('02:00');
 Schedule::command('telescope:prune --hours=48')->daily();
 
 //queue
-Schedule::command('queue:work --stop-when-empty')->everyMinute();
+Schedule::command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping(10);
 Schedule::command('queue:restart')->everyFiveMinutes();
 
 Artisan::command('inspire', function () {

@@ -56,7 +56,7 @@ class ProductsService
                 'products.sub_category_id'
             );
 
-        $products = $query->get();
+        $products = $query->distinct()->get();
 
         return $products->map(function ($p) {
             return [
