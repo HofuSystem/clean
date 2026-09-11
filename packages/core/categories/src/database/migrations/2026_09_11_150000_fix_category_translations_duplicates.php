@@ -28,9 +28,7 @@ return new class extends Migration
                 t1.id,
                 t1.category_id,
                 t1.locale,
-                t1.name,
-                t1.created_at,
-                t1.updated_at
+                t1.name
             FROM category_translations t1
             INNER JOIN (
                 SELECT category_id, locale
