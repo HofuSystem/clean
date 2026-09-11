@@ -38,56 +38,7 @@ class TelegramNotificationService
 
     public function formatExceptionMessage(\Throwable $exception): string
     {
-        $domain     =   $_SERVER['HTTP_HOST'] ?? null;
-        $message    =   "<b>⚠️ حدث خطأ ⚠️ (" . $domain . ")</b>\n\n";
-        $message    .=  "<b>📱 التطبيق:</b> " . config('app.name') . "\n";
-        $message    .=  "<b>🌍 البيئة:</b> " . app()->environment() . "\n";
-
-        // Add request URL if available
-        if (request() && method_exists(request(), 'fullUrl')) {
-            $message .= "<b>🔗 الرابط:</b> " . request()->fullUrl() . "\n";
-        }
-
-        $message .= "<b>❌ الخطأ:</b> " . $exception->getMessage() . "\n";
-        $message .= "<b>📄 الملف:</b> " . $exception->getFile() . "\n";
-        $message .= "<b>📝 السطر:</b> " . $exception->getLine() . "\n";
-        $message .= "<b>🔢 الكود:</b> " . $exception->getCode() . "\n";
-        $message .= "<b>🕐 الوقت:</b> " . now()->toDateTimeString() . "\n\n";
-
-        // Add authenticated user if available
-        if (request()->user()) {
-            $message .= "<b>👤 المستخدم:</b> " . request()->user()->email . " (ID: " . request()->user()->id . ")\n";
-        }
-
-        if ($exception instanceof \Illuminate\Database\QueryException) {
-            $message .= "<b>💾 استعلام SQL:</b> " . $exception->getSql() . "\n";
-            $message .= "<b>🔗 المتغيرات:</b> " . json_encode($exception->getBindings()) . "\n";
-        }
-
-        // Add request data if available
-        if (request() && !empty(request()->all())) {
-            $message .= "\n<b>📋 بيانات الطلب:</b>\n<pre>" .
-                json_encode(request()->except(['password', 'password_confirmation']), JSON_PRETTY_PRINT) .
-                "</pre>\n";
-        }
-
-        // Add stack trace (first 3 lines to identify the source)
-        $trace = collect($exception->getTrace())->take(5)->map(function ($trace) {
-            $file = $trace['file'] ?? 'unknown';
-            $line = $trace['line'] ?? '?';
-            $function = ($trace['class'] ?? '') . ($trace['type'] ?? '') . ($trace['function'] ?? '');
-            
-            // Shorten file path
-            $file = str_replace(base_path(), '', $file);
-            
-            return "→ {$function}\n  {$file}:{$line}";
-        })->join("\n");
-
-        if ($trace) {
-            $message .= "\n<b>🔍 Stack Trace (Top 5):</b>\n<pre>{$trace}</pre>";
-        }
-
-        return $message;
+        return \App\Support\ExceptionAlertFormatter::format($exception);
     }
 
     /**
@@ -100,7 +51,7 @@ class TelegramNotificationService
             $formattedMessage = $this->formatExceptionMessage($exception);
             $this->sendMessage($chatId, $formattedMessage);
         } catch (\Throwable $e) {
-            Log::error('Failed to report exception to Telegram: ' . $e->getMessage());
+            Log::error('Failed to report exception to Telegram', ['exception' => get_class($e)]);
         }
     }
     //chanel @cleanstationneworders

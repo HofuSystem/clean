@@ -44,16 +44,23 @@ class OrdersController extends Controller
     public function myOrders(Request $request)
     {
         try {
-            $orders = Order::with([
+            // The compact list response does not expose order items. Avoid loading
+            // item/product graphs unless the client explicitly requests a type that
+            // uses OrderResource; the response contract remains unchanged.
+            $with = [
                 'orderRepresentatives.address',
-                'items' => function ($q) {
-                    $q->withTrashed()->where('final_delete', false)->with(['product.category.translations', 'qtyUpdates']);
-                },
                 'coupon.gift',
                 'city.translations',
                 'district.translations',
-                'moreDatas'
-            ])
+                'moreDatas',
+            ];
+            if (in_array($request->type, ['clothes', 'fastorder', 'services', 'sales'], true)) {
+                $with['items'] = function ($q) {
+                    $q->withTrashed()->where('final_delete', false)->with(['product.category.translations', 'qtyUpdates']);
+                };
+            }
+
+            $orders = Order::with($with)
             ->where('client_id', $request->user()->id)
             ->whereNotIn('status', ['pending_payment', 'failed_payment', 'cancel_payment'])
             ->when($request->type, function ($query) use ($request) {

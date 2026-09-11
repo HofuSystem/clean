@@ -365,6 +365,26 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        /* Keep content readable when animation scripts are unavailable. */
+        html:not(.aos-ready) [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto !important; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            [data-aos] {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+            }
+        }
+
         /* Animation for dropdowns */
         .animate-fade-in-down {
             animation: fadeInDown 0.2s ease-out;
@@ -998,12 +1018,19 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
+        if (window.AOS && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            try {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true,
+                    mirror: false
+                });
+                document.documentElement.classList.add('aos-ready');
+            } catch (error) {
+                document.documentElement.classList.remove('aos-ready');
+            }
+        }
     </script>
 
     {{-- ============================================================ --}}

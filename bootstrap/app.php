@@ -40,9 +40,9 @@ return Application::configure(basePath: dirname(__DIR__))
             } catch (\Throwable $telegramError) {
                 // Silently fail to prevent infinite loops
                 if (!app()->runningInConsole()) {
-                    \Illuminate\Support\Facades\Log::error('Failed to send telegram notification: ' . $telegramError->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Failed to send telegram notification', ['exception' => get_class($telegramError)]);
                 } else {
-                    echo "Original Exception: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
+                    echo "Original exception type: " . get_class($e) . "\n";
                 }
             }
         });

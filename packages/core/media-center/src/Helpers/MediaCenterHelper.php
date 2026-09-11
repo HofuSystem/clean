@@ -268,6 +268,10 @@ class MediaCenterHelper
     public static function deleteFile($id)
     {
         $media = Media::where('id',$id)->orWhere('file_name',$id)->first();
+        if (! $media) {
+            return false;
+        }
+
         Storage::disk('public')->delete($media->file_name);
         return $media->delete();
     }

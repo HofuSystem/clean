@@ -12,7 +12,7 @@
         
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-20 lg:mb-32">
             
-            <div class="text-center lg:text-start space-y-6 order-2 lg:order-1" data-aos="fade-up">
+            <div class="text-center lg:text-start space-y-6 order-1">
                 <div class="inline-flex items-center gap-2 bg-white border border-brand-100 shadow-sm px-3 py-1.5 rounded-full">
                     <span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span></span>
                     <span class="text-[10px] md:text-xs font-bold text-gray-600 tracking-wide">{{ $section->small_title }}</span>
@@ -21,7 +21,7 @@
                     $titleArray = explode('..', $section->title);
                 @endphp
                 <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 leading-[1.1] tracking-tight">
-                    <span>{{  $titleArray[0] ?? '' }}... 
+                    <span>{{  $titleArray[0] ?? '' }}...</span>
                     <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">{{ $titleArray[1] ?? '' }}</span>
                 </h1>
@@ -62,8 +62,8 @@
                 </div>
             </div>
 
-            <div class="relative order-1 lg:order-2 flex justify-center perspective-1000 mt-8 lg:mt-0" data-aos="zoom-in">
-                <div class="relative w-[260px] md:w-[300px] h-[540px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
+            <div class="relative order-2 flex justify-center perspective-1000 mt-4 lg:mt-0">
+                <div class="relative w-[220px] md:w-[300px] h-[440px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
                     @if($section->image_url)
                         <img src="{{ $section->image_url }}" width="300" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
                     @else

@@ -36,10 +36,10 @@ class SendTelegramMessageJob implements ShouldQueue
             ]);
 
             if ($response->failed()) {
-                Log::error('Telegram API Error: ' . $response->body());
+                Log::error('Telegram API request failed', ['status' => $response->status()]);
             }
         } catch (\Throwable $e) {
-            Log::error('SendTelegramMessageJob failed: ' . $e->getMessage());
+            Log::error('SendTelegramMessageJob failed', ['exception' => get_class($e)]);
         }
     }
 }
