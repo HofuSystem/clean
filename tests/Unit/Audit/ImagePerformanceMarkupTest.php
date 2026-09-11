@@ -26,6 +26,7 @@ class ImagePerformanceMarkupTest extends TestCase
         $features = file_get_contents($this->projectPath('resources/views/landing/sections/app-features.blade.php'));
         $blogs = file_get_contents($this->projectPath('resources/views/landing/sections/blogs.blade.php'));
         $this->assertStringContainsString('width="300" height="600" loading="lazy" decoding="async"', $features);
+        $this->assertStringContainsString("\$defaultFeatureImage = \$section->image_url ?: (\$appFeatures->first()?->image_url ?? '');", $features);
         $this->assertStringContainsString('alt="{{ $appFeatures->first()?->title ?? trans(\'app feature\') }}"', $features);
         $this->assertGreaterThanOrEqual(2, substr_count($features, 'loading="lazy" decoding="async"'));
         $this->assertGreaterThanOrEqual(2, substr_count($blogs, 'loading="lazy" decoding="async"'));
