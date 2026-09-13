@@ -15,6 +15,7 @@ class ContactRequest extends CoreModel {
 	protected $table             = 'contact_requests';
 	protected $fillable          = ['name', 'phone', 'email', 'type', 'notes', 'creator_id', 'updater_id'];
     protected $guarded           = [];
+    protected $attributes        = ['type' => 'general']; // default when form doesn't include type field
 
 
     //start Scopes
