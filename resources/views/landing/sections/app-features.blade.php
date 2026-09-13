@@ -7,8 +7,8 @@
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="order-2 lg:order-1 flex justify-center" data-aos="fade-right">
-                <div class="relative w-[300px] bg-gray-800 rounded-[3rem] border-[8px] border-gray-700 shadow-2xl overflow-hidden transform hover:rotate-1 transition duration-500">
-                    <img id="app-feature-screen" src="{{ $defaultFeatureImage }}" width="300" height="600" loading="lazy" decoding="async" alt="{{ $appFeatures->first()?->title ?? trans('app feature') }}" class="w-full h-full object-cover transition-opacity duration-300">
+                <div class="app-feature-frame relative w-[300px] bg-gray-800 rounded-[3rem] border-[8px] border-gray-700 shadow-2xl overflow-hidden transform hover:rotate-1 transition duration-500">
+                    <x-website-image id="app-feature-screen" :src="$defaultFeatureImage" sizes="284px" width="300" height="600" loading="lazy" decoding="async" alt="{{ $appFeatures->first()?->title ?? trans('app feature') }}" class="w-full h-full object-cover transition-opacity duration-300" />
                 </div>
             </div>
             <div class="order-1 lg:order-2 text-center lg:text-start" data-aos="fade-left">
@@ -20,19 +20,21 @@
                          role="button"
                          tabindex="0"
                          data-image="{{ $featureImage }}"
+                         data-srcset="{{ \App\Support\WebsiteImages::attributes($featureImage)['srcset'] ?? '' }}"
+                         data-title="{{ $feature->title }}"
                          onclick="window.appFeatureSelect(this)"
                          onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); window.appFeatureSelect(this); }">
                         <i class="{{ $feature->icon }} text-2xl text-brand-400"></i>
                         <div class="text-start">
-                            <h4 class="font-bold">{{ $feature->title }}</h4>
+                            <h3 class="font-bold">{{ $feature->title }}</h3>
                             <p class="text-xs text-gray-400">{{ $feature->description }}</p>
                         </div>
                     </div>
                     @endforeach
                 </div>
-                <div class="mt-6 flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" width="250" height="83" loading="lazy" decoding="async" alt="Download Clean Station on the App Store" class="h-12"></a>
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_app_features' });" class="hover:scale-105 transition-transform"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="250" height="83" loading="lazy" decoding="async" alt="Download Clean Station on Google Play" class="h-12"></a>
+                <div class="mt-6 store-badge-row flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_app_features' });" class="store-badge-link hover:scale-105 transition-transform"><img width="119.66407" height="40" src="{{ asset('assets/store-badges/app-store.svg') }}" loading="lazy" decoding="async" alt="Download Clean Station on the App Store" class="store-badge store-badge-apple"></a>
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_app_features' });" class="store-badge-link hover:scale-105 transition-transform"><img width="646" height="192" src="{{ asset('assets/store-badges/google-play.svg') }}" loading="lazy" decoding="async" alt="Download Clean Station on Google Play" class="store-badge store-badge-google"></a>
                 </div>
             </div>
         </div>
@@ -46,6 +48,10 @@
                 screenEl.style.opacity = '0';
                 setTimeout(function() {
                     screenEl.src = img;
+                    var srcset = el.getAttribute('data-srcset');
+                    if (srcset) screenEl.setAttribute('srcset', srcset);
+                    else screenEl.removeAttribute('srcset');
+                    screenEl.alt = el.getAttribute('data-title') || '';
                     screenEl.style.opacity = '1';
                 }, 150);
             }

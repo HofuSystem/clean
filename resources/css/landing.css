@@ -1,0 +1,405 @@
+@import './vendor/landing-fonts.css';
+@import './vendor/landing-icons.css';
+@import './vendor/landing-icon-subsets.css';
+@import './vendor/aos.css';
+@import './vendor/swiper.css';
+@config '../../tailwind.landing.config.js';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+        /* Mobile Optimization */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+
+        /* Language Support - Using html dir attribute */
+        html[dir="rtl"] body {
+            text-align: right;
+            direction: rtl;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        html[dir="ltr"] body {
+            text-align: left;
+            direction: ltr;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Show/Hide language-specific content */
+        html[dir="rtl"] .lang-en {
+            display: none !important;
+        }
+
+        html[dir="rtl"] .lang-ar {
+            display: inline-block !important;
+        }
+
+        html[dir="ltr"] .lang-ar {
+            display: none !important;
+        }
+
+        html[dir="ltr"] .lang-en {
+            display: inline-block !important;
+        }
+
+        /* Floating WhatsApp Button */
+        .floating-wa {
+            position: fixed;
+            bottom: 20px;
+            z-index: 999;
+            background: #25d366;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+        }
+
+        .floating-wa:hover {
+            transform: scale(1.1);
+        }
+
+        html[dir="rtl"] .floating-wa {
+            right: 20px;
+            left: auto;
+        }
+
+        html[dir="ltr"] .floating-wa {
+            left: 20px;
+            right: auto;
+        }
+
+        /* Fix Table Overflow on Mobile */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Keep content readable when animation scripts are unavailable. */
+        html:not(.aos-ready) [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto !important; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            [data-aos] {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+            }
+        }
+
+        /* Animation for dropdowns */
+        .animate-fade-in-down {
+            animation: fadeInDown 0.2s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Swiper Custom Styles */
+        .swiper-pagination-bullet { width: 28px; height: 28px; background: transparent; opacity: 1; display: inline-flex; align-items: center; justify-content: center; }
+        .swiper-pagination-bullet::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
+
+        .swiper-pagination-bullet-active::before { background: #0369a1; width: 20px; border-radius: 5px; }
+
+        .swiper-slide {
+            height: auto;
+        }
+
+        /* =========================================================
+           UI/UX & Premium Enhancements from cleanstation_dev
+           ========================================================= */
+
+        /* 1. تأثير النبض المتوهج لأزرار التحميل (لجذب الانتباه) */
+        .btn-glow-pulse {
+            animation: glow-pulse 2s infinite;
+            box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+        }
+
+        @keyframes glow-pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(14, 165, 233, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+        }
+
+        /* 2. الشريط اللاصق السفلي لأجهزة الجوال (Sticky Mobile CTA) */
+        .sticky-mobile-cta {
+            position: fixed;
+            bottom: -100px; /* مخفي افتراضياً */
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #f1f5f9;
+            padding: 12px 20px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 9999;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .sticky-mobile-cta.visible {
+            bottom: 0;
+        }
+
+        /* إخفاء الشريط اللاصق في الشاشات الكبيرة */
+        @media (min-width: 768px) {
+            .sticky-mobile-cta {
+                display: none !important;
+            }
+        }
+
+        .sticky-mobile-cta .stars {
+            color: #fbbf24;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .sticky-mobile-cta-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .sticky-mobile-cta-btn {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        /* 3. تأثير "طفو" للبطاقات (Floating Cards) */
+        .card-float-hover {
+            transition: all 0.3s ease;
+        }
+        .card-float-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #e0f2fe;
+        }
+
+        /* 5. قسم الهدايا والورود الفاخر (Glassmorphism Gifts Section) */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.03), 
+                        inset 0 1px 0 rgba(255, 255, 255, 1);
+            border-radius: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .premium-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 1.5rem;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.12);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+
+        .premium-card img {
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #0284c7, #3b82f6, #0ea5e9);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            display: inline-block;
+            padding-top: 0.25em;
+            padding-bottom: 0.15em;
+            margin-top: -0.25em;
+            margin-bottom: -0.15em;
+            vertical-align: middle;
+            animation: textShine 4s linear infinite;
+        }
+
+        .btn-shimmer {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-shimmer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.5);
+        }
+
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(60px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: blobBounce 10s infinite alternate;
+        }
+        .blob-1 { background: #bae6fd; width: 300px; height: 300px; top: -50px; right: -50px; border-radius: 40% 60% 60% 40%; }
+        .blob-2 { background: #fbcfe8; width: 250px; height: 250px; bottom: -50px; left: -20px; border-radius: 60% 40% 30% 70%; animation-delay: -5s; }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        @keyframes textShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes blobBounce {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, 20px) scale(1.1); }
+            100% { transform: translate(20px, -20px) scale(0.9); }
+        }
+
+        /* 6. تنسيق وتكبير الشعارات (Logo Scaling - Headers & Footers) */
+        #navbar img[alt="Logo"], 
+        nav img[alt="Logo"], 
+        nav a.flex-shrink-0 img {
+            height: 3.5rem !important; /* يعادل h-14 */
+            width: auto !important;
+        }
+
+        #footer img[alt="Logo"], 
+        footer img[alt="Logo"] {
+            height: 4rem !important; /* تكبير اللوجو بأسفل الموقع ليكون واضحاً ومميزاً */
+            width: auto !important;
+        }
+
+        /* 7. تنسيق صفحات الشروط والخصوصية (Policy Page Typography) */
+        .policy-content {
+            font-family: 'Tajawal', sans-serif;
+            color: #334155; /* slate-700 */
+        }
+        .policy-content h1, .policy-content h2, .policy-content h3 {
+            color: #0f172a; /* slate-900 */
+            font-weight: 800;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        .policy-content h1 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        .policy-content h3 {
+            font-size: 1.4rem;
+            color: #0284c7; /* brand sky color */
+        }
+        .policy-content p {
+            line-height: 1.8;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+        .policy-content strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .policy-content ol, .policy-content ul {
+            margin-bottom: 1.5rem;
+            padding-right: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        .policy-content li {
+            margin-bottom: 0.8rem;
+            line-height: 1.7;
+            position: relative;
+            list-style-type: decimal;
+        }
+        html[dir="ltr"] .policy-content ol, html[dir="ltr"] .policy-content ul {
+            padding-left: 1.5rem;
+            padding-right: 0;
+        }
+
+/* Dimensions must exist before fonts and images load, including a cold mobile visit. */
+.hero-phone { width: 220px; height: 440px; flex-shrink: 0; }
+@media (min-width: 768px) { .hero-phone { width: 300px; height: 600px; } }
+#home > .absolute { top: -50px; }
+#home > .absolute:nth-child(2) { top: auto; bottom: 50px; }
+.store-badge { display: block; height: 48px; max-width: none; object-fit: contain; flex-shrink: 0; }
+.store-badge-apple { width: 143.597px; }
+.store-badge-google { width: 161.538px; }
+.store-badge-link { flex-shrink: 0; }
+.store-badge-row { flex-wrap: wrap; }
+#home .text-brand-600.bg-brand-50 { color: #0369a1; }
+#home .text-gray-400, #testimonials .text-gray-400 { color: #64748b; }
+#footer .text-gray-500 { color: #9ca3af; }
+#footer button[type="submit"] { width: 44px; height: 44px; }
+#footer input[type="email"] { padding-inline-end: 56px; }
+#footer a[aria-label] { min-width: 28px; min-height: 28px; display: inline-flex; align-items: center; justify-content: center; }
+.app-feature-frame { width: 300px; height: 300px; }
+.app-feature-frame img { width: 100%; height: 100%; object-fit: contain; }
+#home .animate-ping { animation: none; }
+
+#home .bg-gray-900 .text-gray-400 { color: #9ca3af; }
+#home h1 .bg-clip-text { background-image: none; color: #0369a1; }
+#navbar .bg-brand-600 { background-color: #0369a1; }
+
+#navbar .text-brand-600 { color: #0369a1; }
+#gifts-premium-section .text-pink-500 { color: #be185d; }
+#gifts-premium-section .text-sky-500 { color: #0369a1; }
+.btn-shimmer, .sticky-mobile-cta-btn { background-image: linear-gradient(135deg, #0369a1, #075985); }
+.text-gradient { background-image: linear-gradient(135deg, #075985, #0369a1, #075985); }

@@ -31,6 +31,6 @@ class MediaUploadCompressionPolicyTest extends TestCase
         $features = file_get_contents($this->projectPath('resources/views/landing/sections/app-features.blade.php'));
 
         $this->assertStringNotContainsString('assets/images/optimized/', $hero . $features);
-        $this->assertStringContainsString('{{ $section->image_url }}', $hero);
+        $this->assertStringContainsString(':src="$section->image_url"', $hero);
     }
 }

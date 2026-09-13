@@ -1,8 +1,94 @@
 {
+  "public/control/assets/vendor/fonts/fontawesome/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-C-jaCRNI.woff2",
+    "src": "public/control/assets/vendor/fonts/fontawesome/fa-brands-400.woff2"
+  },
+  "public/control/assets/vendor/fonts/fontawesome/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-TCCU0xbi.woff2",
+    "src": "public/control/assets/vendor/fonts/fontawesome/fa-regular-400.woff2"
+  },
+  "public/control/assets/vendor/fonts/fontawesome/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-tLH6XCuf.woff2",
+    "src": "public/control/assets/vendor/fonts/fontawesome/fa-solid-900.woff2"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-BVm4ZHOx.css",
+    "file": "assets/app-qnJFp1VQ.css",
     "src": "resources/css/app.css",
     "isEntry": true
+  },
+  "resources/css/landing.css": {
+    "file": "assets/landing-CgCCM5cr.css",
+    "src": "resources/css/landing.css",
+    "isEntry": true
+  },
+  "resources/css/vendor/landing-icons-full.css": {
+    "file": "assets/landing-icons-full-CKrGjLJz.css",
+    "src": "resources/css/vendor/landing-icons-full.css",
+    "isEntry": true
+  },
+  "resources/fonts/landing/Iura6YBj_oCad4k1nzGBCw.woff2": {
+    "file": "assets/Iura6YBj_oCad4k1nzGBCw-BVNSOH3d.woff2",
+    "src": "resources/fonts/landing/Iura6YBj_oCad4k1nzGBCw.woff2"
+  },
+  "resources/fonts/landing/Iura6YBj_oCad4k1nzSBC45I.woff2": {
+    "file": "assets/Iura6YBj_oCad4k1nzSBC45I-CyCXRvzh.woff2",
+    "src": "resources/fonts/landing/Iura6YBj_oCad4k1nzSBC45I.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l4qkHrFpiQ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l4qkHrFpiQ-BypgxfGb.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l4qkHrFpiQ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l4qkHrRpiYlJ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l4qkHrRpiYlJ-D2-eand5.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l4qkHrRpiYlJ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l5anHrFpiQ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l5anHrFpiQ-CmI34b-g.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l5anHrFpiQ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l5anHrRpiYlJ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l5anHrRpiYlJ-TQp-UTiE.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l5anHrRpiYlJ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l7KmHrFpiQ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l7KmHrFpiQ-DURQZvFY.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l7KmHrFpiQ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l7KmHrRpiYlJ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l7KmHrRpiYlJ-MgmkhdPX.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l7KmHrRpiYlJ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l8KiHrFpiQ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l8KiHrFpiQ-CoYeBiSI.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l8KiHrFpiQ.woff2"
+  },
+  "resources/fonts/landing/Iurf6YBj_oCad4k1l8KiHrRpiYlJ.woff2": {
+    "file": "assets/Iurf6YBj_oCad4k1l8KiHrRpiYlJ-BZ8ojJNu.woff2",
+    "src": "resources/fonts/landing/Iurf6YBj_oCad4k1l8KiHrRpiYlJ.woff2"
+  },
+  "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2": {
+    "file": "assets/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0-CJWMIGCx.woff2",
+    "src": "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS4J0.woff2"
+  },
+  "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2": {
+    "file": "assets/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS-PfPtmrPZ.woff2",
+    "src": "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS.woff2"
+  },
+  "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2": {
+    "file": "assets/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0-at8nfxId.woff2",
+    "src": "resources/fonts/landing/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS4J0.woff2"
+  },
+  "resources/fonts/landing/icons-brands-400.woff2": {
+    "file": "assets/icons-brands-400-Efkm5TqF.woff2",
+    "src": "resources/fonts/landing/icons-brands-400.woff2"
+  },
+  "resources/fonts/landing/icons-regular-400.woff2": {
+    "file": "assets/icons-regular-400-CcCf5ACm.woff2",
+    "src": "resources/fonts/landing/icons-regular-400.woff2"
+  },
+  "resources/fonts/landing/icons-solid-900.woff2": {
+    "file": "assets/icons-solid-900-DGirldKz.woff2",
+    "src": "resources/fonts/landing/icons-solid-900.woff2"
   },
   "resources/js/app.js": {
     "file": "assets/app-CIomGrQN.js",

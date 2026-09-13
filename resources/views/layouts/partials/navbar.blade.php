@@ -4,7 +4,7 @@
             
             <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2">
                 @if(config('app.logo'))
-                    <img src="{{ config('app.logo') }}" alt="Logo" class="h-10 w-auto">
+                    <x-website-image :src="config('app.logo')" sizes="104px" width="1503" height="826" alt="Logo" class="h-10 w-auto" />
                 @else
                     <div class="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center text-xl shadow-lg"><i class="fa-solid fa-soap"></i></div>
                     <span class="font-black text-xl tracking-tighter text-gray-900 hidden sm:block">{{ app()->getLocale() === 'ar' ? 'كلين ستيشن' : 'Clean Station' }}</span>

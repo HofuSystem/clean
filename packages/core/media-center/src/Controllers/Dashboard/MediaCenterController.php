@@ -25,6 +25,9 @@ class MediaCenterController extends Controller
     }
     public function addNew(AddMediaCenterRequest $request)  {
         $media = MediaCenterHelper::saveMedias($request->file('files'),$request->type);
+        foreach ($media as $item) {
+            \App\Support\WebsiteImages::prepare($item->file_name);
+        }
         return response()->json(['data' => $media]);
     }
     public function delete(Request $request)  {

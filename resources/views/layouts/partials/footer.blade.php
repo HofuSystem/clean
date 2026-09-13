@@ -9,7 +9,7 @@
             <div class="space-y-6 flex flex-col items-center {{ $isRtl ? 'md:items-start' : 'md:items-start' }}">
                 <div class="flex items-center gap-3 justify-center md:justify-start">
                     @if(config('app.logo'))
-                        <img src="{{ config('app.logo') }}" alt="Logo" class="h-10 w-auto mx-auto md:mx-0">
+                        <x-website-image :src="config('app.logo')" sizes="116px" width="1503" height="826" alt="Logo" class="h-10 w-auto mx-auto md:mx-0" />
                     @else
                         <div class="text-2xl font-black text-white">{{ config('app.name') }}</div>
                     @endif
@@ -26,7 +26,7 @@
             </div>
 
             <div class="flex flex-col items-center md:items-start">
-                <h4 class="font-bold text-white mb-6 text-lg">{{ trans('quick_links') }}</h4>
+                <h2 class="font-bold text-white mb-6 text-lg">{{ trans('quick_links') }}</h2>
                 <ul class="space-y-3 text-sm text-gray-400">
                     <li><a href="{{ route('home') }}" class="hover:text-brand-400 transition-colors">{{ trans('home') }}</a></li>
                     <li><a href="{{ route('services') }}" class="hover:text-brand-400 transition-colors">{{ trans('services') }}</a></li>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="flex flex-col items-center md:items-start">
-                <h4 class="font-bold text-white mb-6 text-lg">{{ trans('support') }}</h4>
+                <h2 class="font-bold text-white mb-6 text-lg">{{ trans('support') }}</h2>
                 <ul class="space-y-3 text-sm text-gray-400">
                     <li><a href="https://wa.me/{{ setting('whatsapp') }}" target="_blank" rel="noopener" class="hover:text-brand-400 transition-colors">{{ trans('help_center') }}</a></li>
                     @if(route('privacy'))<li><a href="{{ route('privacy') }}" class="hover:text-brand-400 transition-colors">{{ trans('privacy_policy') }}</a></li>@endif
@@ -48,7 +48,7 @@
             </div>
 
             <div class="flex flex-col items-center md:items-start">
-                <h4 class="font-bold text-white mb-6 text-lg">{{ trans('subscribe') }}</h4>
+                <h2 class="font-bold text-white mb-6 text-lg">{{ trans('subscribe') }}</h2>
                 <form action="{{ route('newsletter') }}" method="POST" class="relative mb-6 w-full max-w-xs mx-auto md:mx-0">
                     @csrf
                     <input type="email" name="email" placeholder="{{ trans('email') }}" class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 text-sm text-white focus:border-brand-500 focus:outline-none" required>
@@ -64,9 +64,9 @@
         <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center gap-4 text-center">
             <p class="text-gray-500 text-sm">© {{ date('Y') }} {{ config('app.name') }}. {{ trans('all_rights_reserved') }}</p>
             <div class="flex gap-2 opacity-70 grayscale hover:grayscale-0 transition-all justify-center">
-                <div class="mt-6 flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_footer' });" class="hover:scale-105 transition-transform" aria-label="App Store"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" class="h-12" alt="App Store"></a>
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_footer' });" class="hover:scale-105 transition-transform" aria-label="Google Play"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" class="h-12" alt="Google Play"></a>
+                <div class="mt-6 store-badge-row flex flex-row xs:flex-row gap-3 justify-center lg:justify-start w-full">
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'website_footer' });" class="store-badge-link hover:scale-105 transition-transform" aria-label="App Store"><img width="119.66407" height="40" src="{{ asset('assets/store-badges/app-store.svg') }}" class="store-badge store-badge-apple" alt="App Store"></a>
+                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'website_footer' });" class="store-badge-link hover:scale-105 transition-transform" aria-label="Google Play"><img width="646" height="192" src="{{ asset('assets/store-badges/google-play.svg') }}" class="store-badge store-badge-google" alt="Google Play"></a>
                 </div>
             </div>
         </div>

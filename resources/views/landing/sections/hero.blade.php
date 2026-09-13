@@ -3,6 +3,15 @@
     $steps = \Core\Pages\Models\WorkStep::with('translations')->get();
 @endphp
 @if($section)
+@push('preloads')
+    @if($section->image_url)
+        @php
+            $heroResponsive = \App\Support\WebsiteImages::attributes($section->image_url);
+        @endphp
+        <link rel="preload" as="image" href="{{ $section->image_url }}" fetchpriority="high"
+              @if($heroResponsive) imagesrcset="{{ $heroResponsive['srcset'] }}" imagesizes="(min-width: 768px) 284px, 204px" @endif>
+    @endif
+@endpush
 <section id="home" class="page-section bg-white overflow-hidden pt-8 pb-16 lg:pt-20 lg:pb-24 relative">
     
     <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-brand-100/50 rounded-full blur-[100px] pointer-events-none"></div>
@@ -26,26 +35,24 @@
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">{{ $titleArray[1] ?? '' }}</span>
                 </h1>
 
-                <p class="text-base md:text-lg text-gray-500 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    <span >{!!  $section->description !!}</span>
-                </p>
+                <div class="text-base md:text-lg text-gray-500 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                    {!! $section->description !!}
+                </div>
 
                 <div class="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start w-full">
                     <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                        id="hero-appstore-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('ios', 'hero')"
                        class="w-full xs:w-auto">
-                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
-                             width="250" height="83" decoding="async" alt="Download Clean Station on the App Store"
-                             class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
+                        <img width="119.66407" height="40" src="{{ asset('assets/store-badges/app-store.svg') }}" decoding="async" alt="Download Clean Station on the App Store"
+                             class="store-badge store-badge-apple">
                     </a>
                     <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
                        id="hero-googleplay-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('android', 'hero')"
                        class="w-full xs:w-auto">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                             width="250" height="83" decoding="async" alt="Download Clean Station on Google Play"
-                             class="h-12 w-auto mx-auto shadow-md rounded-lg hover:-translate-y-1 transition-transform">
+                        <img width="646" height="192" src="{{ asset('assets/store-badges/google-play.svg') }}" decoding="async" alt="Download Clean Station on Google Play"
+                             class="store-badge store-badge-google">
                     </a>
                 </div>
 
@@ -63,9 +70,9 @@
             </div>
 
             <div class="relative order-2 flex justify-center perspective-1000 mt-4 lg:mt-0">
-                <div class="relative w-[220px] md:w-[300px] h-[440px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
+                <div class="hero-phone relative w-[220px] md:w-[300px] h-[440px] md:h-[600px] bg-black rounded-[45px] border-[8px] border-gray-900 shadow-2xl overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-500 z-20">
                     @if($section->image_url)
-                        <img src="{{ $section->image_url }}" width="300" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover">
+                        <x-website-image :src="$section->image_url" sizes="(min-width: 768px) 284px, 204px" width="300" height="600" alt="{{ $section->title }}" fetchpriority="high" decoding="async" class="w-full h-full object-cover" />
                     @else
                         <div class="w-full h-full bg-gray-100 flex items-center justify-center">{{ trans('app screen') }}</div>
                     @endif
@@ -90,7 +97,7 @@
                         <div class="w-12 h-12 bg-brand-600 text-white rounded-xl flex items-center justify-center text-xl shadow-lg shadow-brand-500/30"><i class="fa-solid fa-bolt"></i></div>
                         <span class="bg-brand-50 text-brand-600 text-[10px] font-bold px-2 py-1 rounded-full">{{ trans('fastest') }}</span>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ trans('fast order') }}</h3>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">{{ trans('fast order') }}</h2>
                     
                     <div class="flex items-center gap-2 text-xs text-gray-500 mt-4 bg-gray-50 p-3 rounded-xl">
                         <div class="flex flex-col items-center"><i class="fa-solid fa-location-dot text-brand-500 mb-1"></i><span>{{ trans('location') }}</span></div>
@@ -109,7 +116,7 @@
                         <div class="w-12 h-12 bg-purple-600 text-white rounded-xl flex items-center justify-center text-xl shadow-lg shadow-purple-500/30"><i class="fa-solid fa-list-check"></i></div>
                         <span class="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-1 rounded-full">{{ trans('detailed') }}</span>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ trans('detailed') }}</h3>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">{{ trans('detailed') }}</h2>
                     
                     <div class="flex items-center gap-2 text-xs text-gray-500 mt-4 bg-gray-50 p-3 rounded-xl overflow-x-auto">
                         <div class="flex flex-col items-center min-w-[30px]"><i class="fa-solid fa-shirt text-purple-500 mb-1"></i><span>{{ trans('pieces') }}</span></div>
@@ -141,7 +148,7 @@
                             <div class="hidden md:block w-5/12 text-end pr-8 {{ $isEven ? 'opacity-100' : 'opacity-0' }}">
                                 @if($isEven)
                                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                                    <h4 class="font-bold text-gray-900">{{ $step->title }}</h4>
+                                    <h3 class="font-bold text-gray-900">{{ $step->title }}</h3>
                                     <p class="text-xs text-gray-500 mt-1">{!! $step->description !!}</p>
                                 </div>
                                 @endif
@@ -152,11 +159,11 @@
                             </div>
 
                             <div class="w-[calc(100%-2.5rem)] md:w-5/12 pl-4 md:pl-8 text-start {{ $isEven ? 'md:opacity-0' : 'md:opacity-100' }}">
-                                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 md:hidden"> <h4 class="font-bold text-gray-900">{{ $step->title }}</h4>
+                                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 md:hidden"> <h3 class="font-bold text-gray-900">{{ $step->title }}</h3>
                                     <p class="text-xs text-gray-500 mt-1">{!! $step->description !!}</p>
                                 </div>
                                 <div class="hidden md:block bg-white p-4 rounded-2xl shadow-sm border border-gray-100"> @if(!$isEven)
-                                    <h4 class="font-bold text-gray-900">{{ $step->title }}</h4>
+                                    <h3 class="font-bold text-gray-900">{{ $step->title }}</h3>
                                     <p class="text-xs text-gray-500 mt-1">{!! $step->description !!}</p>
                                     @endif
                                 </div>

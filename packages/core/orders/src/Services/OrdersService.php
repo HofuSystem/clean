@@ -684,8 +684,8 @@ class OrdersService
             $order = Order::where('id', $orderId)->first();
             if ($order) {
                 $order->update([
-                    'washer_cost' => $washerCost,
-                    'lab_cost' => $labCost,
+                    'washer_cost' => $washerCost ?? 0,
+                    'lab_cost'    => $labCost ?? 0,
                 ]);
             }
         }
