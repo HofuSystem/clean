@@ -248,12 +248,8 @@
     <meta name="twitter:description" content="{{ $actualDesc ?: 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
     <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
-    @if (Vite::isRunningHot())
-        @vite(['resources/css/landing.css'])
-    @else
-        <style>{!! Vite::content('resources/css/landing.css') !!}</style>
-    @endif
-    <link rel="stylesheet" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}" media="print" onload="this.media='all'">
+    @vite(['resources/css/landing.css'])
+    <script>window.setTimeout(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}";document.head.appendChild(l)},10000)</script>
     <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}"></noscript>
 
     <!-- Unified Lazy-Loaded Tracking Pixels: Moved to head -->
