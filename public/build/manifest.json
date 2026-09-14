@@ -1,23 +1,11 @@
 {
-  "public/control/assets/vendor/fonts/fontawesome/fa-brands-400.woff2": {
-    "file": "assets/fa-brands-400-C-jaCRNI.woff2",
-    "src": "public/control/assets/vendor/fonts/fontawesome/fa-brands-400.woff2"
-  },
-  "public/control/assets/vendor/fonts/fontawesome/fa-regular-400.woff2": {
-    "file": "assets/fa-regular-400-TCCU0xbi.woff2",
-    "src": "public/control/assets/vendor/fonts/fontawesome/fa-regular-400.woff2"
-  },
-  "public/control/assets/vendor/fonts/fontawesome/fa-solid-900.woff2": {
-    "file": "assets/fa-solid-900-tLH6XCuf.woff2",
-    "src": "public/control/assets/vendor/fonts/fontawesome/fa-solid-900.woff2"
-  },
   "resources/css/app.css": {
     "file": "assets/app-qnJFp1VQ.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/landing.css": {
-    "file": "assets/landing-CgCCM5cr.css",
+    "file": "assets/landing-DqNZaP1u.css",
     "src": "resources/css/landing.css",
     "isEntry": true
   },

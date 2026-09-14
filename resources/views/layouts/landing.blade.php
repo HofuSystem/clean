@@ -253,7 +253,7 @@
     @else
         <style>{!! Vite::content('resources/css/landing.css') !!}</style>
     @endif
-    <link rel="preload" as="style" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}"></noscript>
 
     <!-- Unified Lazy-Loaded Tracking Pixels: Moved to head -->
