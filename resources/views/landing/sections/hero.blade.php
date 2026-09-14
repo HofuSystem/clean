@@ -227,7 +227,7 @@
             <!-- الكرت الأول: باقات الورد -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=400" alt="Rose Bouquet" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=240" alt="Rose Bouquet" width="240" height="240" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -240,7 +240,7 @@
             <!-- الكرت الثاني: فازات ورد (صورة عالية الجودة وموثوقة) -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=400" alt="Rose Vases" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=240" alt="Rose Vases" width="240" height="240" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -294,7 +294,7 @@
             <!-- Card 1: Rose Bouquets -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=400" alt="Rose Bouquet" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=240" alt="Rose Bouquet" width="240" height="240" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
@@ -307,7 +307,7 @@
             <!-- Card 2: Luxury Rose Vases -->
             <div class="premium-card flex items-center p-3 gap-4 group">
                 <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden shadow-inner">
-                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=400" alt="Rose Vases" width="400" height="400" loading="lazy" decoding="async" class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=240" alt="Rose Vases" width="240" height="240" loading="lazy" decoding="async" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
