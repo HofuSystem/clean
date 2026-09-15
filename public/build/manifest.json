@@ -9,11 +9,6 @@
     "src": "resources/css/landing.css",
     "isEntry": true
   },
-  "resources/css/vendor/landing-icons-full.css": {
-    "file": "assets/landing-icons-full-CKrGjLJz.css",
-    "src": "resources/css/vendor/landing-icons-full.css",
-    "isEntry": true
-  },
   "resources/fonts/landing/Iura6YBj_oCad4k1nzGBCw.woff2": {
     "file": "assets/Iura6YBj_oCad4k1nzGBCw-BVNSOH3d.woff2",
     "src": "resources/fonts/landing/Iura6YBj_oCad4k1nzGBCw.woff2"

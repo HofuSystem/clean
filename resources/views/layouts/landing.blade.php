@@ -249,8 +249,8 @@
     <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
     @vite(['resources/css/landing.css'])
-    <script>window.setTimeout(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}";document.head.appendChild(l)},10000)</script>
-    <noscript><link rel="stylesheet" href="{{ Vite::asset('resources/css/vendor/landing-icons-full.css') }}"></noscript>
+    <script>window.setTimeout(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="{{ asset('assets/landing-icons-full.css') }}";document.head.appendChild(l)},10000)</script>
+    <noscript><link rel="stylesheet" href="{{ asset('assets/landing-icons-full.css') }}"></noscript>
 
     <!-- Unified Lazy-Loaded Tracking Pixels: Moved to head -->
 

@@ -24,10 +24,13 @@ class CacheServiceProvider extends ServiceProvider
      */
     public function boot(){
 
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'cache');
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'cache');
-		$this->loadMigrationsFrom(__DIR__."/../database/migrations");
 
+        $langPath = __DIR__ . '/../lang';
+        $viewsPath = __DIR__ . '/../resources/views';
+        $migrationsPath = __DIR__ . '/../database/migrations';
+        if (is_dir($langPath)) { $this->loadTranslationsFrom($langPath, 'cache'); }
+        if (is_dir($viewsPath)) { $this->loadViewsFrom($viewsPath, 'cache'); }
+        if (is_dir($migrationsPath)) { $this->loadMigrationsFrom($migrationsPath); }
         // $this->publishes([
         //     __DIR__ . '/../public' => public_path('test'),
         // ], 'public');
