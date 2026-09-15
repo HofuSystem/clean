@@ -53,14 +53,17 @@ class WebsiteImages
                 return [];
             }
             $variants = [];
+            $fallback = null;
             foreach ($data['variants'] as $variant) {
                 if (! str_starts_with($variant['path'], $directory.'/') || ! $disk->exists($variant['path'])) {
                     return [];
                 }
-                $variants[] = $disk->url($variant['path']).' '.$variant['width'].'w';
+                $variantUrl = $disk->url($variant['path']);
+                $fallback ??= $variantUrl;
+                $variants[] = $variantUrl.' '. $variant['width'].'w';
             }
             $variants[] = $disk->url($relative).' '.$data['width'].'w';
-            return ['width' => $data['width'], 'height' => $data['height'], 'srcset' => implode(', ', $variants)];
+            return ['src' => $fallback ?? $disk->url($relative), 'width' => $data['width'], 'height' => $data['height'], 'srcset' => implode(', ', $variants)];
         } catch (\Throwable) {
             return [];
         }

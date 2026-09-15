@@ -6,7 +6,7 @@
 @if ($posts->count() > 0)
     @push('preloads')
         @php $featuredImage = \App\Support\WebsiteImages::attributes($posts[0]->image_url); @endphp
-        <link rel="preload" as="image" href="{{ $posts[0]->image_url }}" fetchpriority="high"
+        <link rel="preload" as="image" href="{{ $featuredImage['src'] ?? $posts[0]->image_url }}" fetchpriority="high"
             @if($featuredImage) imagesrcset="{{ $featuredImage['srcset'] }}" imagesizes="(min-width: 1024px) 50vw, 100vw" @endif>
     @endpush
 @endif

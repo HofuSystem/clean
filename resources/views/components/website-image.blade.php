@@ -2,7 +2,7 @@
 @php
     $image = \App\Support\WebsiteImages::attributes($src);
 @endphp
-<img src="{{ $src }}"
+<img src="{{ $image['src'] ?? $src }}"
      @if($image)
          width="{{ $image['width'] }}" height="{{ $image['height'] }}" srcset="{{ $image['srcset'] }}"
      @else

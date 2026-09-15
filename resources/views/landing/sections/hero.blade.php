@@ -8,7 +8,7 @@
         @php
             $heroResponsive = \App\Support\WebsiteImages::attributes($section->image_url);
         @endphp
-        <link rel="preload" as="image" href="{{ $section->image_url }}" fetchpriority="high"
+        <link rel="preload" as="image" href="{{ $heroResponsive['src'] ?? $section->image_url }}" fetchpriority="high"
               @if($heroResponsive) imagesrcset="{{ $heroResponsive['srcset'] }}" imagesizes="(min-width: 768px) 284px, 204px" @endif>
     @endif
 @endpush
