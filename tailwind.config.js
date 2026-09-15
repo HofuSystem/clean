@@ -7,7 +7,7 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
-        './packages/**/*.blade.php',
+        './storage/framework/tailwind-content.html',
     ],
     theme: {
         extend: {
