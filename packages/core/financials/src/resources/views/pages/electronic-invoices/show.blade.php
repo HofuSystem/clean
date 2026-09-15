@@ -474,12 +474,12 @@
 
                             @foreach($invoice?->order?->items ?? [] as $index => $item)
                                     @php
-                                        $price = $item->product_price;
-                                        $tax = (15 * $price / 100);
-                                        $beforeTax = $price - $tax;
-                                        $totalBeforeTax += $beforeTax * $item->quantity;
-                                        $totalTax += $tax * $item->quantity;
-                                        $total += $price * $item->quantity;
+                                        $price      = $item->product_price; // inclusive VAT per unit
+                                        $netPerUnit = round($price / 1.15, 10); // exclusive per unit (ZATCA)
+                                        $taxPerUnit = $price - $netPerUnit;     // VAT per unit = price × 15/115
+                                        $totalBeforeTax += $netPerUnit * $item->quantity;
+                                        $totalTax       += $taxPerUnit * $item->quantity;
+                                        $total          += $price * $item->quantity;
                                     @endphp
                                     <tr
                                         class="inv-row border-b border-gray-200 hover:bg-gray-50 transition {{ ($index % 2 != 0) ? 'bg-gray-50/50' : '' }}">
@@ -492,11 +492,11 @@
                                             <span class="qty font-semibold">{{ $item->quantity }}</span>
                                         </td>
                                         <td class="px-2 text-center">
-                                            <span class="base-price font-semibold">{{number_format($beforeTax * $item->quantity, 2, '.', '') }}</span>
+                                            <span class="base-price font-semibold">{{number_format($netPerUnit, 2, '.', '') }}</span>
                                             <span class="text-[10px]">ر.س</span>
                                         </td>
                                         <td class="px-2 text-center text-red-500">
-                                            <span class="discount font-semibold">{{number_format($tax * $item->quantity, 2, '.', '')}}</span> ر.س
+                                            <span class="discount font-semibold">{{number_format($taxPerUnit * $item->quantity, 2, '.', '')}}</span> ر.س
                                         </td>
                                         <td class="px-2 text-center font-bold text-[#00AEEF] bg-[#00AEEF]/5">
                                             <span class="final-price text-base">{{ number_format($price * $item->quantity, 2, '.', '') }}</span>

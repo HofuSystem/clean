@@ -35,7 +35,7 @@ class InvoiceService
         $couponValue    = $order->total_coupon;
         $totalPrice     = $order->total_price;
         $vatRate        = 0.15;
-        $vatAmount      = $order->total_price * $vatRate;
+        $vatAmount      = round($order->total_price * 15 / 115, 2); // ZATCA: extract VAT from inclusive price
 
         // 2. Identify Type (B2B/B2C)
         $taxNumber = $order->company;
@@ -94,7 +94,7 @@ class InvoiceService
         $couponValue    = $order->total_coupon;
         $totalPrice     = $order->total_price;
         $vatRate        = 0.15;
-        $vatAmount      = $order->total_price * $vatRate;
+        $vatAmount      = round($order->total_price * 15 / 115, 2); // ZATCA: extract VAT from inclusive price
 
       
 
