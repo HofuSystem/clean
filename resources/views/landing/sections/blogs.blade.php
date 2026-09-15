@@ -3,6 +3,13 @@
         $posts = \Core\Blog\Models\Blog::published()->with('translations')->latest()->take(6)->get();
     }
 @endphp
+@if ($posts->count() > 0)
+    @push('preloads')
+        @php $featuredImage = \App\Support\WebsiteImages::attributes($posts[0]->image_url); @endphp
+        <link rel="preload" as="image" href="{{ $posts[0]->image_url }}" fetchpriority="high"
+            @if($featuredImage) imagesrcset="{{ $featuredImage['srcset'] }}" imagesizes="(min-width: 1024px) 50vw, 100vw" @endif>
+    @endpush
+@endif
 <section id="blogs" class="page-section bg-gray-50 py-20 md:py-32">
     <div class="max-w-7xl mx-auto px-4">
 
@@ -17,8 +24,7 @@
             <div class="grid lg:grid-cols-2 gap-8 mb-12" data-aos="fade-up">
                 <a href="{{ route('blogs-single', $posts[0]->slug) }}" class="relative h-[300px] lg:h-[400px] rounded-3xl overflow-hidden group shadow-xl cursor-pointer block">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10"></div>
-                    <img src="{{ $posts[0]->image_url }}" alt="{{ $posts[0]->title }}"
-                        class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    <x-website-image :src="$posts[0]->image_url" sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="675" fetchpriority="high" decoding="async" alt="{{ $posts[0]->title }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                     <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
                         <span
                             class="bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block">{{ trans('featured') }}</span>
@@ -34,8 +40,7 @@
                         <a href="{{ route('blogs-single', $post->slug) }}"
                             class="bg-white rounded-3xl p-6 flex flex-col md:flex-row gap-6 shadow-md hover:shadow-xl transition-all group cursor-pointer border border-gray-100 h-full block">
                             <div class="w-full md:w-1/3 h-48 md:h-full rounded-2xl overflow-hidden relative">
-                                <img src="{{ $post->image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async"
-                                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                <x-website-image :src="$post->image_url" sizes="(min-width: 768px) 33vw, 100vw" width="640" height="480" loading="lazy" decoding="async" alt="{{ $post->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                             </div>
                             <div class="flex-1 flex flex-col justify-center">
                                 <div class="text-xs text-brand-600 font-bold mb-2 uppercase tracking-wide">
@@ -65,8 +70,7 @@
                             <i class="fa-solid fa-bolt text-brand-500"></i> {{ trans('new') }}
                         </div>
                         @endif
-                        <img src="{{ $post->image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async"
-                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <x-website-image :src="$post->image_url" sizes="(min-width: 768px) 33vw, 100vw" width="640" height="480" loading="lazy" decoding="async" alt="{{ $post->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                     </div>
                     <div class="p-6">
                         <h4

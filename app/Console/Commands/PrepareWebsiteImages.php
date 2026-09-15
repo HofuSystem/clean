@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Support\WebsiteImages;
 use Core\Pages\Models\Feature;
+use Core\Blog\Models\Blog;
 use Core\Pages\Models\Section;
 use Illuminate\Console\Command;
 
@@ -18,6 +19,7 @@ class PrepareWebsiteImages extends Command
         if ($paths->isEmpty()) {
             $paths = Section::query()->whereIn('template', ['hero', 'app-features'])->pluck('images')
                 ->concat(Feature::query()->where('section', 'b2c')->pluck('image'))
+                ->concat(Blog::query()->published()->pluck('image'))
                 ->push(config('app.logo'));
         }
         $paths = $paths->filter()->flatMap(fn ($path) => explode(',', $path))->unique();
