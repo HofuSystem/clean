@@ -51,7 +51,7 @@
                                     {{ $post->title }}
                                 </h4>
                                 <p class="text-gray-500 text-sm line-clamp-2 mb-4">{!! Str::limit(strip_tags($post->content), 80) !!}</p>
-                                <div class="text-xs text-gray-400 mt-auto">@include('partials.blog-date', ['post' => $post])
+                                <div class="text-xs text-gray-500 mt-auto">@include('partials.blog-date', ['post' => $post])
                                 </div>
                             </div>
                         </a>
@@ -78,7 +78,7 @@
                             {{ $post->title }}
                         </h4>
                         <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                            <span class="text-xs text-gray-400">@include('partials.blog-date', ['post' => $post])</span>
+                            <span class="text-xs text-gray-500">@include('partials.blog-date', ['post' => $post])</span>
                             <span class="text-brand-600 text-xs font-bold cursor-pointer hover:underline">{{ trans('read more') }}</span>
                         </div>
                     </div>

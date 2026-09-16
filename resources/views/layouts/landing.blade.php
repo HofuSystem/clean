@@ -603,7 +603,9 @@
     @include('layouts.partials.footer')
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    @if (Route::is('home'))
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    @endif
     @if (session('success_message') || session('success') || session('error') || $errors->any())
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     @endif
