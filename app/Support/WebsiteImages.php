@@ -53,6 +53,7 @@ class WebsiteImages
                 return [];
             }
             $variants = [];
+            $preload = null;
             $fallback = null;
             foreach ($data['variants'] as $variant) {
                 if (! str_starts_with($variant['path'], $directory.'/') || ! $disk->exists($variant['path'])) {
@@ -60,10 +61,20 @@ class WebsiteImages
                 }
                 $variantUrl = $disk->url($variant['path']);
                 $fallback ??= $variantUrl;
+                // Preload a practical candidate for the visible image.
+                if ($preload === null && ($variant['width'] ?? 0) >= 480) {
+                    $preload = $variantUrl;
+                }
                 $variants[] = $variantUrl.' '. $variant['width'].'w';
             }
             $variants[] = $disk->url($relative).' '.$data['width'].'w';
-            return ['src' => $fallback ?? $disk->url($relative), 'width' => $data['width'], 'height' => $data['height'], 'srcset' => implode(', ', $variants)];
+            return [
+                'src' => $fallback ?? $disk->url($relative),
+                'preload' => $preload ?? $fallback ?? $disk->url($relative),
+                'width' => $data['width'],
+                'height' => $data['height'],
+                'srcset' => implode(', ', $variants),
+            ];
         } catch (\Throwable) {
             return [];
         }

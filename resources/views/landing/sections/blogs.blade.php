@@ -6,7 +6,7 @@
 @if ($posts->count() > 0)
     @push('preloads')
         @php $featuredImage = \App\Support\WebsiteImages::attributes($posts[0]->image_url); @endphp
-        <link rel="preload" as="image" href="{{ $featuredImage['src'] ?? $posts[0]->image_url }}" fetchpriority="high"
+        <link rel="preload" as="image" href="{{ $featuredImage['preload'] ?? $featuredImage['src'] ?? $posts[0]->image_url }}" fetchpriority="high"
             @if($featuredImage) imagesrcset="{{ $featuredImage['srcset'] }}" imagesizes="(min-width: 1024px) 50vw, 100vw" @endif>
     @endpush
 @endif
@@ -24,7 +24,7 @@
             <div class="grid lg:grid-cols-2 gap-8 mb-12" data-aos="fade-up">
                 <a href="{{ route('blogs-single', $posts[0]->slug) }}" class="relative h-[300px] lg:h-[400px] rounded-3xl overflow-hidden group shadow-xl cursor-pointer block">
                     <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all z-10"></div>
-                    <x-website-image :src="$posts[0]->image_url" sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="675" fetchpriority="high" decoding="async" alt="{{ $posts[0]->title }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                    <x-website-image :src="$posts[0]->image_url" sizes="(min-width: 1024px) 50vw, 100vw" width="1200" height="675" fetchpriority="high" decoding="sync" alt="{{ $posts[0]->title }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                     <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
                         <span
                             class="bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block">{{ trans('featured') }}</span>
