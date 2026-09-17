@@ -1,12 +1,17 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
+const isProd = process.env.NODE_ENV === 'production';
+
 export default {
-    content: [
+    content: isProd 
+      ? ['./storage/framework/tailwind-content.html'] 
+      : [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
+        './packages/**/*.blade.php',
         './storage/framework/tailwind-content.html',
     ],
     theme: {
