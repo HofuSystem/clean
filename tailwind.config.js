@@ -1,10 +1,10 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
-const isProd = process.env.NODE_ENV === 'production';
+const isBuild = process.argv.includes('build') || process.env.npm_lifecycle_event === 'build';
 
 export default {
-    content: isProd 
+    content: isBuild 
       ? ['./storage/framework/tailwind-content.html'] 
       : [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
