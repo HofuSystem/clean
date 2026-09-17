@@ -249,9 +249,32 @@
     <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
     @vite(['resources/css/landing.css'])
-    <script>window.setTimeout(function(){var l=document.createElement("link");l.rel="stylesheet";l.href="{{ asset('assets/landing-icons-full.css') }}";document.head.appendChild(l)},10000)</script>
-    <noscript><link rel="stylesheet" href="{{ asset('assets/landing-icons-full.css') }}"></noscript>
-
+    {{-- Route-specific styles follow. --}}
+    @unless (Route::is('blog') || Route::is('blogs*'))
+        @vite(['resources/css/landing-aos.css'])
+    @endunless
+    @if (Route::is('home'))
+        @vite(['resources/css/landing-swiper.css'])
+    @endif
+    <script>
+        window.addEventListener('load', function () {
+            var schedule = window.requestIdleCallback || function (callback) { window.setTimeout(callback, 1500); };
+            schedule(function () {
+                var missingIcon = Array.prototype.some.call(
+                    document.querySelectorAll('.fa, .fa-solid, .fa-regular, .fa-brands'),
+                    function (icon) {
+                        var content = window.getComputedStyle(icon, '::before').content;
+                        return !content || content === 'none' || content === 'normal' || content.length < 3;
+                    }
+                );
+                if (!missingIcon) return;
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = @json(asset('assets/landing-icons-full.css'));
+                document.head.appendChild(link);
+            });
+        }, { once: true });
+    </script>
     <!-- Unified Lazy-Loaded Tracking Pixels: Moved to head -->
 
 
@@ -602,13 +625,16 @@
 
     @include('layouts.partials.footer')
 
+    @unless (Route::is('blog') || Route::is('blogs*'))
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    @endunless
     @if (Route::is('home'))
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     @endif
     @if (session('success_message') || session('success') || session('error') || $errors->any())
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     @endif
+    @unless (Route::is('blog') || Route::is('blogs*'))
     <script>
         function initLandingAnimations() {
             if (!window.AOS || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -625,6 +651,7 @@
             initLandingAnimations();
         }
     </script>
+    @endunless
 
     {{-- ============================================================ --}}
     {{-- DataLayer Event Helpers – centralised tracking              --}}

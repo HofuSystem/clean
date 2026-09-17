@@ -7,7 +7,7 @@ use Intervention\Image\ImageManager;
 
 class WebsiteImages
 {
-    private const VERSION = 1;
+    private const VERSION = 2;
 
     private static function source(?string $value): ?array
     {
@@ -111,7 +111,7 @@ class WebsiteImages
             $manager = new ImageManager(['driver' => 'gd']);
             $hash = substr(hash('sha256', $contents), 0, 16);
             $data = ['version' => self::VERSION, 'size' => filesize($path), 'mtime' => filemtime($path), 'width' => $info[0], 'height' => $info[1], 'variants' => []];
-            foreach ([160, 320, 480, 640, 960] as $width) {
+            foreach ([160, 320, 480, 640, 768, 960] as $width) {
                 if ($width >= $info[0]) {
                     continue;
                 }

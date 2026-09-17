@@ -762,6 +762,15 @@
   content: "\f167";
 }
 
+/* Aliases used by public templates but absent from this Font Awesome release. */
+.fa-x-twitter:before {
+  content: '\f099';
+}
+
+.fa-sparkles:before {
+  content: '\e2ca';
+}
+
 .fa-twitter:before {
   content: "\f099";
 }

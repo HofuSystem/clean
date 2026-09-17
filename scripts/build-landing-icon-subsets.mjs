@@ -37,5 +37,10 @@ critical=critical.replace(/([^{}]+)\{([^{}]*)\}/g,(rule,selector,body)=>{
  deferred+=rule+'\n';return '';
 });
 critical=critical.replace(/url\("fontawesome\/([^".]+)\.woff2"\) format\("woff2"\), url\("fontawesome\/[^".]+\.ttf"\) format\("truetype"\)/g,'url("../../../public/control/assets/vendor/fonts/fontawesome/$1.woff2") format("woff2")').replace(/font-display: block/g,'font-display: swap');
+critical += `
+/* Aliases used by public templates but absent from this Font Awesome release. */
+.fa-x-twitter:before { content: '\\f099'; }
+.fa-sparkles:before { content: '\\e2ca'; }
+`;
 fs.writeFileSync('resources/css/vendor/landing-icons.css',critical);
 fs.writeFileSync('resources/css/vendor/landing-icons-full.css',deferred);
