@@ -64,7 +64,7 @@ class UsersResource extends JsonResource
         }elseif($data['sent_status'] == 'failed'){
             $data['sent_status'] = '<span class="badge bg-danger">'.trans('failed').'</span>';
         }elseif($data['sent_status'] == 'pending'){
-            $data['sent_status'] = '<span class="badge bg-warning">'.trans('pending').'</span>';
+            $data['sent_status'] = '<span class="badge bg-warning">قيد الانتظار</span>';
             $notificationId = request()->route('id');
             if ($notificationId) {
                 $btn = '<a href="javascript:void(0)" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-user-btn" data-id="'.$this->id.'" data-notification-id="'.$notificationId.'" title="إعادة إرسال"><i class="fas fa-sync"></i> <span>إرسال</span></a>';
