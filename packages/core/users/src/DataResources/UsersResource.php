@@ -28,7 +28,7 @@ class UsersResource extends JsonResource
             "is_active"       => DashboardDataTableFormatter::checkbox($this->is_active),
             "is_allow_notify" => DashboardDataTableFormatter::checkbox($this->is_allow_notify),
             "orders_count"    => DashboardDataTableFormatter::text($this->orders_count),
-            "gender"          => DashboardDataTableFormatter::text($this->gender),
+            "gender"          => DashboardDataTableFormatter::text($this->gender ? trans($this->gender) : null),
             "city"            => $this?->profile?->city?->name,
             "district"        => $this?->profile?->district?->name,
             "created_at"      => $this->created_at?->format('Y-m-d H:i:a'),
@@ -37,21 +37,37 @@ class UsersResource extends JsonResource
             "select_switch"   => $this->select_switch,
             "showActions"     => $this->show_actions,
             "sent_status"     => $this->sent_status,
-            "sent_response"   => $this->sent_response,
         ];
+        
+        $sent_response = $this->sent_response;
+        if ($sent_response) {
+            $responses = is_string($sent_response) ? json_decode($sent_response, true) : $sent_response;
+            if (is_array($responses)) {
+                $translatedResponses = array_map(function($r) {
+                    return trans(trim($r, '"[]')); // Fallback to clean string if it wasn't parsed correctly
+                }, $responses);
+                $data['sent_response'] = implode(', ', $translatedResponses);
+            } else {
+                $data['sent_response'] = trans(trim($sent_response, '"[]'));
+            }
+        } else {
+            $data['sent_response'] = null;
+        }
+
         $customerTire         = OrderHelper::getCustomerTier($this->orders_count);
         $class                = trans($customerTire['type']);
         $color                = $customerTire['color'];
         $data['class']        =  '<span class="ms-2 p-2 rounded" style="background-color:'.$color.'; color:#fff">'.$class.'</span>';
+        
         if($data['sent_status'] == 'sent'){
-            $data['sent_status'] = '<span class="badge bg-success">sent</span>';
+            $data['sent_status'] = '<span class="badge bg-success">'.trans('sent').'</span>';
         }elseif($data['sent_status'] == 'failed'){
-            $data['sent_status'] = '<span class="badge bg-danger">failed</span>';
-        }else{
-            $data['sent_status'] = '<span class="badge bg-warning">pending</span>';
+            $data['sent_status'] = '<span class="badge bg-danger">'.trans('failed').'</span>';
+        }elseif($data['sent_status'] == 'pending'){
+            $data['sent_status'] = '<span class="badge bg-warning">'.trans('pending').'</span>';
             $notificationId = request()->route('id');
             if ($notificationId) {
-                $btn = '<button type="button" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-user-btn" data-id="'.$this->id.'" data-notification-id="'.$notificationId.'" title="إعادة إرسال"><i class="fas fa-sync"></i> <span>إرسال</span></button>';
+                $btn = '<a href="javascript:void(0)" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-user-btn" data-id="'.$this->id.'" data-notification-id="'.$notificationId.'" title="إعادة إرسال"><i class="fas fa-sync"></i> <span>إرسال</span></a>';
                 $data['showActions'] = str_replace('</div>', $btn . '</div>', $data['showActions']);
             }
         }
