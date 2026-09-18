@@ -17,7 +17,7 @@ class NotificationsResource extends JsonResource
 
         $actions = $this->actions;
         if ($this->pending_count > 0) {
-            $btn = '<button type="button" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-pending-btn" data-id="'.$this->id.'"><i class="fas fa-sync"></i> <span>إعادة إرسال للمُعلقين ('.$this->pending_count.')</span></button>';
+            $btn = '<button type="button" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-pending-btn" data-id="'.$this->id.'" title="إعادة إرسال للمُعلقين ('.$this->pending_count.')"><i class="fas fa-sync"></i> <span>إرسال</span></button>';
             $actions = str_replace('</div>', $btn . '</div>', $actions);
         }
 
