@@ -24,6 +24,7 @@ class NotificationsResource extends JsonResource
             "body"          => DashboardDataTableFormatter::text($this->body),
             "media"         => DashboardDataTableFormatter::mediaCenter($this->media),
             "sender_id"     => DashboardDataTableFormatter::relations($this->sender,"fullname","dashboard.users.show"),
+            "sent_count"    => $this->sent_count ? $this->sent_count . ' ' . trans('users') : '0 ' . trans('users'),
             "created_at"   => $this->created_at?->format('Y-m-d h:i a'),
             "actions"       => $this->actions,
             "select_switch" => $this->select_switch,

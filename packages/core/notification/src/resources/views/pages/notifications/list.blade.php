@@ -266,6 +266,7 @@
 
                                 <th class="text-center p-0" data-name="types">@lang("types")</th>
                                 <th class="text-center p-0" data-name="for">@lang("for")</th>
+                                <th class="text-center p-0" data-name="sent_count">@lang("delivered")</th>
                                 <th class="text-center p-0" data-name="title">@lang("title")</th>
                                 <th class="text-center p-0" data-name="body">@lang("body")</th>
                                 <th class="text-center p-0" data-name="media">@lang("media")</th>

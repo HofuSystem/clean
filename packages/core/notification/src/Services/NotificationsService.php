@@ -57,6 +57,9 @@ class NotificationsService
         $recordsFiltered    = Notification::search()->count();
         $records            = Notification::select(['id','types','for','title','body','media','sender_id','created_at'])
         ->with(['sender'])
+        ->withCount(['users as sent_count' => function ($query) {
+            $query->where('users_notifications.status', 'sent');
+        }])
         ->search()->dataTable()->get();
         
         return [
