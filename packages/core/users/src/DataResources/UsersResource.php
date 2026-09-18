@@ -51,7 +51,7 @@ class UsersResource extends JsonResource
             $data['sent_status'] = '<span class="badge bg-warning">pending</span>';
             $notificationId = request()->route('id');
             if ($notificationId) {
-                $btn = '<button type="button" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-user-btn" data-id="'.$this->id.'" data-notification-id="'.$notificationId.'" title="إعادة إرسال"><i class="fas fa-sync"></i></button>';
+                $btn = '<button type="button" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-user-btn" data-id="'.$this->id.'" data-notification-id="'.$notificationId.'"><i class="fas fa-sync"></i> <span>إعادة إرسال</span></button>';
                 $data['showActions'] = str_replace('</div>', $btn . '</div>', $data['showActions']);
             }
         }
