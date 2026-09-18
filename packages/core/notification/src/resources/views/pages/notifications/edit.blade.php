@@ -474,11 +474,12 @@
             var notificationId = $(this).data('notification-id');
             var btn = $(this);
             Swal.fire({
-                title: "{{ trans('Are you sure?') }}",
-                text: "{{ trans('This will resend the notification to this specific user.') }}",
+                title: "هل أنت متأكد؟",
+                text: "سيتم إعادة إرسال الإشعار لهذا المستخدم بالتحديد.",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "{{ trans('Yes, resend it!') }}"
+                confirmButtonText: "نعم، أعد الإرسال!",
+                cancelButtonText: "إلغاء"
             }).then(function(result) {
                 if (result.value) {
                     btn.prop('disabled', true).find('i').addClass('fa-spin');
@@ -491,15 +492,15 @@
                         success: function(response) {
                             btn.prop('disabled', false).find('i').removeClass('fa-spin');
                             if (response.status) {
-                                Swal.fire("{{ trans('Success') }}", response.message, "success");
+                                Swal.fire("نجاح", response.message, "success");
                                 DataTable.ajax.reload();
                             } else {
-                                Swal.fire("{{ trans('Error') }}", response.message, "error");
+                                Swal.fire("خطأ", response.message, "error");
                             }
                         },
                         error: function() {
                             btn.prop('disabled', false).find('i').removeClass('fa-spin');
-                            Swal.fire("{{ trans('Error') }}", "{{ trans('system Error please try again later') }}", "error");
+                            Swal.fire("خطأ", "حدث خطأ في النظام، يرجى المحاولة لاحقاً", "error");
                         }
                     });
                 }

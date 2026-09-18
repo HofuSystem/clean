@@ -15,6 +15,11 @@ class NotificationsResource extends JsonResource
     public function toArray(Request $request): array
     {
 
+        $actions = $this->actions;
+        if ($this->pending_count > 0) {
+            $actions .= " <button type='button' class='btn btn-warning btn-sm text-white resend-pending-btn ms-1' data-id='{$this->id}'><i class='fas fa-sync'></i> إعادة إرسال للمُعلقين ({$this->pending_count})</button>";
+        }
+
         $data =  [
             
             "id"            => $this->id,
@@ -26,7 +31,7 @@ class NotificationsResource extends JsonResource
             "sender_id"     => DashboardDataTableFormatter::relations($this->sender,"fullname","dashboard.users.show"),
             "sent_count"    => $this->sent_count ? $this->sent_count . ' ' . trans('users') : '0 ' . trans('users'),
             "created_at"   => $this->created_at?->format('Y-m-d h:i a'),
-            "actions"       => $this->actions . " <button type='button' class='btn btn-icon btn-light-warning btn-sm resend-pending-btn' data-id='{$this->id}' title='".trans('Resend Pending')."'><i class='fas fa-sync'></i></button>",
+            "actions"       => $actions,
             "select_switch" => $this->select_switch,
            
         ];

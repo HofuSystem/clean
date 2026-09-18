@@ -59,6 +59,8 @@ class NotificationsService
         ->with(['sender'])
         ->withCount(['users as sent_count' => function ($query) {
             $query->where('users_notifications.status', 'sent');
+        }, 'users as pending_count' => function ($query) {
+            $query->where('users_notifications.status', 'pending');
         }])
         ->search()->dataTable()->get();
         
