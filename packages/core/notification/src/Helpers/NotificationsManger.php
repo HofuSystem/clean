@@ -139,6 +139,9 @@ class NotificationsManger
             ->join('devices', 'devices.user_id', '=', 'users.id')
             ->whereIn('user_id', $ids)
             ->whereNotNull('devices.device_token')
+            ->whereIn('devices.id', function($query) {
+                $query->selectRaw('MAX(id)')->from('devices')->groupBy('user_id');
+            })
             ->get();
         return $tokensList;
     }

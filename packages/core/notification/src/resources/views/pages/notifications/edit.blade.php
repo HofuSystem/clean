@@ -487,9 +487,11 @@
 
         $(document).on('click', '.resend-user-btn', function(e) {
             e.preventDefault();
-            var userId = $(this).data('id');
-            var notificationId = $(this).data('notification-id');
             var btn = $(this);
+            if (btn.hasClass('disabled')) return;
+            var userId = btn.data('id');
+            var notificationId = btn.data('notification-id');
+            
             Swal.fire({
                 title: "هل أنت متأكد؟",
                 text: "سيتم إعادة إرسال الإشعار لهذا المستخدم بالتحديد.",
@@ -499,7 +501,7 @@
                 cancelButtonText: "إلغاء"
             }).then(function(result) {
                 if (result.value) {
-                    btn.prop('disabled', true).find('i').addClass('fa-spin');
+                    btn.addClass('disabled').find('i').addClass('fa-spin');
                     $.ajax({
                         url: "{{ url('admin/notifications') }}/" + notificationId + "/resend-user/" + userId,
                         type: "POST",
@@ -507,7 +509,7 @@
                             _token: "{{ csrf_token() }}"
                         },
                         success: function(response) {
-                            btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                            btn.removeClass('disabled').find('i').removeClass('fa-spin');
                             if (response.status) {
                                 Swal.fire("نجاح", response.message, "success");
                                 DataTable.ajax.reload();
@@ -516,7 +518,7 @@
                             }
                         },
                         error: function() {
-                            btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                            btn.removeClass('disabled').find('i').removeClass('fa-spin');
                             Swal.fire("خطأ", "حدث خطأ في النظام، يرجى المحاولة لاحقاً", "error");
                         }
                     });
