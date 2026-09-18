@@ -300,6 +300,43 @@
 @endpush
 @push('js')
 <script>
-    var deleteUrl = "{{ route('dashboard.notifications.delete', ['id'=>'%s','trash'=>request()->trash]) }}"
+    var deleteUrl = "{{ route('dashboard.notifications.delete', ['id'=>'%s','trash'=>request()->trash]) }}";
+
+    $(document).on('click', '.resend-pending-btn', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+        var btn = $(this);
+        Swal.fire({
+            title: "{{ trans('Are you sure?') }}",
+            text: "{{ trans('This will resend the notification to all pending users.') }}",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "{{ trans('Yes, resend it!') }}"
+        }).then(function(result) {
+            if (result.value) {
+                btn.prop('disabled', true).find('i').addClass('fa-spin');
+                $.ajax({
+                    url: "{{ url('admin/notifications') }}/" + id + "/resend-pending",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                        if (response.status) {
+                            Swal.fire("{{ trans('Success') }}", response.message, "success");
+                            $('#view-datatable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire("{{ trans('Error') }}", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                        Swal.fire("{{ trans('Error') }}", "{{ trans('system Error please try again later') }}", "error");
+                    }
+                });
+            }
+        });
+    });
 </script>
 @endpush

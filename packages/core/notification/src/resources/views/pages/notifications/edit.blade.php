@@ -467,5 +467,43 @@
                 DataTable.draw();
             });
         @endisset
+
+        $(document).on('click', '.resend-user-btn', function(e) {
+            e.preventDefault();
+            var userId = $(this).data('id');
+            var notificationId = $(this).data('notification-id');
+            var btn = $(this);
+            Swal.fire({
+                title: "{{ trans('Are you sure?') }}",
+                text: "{{ trans('This will resend the notification to this specific user.') }}",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "{{ trans('Yes, resend it!') }}"
+            }).then(function(result) {
+                if (result.value) {
+                    btn.prop('disabled', true).find('i').addClass('fa-spin');
+                    $.ajax({
+                        url: "{{ url('admin/notifications') }}/" + notificationId + "/resend-user/" + userId,
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                            if (response.status) {
+                                Swal.fire("{{ trans('Success') }}", response.message, "success");
+                                DataTable.ajax.reload();
+                            } else {
+                                Swal.fire("{{ trans('Error') }}", response.message, "error");
+                            }
+                        },
+                        error: function() {
+                            btn.prop('disabled', false).find('i').removeClass('fa-spin');
+                            Swal.fire("{{ trans('Error') }}", "{{ trans('system Error please try again later') }}", "error");
+                        }
+                    });
+                }
+            });
+        });
     </script>
 @endpush

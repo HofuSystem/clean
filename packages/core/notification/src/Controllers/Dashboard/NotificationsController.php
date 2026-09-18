@@ -176,6 +176,46 @@ class NotificationsController extends Controller
             return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
         }
     }
+    public function resendPending(Request $request, $id){
+        try {
+            DB::beginTransaction();
+            $count = $this->notificationsService->resendPending($id);
+            DB::commit();
+            if ($count > 0) {
+                return $this->returnSuccessMessage(trans("Resent to $count pending users"));
+            } else {
+                return $this->returnSuccessMessage(trans('No pending users found'));
+            }
+        }catch(ValidationException $e){
+            DB::rollback();
+            return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
+        }
+    }
+
+    public function resendUser(Request $request, $id, $userId){
+        try {
+            DB::beginTransaction();
+            $count = $this->notificationsService->resendUser($id, $userId);
+            DB::commit();
+            if ($count > 0) {
+                return $this->returnSuccessMessage(trans("Resent to user"));
+            } else {
+                return $this->returnErrorMessage(trans('User is not pending'));
+            }
+        }catch(ValidationException $e){
+            DB::rollback();
+            return $this->returnErrorMessage($e->getMessage(),$e->errors(),[],422);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            report($e);
+            return $this->returnErrorMessage(trans('system Error please try again later'),[],[],422);
+        }
+    }
+
     public function getUsers(Request $request){
         $recordsTotal       = User::count();
         $users              = $this->notificationsManger->getNotificationUserQuery($request->for,$request->for_data,$request->register_from,$request->register_to,$request->orders_from,$request->orders_to,$request->orders_min,$request->orders_max)

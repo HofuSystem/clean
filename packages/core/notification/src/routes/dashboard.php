@@ -40,6 +40,8 @@ Route::group(
                     Route::post('{id}/getSentToUsers', [NotificationsController::class,'getSentToUsers'])->name('getSentToUsers');
                     Route::get('{id}/edit', [NotificationsController::class,'createOrEdit'])->name('edit');
                     Route::put('{id}/edit', [NotificationsController::class,'storeOrUpdate'])->name('edit');
+                    Route::post('{id}/resend-pending', [NotificationsController::class,'resendPending'])->name('resendPending');
+                    Route::post('{id}/resend-user/{user_id}', [NotificationsController::class,'resendUser'])->name('resendUser');
                     Route::delete('{id}/delete', [NotificationsController::class,'delete'])->name('delete');
                     Route::post('{id}/comment', [NotificationsController::class,'comment'])->name('comment');
                     Route::put('{id}/restore', [NotificationsController::class,'restore'])->name('restore');

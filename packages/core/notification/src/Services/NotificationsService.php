@@ -101,4 +101,22 @@ class NotificationsService
         $record->restore();
         return $record;
     }
+
+    public function resendPending(int $id){
+        $notification = Notification::findOrFail($id);
+        $pendingUsers = $notification->users()->wherePivot('status', 'pending')->get();
+        if ($pendingUsers->count() > 0) {
+            \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $pendingUsers);
+        }
+        return $pendingUsers->count();
+    }
+
+    public function resendUser(int $id, int $userId){
+        $notification = Notification::findOrFail($id);
+        $user = $notification->users()->wherePivot('status', 'pending')->where('users.id', $userId)->get();
+        if ($user->count() > 0) {
+            \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $user);
+        }
+        return $user->count();
+    }
 }

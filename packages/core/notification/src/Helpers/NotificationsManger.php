@@ -221,6 +221,52 @@ class NotificationsManger
         $this->send();
     }
 
+    function resendToUsers(Notification $notification, $users)
+    {
+        $this->notification     = $notification;
+        $this->sendTypes        = json_decode($notification->types);
+
+        if (array_intersect(['sms', 'whats_app', 'email'], $this->sendTypes)) {
+            foreach ($users as $user) {
+                $notificationsReceiver  = new NotificationsReceiver($user->id, $user->fullname,  $user->email, $user->phone, $user->device_token, $notification->id);
+                if (in_array('sms', $this->sendTypes)) {
+                    $this->phonesList->push($notificationsReceiver);
+                }
+                if (in_array('whats_app', $this->sendTypes)) {
+                    $this->phonesList->push($notificationsReceiver);
+                }
+                if (in_array('email', $this->sendTypes)) {
+                    $this->emailsList->push($notificationsReceiver);
+                }
+            }
+        }
+
+        if (in_array('apps', $this->sendTypes)) {
+            $tokensList         =  $this->getNotificationUsersDevices($users);
+            foreach ($tokensList as $user) {
+                $notificationsReceiver  = new NotificationsReceiver($user->id,$user->fullname,  $user->email, $user->phone, $user->device_token,$notification->id);
+                $this->tokensList->push($notificationsReceiver);
+            }
+        }
+        
+        $this->title    = $notification->title;
+        $this->message  = $notification->body;
+        if ($notification->payload and !empty($notification->payload)) {
+            $this->payload = ToolHelper::isJson($notification->payload)
+                ?   json_decode($notification->payload, true)
+                :   ['payload' => $notification->payload];
+            if (isset($notification->media) and !empty($notification->media)) {
+                $this->payload['media']  =  url($notification->media);
+            }
+        } else {
+            $this->payload  = (isset($notification->media) and !empty($notification->media)) ? [
+                'media' => MediaCenterHelper::getImagesUrl($notification->media)
+            ] : [];
+        }
+        
+        $this->send();
+    }
+
     function send()
     {
         $this->phonesList = $this->phonesList->unique('phone');
@@ -297,6 +343,22 @@ class NotificationsManger
     //send to mobile app with fcm
     function sendApps()
     {
+        $targetedIds = $this->notification->users()->pluck('users.id')->toArray();
+        $userIdsWithTokens = $this->tokensList->pluck('id')->toArray();
+        $userIdsWithoutTokens = array_diff($targetedIds, $userIdsWithTokens);
+
+        if (!empty($userIdsWithoutTokens)) {
+            \Illuminate\Support\Facades\DB::table('users_notifications')
+                ->where('notifications_id', $this->notification->id)
+                ->where('notifications_type', Notification::class)
+                ->where('status', 'pending')
+                ->whereIn('user_id', $userIdsWithoutTokens)
+                ->update([
+                    'status' => 'failed',
+                    'response' => 'No device token'
+                ]);
+        }
+
         if ($this->tokensList->isEmpty()) {
             return;
         }

@@ -99,10 +99,12 @@ class NotificationsReceiver {
     public function toArray(string $for = 'email')  {
         $this->for = $for;
         return [
-            'fullname'  => $this->getName(),
-            'email'     => $this->getEmail(),
-            'phone'     => $this->getPhone(),
-            'token'     => $this->getToken(),
+            'id'             => $this->id,
+            'fullname'       => $this->getName(),
+            'email'          => $this->getEmail(),
+            'phone'          => $this->getPhone(),
+            'token'          => $this->getToken(),
+            'notificationId' => $this->notificationId,
         ];
     }
 }

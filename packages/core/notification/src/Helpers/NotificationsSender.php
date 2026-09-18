@@ -26,6 +26,7 @@ class NotificationsSender
         }
 
         foreach ($receivers as $receiver) {
+            $receiver = (object)$receiver;
             $status = 'failed';
             $response = null;
             $failedToDeliver = false;
@@ -88,6 +89,7 @@ class NotificationsSender
     { 
 
         foreach ($receivers as $receiver) {
+            $receiver = (object)$receiver;
             try {
                  $data = [
                     "userName" => 'anas dahbour', // settings('sms_username')
@@ -146,8 +148,9 @@ class NotificationsSender
     {
         try {
             $lastOne = end($receivers);
+            $notificationId = is_array($lastOne) ? ($lastOne['notificationId'] ?? null) : ($lastOne->notificationId ?? null);
             $tokens = collect($receivers)->pluck('token')->toArray();
-            FCMService::getInstance()->sendToCustomTopic($lastOne?->notificationId,'fcm-function-v5',$tokens,$title,$message,$payload);
+            FCMService::getInstance()->sendToCustomTopic($notificationId,'fcm-function-v5',$tokens,$title,$message,$payload);
         } catch (\Throwable $e) {
             report($e);
         }
@@ -159,8 +162,12 @@ class NotificationsSender
             $OgMsg            = $data['msg'];
             $OgTitle          = $data['title'];
             foreach ($receivers as $receiver) {
-                $data['msg']    = ToolHelper::formatString($OgMsg, $receiver->toArray('smtp'));
-                $data['title']  = ToolHelper::formatString($OgTitle, $receiver->toArray('smtp'));
+                $receiver = (object)$receiver;
+                // Since it's an object now, $receiver->toArray() won't work if it's stdClass.
+                // We need to pass the array representation to formatString.
+                $receiverArray = (array)$receiver;
+                $data['msg']    = ToolHelper::formatString($OgMsg, $receiverArray);
+                $data['title']  = ToolHelper::formatString($OgTitle, $receiverArray);
                 \Mail::to($receiver->email)->send(new \Core\Notification\Mail\SmtpMail( $data));
             }
             $status     = 'sent';
