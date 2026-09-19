@@ -245,6 +245,9 @@ class NotificationsController extends Controller
         })
         ->when($request->filter_phone, function ($query) use ($request) {
             $query->where('phone', 'like', '%' . $request->filter_phone . '%');
+        })
+        ->when($request->filter_status, function ($query) use ($request) {
+            $query->where('users_notifications.status', $request->filter_status);
         });
         $recordsTotal   = $users->count();
         $recordsFiltered = $users->count();

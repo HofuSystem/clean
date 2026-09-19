@@ -223,15 +223,24 @@
 
                                     <div class="p-1 row" data-kt-user-table-filter="form" id="filter-form">
 
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="filter_fullname"> @lang('full name') </label>
                                             <input type="text" name="filter_fullname" id="filter_fullname" class="form-control filter-input"
                                                 placeholder="@lang('search for name') " value="">
                                         </div>
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="filter_phone"> @lang('phone') </label>
                                             <input type="text" name="filter_phone" id="filter_phone" class="form-control filter-input"
                                                 placeholder="@lang('search for phone') " value="">
+                                        </div>
+                                        <div class="col-md-4 mb-1">
+                                            <label for="filter_status"> حالة الإرسال </label>
+                                            <select name="filter_status" id="filter_status" class="form-select filter-input">
+                                                <option value="">الكل</option>
+                                                <option value="sent">تم الإرسال</option>
+                                                <option value="failed">فشل الإرسال</option>
+                                                <option value="pending">قيد الانتظار</option>
+                                            </select>
                                         </div>
                                       
                                         <!--begin::Actions-->
@@ -270,8 +279,8 @@
                                     <th class="text-center p-3" data-name="email">@lang('email')</th>
                                     <th class="text-center p-3" data-name="phone">@lang('phone')</th>
                                     @isset($item)
-                                        <th class="text-center p-3" data-name="sent_status">@lang('sent status')</th>
-                                        <th class="text-center p-3" data-name="sent_response">@lang('sent response')</th>
+                                        <th class="text-center p-3" data-name="sent_status">حالة الإرسال</th>
+                                        <th class="text-center p-3" data-name="sent_response">نتيجة الإرسال</th>
                                     @endisset
                                     <th class="text-center p-3" data-name="orders_count">@lang('orders count')</th>
                                     <th class="text-center p-3" data-name="gender">@lang('gender')</th>
@@ -456,7 +465,8 @@
             // Get filter values
             let filterData = {
                 filter_fullname: $('#filter_fullname').val(),
-                filter_phone: $('#filter_phone').val()
+                filter_phone: $('#filter_phone').val(),
+                filter_status: $('#filter_status').val()
             };
             // Merge with existing form data
             $.extend(formData, filterData);
@@ -470,9 +480,11 @@
             // Clear filter inputs
             $('#filter_fullname').val('');
             $('#filter_phone').val('');
+            $('#filter_status').val('');
             // Remove filter data from formData
             delete formData.filter_fullname;
             delete formData.filter_phone;
+            delete formData.filter_status;
             // Reload DataTable without filters
             DataTable.draw();
         });

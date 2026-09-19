@@ -47,11 +47,18 @@ class UsersResource extends JsonResource
                     if (is_array($r) || is_object($r)) {
                         return json_encode($r, JSON_UNESCAPED_UNICODE);
                     }
-                    return trans(trim((string)$r, '"[]')); 
+                    $string_r = trim((string)$r, '"[]');
+                    if ($string_r === 'No device token') return 'لا يوجد توكن للجهاز';
+                    return trans($string_r); 
                 }, $responses);
                 $data['sent_response'] = implode(', ', $translatedResponses);
             } else {
-                $data['sent_response'] = trans(trim((string)$sent_response, '"[]'));
+                $string_response = trim((string)$sent_response, '"[]');
+                if ($string_response === 'No device token') {
+                    $data['sent_response'] = 'لا يوجد توكن للجهاز';
+                } else {
+                    $data['sent_response'] = trans($string_response);
+                }
             }
         } else {
             $data['sent_response'] = null;
@@ -63,9 +70,9 @@ class UsersResource extends JsonResource
         $data['class']        =  '<span class="ms-2 p-2 rounded" style="background-color:'.$color.'; color:#fff">'.$class.'</span>';
         
         if($data['sent_status'] == 'sent'){
-            $data['sent_status'] = '<span class="badge bg-success">'.trans('sent').'</span>';
+            $data['sent_status'] = '<span class="badge bg-success">تم الإرسال</span>';
         }elseif($data['sent_status'] == 'failed'){
-            $data['sent_status'] = '<span class="badge bg-danger">'.trans('failed').'</span>';
+            $data['sent_status'] = '<span class="badge bg-danger">فشل الإرسال</span>';
         }elseif($data['sent_status'] == 'pending'){
             $data['sent_status'] = '<span class="badge bg-warning">قيد الانتظار</span>';
             $notificationId = request()->route('id');
