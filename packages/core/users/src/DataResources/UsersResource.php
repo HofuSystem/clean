@@ -44,11 +44,14 @@ class UsersResource extends JsonResource
             $responses = is_string($sent_response) ? json_decode($sent_response, true) : $sent_response;
             if (is_array($responses)) {
                 $translatedResponses = array_map(function($r) {
-                    return trans(trim($r, '"[]')); // Fallback to clean string if it wasn't parsed correctly
+                    if (is_array($r) || is_object($r)) {
+                        return json_encode($r, JSON_UNESCAPED_UNICODE);
+                    }
+                    return trans(trim((string)$r, '"[]')); 
                 }, $responses);
                 $data['sent_response'] = implode(', ', $translatedResponses);
             } else {
-                $data['sent_response'] = trans(trim($sent_response, '"[]'));
+                $data['sent_response'] = trans(trim((string)$sent_response, '"[]'));
             }
         } else {
             $data['sent_response'] = null;
