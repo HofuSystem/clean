@@ -239,7 +239,7 @@ class NotificationsController extends Controller
     }
     public function getSentToUsers(Request $request,$id){
         $item           = $this->notificationsService->get($id);
-        $users          = $item->users()->withPivot('status as sent_status','response as sent_response');
+        $users          = $item->users()->withPivot('status', 'response');
         $users          = $users->when($request->filter_fullname, function ($query) use ($request) {
             $query->where('fullname', 'like', '%' . $request->filter_fullname . '%');
         })

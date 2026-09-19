@@ -36,10 +36,10 @@ class UsersResource extends JsonResource
             "actions"         => $this->actions,
             "select_switch"   => $this->select_switch,
             "showActions"     => $this->show_actions,
-            "sent_status"     => $this->sent_status,
+            "sent_status"     => $this->sent_status ?? $this->pivot?->status,
         ];
         
-        $sent_response = $this->sent_response;
+        $sent_response = $this->sent_response ?? $this->pivot?->response;
         if ($sent_response) {
             $responses = is_string($sent_response) ? json_decode($sent_response, true) : $sent_response;
             if (is_array($responses)) {
