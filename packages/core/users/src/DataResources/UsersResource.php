@@ -49,6 +49,7 @@ class UsersResource extends JsonResource
                     }
                     $string_r = trim((string)$r, '"[]');
                     if ($string_r === 'No device token') return 'لا يوجد توكن للجهاز';
+                    if ($string_r === 'not working tokens') return 'بيانات التوكن غير صالحة (لا تعمل)';
                     return trans($string_r); 
                 }, $responses);
                 $data['sent_response'] = implode(', ', $translatedResponses);
@@ -56,6 +57,8 @@ class UsersResource extends JsonResource
                 $string_response = trim((string)$sent_response, '"[]');
                 if ($string_response === 'No device token') {
                     $data['sent_response'] = 'لا يوجد توكن للجهاز';
+                } elseif ($string_response === 'not working tokens') {
+                    $data['sent_response'] = 'بيانات التوكن غير صالحة (لا تعمل)';
                 } else {
                     $data['sent_response'] = trans($string_response);
                 }
