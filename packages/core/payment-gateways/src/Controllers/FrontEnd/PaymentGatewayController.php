@@ -246,6 +246,18 @@ class PaymentGatewayController extends Controller
                 if (in_array($status, ['Canceled', 'Cancelled'], true)) {
                     return $this->handleCancelPayment($transaction, $this->myfatoorahService->getMessage($result));
                 }
+                
+                // If the invoice is Unpaid/Pending but the specific transaction failed
+                if (in_array($status, ['Unpaid', 'Pending'], true)) {
+                    $transactions = $result['data']['InvoiceTransactions'] ?? [];
+                    if (!empty($transactions)) {
+                        $lastTransaction = end($transactions);
+                        if (isset($lastTransaction['TransactionStatus']) && $lastTransaction['TransactionStatus'] === 'Failed') {
+                            return $this->handleFailedPayment($transaction, $this->myfatoorahService->getMessage($result));
+                        }
+                    }
+                }
+
                 // A pending invoice is not evidence of cancellation.
                 $transaction->save();
                 return redirect()->route('payment-gateway.web', [
