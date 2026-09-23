@@ -115,12 +115,14 @@ class AuthenticationController extends Controller
             if (!Hash::check($request->password, $user->password)) {
                 return $this->returnErrorMessage(trans('password is incorrect'));
             }
-            Device::updateOrCreate([
-                'user_id' => $user->id,
-                'type' => $request->type,
-            ], [
-                'device_token' => $request->device_token
-            ]);
+            if ($request->device_token) {
+                Device::updateOrCreate([
+                    'user_id' => $user->id,
+                    'type' => $request->type,
+                ], [
+                    'device_token' => $request->device_token
+                ]);
+            }
             $user->token = $user->createToken('login')->plainTextToken;
             return $this->returnData(trans('user verified'), ['data' => new UserProfileResource($user)]);
         }
@@ -148,12 +150,14 @@ class AuthenticationController extends Controller
                 'fullname' => $user->temp_name,
             ]);
         }
-        Device::updateOrCreate([
-            'user_id' => $user->id,
-            'type' => $request->type,
-        ], [
-            'device_token' => $request->device_token
-        ]);
+        if ($request->device_token) {
+            Device::updateOrCreate([
+                'user_id' => $user->id,
+                'type' => $request->type,
+            ], [
+                'device_token' => $request->device_token
+            ]);
+        }
 
         $langHeader = $request->header('Accept-Language') ?: $request->input('default_language');
         if ($langHeader) {
@@ -227,7 +231,13 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        Device::where(['user_id' => $request->user()->id, 'device_token' => $request->device_token, 'type' => $request->type])->first()?->delete();
+        $deviceQuery = Device::where('user_id', $request->user()->id);
+        if ($request->device_token) {
+            $deviceQuery->where('device_token', $request->device_token);
+        } elseif ($request->type) {
+            $deviceQuery->where('type', $request->type);
+        }
+        $deviceQuery->delete();
         $request->user()->tokens()->delete();
         $request->user()->update(['last_login_at' => null]);
         return $this->returnSuccessMessage(trans("user logged out"));
