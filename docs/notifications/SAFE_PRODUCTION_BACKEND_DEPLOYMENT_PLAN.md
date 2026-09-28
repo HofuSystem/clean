@@ -1,10 +1,12 @@
 ﻿# SAFE PRODUCTION BACKEND DEPLOYMENT PLAN — DIRECT FCM DISABLED
 ## دليل التشغيل وخطة التنفيذ خطوة بخطوة للإنتاج (Production Deployment Runbook)
 
-**تاريخ الإصدار:** 2026-09-28  
-**المشروع:** CleanStation Backend  
-**Commit الأساس (Base SHA):** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
-**Commit الإصدار النهائي (Release SHA):** `9542e93f1fc28480d041cfb71433c36004e694b3`  
+**تاريخ الإصدار:** 2026-09-28
+**المشروع:** CleanStation Backend
+**Commit الأساس (Base SHA):** `17d9f880bc4430835eb3a02ff759afc91ace5fae`
+**Commit الكود الأساسي (Feature/Code Commit):** `9542e93f1fc28480d041cfb71433c36004e694b3`
+**Commits التوثيق (Documentation Commits):** `933a56b979a55dca76d82dba4637e07e8d492d68` ثم `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
+**SHA النشر النهائي الواجب رفعه ونشره (Final Deployment SHA):** `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
 **الهدف:** النشر الآمن الأول للـ Backend، لوحة تحكم الإشعارات، الـ APIs الجديدة، والـ Migrations مع إبقاء المسار الفعلي للإشعارات هو Legacy Topic Path، وحظر Direct FCM نهائياً.
 
 ---
@@ -140,7 +142,11 @@ echo 'SAFETY FLAGS VERIFIED: ALL SAFE' . PHP_EOL;
 ---
 
 ### المرحلة 4: فحص وسحب الكود (Code Deployment Precheck)
-الاعتماد الصريح لـ Release SHA المستهدف:
+الاعتماد الصريح لـ Final Deployment SHA المستهدف (وليس Commit الكود القديم فقط):
+- **Feature/Code Commit:** `9542e93f1fc28480d041cfb71433c36004e694b3` (كود الميزات والـ Migrations)
+- **Documentation Commits:** `933a56b979a55dca76d82dba4637e07e8d492d68` ثم `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
+- **Final Deployment SHA الواجب نشره:** `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
+
 ```bash
 # 1. جلب التحديثات من origin
 git fetch origin
@@ -149,10 +155,10 @@ git fetch origin
 git log --oneline HEAD..origin/main
 git diff --stat HEAD..origin/main
 
-# 3. سحب التحديثات والانتقال إلى Release SHA المعتمد صراحة
-# Release SHA: 9542e93f1fc28480d041cfb71433c36004e694b3
+# 3. سحب التحديثات والانتقال إلى Final Deployment SHA المعتمد صراحة
+# Final Deployment SHA: f4c11f31642f91e6934d6de3221dd7a5ea6b770e
 git pull --ff-only origin main
-git checkout 9542e93f1fc28480d041cfb71433c36004e694b3
+git checkout f4c11f31642f91e6934d6de3221dd7a5ea6b770e
 ```
 
 ---

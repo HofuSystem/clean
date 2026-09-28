@@ -1,12 +1,15 @@
 # NOTIFICATION BACKEND RELEASE CANDIDATE HANDOFF REPORT
 
-**تاريخ الإصدار:** 2026-09-28  
-**المشروع:** CleanStation Backend  
-**الحالة:** RELEASE CANDIDATE READY — COMMIT 9542e93 (NO PUSH)  
-**الفرع المستهدف:** `main`  
-**Base Commit السابق:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
-**Rollback Base Commit:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
-**حالة Direct FCM:** `NOTIFICATION_DIRECT_FCM_ENABLED=false` (محظور ومعطل قطعياً)  
+**تاريخ الإصدار:** 2026-09-28
+**المشروع:** CleanStation Backend
+**الحالة:** RELEASE CANDIDATE READY — FINAL DEPLOYMENT SHA f4c11f3 (NO PUSH)
+**Feature/Code Commit:** `9542e93f1fc28480d041cfb71433c36004e694b3` (كود الميزات والـ Migrations)
+**Documentation Commits:** `933a56b979a55dca76d82dba4637e07e8d492d68` ثم `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
+**Final Deployment SHA:** `f4c11f31642f91e6934d6de3221dd7a5ea6b770e`
+**الفرع المستهدف:** `main`
+**Base Commit السابق:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`
+**Rollback Base Commit:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`
+**حالة Direct FCM:** `NOTIFICATION_DIRECT_FCM_ENABLED=false` (محظور ومعطل قطعياً)
 
 ---
 
@@ -79,7 +82,7 @@ NOTIFICATION_NEW_DASHBOARD_METRICS_ENABLED=true
 
 ## 5. خطة أوامر النشر الميداني على سيرفر الإنتاج (Production Deployment Commands)
 
-عند تنفيذ عملية النشر لاحقاً على خادم الإنتاج الفعلي، يجب اتباع الدليل الموثق في:  
+عند تنفيذ عملية النشر لاحقاً على خادم الإنتاج الفعلي، يجب اتباع الدليل الموثق في:
 [docs/notifications/SAFE_PRODUCTION_BACKEND_DEPLOYMENT_PLAN.md](file:///d:/programming/projects/Hofu/CleanStation/docs/notifications/SAFE_PRODUCTION_BACKEND_DEPLOYMENT_PLAN.md)
 
 ملخص الأوامر التنفيذية:
@@ -89,7 +92,8 @@ mysqldump -u <DB_USER> -p CleanStation | gzip > /backups/cleanstation_prod_pre_d
 
 # 2. سحب كود الإصدار المعتمد
 git fetch origin
-git checkout <RELEASE_COMMIT_SHA>
+# Final Deployment SHA: f4c11f31642f91e6934d6de3221dd7a5ea6b770e
+git checkout f4c11f31642f91e6934d6de3221dd7a5ea6b770e
 
 # 3. التأكد من حواضر الأمان في .env
 grep "NOTIFICATION_DIRECT_FCM_ENABLED=false" .env
@@ -104,7 +108,7 @@ php artisan migrate --force
 php artisan optimize:clear
 php artisan config:cache
 php artisan queue:restart
-sudo supervisorctl restart all
+sudo supervisorctl restart cleanstation-worker:*
 ```
 
 ---
