@@ -3,6 +3,8 @@
 
 **تاريخ الإصدار:** 2026-09-28  
 **المشروع:** CleanStation Backend  
+**Commit الأساس (Base SHA):** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
+**Commit الإصدار النهائي (Release SHA):** `9542e93f1fc28480d041cfb71433c36004e694b3`  
 **الهدف:** النشر الآمن الأول للـ Backend، لوحة تحكم الإشعارات، الـ APIs الجديدة، والـ Migrations مع إبقاء المسار الفعلي للإشعارات هو Legacy Topic Path، وحظر Direct FCM نهائياً.
 
 ---
@@ -19,12 +21,12 @@
 3. **التوافق العكسي التام (Zero Client Breaking Changes):**
    - لا تعديل على كود Flutter.
    - لا اشتراط لتحديث التطبيقات لدى العملاء أو السائقين أو الفنيين.
-   - استمرار عمل الـ Endpoints القديمة (`/api/devices/update_fcm` وغيرها) بجانب الـ APIs الجديدة.
+   - استمرار عمل الـ Endpoints القديمة (`/api/update_fcm` وغيرها) بنسبة 100%.
 4. **حماية وسلامة البيانات التاريخية (Data Preservation):**
    - ممنوع تشغيل `migrate:fresh` أو `migrate:rollback`.
    - ممنوع حذف أو تعديل سجلات قديمة أو تنظيف أجهزة قديمة.
    - ممنوع حذف `failed_jobs` أو إعادة تشغيلها جماعياً.
-   - الحفاظ على الـ 1,050 سجلاً التجريبي الموجودة في قاعدة Local وعدم نقلها أو تكرارها.
+   - الحفاظ على الـ 1,050 سجلاً التجريبي الموجودة في قاعدة Local وعدم نقلها للإنتاج.
 
 ---
 
@@ -48,18 +50,6 @@ NOTIFICATION_NEW_DASHBOARD_METRICS_ENABLED=true
 
 ## 3. خطة التنفيذ الميدانية مرحلة بمرحلة (Step-by-Step Execution Runbook)
 
-```mermaid
-flowchart TD
-    A[المرحلة 1: Read-Only Preflight] --> B[المرحلة 2: Database Backup]
-    B --> C[المرحلة 3: Environment Safety Flags]
-    C --> D[المرحلة 4: Code Deployment Precheck]
-    D --> E[المرحلة 5: Migration Dry-Run --pretend]
-    E --> F[المرحلة 6: Controlled Migration & Cache]
-    F --> G[المرحلة 7: Queue Worker Restart]
-    G --> H[المرحلة 8: Post-Deploy Verification]
-    H --> I[المرحلة 9: 60-Minute Monitoring Window]
-```
-
 ### المرحلة 1: Production Read-Only Preflight (الفحص الاستطلاعي)
 يتم تنفيذ الأوامر التالية على سيرفر الإنتاج لتوثيق الحالة قبل أي تغيير:
 ```bash
@@ -72,7 +62,7 @@ whoami
 php -v
 php artisan --version
 
-# 3. التحقق من حالة Git
+# 3. التحقق من حالة Git وتأكيد عدم وجود تعديلات عشوائية
 git status --short
 git branch -v
 git rev-parse HEAD
@@ -95,22 +85,22 @@ df -h
 ---
 
 ### المرحلة 2: النسخة الاحتياطية الكاملة (Database Backup & Snapshots)
-قبل تنفيذ أي Migration، يتم أخذ نسخة احتياطية مشفرة ومؤرخة:
+قبل تنفيذ أي Migration، يتم أخذ نسخة احتياطية مشفرة ومؤرخة. **يُمنع تمرير كلمة المرور صراحة في سطر الأوامر**؛ يتم استخدام موجه الإدخال التفاعلي `-p` أو ملف إعدادات آمن:
 
 ```bash
 # 1. إنشاء مجلد النسخ الاحتياطي
 BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
 BACKUP_FILE="/backups/cleanstation_prod_${BACKUP_DATE}.sql.gz"
 
-# 2. أخذ النسخة الكاملة عبر mysqldump
-mysqldump -u <DB_USER> -p<DB_PASSWORD> --single-transaction --quick --routines --triggers CleanStation | gzip > "${BACKUP_FILE}"
+# 2. أخذ النسخة الكاملة عبر mysqldump مع إدخال كلمة المرور تفاعلياً
+mysqldump -u <DB_USER> -p --single-transaction --quick --routines --triggers CleanStation | gzip > "${BACKUP_FILE}"
 
 # 3. توثيق الـ Checksum والحجم
 ls -lh "${BACKUP_FILE}"
 sha256sum "${BACKUP_FILE}" > "${BACKUP_FILE}.sha256"
 
 # 4. أخذ Snapshot لأعداد الجداول الأساسية
-mysql -u <DB_USER> -p<DB_PASSWORD> CleanStation -e "
+mysql -u <DB_USER> -p CleanStation -e "
 SELECT 'users' as tbl, count(*) as count FROM users
 UNION ALL SELECT 'devices', count(*) FROM devices
 UNION ALL SELECT 'notifications', count(*) FROM notifications
@@ -125,29 +115,44 @@ UNION ALL SELECT 'failed_jobs', count(*) FROM failed_jobs;
 
 ### المرحلة 3: تأكيد وتطبيق حواجز الأمان (Environment Safety Flags)
 1. تعديل ملف `.env` على السيرفر لإضافة المتغيرات الستة الإلزامية.
-2. التحقق من قراءة القيم عبر عملية PHP مستقلة تماماً:
+2. التحقق من قراءة القيم عبر عملية PHP مستقلة بفحص صريح وقاطع (**استبدال `assert` بفحص `if + STDERR + exit(1)`** لضمان التنفيذ حتى لو كانت assertions معطلة في php.ini الإنتاجي):
+
 ```bash
 php -r "require 'vendor/autoload.php'; \$app = require 'bootstrap/app.php'; \$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
-assert(config('notification.direct_fcm_enabled') === false, 'CRITICAL: Direct FCM is enabled!');
-assert(config('notification.permission_mode') === 'observe', 'CRITICAL: Permission mode not observe!');
-assert(config('notification.marketing_preference_mode') === 'observe', 'CRITICAL: Marketing mode not observe!');
+\$errors = [];
+if (config('notification.direct_fcm_enabled') !== false) {
+    \$errors[] = 'CRITICAL: direct_fcm_enabled must be false, got: ' . var_export(config('notification.direct_fcm_enabled'), true);
+}
+if (config('notification.permission_mode') !== 'observe') {
+    \$errors[] = 'CRITICAL: permission_mode must be observe, got: ' . var_export(config('notification.permission_mode'), true);
+}
+if (config('notification.marketing_preference_mode') !== 'observe') {
+    \$errors[] = 'CRITICAL: marketing_preference_mode must be observe, got: ' . var_export(config('notification.marketing_preference_mode'), true);
+}
+if (!empty(\$errors)) {
+    fwrite(STDERR, implode(PHP_EOL, \$errors) . PHP_EOL);
+    exit(1);
+}
 echo 'SAFETY FLAGS VERIFIED: ALL SAFE' . PHP_EOL;
 "
 ```
 
 ---
 
-### المرحلة 4: فحص الكود قبل النشر (Code Deployment Precheck)
+### المرحلة 4: فحص وسحب الكود (Code Deployment Precheck)
+الاعتماد الصريح لـ Release SHA المستهدف:
 ```bash
-# 1. جلب التحديثات
+# 1. جلب التحديثات من origin
 git fetch origin
 
-# 2. مراجعة التغييرات القادمة مقارنة بـ HEAD
+# 2. مراجعة التغييرات القادمة بدقة
 git log --oneline HEAD..origin/main
 git diff --stat HEAD..origin/main
 
-# 3. سحب التحديثات بطريقة آمنة
+# 3. سحب التحديثات والانتقال إلى Release SHA المعتمد صراحة
+# Release SHA: 9542e93f1fc28480d041cfb71433c36004e694b3
 git pull --ff-only origin main
+git checkout 9542e93f1fc28480d041cfb71433c36004e694b3
 ```
 
 ---
@@ -170,13 +175,15 @@ php artisan migrate --pretend
 ### المرحلة 6: التنفيذ المحكوم للنشر (Controlled Deployment Execution)
 
 ```bash
-# 1. إدخال التطبيق في وضع الصيانة القصير (اختياري بحسب نافذة الصيانة)
-php artisan down --secret="cleanstation-deploy-2026" --render="errors::503"
+# 1. إدخال التطبيق في وضع الصيانة برمز عشوائي آمن (ممنوع استخدام سر ثابت أو مكشوف)
+DEPLOY_MAINTENANCE_SECRET=$(openssl rand -hex 16)
+echo "Maintenance Bypass Secret Token: ${DEPLOY_MAINTENANCE_SECRET}"
+php artisan down --secret="${DEPLOY_MAINTENANCE_SECRET}" --render="errors::503"
 
-# 2. تحديث التبعيات في حال تغير composer.lock
+# 2. تحديث التبعيات في حال تغير composer.lock فقط
 composer install --no-dev --optimize-autoloader --no-interaction
 
-# 3. تنفيذ الـ Migrations الفعلية
+# 3. تنفيذ الـ Migrations التراكمية الفعلية
 php artisan migrate --force
 
 # 4. تنظيف وإعادة بناء الكاش المتوافق
@@ -186,8 +193,11 @@ php artisan config:cache
 # 5. إعادة تشغيل الطوابير
 php artisan queue:restart
 
-# 6. إذا كان Supervisor يدير العمال:
-sudo supervisorctl restart all
+# 6. إعادة تشغيل عمال Supervisor الخاصين بالمشروع حصراً (ممنوع restart all لتفادي تعطيل خدمات السيرفر الأخرى)
+# اسم مجموعة العمال الفعلي: NOT VERIFIED محلياً (يجب استخراجه عبر sudo supervisorctl status)
+# مثال للعمال المعتمد:
+sudo supervisorctl status
+sudo supervisorctl restart cleanstation-worker:*
 
 # 7. إخراج التطبيق من وضع الصيانة
 php artisan up
@@ -195,18 +205,18 @@ php artisan up
 
 ---
 
-### المرحلة 7: الفحص الفوري بعد النشر (Post-Deploy Smoke Verification)
+### المرحلة 7: الفحص الفوري للمسارات الحقيقية بعد النشر (Post-Deploy Smoke Verification)
 
-يتم التحقق الفوري من الخدمات الحيوية عبر حسابات اختبار تجريبية محددة حصراً (ممنوع الإرسال العام):
+يتم التحقق الفوري من الخدمات الحيوية عبر المسارات الفعلية المستخرجة من `php artisan route:list` (ممنوع الإرسال العام):
 
-1. **الصفحة الرئيسية ولوحة التحكم:**
-   - فحص لوحة الإشعارات الجديدة: `GET /dashboard/notifications`
-   - فحص شاشة المراقبة الصحية: `GET /dashboard/notifications/health`
-   - فحص مراقبة الطوابير: `GET /dashboard/notifications/queue-monitor`
+1. **المسارات الإدارية الفعلية (Prefix المسار هو `/admin/notifications` مع دعم بادئة اللغة مثل `/ar/`):**
+   - صفحة قائمة الإشعارات: `GET https://cleanstation.app/ar/admin/notifications` (اسم المسار: `dashboard.notifications.index`)
+   - شاشة صحة الإشعارات: `GET https://cleanstation.app/ar/admin/notifications/health` (اسم المسار: `dashboard.notifications.health`)
+   - مراقبة طوابير الإشعارات: `GET https://cleanstation.app/ar/admin/notifications/queue-monitor` (اسم المسار: `dashboard.notifications.queueMonitor`)
 2. **تطبيقات العملاء والفنيين والسائقين (Legacy Compatibility):**
-   - تسجيل الدخول لعميل قديم.
-   - استدعاء تحديث توكن FCM القديم (`POST /api/devices/update_fcm`).
-   - استدعاء المزامنة الجديدة (`POST /api/devices/sync`) والتأكد من استجابة `200 OK`.
+   - استدعاء تحديث توكن FCM القديم: `POST https://cleanstation.app/api/update_fcm` (دالة `UserController::updateFcm`).
+   - استدعاء مزامنة الأجهزة الحديث: `POST https://cleanstation.app/api/devices/sync` (دالة `DeviceSyncController::sync`).
+   - استدعاء تفضيلات التسويق: `PUT https://cleanstation.app/api/client/notification-preference` (دالة `DeviceSyncController::updateMarketingPreference`).
    - إنشاء طلب تجريبي واختبار إشعار Transactional قديم (SMS/WhatsApp/Legacy Push).
    - التأكد من عدم تأثر `BannerNotification`.
 
@@ -216,7 +226,7 @@ php artisan up
 
 مقارنة الأعداد مع الـ Snapshot المأخوذ في المرحلة 2:
 ```bash
-mysql -u <DB_USER> -p<DB_PASSWORD> CleanStation -e "
+mysql -u <DB_USER> -p CleanStation -e "
 SELECT 'users' as tbl, count(*) as count FROM users
 UNION ALL SELECT 'devices', count(*) FROM devices
 UNION ALL SELECT 'notifications', count(*) FROM notifications
@@ -243,25 +253,27 @@ UNION ALL SELECT 'notification_tokens', count(*) FROM notification_tokens;
 
 ---
 
-## 4. خطة التراجع السريع عند الطوارئ (Rollback Emergency Runbook)
+## 4. خطة التراجع السريع عند الطوارئ (Safe Rollback Runbook)
 
 إذا ظهر أي خلل غير متوقع يهدد استقرار التطبيق:
 
 1. **الاحتفاظ بالـ Migrations كما هي:** نظراً لأن جميع الأعمدة الجديدة Additive و Nullable، فإنها لا تعطل الكود القديم ولا تتطلب أي Rollback لقاعدة البيانات.
-2. **الرجوع لـ Commit السابق:**
+2. **الرجوع لـ Base Commit السابق حصراً دون مساس بأي ملفات غير مرتبطة:**
    ```bash
-   git checkout <PREVIOUS_COMMIT_SHA>
+   # Base SHA: 17d9f880bc4430835eb3a02ff759afc91ace5fae
+   git checkout 17d9f880bc4430835eb3a02ff759afc91ace5fae
    ```
+   *(ممنوع استخدام `git reset --hard` أو `git clean -fd` لعدم حذف أي ملفات غير متتبعة على الخادم).*
 3. **تأكيد بقاء Direct FCM معطلاً:**
    ```dotenv
    NOTIFICATION_DIRECT_FCM_ENABLED=false
    ```
-4. **تحديث الكاش وإعادة تشغيل الطابور:**
+4. **تحديث الكاش وإعادة تشغيل عمال الطابور:**
    ```bash
    php artisan optimize:clear
    php artisan config:cache
    php artisan queue:restart
-   sudo supervisorctl restart all
+   sudo supervisorctl restart cleanstation-worker:*
    ```
 5. **التحقق من عمل المسارات القديمة بالكامل.**
 
