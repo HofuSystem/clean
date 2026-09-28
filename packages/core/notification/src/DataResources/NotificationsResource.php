@@ -5,6 +5,7 @@ namespace Core\Notification\DataResources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Core\Admin\Helpers\DashboardDataTableFormatter;
+use Core\Notification\Helpers\NotificationChannelResolver;
 
 class NotificationsResource extends JsonResource
 {
@@ -32,49 +33,69 @@ class NotificationsResource extends JsonResource
         ];
         $statusHtml = $statusBadges[$status] ?? '<span class="badge bg-label-secondary badge-light-secondary">' . $status . '</span>';
 
-        // Purpose badge
-        $purpose = $this->purpose ?: 'marketing';
-        $purposeBadges = [
-            'marketing' => '<span class="badge bg-label-info badge-light-info">تسويقي</span>',
-            'transactional' => '<span class="badge bg-label-primary badge-light-primary">تشغيلي</span>',
-            'system' => '<span class="badge bg-label-dark badge-light-dark">نظام</span>',
-        ];
-        $purposeHtml = $purposeBadges[$purpose] ?? '<span class="badge bg-label-info badge-light-info">' . $purpose . '</span>';
+        // 1. Resolve Channel
+        $resolvedChannel = NotificationChannelResolver::resolveChannel($this->resource);
+        $channelBadge = NotificationChannelResolver::renderChannelBadge($resolvedChannel);
+        $channelLabel = NotificationChannelResolver::getChannelLabel($resolvedChannel);
 
-        // Delivery channel & semantics differentiation
-        $channel = method_exists($this->resource, 'getDeliveryChannel') ? $this->getDeliveryChannel() : 'legacy_topic';
-        $isDirect = ($channel === 'direct_fcm');
-        $newMetricsEnabled = config('notification.new_dashboard_metrics_enabled', true);
+        // 2. Resolve Purpose (Never default to marketing!)
+        $resolvedPurpose = NotificationChannelResolver::resolvePurpose($this->resource);
+        $purposeBadge = NotificationChannelResolver::renderPurposeBadge($resolvedPurpose);
+        $purposeLabel = NotificationChannelResolver::getPurposeLabel($resolvedPurpose);
 
-        if ($newMetricsEnabled) {
+        // 3. Resolve Transport Type & Delivery Semantics
+        $isFcm = NotificationChannelResolver::isFcm($this->resource);
+        $deliveryChannel = method_exists($this->resource, 'getDeliveryChannel') ? $this->getDeliveryChannel() : ($isFcm ? 'legacy_topic' : $resolvedChannel);
+        $isDirect = ($deliveryChannel === 'direct_fcm');
+        $transportType = NotificationChannelResolver::resolveTransportType($resolvedChannel, $deliveryChannel);
+        $combinedLabel = NotificationChannelResolver::formatCombinedLabel($this->resource);
+
+        if ($isFcm) {
             if ($isDirect) {
-                // Direct FCM campaign
-                $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM">' .
+                $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM (Push)">' .
                     trans('قُبل من FCM') . ': ' . number_format($this->accepted_by_fcm_count ?? 0) . '</span>';
             } else {
-                // Legacy campaign: explicit Legacy Topic Subscription semantics
                 $legacyCount = (int) ($this->sent_count ?? 0);
                 $displayCount = $legacyCount > 0 ? number_format($legacyCount) : '—';
-                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="Legacy Topic Subscription">' .
-                    trans('Legacy Topic Subscription') . ': ' . $displayCount . '</span>';
+                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">' .
+                    trans('قبول اشتراك الموضوع (Legacy Topic Subscription)') . ': ' . $displayCount . '</span>';
             }
+        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_WHATSAPP) {
+            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
+            $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="WhatsApp Gateway API"><i class="fab fa-whatsapp me-1"></i>بوابة WhatsApp: ' . $sentVal . '</span>';
+        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_SMS) {
+            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
+            $acceptedDisplay = '<span class="badge bg-label-info badge-light-info fs-7 fw-bold" title="SMS Gateway API"><i class="fas fa-sms me-1"></i>بوابة SMS: ' . $sentVal . '</span>';
+        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_EMAIL) {
+            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
+            $acceptedDisplay = '<span class="badge bg-label-warning badge-light-warning fs-7 fw-bold" title="SMTP Mail Server"><i class="fas fa-envelope me-1"></i>خادم Email: ' . $sentVal . '</span>';
         } else {
-            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7">' . number_format($this->sent_count ?? 0) . '</span>';
+            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7">غير مصنف</span>';
         }
+
+        $targetedCountFormatted = $this->targeted_users_count ? number_format($this->targeted_users_count) : ($this->for === 'all' ? trans('All Users') : number_format($this->users()->count()));
 
         $data = [
             "id"                        => $this->id,
             "types"                     => DashboardDataTableFormatter::text($this->types),
+            "channel"                   => $channelBadge,
+            "channel_raw"               => $resolvedChannel,
+            "channel_label"             => $channelLabel,
             "for"                       => DashboardDataTableFormatter::text($this->for),
-            "purpose"                   => $purposeHtml,
+            "purpose"                   => $purposeBadge,
+            "purpose_raw"               => $resolvedPurpose,
+            "purpose_label"             => $purposeLabel,
+            "transport_type"            => $transportType,
+            "combined_label"            => $combinedLabel,
             "processing_status"         => $statusHtml,
-            "delivery_channel"          => $channel,
-            "delivery_channel_label"    => $isDirect ? 'Direct FCM' : 'Legacy Topic Subscription',
-            "delivery_metric_label"     => $isDirect ? trans('قُبل من FCM') : trans('Legacy Topic Subscription'),
-            "accepted_by_fcm"           => $isDirect ? (int) ($this->accepted_by_fcm_count ?? 0) : '—',
-            "legacy_topic_count"        => !$isDirect ? (int) ($this->sent_count ?? 0) : '—',
-            "targeted_users_count"      => $this->targeted_users_count ? number_format($this->targeted_users_count) : ($this->for === 'all' ? trans('All Users') : number_format($this->users()->count())),
-            "eligible_devices_count"    => $this->eligible_devices_count ? number_format($this->eligible_devices_count) : '—',
+            "delivery_channel"          => $deliveryChannel,
+            "delivery_channel_label"    => ($isDirect ? 'Direct FCM' : ($deliveryChannel === 'legacy_topic' ? 'Legacy Topic Subscription' : $transportType)),
+            "delivery_metric_label"     => method_exists($this->resource, 'getDeliveryMetricLabel') ? $this->getDeliveryMetricLabel() : $transportType,
+            "accepted_by_fcm"           => ($isFcm && $isDirect) ? (int) ($this->accepted_by_fcm_count ?? 0) : '—',
+            "legacy_topic_count"        => ($isFcm && !$isDirect) ? (int) ($this->sent_count ?? 0) : '—',
+            "targeted_users_count"      => $targetedCountFormatted,
+            "eligible_devices_count"    => $isFcm ? ($this->eligible_devices_count !== null ? number_format($this->eligible_devices_count) : '—') : '—',
+            "fcm_users_count"           => $isFcm ? $targetedCountFormatted : trans('Not applicable'),
             "title"                     => DashboardDataTableFormatter::text($this->title),
             "body"                      => DashboardDataTableFormatter::text($this->body),
             "media"                     => DashboardDataTableFormatter::mediaCenter($this->media),

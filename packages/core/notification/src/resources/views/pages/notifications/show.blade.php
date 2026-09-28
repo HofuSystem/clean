@@ -1,4 +1,10 @@
 @extends('admin::layouts.dashboard')
+@php
+    $isFcmChannel = isset($item) ? $item->isFcm() : true;
+    $channel = isset($item) ? $item->getChannel() : 'app_fcm';
+    $resolvedPurpose = isset($item) ? $item->getPurpose() : ($item->purpose ?? 'legacy_unknown');
+    $transportType = isset($item) ? $item->getTransportType() : 'Legacy Topic Subscription';
+@endphp
 @section('content')
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Toolbar-->
@@ -122,7 +128,11 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">@lang('الأجهزة المؤهلة'):</span>
-                                <span class="fw-bolder text-info fs-6">{{ number_format($eligibleDevices) }}</span>
+                                @if($isFcmChannel)
+                                    <span class="fw-bolder text-info fs-6">{{ number_format($eligibleDevices) }}</span>
+                                @else
+                                    <span class="text-muted fs-7">غير منطبق ({{ ucfirst($resolvedChannel) }})</span>
+                                @endif
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted">@lang('سجلات المستخدمين'):</span>
@@ -160,9 +170,9 @@
                                     <span class="badge bg-label-secondary badge-light-secondary fs-6 fw-bolder">{{ number_format($skippedTokensCount) }}</span>
                                 </div>
                                 @endif
-                            @else
+                            @elseif($isFcmChannel)
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Legacy Topic:</span>
+                                    <span class="text-muted" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">قبول اشتراك الموضوع (Legacy Topic Subscription):</span>
                                     <span class="badge bg-label-primary badge-light-primary fs-6 fw-bolder">{{ is_numeric($legacyTopicCount) ? number_format($legacyTopicCount) : $legacyTopicCount }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
@@ -172,6 +182,19 @@
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">@lang('الفشل الدقيق'):</span>
                                     <span class="text-muted">غير متاح (قناة عامة)</span>
+                                </div>
+                            @else
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">بوابة الإرسال:</span>
+                                    <span class="badge bg-label-success badge-light-success fs-7 fw-bold">{{ $transportType }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">حالة الإرسال:</span>
+                                    <span class="badge bg-label-info badge-light-info fs-7">تم التوجيه للبوابة</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">أجهزة FCM:</span>
+                                    <span class="text-muted">غير منطبق</span>
                                 </div>
                             @endif
                         </div>

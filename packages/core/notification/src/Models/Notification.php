@@ -1,6 +1,8 @@
 <?php
 
 namespace Core\Notification\Models;
+
+use Core\Notification\Helpers\NotificationChannelResolver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Core\Users\Models\User;
 use Core\Notification\Observers\NotificationObserver;
@@ -184,6 +186,62 @@ class Notification extends CoreModel {
         return $this->getItemData('notifications');
     }
 
+    public function getChannelAttribute(): string
+    {
+        return $this->getChannel();
+    }
+
+    public function getResolvedPurposeAttribute(): string
+    {
+        return $this->getPurpose();
+    }
+
+    public function getChannel(): string
+    {
+        return NotificationChannelResolver::resolveChannel($this);
+    }
+
+    public function getChannels(): array
+    {
+        return NotificationChannelResolver::resolveChannels($this);
+    }
+
+        public function getResolvedPurpose(): string
+    {
+        return $this->getPurpose();
+    }
+
+    public function getPurpose(): string
+    {
+        return NotificationChannelResolver::resolvePurpose($this);
+    }
+
+    public function getTransportType(): string
+    {
+        $deliv = $this->getDeliveryChannel();
+        return NotificationChannelResolver::resolveTransportType($this->getChannel(), $deliv);
+    }
+
+    public function isFcm(): bool
+    {
+        return NotificationChannelResolver::isFcm($this);
+    }
+
+    public function isWhatsApp(): bool
+    {
+        return in_array(NotificationChannelResolver::CHANNEL_WHATSAPP, $this->getChannels(), true);
+    }
+
+    public function isSms(): bool
+    {
+        return in_array(NotificationChannelResolver::CHANNEL_SMS, $this->getChannels(), true);
+    }
+
+    public function isEmail(): bool
+    {
+        return in_array(NotificationChannelResolver::CHANNEL_EMAIL, $this->getChannels(), true);
+    }
+
     public function getDeliveryChannel(): string
     {
         $payload = is_array($this->payload) ? $this->payload : json_decode($this->payload ?? '{}', true);
@@ -197,6 +255,12 @@ class Notification extends CoreModel {
                 return 'legacy_topic';
             }
             return (string) $payload['delivery_channel'];
+        }
+
+        // If channel is non-FCM (WhatsApp, SMS, Email, In-App):
+        $channel = $this->getChannel();
+        if ($channel !== NotificationChannelResolver::CHANNEL_APP_FCM && $channel !== NotificationChannelResolver::CHANNEL_LEGACY_UNKNOWN) {
+            return $channel;
         }
 
         // 2. Historical campaigns without snapshot:
@@ -224,8 +288,17 @@ class Notification extends CoreModel {
         if ($channel === 'direct_fcm') {
             return trans('قُبل من FCM');
         }
+        if ($channel === 'whatsapp') {
+            return trans('بوابة WhatsApp');
+        }
+        if ($channel === 'sms') {
+            return trans('بوابة SMS');
+        }
+        if ($channel === 'email') {
+            return trans('خادم Email');
+        }
 
-        return trans('Legacy Topic Subscription');
+        return 'Legacy Topic Subscription';
     }
 
     public function getDeliveryMetricValue(): string
@@ -233,6 +306,10 @@ class Notification extends CoreModel {
         $channel = $this->getDeliveryChannel();
         if ($channel === 'direct_fcm') {
             return (string) ($this->accepted_by_fcm_count ?? 0);
+        }
+        if (in_array($channel, ['whatsapp', 'sms', 'email'], true)) {
+            $sent = $this->sent_count ?? $this->users()->wherePivot('status', 'sent')->count();
+            return $sent > 0 ? (string) $sent : '—';
         }
 
         $sentCount = $this->sent_count ?? $this->users()->wherePivot('status', 'sent')->count();

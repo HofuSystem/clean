@@ -207,41 +207,87 @@ class NotificationsManger
             ] : [];
         }
 
-        // Use RecipientEligibilityService to resolve audience & eligibility
+        $channels = NotificationChannelResolver::resolveChannels($notification);
+        $isFcm = in_array(NotificationChannelResolver::CHANNEL_APP_FCM, $channels, true);
+        $primaryChannel = NotificationChannelResolver::resolveChannel($notification);
+        $resolvedPurpose = NotificationChannelResolver::resolvePurpose($notification);
+
+        // Update channel and purpose on notification record
+        $metaUpdate = [];
+        if (empty($notification->getRawOriginal('channel')) && \Illuminate\Support\Facades\Schema::hasColumn('notifications', 'channel')) {
+            $metaUpdate['channel'] = $primaryChannel;
+        }
+        if (empty($notification->getRawOriginal('purpose'))) {
+            $metaUpdate['purpose'] = $resolvedPurpose;
+        }
+
         $eligibilityService = app(RecipientEligibilityService::class);
-        $evaluation = $eligibilityService->evaluateEligibility($notification);
 
-        $targetedUsers = $evaluation['targeted_users'];
-        $targetedCount = $evaluation['targeted_users_count'];
-        $eligibleUsersCount = $evaluation['eligible_users_count'];
-        $eligibleDevices = $evaluation['eligible_devices'];
-        $userEligibility = $evaluation['user_eligibility'];
+        if ($isFcm) {
+            // FCM Path: resolve devices and tokens
+            $evaluation = $eligibilityService->evaluateEligibility($notification);
 
-        // Snapshot initial campaign metrics
-        $notification->update([
-            'processing_status' => 'processing',
-            'started_at' => now(),
-            'targeted_users_count' => $targetedCount,
-            'eligible_users_count' => $eligibleUsersCount,
-            'eligible_devices_count' => count($eligibleDevices),
-        ]);
+            $targetedUsers = $evaluation['targeted_users'];
+            $targetedCount = $evaluation['targeted_users_count'];
+            $eligibleUsersCount = $evaluation['eligible_users_count'];
+            $eligibleDevices = $evaluation['eligible_devices'];
+            $userEligibility = $evaluation['user_eligibility'];
 
-        // Sync users_notifications pivot for targeted users
-        $targetedIds = $targetedUsers->pluck('id')->toArray();
-        $notification->users()->sync($targetedIds);
+            $metaUpdate['processing_status'] = 'processing';
+            $metaUpdate['started_at'] = now();
+            $metaUpdate['targeted_users_count'] = $targetedCount;
+            $metaUpdate['eligible_users_count'] = $eligibleUsersCount;
+            $metaUpdate['eligible_devices_count'] = count($eligibleDevices);
 
-        // Update eligibility status per user in users_notifications (polymorphic safe)
-        foreach ($userEligibility as $userId => $eligibility) {
-            DB::table('users_notifications')
-                ->where('notifications_type', Notification::class)
-                ->where('notifications_id', $notification->id)
-                ->where('user_id', $userId)
-                ->update([
-                    'eligibility_status' => $eligibility['status'],
-                    'eligibility_reason' => $eligibility['reason'],
-                    'status' => $eligibility['status'] === 'eligible' ? 'pending' : 'failed',
-                    'response' => $eligibility['reason'] ?: 'pending device dispatch',
-                ]);
+            $notification->update($metaUpdate);
+
+            $targetedIds = $targetedUsers->pluck('id')->toArray();
+            $notification->users()->sync($targetedIds);
+
+            foreach ($userEligibility as $userId => $eligibility) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->where('user_id', $userId)
+                    ->update([
+                        'eligibility_status' => $eligibility['status'],
+                        'eligibility_reason' => $eligibility['reason'],
+                        'status' => $eligibility['status'] === 'eligible' ? 'pending' : 'failed',
+                        'response' => $eligibility['reason'] ?: 'pending device dispatch',
+                    ]);
+            }
+        } else {
+            // Non-FCM Path (WhatsApp, SMS, Email):
+            // Zero FCM device token evaluation or dependency
+            $targetedQuery = $eligibilityService->getTargetedUsersQuery($notification);
+            $targetedUsers = $targetedQuery->get();
+            $targetedCount = $targetedUsers->count();
+
+            $metaUpdate['processing_status'] = 'processing';
+            $metaUpdate['started_at'] = now();
+            $metaUpdate['targeted_users_count'] = $targetedCount;
+            $metaUpdate['eligible_users_count'] = $targetedCount;
+            $metaUpdate['eligible_devices_count'] = 0; // Explicitly NULL: FCM devices not applicable!
+
+            $notification->update($metaUpdate);
+
+            $targetedIds = $targetedUsers->pluck('id')->toArray();
+            $notification->users()->sync($targetedIds);
+
+            foreach ($targetedIds as $uId) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->where('user_id', $uId)
+                    ->update([
+                        'eligibility_status' => 'eligible',
+                        'eligibility_reason' => null,
+                        'status' => 'pending',
+                        'response' => 'Dispatched via ' . implode(', ', $channels),
+                    ]);
+            }
+
+            $eligibleDevices = [];
         }
 
         // Setup receivers for SMS, WhatsApp, Email
@@ -290,11 +336,18 @@ class NotificationsManger
                 $this->sendLegacyApps();
             }
         } else {
-            // If apps was not selected, complete immediately
+            // If apps was not selected, complete immediately and update sent_count
+            $sentCount = $this->phonesList->count() ?: ($this->emailsList->count() ?: $targetedCount);
             $notification->update([
                 'processing_status' => 'completed',
                 'completed_at' => now(),
+                'sent_count' => $sentCount,
             ]);
+
+            DB::table('users_notifications')
+                ->where('notifications_type', Notification::class)
+                ->where('notifications_id', $notification->id)
+                ->update(['status' => 'sent']);
         }
     }
 

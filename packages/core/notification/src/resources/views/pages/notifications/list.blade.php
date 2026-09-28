@@ -276,11 +276,11 @@
                                 <th class="text-center p-0" data-name="id">@lang("id")</th>
 
 
-                                <th class="text-center p-0" data-name="types">@lang("types")</th>
+                                <th class="text-center p-0" data-name="channel">القناة</th>
                                 <th class="text-center p-0" data-name="for">@lang("for")</th>
                                 <th class="text-center p-0" data-name="purpose">الغرض</th>
                                 <th class="text-center p-0" data-name="processing_status">الحالة</th>
-                                <th class="text-center p-0" data-name="sent_count">حالة الإرسال / القبول</th>
+                                <th class="text-center p-0" data-name="sent_count">حالة الإرسال / النقل</th>
                                 <th class="text-center p-0" data-name="title">@lang("title")</th>
                                 <th class="text-center p-0" data-name="body">@lang("body")</th>
                                 <th class="text-center p-0" data-name="media">@lang("media")</th>

@@ -2,6 +2,8 @@
 
 namespace Core\Notification\Services;
 
+use Core\Notification\Helpers\NotificationChannelResolver;
+
 use Core\Notification\Helpers\NotificationDataNormalizer;
 use Core\Notification\Models\Notification;
 use Core\Users\Models\Device;
@@ -139,7 +141,9 @@ class RecipientEligibilityService
             $userDevices = $devicesByUser->get($user->id, collect());
 
             // 1. Check marketing opt-out
-            $isMarketingBlocked = ($purpose === 'marketing' && $user->is_allow_notify == 0 && !is_null($user->is_allow_notify_confirmed_at));
+            $channel = NotificationChannelResolver::resolveChannel($notification);
+            $resolvedPurpose = NotificationChannelResolver::resolvePurpose($notification);
+            $isMarketingBlocked = ($channel === NotificationChannelResolver::CHANNEL_APP_FCM && $resolvedPurpose === NotificationChannelResolver::PURPOSE_MARKETING && $user->is_allow_notify == 0 && !is_null($user->is_allow_notify_confirmed_at));
 
             if ($isMarketingBlocked) {
                 if ($marketingMode === 'enforce') {
@@ -281,7 +285,7 @@ class RecipientEligibilityService
 
         // Chunk through targeted users (500 at a time) to avoid loading all models into memory
         $targetedQuery->orderBy('id')->chunk(500, function ($users) use (
-            $purpose, $permissionMode, $marketingMode,
+            $notification, $purpose, $permissionMode, $marketingMode,
             &$eligibleUsersCount, &$eligibleDevicesCount,
             &$noDeviceCount, &$noValidTokenCount, &$marketingDisabledCount,
             &$permissionDeniedCount, &$legacyUnknownCount,
@@ -302,7 +306,9 @@ class RecipientEligibilityService
                 $validTokens = $userDevices->filter(fn($d) => !empty($d->device_token) && $d->token_status !== 'invalid');
 
                 // Check marketing opt-out
-                $isMarketingBlocked = ($purpose === 'marketing' && $user->is_allow_notify == 0 && !is_null($user->is_allow_notify_confirmed_at));
+                $channel = NotificationChannelResolver::resolveChannel($notification);
+            $resolvedPurpose = NotificationChannelResolver::resolvePurpose($notification);
+            $isMarketingBlocked = ($channel === NotificationChannelResolver::CHANNEL_APP_FCM && $resolvedPurpose === NotificationChannelResolver::PURPOSE_MARKETING && $user->is_allow_notify == 0 && !is_null($user->is_allow_notify_confirmed_at));
                 if ($isMarketingBlocked) {
                     $marketingDisabledCount++;
                     if ($marketingMode === 'enforce') {
