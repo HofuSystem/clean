@@ -51,13 +51,13 @@
                                 <span class="text-muted">@lang('الغرض'):</span>
                                 <div>
                                     @if($item->purpose === 'marketing')
-                                        <span class="badge badge-light-info">تسويقي (Marketing)</span>
+                                        <span class="badge bg-label-info badge-light-info">تسويقي (Marketing)</span>
                                     @elseif($item->purpose === 'transactional')
-                                        <span class="badge badge-light-primary">تشغيلي (Transactional)</span>
+                                        <span class="badge bg-label-primary badge-light-primary">تشغيلي (Transactional)</span>
                                     @elseif($item->purpose === 'system')
-                                        <span class="badge badge-light-dark">نظام (System)</span>
+                                        <span class="badge bg-label-dark badge-light-dark">نظام (System)</span>
                                     @else
-                                        <span class="badge badge-light-secondary">{{ $item->purpose ?: '—' }}</span>
+                                        <span class="badge bg-label-secondary badge-light-secondary">{{ $item->purpose ?: '—' }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -65,11 +65,11 @@
                                 <span class="text-muted">@lang('قناة الإرسال'):</span>
                                 <div>
                                     @if($isDirect)
-                                        <span class="badge badge-light-success fs-7 fw-bold">
+                                        <span class="badge bg-label-success badge-light-success fs-7 fw-bold">
                                             <i class="fas fa-bolt text-success me-1"></i> Direct FCM
                                         </span>
                                     @else
-                                        <span class="badge badge-light-primary fs-7 fw-bold">
+                                        <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">
                                             <i class="fas fa-layer-group text-primary me-1"></i> Legacy Topic
                                         </span>
                                     @endif
@@ -84,18 +84,18 @@
                                     @endphp
                                     @if($pStatus === 'completed')
                                         @if($skippedTokensCount > 0 && ($acceptedByFcm === 0 || $acceptedByFcm === '—'))
-                                            <span class="badge badge-light-warning text-warning fw-bold">مكتمل — تخطي بـ Flag</span>
+                                            <span class="badge bg-label-warning badge-light-warning text-warning fw-bold">مكتمل — تخطي بـ Flag</span>
                                         @elseif($skippedTokensCount > 0 && $acceptedByFcm > 0)
-                                            <span class="badge badge-light-info text-info fw-bold">مكتمل جزئياً — تخطي بـ Flag</span>
+                                            <span class="badge bg-label-info badge-light-info text-info fw-bold">مكتمل جزئياً — تخطي بـ Flag</span>
                                         @else
-                                            <span class="badge badge-light-success">مكتمل</span>
+                                            <span class="badge bg-label-success badge-light-success">مكتمل</span>
                                         @endif
                                     @elseif($pStatus === 'processing')
-                                        <span class="badge badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
+                                        <span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
                                     @elseif($pStatus === 'queued')
-                                        <span class="badge badge-light-warning">في الطابور</span>
+                                        <span class="badge bg-label-warning badge-light-warning">في الطابور</span>
                                     @else
-                                        <span class="badge badge-light-secondary">{{ $pStatus }}</span>
+                                        <span class="badge bg-label-secondary badge-light-secondary">{{ $pStatus }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -144,26 +144,26 @@
                             @if($isDirect)
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">@lang('قُبل من FCM'):</span>
-                                    <span class="badge badge-light-success fs-6 fw-bolder">{{ number_format($acceptedByFcm) }}</span>
+                                    <span class="badge bg-label-success badge-light-success fs-6 fw-bolder">{{ number_format($acceptedByFcm) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">@lang('فشل مؤقت (Transient)'):</span>
-                                    <span class="badge badge-light-warning fs-6">{{ number_format($transFailed) }}</span>
+                                    <span class="badge bg-label-warning badge-light-warning fs-6">{{ number_format($transFailed) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between {{ ($skippedTokensCount ?? 0) > 0 ? 'mb-2' : '' }}">
                                     <span class="text-muted">@lang('فشل دائم (Permanent)'):</span>
-                                    <span class="badge badge-light-danger fs-6">{{ number_format($permFailed) }}</span>
+                                    <span class="badge bg-label-danger badge-light-danger fs-6">{{ number_format($permFailed) }}</span>
                                 </div>
                                 @if(($skippedTokensCount ?? 0) > 0)
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted">@lang('تخطي Flag'):</span>
-                                    <span class="badge badge-light-secondary fs-6 fw-bolder">{{ number_format($skippedTokensCount) }}</span>
+                                    <span class="badge bg-label-secondary badge-light-secondary fs-6 fw-bolder">{{ number_format($skippedTokensCount) }}</span>
                                 </div>
                                 @endif
                             @else
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">Legacy Topic:</span>
-                                    <span class="badge badge-light-primary fs-6 fw-bolder">{{ is_numeric($legacyTopicCount) ? number_format($legacyTopicCount) : $legacyTopicCount }}</span>
+                                    <span class="badge bg-label-primary badge-light-primary fs-6 fw-bolder">{{ is_numeric($legacyTopicCount) ? number_format($legacyTopicCount) : $legacyTopicCount }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">@lang('قُبل من FCM'):</span>
@@ -270,13 +270,13 @@
                         <li class="nav-item" role="presentation">
                             <a class="nav-link" data-bs-toggle="tab" href="#tab-eligibility" role="tab" id="link-tab-eligibility">
                                 <i class="fas fa-user-check me-1"></i> @lang('أهلية المستخدمين')
-                                <span class="badge badge-light-primary ms-1">{{ number_format($usersCount) }}</span>
+                                <span class="badge bg-label-primary badge-light-primary ms-1">{{ number_format($usersCount) }}</span>
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
                             <a class="nav-link" data-bs-toggle="tab" href="#tab-devices" role="tab" id="link-tab-devices">
                                 <i class="fas fa-mobile-screen me-1"></i> @lang('نتائج الأجهزة')
-                                <span class="badge badge-light-info ms-1">{{ number_format($devicesCount) }}</span>
+                                <span class="badge bg-label-info badge-light-info ms-1">{{ number_format($devicesCount) }}</span>
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -589,8 +589,8 @@ $(document).ready(function() {
                             <td>${row.user_phone}</td>
                             <td>${row.eligibility_status}</td>
                             <td><span class="text-muted fs-7">${row.eligibility_reason}</span></td>
-                            <td><span class="badge badge-light-success">${row.accepted_devices_count}</span></td>
-                            <td><span class="badge badge-light-danger">${row.failed_devices_count}</span></td>
+                            <td><span class="badge bg-label-success badge-light-success">${row.accepted_devices_count}</span></td>
+                            <td><span class="badge bg-label-danger badge-light-danger">${row.failed_devices_count}</span></td>
                             <td>${row.read_at}</td>
                         </tr>`;
                     });
@@ -631,7 +631,7 @@ $(document).ready(function() {
                             <td>#${row.id}</td>
                             <td><span class="fw-bold">${row.device_id}</span></td>
                             <td>${row.user}</td>
-                            <td><span class="badge badge-light-dark">${row.platform}</span></td>
+                            <td><span class="badge bg-label-dark badge-light-dark">${row.platform}</span></td>
                             <td><span class="text-muted fs-7">${row.app_context}</span></td>
                             <td>${row.masked_token}</td>
                             <td>${row.status}</td>
@@ -696,4 +696,16 @@ $(document).ready(function() {
     });
 });
 </script>
+@endpush
+
+@push('css')
+<style>
+    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
+    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
+    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
+    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
+    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
+    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
+    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
+</style>
 @endpush

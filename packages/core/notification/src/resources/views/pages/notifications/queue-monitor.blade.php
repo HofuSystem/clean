@@ -91,9 +91,9 @@
                             <div>
                                 <span class="text-muted fs-7 d-block">@lang('حالة Direct FCM Kill Switch')</span>
                                 @if(config('notification.direct_fcm_enabled', false))
-                                    <span class="badge badge-light-success fs-7 fw-bold">Active (Enabled)</span>
+                                    <span class="badge bg-label-success badge-light-success fs-7 fw-bold">Active (Enabled)</span>
                                 @else
-                                    <span class="badge badge-light-warning fs-7 fw-bold">Standby (Direct FCM Disabled)</span>
+                                    <span class="badge bg-label-warning badge-light-warning fs-7 fw-bold">Standby (Direct FCM Disabled)</span>
                                 @endif
                                 <span class="text-muted fs-8 d-block mt-1">الوظائف تنهي بأمان عند تعطيل الـ Flag</span>
                             </div>
@@ -144,21 +144,21 @@
                                             <div class="text-muted fs-8">
                                                 {{ $notif->created_at?->format('Y-m-d H:i') }}
                                                 @if($isDirect)
-                                                    <span class="badge badge-light-success py-0 px-1 ms-1">Direct</span>
+                                                    <span class="badge bg-label-success badge-light-success py-0 px-1 ms-1">Direct</span>
                                                 @else
-                                                    <span class="badge badge-light-primary py-0 px-1 ms-1">Legacy</span>
+                                                    <span class="badge bg-label-primary badge-light-primary py-0 px-1 ms-1">Legacy</span>
                                                 @endif
                                             </div>
                                         </td>
                                         <td>
                                             @if($notif->purpose === 'marketing')
-                                                <span class="badge badge-light-info">تسويقي</span>
+                                                <span class="badge bg-label-info badge-light-info">تسويقي</span>
                                             @elseif($notif->purpose === 'transactional')
-                                                <span class="badge badge-light-primary">تشغيلي</span>
+                                                <span class="badge bg-label-primary badge-light-primary">تشغيلي</span>
                                             @elseif($notif->purpose === 'system')
-                                                <span class="badge badge-light-dark">نظام</span>
+                                                <span class="badge bg-label-dark badge-light-dark">نظام</span>
                                             @else
-                                                <span class="badge badge-light-secondary">{{ $notif->purpose ?: '—' }}</span>
+                                                <span class="badge bg-label-secondary badge-light-secondary">{{ $notif->purpose ?: '—' }}</span>
                                             @endif
                                         </td>
                                         <td>
@@ -169,59 +169,59 @@
                                             @endphp
                                             @if($st === 'completed')
                                                 @if($isSkipped)
-                                                    <span class="badge badge-light-warning text-warning fw-bold" title="Completed — skipped by feature flag">مكتمل — تخطي بـ Flag</span>
+                                                    <span class="badge bg-label-warning badge-light-warning text-warning fw-bold" title="Completed — skipped by feature flag">مكتمل — تخطي بـ Flag</span>
                                                 @elseif($isPartialSkipped)
-                                                    <span class="badge badge-light-info text-info fw-bold">مكتمل جزئياً — تخطي بـ Flag</span>
+                                                    <span class="badge bg-label-info badge-light-info text-info fw-bold">مكتمل جزئياً — تخطي بـ Flag</span>
                                                 @else
-                                                    <span class="badge badge-light-success">مكتمل</span>
+                                                    <span class="badge bg-label-success badge-light-success">مكتمل</span>
                                                 @endif
                                             @elseif($st === 'processing')
-                                                <span class="badge badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
+                                                <span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
                                             @elseif($st === 'queued')
-                                                <span class="badge badge-light-warning">في الطابور</span>
+                                                <span class="badge bg-label-warning badge-light-warning">في الطابور</span>
                                             @else
-                                                <span class="badge badge-light-secondary">{{ $st }}</span>
+                                                <span class="badge bg-label-secondary badge-light-secondary">{{ $st }}</span>
                                             @endif
                                         </td>
                                         <td><span class="fw-bold">{{ number_format($notif->total_tokens_count) }}</span></td>
                                         <td>
                                             @if($notif->queued_count > 0)
-                                                <span class="badge badge-light-warning fw-bold">{{ $notif->queued_count }}</span>
+                                                <span class="badge bg-label-warning badge-light-warning fw-bold">{{ $notif->queued_count }}</span>
                                             @else
                                                 <span class="text-muted">0</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($notif->processing_count > 0)
-                                                <span class="badge badge-light-primary fw-bold">{{ $notif->processing_count }}</span>
+                                                <span class="badge bg-label-primary badge-light-primary fw-bold">{{ $notif->processing_count }}</span>
                                             @else
                                                 <span class="text-muted">0</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($isDirect)
-                                                <span class="badge badge-light-success">{{ number_format($notif->accepted_by_fcm_count) }}</span>
+                                                <span class="badge bg-label-success badge-light-success">{{ number_format($notif->accepted_by_fcm_count) }}</span>
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($notif->transient_failed_count > 0)
-                                                <span class="badge badge-light-warning">{{ number_format($notif->transient_failed_count) }}</span>
+                                                <span class="badge bg-label-warning badge-light-warning">{{ number_format($notif->transient_failed_count) }}</span>
                                             @else
                                                 <span class="text-muted">0</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($notif->permanent_failed_count > 0)
-                                                <span class="badge badge-light-danger">{{ number_format($notif->permanent_failed_count) }}</span>
+                                                <span class="badge bg-label-danger badge-light-danger">{{ number_format($notif->permanent_failed_count) }}</span>
                                             @else
                                                 <span class="text-muted">0</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($notif->skipped_count > 0)
-                                                <span class="badge badge-light-secondary">{{ $notif->skipped_count }}</span>
+                                                <span class="badge bg-label-secondary badge-light-secondary">{{ $notif->skipped_count }}</span>
                                             @else
                                                 <span class="text-muted">0</span>
                                             @endif
@@ -263,3 +263,15 @@
     <!--end::Post-->
 </div>
 @endsection
+
+@push('css')
+<style>
+    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
+    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
+    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
+    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
+    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
+    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
+    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
+</style>
+@endpush

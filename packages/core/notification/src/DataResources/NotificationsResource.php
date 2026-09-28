@@ -24,22 +24,22 @@ class NotificationsResource extends JsonResource
         // Status badge
         $status = $this->processing_status ?: 'completed';
         $statusBadges = [
-            'completed' => '<span class="badge badge-light-success">مكتمل</span>',
-            'processing' => '<span class="badge badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري الإرسال</span>',
-            'queued' => '<span class="badge badge-light-warning">في الطابور</span>',
-            'failed' => '<span class="badge badge-light-danger">فشل</span>',
-            'draft' => '<span class="badge badge-light-secondary">مسودة</span>',
+            'completed' => '<span class="badge bg-label-success badge-light-success">مكتمل</span>',
+            'processing' => '<span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري الإرسال</span>',
+            'queued' => '<span class="badge bg-label-warning badge-light-warning">في الطابور</span>',
+            'failed' => '<span class="badge bg-label-danger badge-light-danger">فشل</span>',
+            'draft' => '<span class="badge bg-label-secondary badge-light-secondary">مسودة</span>',
         ];
-        $statusHtml = $statusBadges[$status] ?? '<span class="badge badge-light-secondary">' . $status . '</span>';
+        $statusHtml = $statusBadges[$status] ?? '<span class="badge bg-label-secondary badge-light-secondary">' . $status . '</span>';
 
         // Purpose badge
         $purpose = $this->purpose ?: 'marketing';
         $purposeBadges = [
-            'marketing' => '<span class="badge badge-light-info">تسويقي</span>',
-            'transactional' => '<span class="badge badge-light-primary">تشغيلي</span>',
-            'system' => '<span class="badge badge-light-dark">نظام</span>',
+            'marketing' => '<span class="badge bg-label-info badge-light-info">تسويقي</span>',
+            'transactional' => '<span class="badge bg-label-primary badge-light-primary">تشغيلي</span>',
+            'system' => '<span class="badge bg-label-dark badge-light-dark">نظام</span>',
         ];
-        $purposeHtml = $purposeBadges[$purpose] ?? '<span class="badge badge-light-info">' . $purpose . '</span>';
+        $purposeHtml = $purposeBadges[$purpose] ?? '<span class="badge bg-label-info badge-light-info">' . $purpose . '</span>';
 
         // Delivery channel & semantics differentiation
         $channel = method_exists($this->resource, 'getDeliveryChannel') ? $this->getDeliveryChannel() : 'legacy_topic';
@@ -49,17 +49,17 @@ class NotificationsResource extends JsonResource
         if ($newMetricsEnabled) {
             if ($isDirect) {
                 // Direct FCM campaign
-                $acceptedDisplay = '<span class="badge badge-light-success fs-7 fw-bold" title="Direct FCM">' .
+                $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM">' .
                     trans('قُبل من FCM') . ': ' . number_format($this->accepted_by_fcm_count ?? 0) . '</span>';
             } else {
                 // Legacy campaign: explicit Legacy Topic Subscription semantics
                 $legacyCount = (int) ($this->sent_count ?? 0);
                 $displayCount = $legacyCount > 0 ? number_format($legacyCount) : '—';
-                $acceptedDisplay = '<span class="badge badge-light-primary fs-7" title="Legacy Topic Subscription">' .
+                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="Legacy Topic Subscription">' .
                     trans('Legacy Topic Subscription') . ': ' . $displayCount . '</span>';
             }
         } else {
-            $acceptedDisplay = '<span class="badge badge-light-secondary fs-7">' . number_format($this->sent_count ?? 0) . '</span>';
+            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7">' . number_format($this->sent_count ?? 0) . '</span>';
         }
 
         $data = [

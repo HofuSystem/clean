@@ -65,7 +65,7 @@
                     <div class="text-gray-900 fw-bolder fs-2 mb-1">{{ number_format($usersWithoutDevices) }}</div>
                     <div class="fw-bold text-gray-500">عملاء بلا أي جهاز مسجل</div>
                     <div class="text-muted fs-8 mt-2">
-                        <span class="badge badge-light-danger fs-8">غير قابلين للوصول عبر Push</span>
+                        <span class="badge bg-label-danger badge-light-danger fs-8">غير قابلين للوصول عبر Push</span>
                     </div>
                 </div>
             </div>
@@ -161,22 +161,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><span class="badge badge-light-success">موافق عليها (Authorized)</span></td>
+                                    <td><span class="badge bg-label-success badge-light-success">موافق عليها (Authorized)</span></td>
                                     <td class="text-muted fs-7">العميل منح صلاحية Push للنظام</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['authorized'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge badge-light-danger">مرفوضة (Denied)</span></td>
+                                    <td><span class="badge bg-label-danger badge-light-danger">مرفوضة (Denied)</span></td>
                                     <td class="text-muted fs-7">العميل عطّل الإشعارات من إعدادات الجوال</td>
                                     <td class="text-end fw-bold text-danger">{{ number_format($permissions['denied'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge badge-light-warning">غير محدد (Not Determined)</span></td>
+                                    <td><span class="badge bg-label-warning badge-light-warning">غير محدد (Not Determined)</span></td>
                                     <td class="text-muted fs-7">لم يُعرض طلب الصلاحية بعد</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['not_determined'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge badge-light-secondary">غير معروفة (Legacy / Unknown)</span></td>
+                                    <td><span class="badge bg-label-secondary badge-light-secondary">غير معروفة (Legacy / Unknown)</span></td>
                                     <td class="text-muted fs-7">أجهزة قديمة لم ترسل بعد تقرير الصلاحية</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['unknown'] ?? 0) }}</td>
                                 </tr>
@@ -242,15 +242,15 @@
                 <div class="card-body pt-3">
                     <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
                         <span class="fw-bold"><i class="fas fa-clock text-success me-2"></i> شوهدت خلال آخر 7 أيام</span>
-                        <span class="badge badge-light-success fs-7 fw-bold">{{ number_format($active7Days) }}</span>
+                        <span class="badge bg-label-success badge-light-success fs-7 fw-bold">{{ number_format($active7Days) }}</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
                         <span class="fw-bold"><i class="fas fa-calendar-check text-info me-2"></i> شوهدت خلال آخر 30 يوماً</span>
-                        <span class="badge badge-light-info fs-7 fw-bold">{{ number_format($active30Days) }}</span>
+                        <span class="badge bg-label-info badge-light-info fs-7 fw-bold">{{ number_format($active30Days) }}</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
                         <span class="fw-bold"><i class="fas fa-calendar-alt text-primary me-2"></i> شوهدت خلال آخر 90 يوماً</span>
-                        <span class="badge badge-light-primary fs-7 fw-bold">{{ number_format($active90Days) }}</span>
+                        <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">{{ number_format($active90Days) }}</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between p-3 bg-light-danger rounded">
                         <span class="fw-bold text-danger"><i class="fas fa-exclamation-triangle text-danger me-2"></i> غير نشطة لأكثر من 90 يوماً أو قديمة</span>
@@ -262,3 +262,15 @@
     </div>
 </div>
 @endsection
+
+@push('css')
+<style>
+    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
+    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
+    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
+    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
+    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
+    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
+    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
+</style>
+@endpush
