@@ -1,8 +1,8 @@
-﻿# NOTIFICATION BACKEND RELEASE CANDIDATE HANDOFF REPORT
+# NOTIFICATION BACKEND RELEASE CANDIDATE HANDOFF REPORT
 
 **تاريخ الإصدار:** 2026-09-28  
 **المشروع:** CleanStation Backend  
-**الحالة:** RELEASE CANDIDATE READY — LOCAL COMMIT PREPARED (NO PUSH)  
+**الحالة:** RELEASE CANDIDATE READY — COMMIT 9542e93 (NO PUSH)  
 **الفرع المستهدف:** `main`  
 **Base Commit السابق:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
 **Rollback Base Commit:** `17d9f880bc4430835eb3a02ff759afc91ace5fae`  
