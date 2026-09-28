@@ -34,7 +34,6 @@ abstract class IsolatedAuditTestCase extends TestCase
         return $app;
     }
 
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,5 +43,26 @@ abstract class IsolatedAuditTestCase extends TestCase
         Mail::fake();
         Notification::fake();
         $this->assertSame(':memory:', DB::connection()->getDatabaseName());
+    }
+
+    protected function tearDown(): void
+    {
+        $dbPath = database_path('testing.sqlite');
+        putenv('DB_CONNECTION=sqlite');
+        putenv('DB_DATABASE=' . $dbPath);
+        $_ENV['DB_CONNECTION'] = $_SERVER['DB_CONNECTION'] = 'sqlite';
+        $_ENV['DB_DATABASE'] = $_SERVER['DB_DATABASE'] = $dbPath;
+
+        foreach ([
+            'APP_CONFIG_CACHE',
+            'CACHE_STORE',
+            'SESSION_DRIVER',
+            'QUEUE_CONNECTION',
+        ] as $key) {
+            putenv($key);
+            unset($_ENV[$key], $_SERVER[$key]);
+        }
+
+        parent::tearDown();
     }
 }

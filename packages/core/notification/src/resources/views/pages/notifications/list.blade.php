@@ -106,6 +106,18 @@
                                         </a>
                                     @endcan
                                     <!--begin::Add -->
+                                                                        <a href="{{ route('dashboard.notifications.queueMonitor') }}" class="btn-operation" style="border-color: #ffc700; color: #b58105;">
+                                        <i class="fas fa-tasks" style="color: #ffc700;"></i>
+                                        <span>
+                                            مراقبة الطابور
+                                        </span>
+                                    </a>
+                                    <a href="{{ route('dashboard.notifications.health') }}" class="btn-operation" style="border-color: #009ef7; color: #009ef7;">
+                                        <i class="fas fa-heartbeat" style="color: #009ef7;"></i>
+                                        <span>
+                                            صحة الأجهزة
+                                        </span>
+                                    </a>
                                     @can('dashboard.notifications.create')
                                         <a href="{{ route('dashboard.notifications.create') }}" class="btn-operation ">
                                             <i class="fas fa-plus-circle"></i>
@@ -266,7 +278,9 @@
 
                                 <th class="text-center p-0" data-name="types">@lang("types")</th>
                                 <th class="text-center p-0" data-name="for">@lang("for")</th>
-                                <th class="text-center p-0" data-name="sent_count">@lang("delivered")</th>
+                                <th class="text-center p-0" data-name="purpose">الغرض</th>
+                                <th class="text-center p-0" data-name="processing_status">الحالة</th>
+                                <th class="text-center p-0" data-name="sent_count">حالة الإرسال / القبول</th>
                                 <th class="text-center p-0" data-name="title">@lang("title")</th>
                                 <th class="text-center p-0" data-name="body">@lang("body")</th>
                                 <th class="text-center p-0" data-name="media">@lang("media")</th>

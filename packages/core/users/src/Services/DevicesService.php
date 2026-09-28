@@ -22,9 +22,27 @@ class DevicesService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['device_token','type','user_id','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, [
+            'device_token',
+            'type',
+            'user_id',
+            'installation_id',
+            'app_context',
+            'token_status',
+            'notification_permission',
+            'permission_checked_at',
+            'token_refreshed_at',
+            'last_seen_at',
+            'app_version',
+            'os_version',
+            'device_model',
+            'invalidated_at',
+            'invalid_reason',
+            'last_notification_received_at',
+            'last_notification_opened_at',
+            'translations'
+        ]),ARRAY_FILTER_USE_KEY);
         $record     = Device::updateOrCreate(['id' => $id],$recordData);
-        
         
         return $record;
     }
@@ -47,7 +65,7 @@ class DevicesService
 
         $recordsTotal       = Device::count();
         $recordsFiltered    = Device::search()->count();
-        $records            = Device::select(['id','device_token','type','user_id'])
+        $records            = Device::select(['id','device_token','type','user_id','installation_id','app_context','token_status'])
         ->with(['user'])
         ->search()->dataTable()->get();
         

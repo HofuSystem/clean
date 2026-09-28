@@ -39,7 +39,7 @@ class UserController extends Controller
 
             $user->update(array_except($request->validated(), $profile_data));
             $user->profile()->updateOrCreate(['user_id' => $user->id], array_only($request->validated(), $profile_data));
-            $msg = "تم التعديل بنجاح";
+            $msg = "طھظ… ط§ظ„طھط¹ط¯ظٹظ„ ط¨ظ†ط¬ط§ط­";
 
 
             if ($request->device_token) {
@@ -50,7 +50,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             report($e);
-            return response()->json(['status' => 'fail', 'data' => null, 'message' => 'لم يتم التعديل حاول مرة اخرى'], 401);
+            return response()->json(['status' => 'fail', 'data' => null, 'message' => 'ظ„ظ… ظٹطھظ… ط§ظ„طھط¹ط¯ظٹظ„ ط­ط§ظˆظ„ ظ…ط±ط© ط§ط®ط±ظ‰'], 401);
         }
     }
 
@@ -89,7 +89,10 @@ class UserController extends Controller
 
     public function updateFcm(Request $request)
     {
-        $user = auth('api')->user();
+        $user = $request->user() ?? auth('sanctum')->user() ?? auth('api')->user() ?? auth()->user();
+        if (!$user) {
+            return $this->returnErrorMessage(trans('Unauthenticated'), [], [], 401);
+        }
         if($request->device_token && $request->type){
             $user->devices()->updateOrCreate(['type' => $request->type],['device_token' => $request->device_token] );  
         };        

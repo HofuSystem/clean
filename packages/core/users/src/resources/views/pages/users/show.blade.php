@@ -89,6 +89,11 @@
                                         data-bs-target="#pills-notifications" type="button" role="tab"
                                         aria-controls="pills-notifications" aria-selected="false">{{ trans('notifications') }}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-attribution-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-attribution" type="button" role="tab"
+                                        aria-controls="pills-attribution" aria-selected="false">{{ trans('Attribution') }}</button>
+                                </li>
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
@@ -502,9 +507,74 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="tab-pane fade" id="pills-attribution" role="tabpanel" aria-labelledby="pills-attribution-tab" tabindex="0">
+                                <div class="mt-3">
+                                    <h3 class="text-dark">{{ trans('مصدر الاكتساب / Attribution') }}</h3>
+                                    <div class="row mt-4">
+                                        @if($item->attribution)
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Acquisition') }}</label>
+                                                <p>
+                                                    @if($item->attribution->is_attributed)
+                                                        <span class="badge badge-light-success">Paid</span>
+                                                    @else
+                                                        <span class="badge badge-light-secondary">Organic / Unknown</span>
+                                                    @endif
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Branch Identity') }}</label>
+                                                <p>{{ $item->id }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Ad Partner & Channel') }}</label>
+                                                <p>{{ $item->attribution->ad_partner ?? 'N/A' }} / {{ $item->attribution->channel ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Campaign') }}</label>
+                                                <p>{{ $item->attribution->campaign_name ?? 'N/A' }} (ID: {{ $item->attribution->campaign_id ?? 'N/A' }})</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Ad Set') }}</label>
+                                                <p>{{ $item->attribution->ad_set_name ?? 'N/A' }} (ID: {{ $item->attribution->ad_set_id ?? 'N/A' }})</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Ad') }}</label>
+                                                <p>{{ $item->attribution->ad_name ?? 'N/A' }} (ID: {{ $item->attribution->ad_id ?? 'N/A' }})</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Platform & App Version') }}</label>
+                                                <p>{{ $item->attribution->platform ?? 'N/A' }} - {{ $item->attribution->app_version ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('OS & Device') }}</label>
+                                                <p>{{ $item->attribution->os_version ?? 'N/A' }} / {{ $item->attribution->device_model ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Install UUID') }}</label>
+                                                <p>{{ $item->attribution->install_uuid ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Referring Link') }}</label>
+                                                <p>{{ $item->attribution->referring_link ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('First Seen') }}</label>
+                                                <p>{{ $item->attribution->first_seen_at ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold">{{ trans('Last Updated') }}</label>
+                                                <p>{{ $item->attribution->updated_at ?? 'N/A' }}</p>
+                                            </div>
+                                        @else
+                                            <div class="col-12">
+                                                <p class="text-muted">{{ trans('No attribution data available for this user.') }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-
-
+                            </div>
 
 
                         </div>

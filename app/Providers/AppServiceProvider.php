@@ -30,5 +30,13 @@ class AppServiceProvider extends ServiceProvider
         // Model::preventLazyLoading(! app()->isProduction());
         // Register the global observer for all models
         Coupon::observe(GlobalModelObserver::class);
+
+        // Load core package migrations in testing environment
+        if ($this->app->environment('testing')) {
+            $paths = glob(base_path('packages/core/*/src/database/migrations'));
+            foreach ($paths as $migrationPath) {
+                $this->loadMigrationsFrom($migrationPath);
+            }
+        }
     }
 }

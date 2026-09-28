@@ -22,7 +22,12 @@ class NotificationsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['types','for','for_data','title','body','media','sender_id','translations','register_from','register_to','orders_from','orders_to','orders_min','orders_max']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, [
+            'types', 'for', 'for_data', 'purpose', 'processing_status', 'title', 'body', 'media',
+            'sender_id', 'translations', 'register_from', 'register_to', 'orders_from', 'orders_to',
+            'orders_min', 'orders_max'
+        ]),ARRAY_FILTER_USE_KEY);
+
         if(isset($recordData['for_data']) and !is_string($recordData['for_data'])){
             $recordData['for_data'] = json_encode($recordData['for_data']);
         }
@@ -32,17 +37,17 @@ class NotificationsService
         if(!isset($recordData['for_data'])){
             $recordData['for_data'] = json_encode([]);
         }
-        $record     = Notification::updateOrCreate(['id' => $id],$recordData);
+        $record = Notification::updateOrCreate(['id' => $id],$recordData);
 
         return $record;
     }
 
     public function get(int $id){
-        return  Notification::findOrFail($id);
+        return Notification::findOrFail($id);
     }
 
     public function delete(int $id,$final = false){
-        $record             = Notification::findOrFail($id);
+        $record = Notification::findOrFail($id);
         if($final){
             $record->forceDelete();
         }else{
@@ -52,16 +57,25 @@ class NotificationsService
     }
 
     public function dataTable($draw){
-
         $recordsTotal       = Notification::count();
         $recordsFiltered    = Notification::search()->count();
-        $records            = Notification::select(['id','types','for','title','body','media','sender_id','created_at'])
+        $records            = Notification::select([
+            'id', 'types', 'for', 'purpose', 'processing_status', 'title', 'body', 'media',
+            'sender_id', 'created_at', 'targeted_users_count', 'eligible_users_count',
+            'eligible_devices_count', 'accepted_by_fcm_count', 'permanent_failed_count',
+            'transient_failed_count', 'received_count', 'opened_count'
+        ])
         ->with(['sender'])
-        ->withCount(['users as sent_count' => function ($query) {
-            $query->where('users_notifications.status', 'sent');
-        }, 'users as pending_count' => function ($query) {
-            $query->where('users_notifications.status', 'pending');
-        }])
+        ->withCount([
+            'users as sent_count' => function ($query) {
+                $query->where('users_notifications.notifications_type', Notification::class)
+                      ->where('users_notifications.status', 'sent');
+            },
+            'users as pending_count' => function ($query) {
+                $query->where('users_notifications.notifications_type', Notification::class)
+                      ->where('users_notifications.status', 'pending');
+            }
+        ])
         ->search()->dataTable()->get();
         
         return [
@@ -106,7 +120,10 @@ class NotificationsService
 
     public function resendPending(int $id){
         $notification = Notification::findOrFail($id);
-        $pendingUsers = $notification->users()->wherePivot('status', 'pending')->get();
+        $pendingUsers = $notification->users()
+            ->wherePivot('status', 'pending')
+            ->where('users_notifications.notifications_type', Notification::class)
+            ->get();
         if ($pendingUsers->count() > 0) {
             \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $pendingUsers);
         }
@@ -115,7 +132,11 @@ class NotificationsService
 
     public function resendUser(int $id, int $userId){
         $notification = Notification::findOrFail($id);
-        $user = $notification->users()->wherePivot('status', 'pending')->where('users.id', $userId)->get();
+        $user = $notification->users()
+            ->wherePivot('status', 'pending')
+            ->where('users.id', $userId)
+            ->where('users_notifications.notifications_type', Notification::class)
+            ->get();
         if ($user->count() > 0) {
             \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $user);
         }

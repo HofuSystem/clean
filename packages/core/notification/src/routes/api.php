@@ -1,6 +1,7 @@
 <?php
 
 use Core\Notification\Controllers\Api\NotificationController;
+use Core\Notification\Controllers\Api\NotificationEventsController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -26,4 +27,12 @@ Route::group([
     Route::delete('/{id}', [NotificationController::class, 'destroy']);
 
     Route::post('allow_notify', [NotificationController::class, 'allow_notify']);
+    Route::post('events', [NotificationEventsController::class, 'recordEvent']);
+});
+
+Route::group([
+    'prefix' => 'client/notifications',
+    'middleware' => ['auth:sanctum', 'active']
+], function () {
+    Route::post('events', [NotificationEventsController::class, 'recordEvent']);
 });

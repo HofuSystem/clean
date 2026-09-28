@@ -7,17 +7,19 @@ use Core\Users\Controllers\Api\FavsController;
 use Core\Users\Controllers\Api\PointsController;
 use Core\Users\Controllers\Api\Technical\AuthController as TechnicalAuthController;
 use Core\Users\Controllers\Api\UserController;
+use Core\Users\Controllers\Api\DeviceSyncController;
 use Illuminate\Support\Facades\Route;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 //all users routes
 Route::group([
     'middleware' => ['auth:sanctum', 'active']
 ], function () {
+    Route::post('devices/sync', [DeviceSyncController::class, 'sync']);
+    Route::delete('devices/{installation_id}/user', [DeviceSyncController::class, 'detach']);
+    Route::put('client/notification-preference', [DeviceSyncController::class, 'updateMarketingPreference']);
     Route::post('update_fcm', [UserController::class, 'updateFcm']);
-    Route::post('delete_account', [UserController::class, 'deleteAccount']);
-    Route::apiResource('addresses', AddressesController::class);
+    Route::post('delete_account', [UserController::class, 'deleteAccount']);    Route::apiResource('addresses', AddressesController::class);
     Route::post('addresses/{id}/delete', [AddressesController::class, 'destroy']);
     Route::post('addresses/delete/{id}', [AddressesController::class, 'destroy']);
 });
@@ -93,3 +95,4 @@ Route::group([
     Route::post('/edit_profile', [TechnicalAuthController::class, 'edit_profile']);
     Route::post('/logout', [TechnicalAuthController::class, 'logout']);
 });
+

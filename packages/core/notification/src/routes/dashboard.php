@@ -31,12 +31,23 @@ Route::group(
                     Route::post('', [NotificationsController::class,'dataTable'])->name('index');
                     Route::post('getusers', [NotificationsController::class,'getUsers'])->name('getusers');
 
+                    // Phase 2: Queue Monitor and Audience Preview (placed before {id} to prevent route collisions)
+                    Route::get('queue-monitor', [NotificationsController::class,'queueMonitor'])->name('queueMonitor');
+                    Route::post('preview-audience', [NotificationsController::class,'previewAudience'])->name('previewAudience');
+
                     Route::get('create', [NotificationsController::class,'createOrEdit'])->name('create');
                     Route::post('create', [NotificationsController::class,'storeOrUpdate'])->name('create');
                     Route::get('import', [NotificationsController::class,'importView'])->name('import');
                     Route::post('import', [NotificationsController::class,'import'])->name('import');
                     Route::get('export', [NotificationsController::class,'export'])->name('export');
+                    Route::get('health', [NotificationsController::class,'health'])->name('health');
+
+                    // Detailed Campaign View & Operations
                     Route::get('{id}', [NotificationsController::class,'show'])->name('show');
+                    Route::get('{id}/export/{type}', [NotificationsController::class, 'exportDetails'])->name('exportDetails');
+                    Route::post('{id}/retry-transient', [NotificationsController::class, 'retryTransient'])->name('retryTransient');
+                    Route::post('{id}/getEligibilityUsers', [NotificationsController::class, 'getEligibilityUsers'])->name('getEligibilityUsers');
+                    Route::post('{id}/getDeviceResults', [NotificationsController::class, 'getDeviceResults'])->name('getDeviceResults');
                     Route::post('{id}/getSentToUsers', [NotificationsController::class,'getSentToUsers'])->name('getSentToUsers');
                     Route::get('{id}/edit', [NotificationsController::class,'createOrEdit'])->name('edit');
                     Route::put('{id}/edit', [NotificationsController::class,'storeOrUpdate'])->name('edit');
@@ -68,7 +79,3 @@ Route::group(
         });
     }
 );
-
-
-
-
