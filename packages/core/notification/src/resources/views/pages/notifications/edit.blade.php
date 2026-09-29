@@ -661,3 +661,6 @@
         });
     </script>
 @endpush
+@push('css')
+@include('notification::pages.notifications.partials.theme-styles')
+@endpush

@@ -325,15 +325,15 @@ class NotificationChannelResolver
     {
         switch ($purpose) {
             case self::PURPOSE_AUTHENTICATION:
-                return '<span class="badge bg-label-warning badge-light-warning">توثيق</span>';
+                return '<span class="badge bg-label-warning badge-light-warning"><i class="fas fa-shield-alt me-1"></i>توثيق</span>';
             case self::PURPOSE_TRANSACTIONAL:
-                return '<span class="badge bg-label-primary badge-light-primary">تشغيلي</span>';
+                return '<span class="badge bg-label-info badge-light-info"><i class="fas fa-receipt me-1"></i>تشغيلي</span>';
             case self::PURPOSE_MARKETING:
-                return '<span class="badge bg-label-info badge-light-info">تسويقي</span>';
+                return '<span class="badge bg-label-marketing badge-light-marketing"><i class="fas fa-bullhorn me-1"></i>تسويقي</span>';
             case self::PURPOSE_SYSTEM:
-                return '<span class="badge bg-label-dark badge-light-dark">نظام</span>';
+                return '<span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-cog me-1"></i>نظام</span>';
             default:
-                return '<span class="badge bg-label-secondary badge-light-secondary">غير مصنف</span>';
+                return '<span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-question-circle me-1"></i>غير مصنف</span>';
         }
     }
 

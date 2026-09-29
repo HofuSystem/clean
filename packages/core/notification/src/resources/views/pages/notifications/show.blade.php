@@ -57,13 +57,15 @@
                                 <span class="text-muted">@lang('الغرض'):</span>
                                 <div>
                                     @if($item->purpose === 'marketing')
-                                        <span class="badge bg-label-info badge-light-info">تسويقي (Marketing)</span>
+                                        <span class="badge bg-label-marketing badge-light-marketing"><i class="fas fa-bullhorn me-1"></i>تسويقي (Marketing)</span>
                                     @elseif($item->purpose === 'transactional')
-                                        <span class="badge bg-label-primary badge-light-primary">تشغيلي (Transactional)</span>
+                                        <span class="badge bg-label-info badge-light-info"><i class="fas fa-receipt me-1"></i>تشغيلي (Transactional)</span>
+                                    @elseif($item->purpose === 'authentication')
+                                        <span class="badge bg-label-warning badge-light-warning"><i class="fas fa-shield-alt me-1"></i>توثيق (Authentication)</span>
                                     @elseif($item->purpose === 'system')
-                                        <span class="badge bg-label-dark badge-light-dark">نظام (System)</span>
+                                        <span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-cog me-1"></i>نظام (System)</span>
                                     @else
-                                        <span class="badge bg-label-secondary badge-light-secondary">{{ $item->purpose ?: '—' }}</span>
+                                        <span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-question-circle me-1"></i>{{ $item->purpose ?: '—' }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -722,13 +724,5 @@ $(document).ready(function() {
 @endpush
 
 @push('css')
-<style>
-    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
-    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
-    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
-    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
-    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
-    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
-    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
-</style>
+@include('notification::pages.notifications.partials.theme-styles')
 @endpush

@@ -63,23 +63,23 @@
                                 <div class="">
                                     <div class="d-flex">
                                         <!--begin::Stat-->
-                                        <div class="border border-dashed border-success text-success rounded mx-1 p-2">
-                                            <a href="{{ route('dashboard.notifications.index') }}">
-                                            <div class="fw-bolder fs-5 text-success">
-                                                {{ $total }}
+                                        <div class="stat-pill-total rounded mx-1 p-2 px-3">
+                                            <a href="{{ route('dashboard.notifications.index') }}" style="color: inherit; text-decoration: none;">
+                                            <div class="fw-bolder fs-5 d-flex align-items-center gap-1">
                                                 <i class="fas fa-list-alt"></i>
-                                                @lang('total')
+                                                <span>{{ $total }}</span>
+                                                <span class="fs-7 fw-normal">@lang('total')</span>
                                             </div>
                                             </a>
                                         </div>
                                         <!--end::Stat-->
                                         <!--begin::Stat-->
-                                        <div class="border border-dashed border-danger  text-danger rounded mx-1 p-2">
-                                            <a href="{{ route('dashboard.notifications.index',['trash' => 1]) }}">
-                                            <div class="fw-bolder fs-5 text-danger">
-                                                {{ $trash }}
+                                        <div class="stat-pill-trash rounded mx-1 p-2 px-3">
+                                            <a href="{{ route('dashboard.notifications.index',['trash' => 1]) }}" style="color: inherit; text-decoration: none;">
+                                            <div class="fw-bolder fs-5 d-flex align-items-center gap-1">
                                                 <i class="fas fa-trash-alt"></i>
-                                                @lang('Trash')
+                                                <span>{{ $trash }}</span>
+                                                <span class="fs-7 fw-normal">@lang('Trash')</span>
                                             </div>
                                             </a>
                                         </div>
@@ -106,14 +106,14 @@
                                         </a>
                                     @endcan
                                     <!--begin::Add -->
-                                                                        <a href="{{ route('dashboard.notifications.queueMonitor') }}" class="btn-operation" style="border-color: #ffc700; color: #b58105;">
-                                        <i class="fas fa-tasks" style="color: #ffc700;"></i>
+                                    <a href="{{ route('dashboard.notifications.queueMonitor') }}" class="btn-operation btn-operation-warning" title="مراقبة الطابور">
+                                        <i class="fas fa-tasks"></i>
                                         <span>
                                             مراقبة الطابور
                                         </span>
                                     </a>
-                                    <a href="{{ route('dashboard.notifications.health') }}" class="btn-operation" style="border-color: #009ef7; color: #009ef7;">
-                                        <i class="fas fa-heartbeat" style="color: #009ef7;"></i>
+                                    <a href="{{ route('dashboard.notifications.health') }}" class="btn-operation btn-operation-teal" title="صحة الأجهزة">
+                                        <i class="fas fa-heartbeat"></i>
                                         <span>
                                             صحة الأجهزة
                                         </span>
@@ -346,15 +346,7 @@
     <!--end::Content-->
 @endsection
 @push('css')
-<style>
-    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
-    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
-    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
-    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
-    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
-    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
-    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
-</style>
+@include('notification::pages.notifications.partials.theme-styles')
 @endpush
 @push('js')
 <script>

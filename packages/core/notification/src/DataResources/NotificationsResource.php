@@ -25,13 +25,13 @@ class NotificationsResource extends JsonResource
         // Status badge
         $status = $this->processing_status ?: 'completed';
         $statusBadges = [
-            'completed' => '<span class="badge bg-label-success badge-light-success">مكتمل</span>',
-            'processing' => '<span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري الإرسال</span>',
-            'queued' => '<span class="badge bg-label-warning badge-light-warning">في الطابور</span>',
-            'failed' => '<span class="badge bg-label-danger badge-light-danger">فشل</span>',
-            'draft' => '<span class="badge bg-label-secondary badge-light-secondary">مسودة</span>',
+            'completed' => '<span class="badge bg-label-success badge-light-success"><i class="fas fa-check-circle me-1"></i>مكتمل</span>',
+            'processing' => '<span class="badge bg-label-info badge-light-info"><i class="fas fa-spinner fa-spin me-1"></i>جاري الإرسال</span>',
+            'queued' => '<span class="badge bg-label-warning badge-light-warning"><i class="fas fa-clock me-1"></i>في الطابور</span>',
+            'failed' => '<span class="badge bg-label-danger badge-light-danger"><i class="fas fa-times-circle me-1"></i>فشل</span>',
+            'draft' => '<span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-file-alt me-1"></i>مسودة</span>',
         ];
-        $statusHtml = $statusBadges[$status] ?? '<span class="badge bg-label-secondary badge-light-secondary">' . $status . '</span>';
+        $statusHtml = $statusBadges[$status] ?? '<span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-info-circle me-1"></i>' . $status . '</span>';
 
         // 1. Resolve Channel
         $resolvedChannel = NotificationChannelResolver::resolveChannel($this->resource);
@@ -52,12 +52,12 @@ class NotificationsResource extends JsonResource
 
         if ($isFcm) {
             if ($isDirect) {
-                $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM (Push)">' .
+                $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM (Push)"><i class="fas fa-bolt me-1"></i>' .
                     trans('قُبل من FCM') . ': ' . number_format($this->accepted_by_fcm_count ?? 0) . '</span>';
             } else {
                 $legacyCount = (int) ($this->sent_count ?? 0);
                 $displayCount = $legacyCount > 0 ? number_format($legacyCount) : '—';
-                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">' .
+                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه"><i class="fas fa-layer-group me-1"></i>' .
                     trans('قبول اشتراك الموضوع (Legacy Topic Subscription)') . ': ' . $displayCount . '</span>';
             }
         } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_WHATSAPP) {
@@ -70,7 +70,7 @@ class NotificationsResource extends JsonResource
             $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
             $acceptedDisplay = '<span class="badge bg-label-warning badge-light-warning fs-7 fw-bold" title="SMTP Mail Server"><i class="fas fa-envelope me-1"></i>خادم Email: ' . $sentVal . '</span>';
         } else {
-            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7">غير مصنف</span>';
+            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7"><i class="fas fa-question-circle me-1"></i>غير مصنف</span>';
         }
 
         $targetedCountFormatted = $this->targeted_users_count ? number_format($this->targeted_users_count) : ($this->for === 'all' ? trans('All Users') : number_format($this->users()->count()));

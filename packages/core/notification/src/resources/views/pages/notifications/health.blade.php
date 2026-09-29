@@ -4,7 +4,7 @@
     <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack mb-5">
         <div class="page-title d-flex align-items-center flex-wrap me-3">
             <h1 class="d-flex align-items-center text-dark fw-bolder fs-3 my-1">
-                <i class="fas fa-heartbeat text-danger me-2"></i> {{ $title }}
+                <i class="fas fa-heartbeat me-2" style="color: var(--cs-brand-teal) !important;"></i> {{ $title }}
             </h1>
             <span class="h-20px border-gray-200 border-start mx-4"></span>
             <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
@@ -264,13 +264,5 @@
 @endsection
 
 @push('css')
-<style>
-    .badge.bg-label-primary, .badge.badge-light-primary { background-color: #e7e7ff !important; color: #696cff !important; font-weight: 600; }
-    .badge.bg-label-success, .badge.badge-light-success { background-color: #e8fadf !important; color: #71dd37 !important; font-weight: 600; }
-    .badge.bg-label-info, .badge.badge-light-info { background-color: #d7f5fc !important; color: #03c3ec !important; font-weight: 600; }
-    .badge.bg-label-warning, .badge.badge-light-warning { background-color: #fff2d6 !important; color: #ffab00 !important; font-weight: 600; }
-    .badge.bg-label-danger, .badge.badge-light-danger { background-color: #ffe0db !important; color: #ff3e1d !important; font-weight: 600; }
-    .badge.bg-label-secondary, .badge.badge-light-secondary { background-color: #ebeef0 !important; color: #8592a3 !important; font-weight: 600; }
-    .badge.bg-label-dark, .badge.badge-light-dark { background-color: #435971 !important; color: #fff !important; font-weight: 600; }
-</style>
+@include('notification::pages.notifications.partials.theme-styles')
 @endpush
