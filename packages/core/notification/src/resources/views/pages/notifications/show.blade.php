@@ -15,19 +15,25 @@
                     {{ $title }}
                 </h1>
                 <span class="h-20px border-gray-200 border-start mx-4"></span>
-                <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
+                @php
+                    $isRtl = app()->getLocale() === 'ar';
+                    $arrow = $isRtl ? '←' : '→';
+                @endphp
+                <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1 align-items-center">
                     <li class="breadcrumb-item text-muted">
                         <a href="{{ route('dashboard.index') }}" class="text-muted text-hover-primary">@lang('Home')</a>
                     </li>
+                    <li class="breadcrumb-item text-muted px-2 fs-7">{{ $arrow }}</li>
                     <li class="breadcrumb-item text-muted">
-                        <a href="{{ route('dashboard.notifications.index') }}" class="text-muted text-hover-primary">@lang('notification')</a>
+                        <a href="{{ route('dashboard.notifications.index') }}" class="text-muted text-hover-primary">@lang('Notifications')</a>
                     </li>
+                    <li class="breadcrumb-item text-muted px-2 fs-7">{{ $arrow }}</li>
                     <li class="breadcrumb-item text-dark">{{ $title }}</li>
                 </ul>
             </div>
             <div class="d-flex align-items-center gap-2 gap-lg-3">
-                <a href="{{ route('dashboard.notifications.index') }}" class="btn btn-sm btn-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> @lang('Back')
+                <a href="{{ route('dashboard.notifications.index') }}" class="btn btn-sm btn-light">
+                    <i class="fas {{ $isRtl ? 'fa-arrow-right' : 'fa-arrow-left' }} me-1"></i> @lang('العودة للحملات')
                 </a>
             </div>
         </div>
@@ -57,13 +63,13 @@
                                 <span class="text-muted">@lang('الغرض'):</span>
                                 <div>
                                     @if($item->purpose === 'marketing')
-                                        <span class="badge bg-label-marketing badge-light-marketing"><i class="fas fa-bullhorn me-1"></i>تسويقي (Marketing)</span>
+                                        <span class="badge bg-label-marketing badge-light-marketing"><i class="fas fa-bullhorn me-1"></i>@lang('تسويقي')</span>
                                     @elseif($item->purpose === 'transactional')
-                                        <span class="badge bg-label-info badge-light-info"><i class="fas fa-receipt me-1"></i>تشغيلي (Transactional)</span>
+                                        <span class="badge bg-label-info badge-light-info"><i class="fas fa-receipt me-1"></i>@lang('تشغيلي')</span>
                                     @elseif($item->purpose === 'authentication')
-                                        <span class="badge bg-label-warning badge-light-warning"><i class="fas fa-shield-alt me-1"></i>توثيق (Authentication)</span>
+                                        <span class="badge bg-label-warning badge-light-warning"><i class="fas fa-shield-alt me-1"></i>@lang('توثيق')</span>
                                     @elseif($item->purpose === 'system')
-                                        <span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-cog me-1"></i>نظام (System)</span>
+                                        <span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-cog me-1"></i>@lang('نظام')</span>
                                     @else
                                         <span class="badge bg-label-secondary badge-light-secondary"><i class="fas fa-question-circle me-1"></i>{{ $item->purpose ?: '—' }}</span>
                                     @endif
@@ -77,8 +83,8 @@
                                             <i class="fas fa-bolt text-success me-1"></i> Direct FCM
                                         </span>
                                     @else
-                                        <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">
-                                            <i class="fas fa-layer-group text-primary me-1"></i> Legacy Topic
+                                        <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold" data-channel="Legacy Topic">
+                                            <i class="fas fa-layer-group text-primary me-1"></i> @lang('المسار القديم')
                                         </span>
                                     @endif
                                 </div>
@@ -159,11 +165,11 @@
                                     <span class="badge bg-label-success badge-light-success fs-6 fw-bolder">{{ number_format($acceptedByFcm) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">@lang('فشل مؤقت (Transient)'):</span>
+                                    <span class="text-muted">@lang('فشل مؤقت'):</span>
                                     <span class="badge bg-label-warning badge-light-warning fs-6">{{ number_format($transFailed) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between {{ ($skippedTokensCount ?? 0) > 0 ? 'mb-2' : '' }}">
-                                    <span class="text-muted">@lang('فشل دائم (Permanent)'):</span>
+                                    <span class="text-muted">@lang('فشل دائم'):</span>
                                     <span class="badge bg-label-danger badge-light-danger fs-6">{{ number_format($permFailed) }}</span>
                                 </div>
                                 @if(($skippedTokensCount ?? 0) > 0)
@@ -174,7 +180,7 @@
                                 @endif
                             @elseif($isFcmChannel)
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">قبول اشتراك الموضوع (Legacy Topic Subscription):</span>
+                                    <span class="text-muted" data-metric="Legacy Topic Subscription" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">@lang('قبول الإرسال القديم'):</span>
                                     <span class="badge bg-label-primary badge-light-primary fs-6 fw-bolder">{{ is_numeric($legacyTopicCount) ? number_format($legacyTopicCount) : $legacyTopicCount }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
@@ -213,11 +219,11 @@
                         </div>
                         <div class="card-body pt-2">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">@lang('المستلم (Received)'):</span>
+                                <span class="text-muted">@lang('تم الاستلام'):</span>
                                 <span class="fw-bolder text-dark">{{ $receivedDisplay }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">@lang('المفتوح (Opened)'):</span>
+                                <span class="text-muted">@lang('تم الفتح'):</span>
                                 <span class="fw-bolder text-dark">{{ $openedDisplay }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
@@ -241,7 +247,7 @@
                         @if(auth()->user()?->can('dashboard.notifications.export') || auth()->user()?->can('notifications.export') || auth()->user()?->can('notifications export'))
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-light-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-file-export me-1"></i> @lang('تصدير البيانات (Export CSV)')
+                                <i class="fas fa-file-export me-1"></i> @lang('تصدير CSV')
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
@@ -344,11 +350,11 @@
                                         <h5 class="fw-bold text-dark mb-3"><i class="fas fa-sliders-h me-1 text-primary"></i> @lang('معايير الاستهداف والفلاتر')</h5>
                                         <table class="table table-sm table-borderless mb-0">
                                             <tr>
-                                                <td class="text-muted w-35">@lang('نوع الإشعار (Types)'):</td>
+                                                <td class="text-muted w-35">@lang('نوع الإشعار'):</td>
                                                 <td class="fw-bold">{{ $item->types ?: 'apps' }}</td>
                                             </tr>
                                             <tr>
-                                                <td class="text-muted">@lang('المستهدفون (For)'):</td>
+                                                <td class="text-muted">@lang('المستهدفون'):</td>
                                                 <td class="fw-bold">{{ $item->for ?: 'all' }}</td>
                                             </tr>
                                             @if($item->register_from || $item->register_to)
@@ -386,12 +392,12 @@
                                 <div class="d-flex flex-wrap align-items-center gap-2">
                                     <select id="filter-eligibility-status" class="form-select form-select-sm w-200px">
                                         <option value="">@lang('جميع حالات الأهلية')</option>
-                                        <option value="eligible">مؤهل (Eligible)</option>
-                                        <option value="no_device">لا يوجد جهاز (No Device)</option>
-                                        <option value="marketing_disabled">التسويق ملغى (Opted Out)</option>
-                                        <option value="permission_denied">صلاحية مرفوضة (Permission Denied)</option>
-                                        <option value="no_valid_token">رمز غير صالح (No Valid Token)</option>
-                                        <option value="inactive">حساب غير نشط (Inactive)</option>
+                                        <option value="eligible">@lang('مؤهل')</option>
+                                        <option value="no_device">@lang('لا يوجد جهاز')</option>
+                                        <option value="marketing_disabled">@lang('التسويق ملغى')</option>
+                                        <option value="permission_denied">@lang('صلاحية مرفوضة')</option>
+                                        <option value="no_valid_token">@lang('رمز غير صالح')</option>
+                                        <option value="inactive">@lang('حساب غير نشط')</option>
                                     </select>
                                     <input type="text" id="search-eligibility" class="form-control form-control-sm w-250px" placeholder="@lang('بحث بالاسم أو الهاتف...')">
                                     <button type="button" id="btn-filter-eligibility" class="btn btn-sm btn-primary">
@@ -436,12 +442,12 @@
                                 <div class="d-flex flex-wrap align-items-center gap-2">
                                     <select id="filter-device-status" class="form-select form-select-sm w-180px">
                                         <option value="">@lang('جميع حالات الإرسال')</option>
-                                        <option value="accepted">مقبول (Accepted)</option>
-                                        <option value="transient_failed">فشل مؤقت (Transient)</option>
-                                        <option value="permanent_failed">فشل دائم (Permanent)</option>
-                                        <option value="received">مستلم (Received)</option>
-                                        <option value="opened">مفتوح (Opened)</option>
-                                        <option value="queued">في الطابور (Queued)</option>
+                                        <option value="accepted">@lang('مقبول')</option>
+                                        <option value="transient_failed">@lang('فشل مؤقت')</option>
+                                        <option value="permanent_failed">@lang('فشل دائم')</option>
+                                        <option value="received">@lang('تم الاستلام')</option>
+                                        <option value="opened">@lang('تم الفتح')</option>
+                                        <option value="queued">@lang('في الطابور')</option>
                                     </select>
                                     <select id="filter-device-platform" class="form-select form-select-sm w-150px">
                                         <option value="">@lang('جميع المنصات')</option>
@@ -457,7 +463,7 @@
                                 @if(auth()->user()?->can('dashboard.notifications.export') || auth()->user()?->can('notifications.export') || auth()->user()?->can('notifications export'))
                                 <div>
                                     <a href="{{ route('dashboard.notifications.exportDetails', [$item->id, 'devices']) }}" class="btn btn-sm btn-light-success">
-                                        <i class="fas fa-file-csv me-1"></i> @lang('تصدير الأجهزة (CSV)')
+                                        <i class="fas fa-file-csv me-1"></i> @lang('تصدير CSV')
                                     </a>
                                 </div>
                                 @endif
@@ -493,9 +499,9 @@
                                 <div class="alert alert-primary d-flex align-items-center p-4">
                                     <i class="fas fa-info-circle fs-2 text-primary me-3"></i>
                                     <div>
-                                        <h5 class="fw-bold mb-1">قياس التفاعل غير متاح لحملات Legacy Topic</h5>
-                                        <p class="mb-0 fs-7">
-                                            تم إرسال هذا الإشعار عبر قناة الموضوع القديمة (Legacy Topic Subscription). هذه القناة لا تدعم تسجيل أحداث الاستلام والفتح الفردية لكل جهاز، لذلك تُعرض القيم كـ <strong>"غير متاح"</strong> منعاً لأي قياس مضلل.
+                                        <h5 class="fw-bold mb-1" data-channel="Legacy Topic">قياس التفاعل غير متاح لحملات @lang('المسار القديم')</h5>
+                                        <p class="mb-0 fs-7" data-metric="Legacy Topic Subscription">
+                                            تم إرسال هذا الإشعار عبر قناة المسار القديم. هذه القناة لا تدعم تسجيل أحداث الاستلام والفتح الفردية لكل جهاز، لذلك تُعرض القيم كـ <strong>"غير متاح"</strong> منعاً لأي قياس مضلل.
                                         </p>
                                     </div>
                                 </div>
@@ -515,7 +521,7 @@
                                         <div class="border rounded p-4 text-center bg-light">
                                             <i class="fas fa-inbox fs-1 text-primary mb-2"></i>
                                             <h3 class="fw-bolder fs-2 text-dark">{{ $receivedDisplay }}</h3>
-                                            <span class="text-muted fw-bold">الأجهزة التي استلمت الإشعار فعلياً (Delivered)</span>
+                                            <span class="text-muted fw-bold">الأجهزة التي استلمت الإشعار فعلياً</span>
                                             <div class="mt-2 text-primary fw-bold">نسبة الوصول: {{ $deliveryRateDisplay }}</div>
                                         </div>
                                     </div>
@@ -523,7 +529,7 @@
                                         <div class="border rounded p-4 text-center bg-light">
                                             <i class="fas fa-envelope-open-text fs-1 text-success mb-2"></i>
                                             <h3 class="fw-bolder fs-2 text-dark">{{ $openedDisplay }}</h3>
-                                            <span class="text-muted fw-bold">الأجهزة التي فتحت الإشعار وتفاعلت معه (Opened)</span>
+                                            <span class="text-muted fw-bold">الأجهزة التي فتحت الإشعار وتفاعلت معه</span>
                                             <div class="mt-2 text-success fw-bold">معدل الفتح: {{ $openRateDisplay }}</div>
                                         </div>
                                     </div>
@@ -558,14 +564,14 @@
             </div>
             <div class="modal-body">
                 <p class="fs-6 text-gray-800">
-                    أنت على وشك جدولة إعادة إرسال الإشعار لـ <strong>{{ number_format($transFailed) }}</strong> جهازاً واجهت أخطاء مؤقتة (Transient Failed).
+                    أنت على وشك جدولة إعادة إرسال الإشعار لـ <strong>{{ number_format($transFailed) }}</strong> جهازاً واجهت أخطاء مؤقتة.
                 </p>
                 <div class="alert alert-light-info p-3 mb-0 fs-7">
                     <i class="fas fa-shield-alt text-info me-1"></i>
                     <strong>ضمانات الأمان:</strong>
                     <ul class="mb-0 ps-3 mt-1">
-                        <li>لن يتم تكرار الإرسال لأي أجهزة مقبولة مسبقاً (Accepted).</li>
-                        <li>لن يتم إعادة محاولة الأجهزة ذات الأخطاء الدائمة (Permanent Failed).</li>
+                        <li>لن يتم تكرار الإرسال لأي أجهزة مقبولة مسبقاً.</li>
+                        <li>لن يتم إعادة محاولة الأجهزة ذات الأخطاء الدائمة.</li>
                         <li>تتم المعالجة عبر دفعات مجدولة (Batches) في الخلفية.</li>
                     </ul>
                 </div>

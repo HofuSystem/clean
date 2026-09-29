@@ -7,21 +7,25 @@
                 <i class="fas fa-heartbeat me-2" style="color: var(--cs-brand-teal) !important;"></i> {{ $title }}
             </h1>
             <span class="h-20px border-gray-200 border-start mx-4"></span>
-            <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1">
+            @php
+                $isRtl = app()->getLocale() === 'ar';
+                $arrow = $isRtl ? '←' : '→';
+            @endphp
+            <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 my-1 align-items-center">
                 <li class="breadcrumb-item text-muted">
                     <a href="{{ route('dashboard.index') }}" class="text-muted text-hover-primary">@lang('Home')</a>
                 </li>
-                <li class="breadcrumb-item"><span class="bullet bg-gray-200 w-5px h-2px"></span></li>
+                <li class="breadcrumb-item text-muted px-2 fs-7">{{ $arrow }}</li>
                 <li class="breadcrumb-item text-muted">
                     <a href="{{ route('dashboard.notifications.index') }}" class="text-muted text-hover-primary">@lang('Notifications')</a>
                 </li>
-                <li class="breadcrumb-item"><span class="bullet bg-gray-200 w-5px h-2px"></span></li>
+                <li class="breadcrumb-item text-muted px-2 fs-7">{{ $arrow }}</li>
                 <li class="breadcrumb-item text-dark">{{ $title }}</li>
             </ul>
         </div>
         <div class="d-flex align-items-center gap-2">
             <a href="{{ route('dashboard.notifications.index') }}" class="btn btn-sm btn-light">
-                <i class="fas fa-arrow-left me-1"></i> العودة للحملات
+                <i class="fas {{ $isRtl ? 'fa-arrow-right' : 'fa-arrow-left' }} me-1"></i> @lang('العودة للحملات')
             </a>
         </div>
     </div>
