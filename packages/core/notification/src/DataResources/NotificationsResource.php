@@ -55,20 +55,25 @@ class NotificationsResource extends JsonResource
                 $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM (Push)"><i class="fas fa-bolt me-1"></i>' .
                     trans('قُبل من FCM') . ': ' . number_format($this->accepted_by_fcm_count ?? 0) . '</span>';
             } else {
-                $legacyCount = (int) ($this->sent_count ?? 0);
-                $displayCount = $legacyCount > 0 ? number_format($legacyCount) : '—';
-                $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه"><i class="fas fa-layer-group me-1"></i>' .
-                    trans('قبول اشتراك الموضوع (Legacy Topic Subscription)') . ': ' . $displayCount . '</span>';
+                $rawCount = $this->sent_count;
+                if ($rawCount !== null && is_numeric($rawCount)) {
+                    $intCount = (int) $rawCount;
+                    if ($intCount > 0) {
+                        $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="هذا يعني أن FCM القديم قبل طلب الإرسال فقط، ولا يثبت وصول الإشعار أو فتحه."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: ' . number_format($intCount) . '</span>';
+                    } else {
+                        $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7" data-metric="Legacy Topic Subscription" title="لم يتم قبول أي إرسال عبر المسار القديم."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: 0</span>';
+                    }
+                } else {
+                    $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7" data-metric="Legacy Topic Subscription" title="هذا الإشعار لا يستخدم مسار Legacy Topic أو لا يتوفر له هذا القياس."><i class="fas fa-minus-circle me-1"></i>غير منطبق</span>';
+                }
             }
-        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_WHATSAPP) {
-            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
-            $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="WhatsApp Gateway API"><i class="fab fa-whatsapp me-1"></i>بوابة WhatsApp: ' . $sentVal . '</span>';
-        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_SMS) {
-            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
-            $acceptedDisplay = '<span class="badge bg-label-info badge-light-info fs-7 fw-bold" title="SMS Gateway API"><i class="fas fa-sms me-1"></i>بوابة SMS: ' . $sentVal . '</span>';
-        } elseif ($resolvedChannel === NotificationChannelResolver::CHANNEL_EMAIL) {
-            $sentVal = $this->sent_count ? number_format($this->sent_count) : 'تم الإرسال';
-            $acceptedDisplay = '<span class="badge bg-label-warning badge-light-warning fs-7 fw-bold" title="SMTP Mail Server"><i class="fas fa-envelope me-1"></i>خادم Email: ' . $sentVal . '</span>';
+        } elseif (in_array($resolvedChannel, [
+            NotificationChannelResolver::CHANNEL_WHATSAPP,
+            NotificationChannelResolver::CHANNEL_SMS,
+            NotificationChannelResolver::CHANNEL_EMAIL,
+            NotificationChannelResolver::CHANNEL_IN_APP,
+        ], true) || !$isFcm) {
+            $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7" data-metric="Legacy Topic Subscription" title="هذا الإشعار لا يستخدم مسار Legacy Topic أو لا يتوفر له هذا القياس."><i class="fas fa-minus-circle me-1"></i>لا ينطبق — قناة WhatsApp/SMS/Email</span>';
         } else {
             $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7"><i class="fas fa-question-circle me-1"></i>غير مصنف</span>';
         }
