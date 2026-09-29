@@ -2685,6 +2685,7 @@
     "Payment canceled": "تم الإلغاء الدفع ",
     "Payment failed": "فشل الدفع",
     "Payment Successful": "تم الدفع بنجاح",
+    "Order is already fully paid": "تم سداد قيمة الطلب بالكامل ولا يوجد مبلغ متبقٍ للدفع",
     "deactivation message": "هذا الحساب غير مفعل",
     "user verified": "تم تفعيل الحساب",
     "code sent": "تم ارسال الكود",

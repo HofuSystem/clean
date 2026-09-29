@@ -7,6 +7,7 @@ use Core\Notification\Models\Notification;
 use Core\Orders\Models\Order;
 use Core\Orders\Models\OrderReport;
 use Core\Orders\Models\OrderRepresentative;
+use Core\Orders\Support\OrderPaymentMath;
 use Core\Settings\Services\SettingsService;
 use Core\Settings\Traits\ApiResponse;
 use Core\Users\DataResources\Driver\OrderDetailsResource;
@@ -434,8 +435,10 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
-        if($order->paid < $order->total_price){
-            $cashAmount = $order->total_price - $order->paid;
+        // Rounded to halalas: floating-point residue from percentage coupons must not
+        // be booked as cash the driver never actually collected.
+        $cashAmount = OrderPaymentMath::remainingToCollect($order->total_price, $order->paid);
+        if (OrderPaymentMath::isCollectable($cashAmount)) {
             $order->transactions()->create([
                 'type'                  => 'cash',
                 'amount'                => $cashAmount,

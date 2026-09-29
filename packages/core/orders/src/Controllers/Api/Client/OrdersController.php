@@ -20,6 +20,7 @@ use Core\Orders\Requests\Api\PayFastOrderRequest;
 use Core\Orders\Requests\Api\UpdateOrderRequest;
 use Core\Orders\Requests\Api\UpdateOrderFlowersRequest;
 use Core\Orders\Requests\UpdateStatusRequest;
+use Core\Orders\Support\OrderPaymentMath;
 use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -358,8 +359,16 @@ class OrdersController extends Controller
         try {
             DB::beginTransaction();
             $requestData = $request->all();
+            // The charged amount is derived from the order, not from the client's `paid`
+            // value, so client-side rounding can never leave an unpaid remainder.
+            $order      = Order::findOrFail($orderId);
+            $cardAmount = $this->ordersService->fastPaymentCardAmount($order, $requestData);
+            if (! OrderPaymentMath::isCollectable($cardAmount)) {
+                throw ValidationException::withMessages(['paid' => trans('Order is already fully paid')]);
+            }
+            $requestData['paid'] = $cardAmount;
             $data = [
-                'payment_url' => $this->ordersService->createPaymentUrl($orderId, $request->paid, $requestData, 'fast_payment'),
+                'payment_url' => $this->ordersService->createPaymentUrl($orderId, $cardAmount, $requestData, 'fast_payment'),
             ];
             DB::commit();
             return $this->returnData(trans('Payment Successful'), ['status' => 'success', 'data' => $data]);

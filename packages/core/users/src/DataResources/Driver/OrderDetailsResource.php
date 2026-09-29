@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Core\Info\DataResources\Api\CityResource;
 use Core\Info\DataResources\Api\DistrictResource;
 use Core\Orders\Models\OrderReport;
+use Core\Orders\Support\OrderPaymentMath;
 use Core\Orders\DataResources\Api\Client\Order\OrderTransactionsResource;
 use Core\Users\DataResources\Api\SimpleUserResource;
 use Core\Users\DataResources\Driver\OrderItemResource;
@@ -93,6 +94,10 @@ class OrderDetailsResource extends JsonResource
             'category_type'         => $this->type ,
             'pay_type'              => $this->pay_type ,
             'total_price'           => (int)$this->total_price ,
+            // Server-side balances rounded to halalas. The app should display these
+            // instead of subtracting `paid` from the integer `total_price` above.
+            'remaining_to_collect'  => OrderPaymentMath::remainingToCollect($this->total_price, $this->paid),
+            'remaining_for_customer' => OrderPaymentMath::remainingForCustomer($this->total_price, $this->paid),
             'returned_to_customer'  => (double)abs(($this->relationLoaded('transactions') ? $this->transactions->where('amount', '<', 0)->sum('amount') : $this->transactions()->where('amount', '<', 0)->sum('amount')) ?? 0),
             'status'                => $this->status,
             'is_report'             => $is_report ,

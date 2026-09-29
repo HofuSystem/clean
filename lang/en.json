@@ -1355,6 +1355,7 @@
     "order_has_been_successfully_accepted": "order has been successfully accepted",
     "select_technical": "select technical",
     "Payment Successful": "Payment Successful 💸",
+    "Order is already fully paid": "Order is already fully paid, there is no remaining amount to pay",
     "col.delivered": "delivered",
     "for_all_cities": "for all cities",
     "first_driver_accepte_order": "The receiving driver approved your request No :order_id from :driver_name",

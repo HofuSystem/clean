@@ -31,6 +31,7 @@ use RuntimeException;
 use Core\Notification\Services\TelegramNotificationService;
 use Core\Orders\Models\Cart;
 use Core\Orders\Models\OrderTransaction;
+use Core\Orders\Support\OrderPaymentMath;
 use Core\Products\Services\ProductsService;
 use Core\B2B\Models\Contract;
 use Core\PaymentGateways\Services\MyFatoorahService;
@@ -1247,6 +1248,42 @@ class OrdersService
             ]);
         }
         return $order;
+    }
+    /**
+     * Card amount the gateway must charge to settle a fast order.
+     *
+     * Computed from the order itself (total minus what is already paid, minus the
+     * wallet/points the client will use) instead of trusting the amount sent by the
+     * client app. Wallet and points are only deducted when payFastOrder() would
+     * actually apply them, so the card always covers the true outstanding balance.
+     */
+    public function fastPaymentCardAmount(Order $order, array $data, $user = null): float
+    {
+        $user         = $user ?? auth('api')->user();
+        $walletAmount = 0.0;
+        $pointsAmount = 0.0;
+
+        if (ToolHelper::getBooleanValue($data['wallet_used'] ?? false)) {
+            $requested = (float) ($data['wallet_amount_used'] ?? 0);
+            if ($requested > 0 && (float) ($user?->wallet ?? 0) >= $requested) {
+                $walletAmount = $requested;
+            }
+        }
+
+        if (ToolHelper::getBooleanValue($data['points_used'] ?? false)) {
+            $requested        = (float) ($data['points_amount_used'] ?? 0);
+            $points           = (float) ($data['points_amount'] ?? 0);
+            $balance          = (float) ($user?->points_balance ?? 0);
+            $minAllowedPoints = (float) (SettingsService::getDataBaseSetting('minium_points_to_use') ?? 0);
+            if ($requested > 0 && $points > 0 && $balance >= $points && $balance >= $minAllowedPoints) {
+                $pointsAmount = $requested;
+            }
+        }
+
+        return OrderPaymentMath::remainingToCollect(
+            $order->total_price,
+            (float) $order->paid + $walletAmount + $pointsAmount
+        );
     }
     public function createPaymentUrl(int $orderId,$amount,$data,$type = 'order_payment'): ?string
     {
