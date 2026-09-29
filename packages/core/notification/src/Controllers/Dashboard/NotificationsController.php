@@ -104,7 +104,17 @@ class NotificationsController extends Controller
 
         // Channel-specific delivery metrics
         $acceptedByFcm = $isDirect ? ($item->accepted_by_fcm_count ?? 0) : '—';
-        $legacyTopicCount = !$isDirect ? ($item->sent_count ?: $totalTargeted) : '—';
+        
+        $hasSavedLegacyCount = false;
+        $legacyTopicCount = null;
+        if (!$isDirect) {
+            $rawCount = $item->sent_count;
+            if ($rawCount !== null && is_numeric($rawCount) && (int) $rawCount > 0) {
+                $hasSavedLegacyCount = true;
+                $legacyTopicCount = (int) $rawCount;
+            }
+        }
+
         $permFailed = $item->permanent_failed_count ?? 0;
         $transFailed = $item->transient_failed_count ?? 0;
 
@@ -139,7 +149,7 @@ class NotificationsController extends Controller
         return view('notification::pages.notifications.show', compact(
             'title', 'screen', 'item', 'comments', 'isDirect', 'deliveryChannel',
             'totalTargeted', 'eligibleUsers', 'eligibleDevices', 'acceptedByFcm',
-            'legacyTopicCount', 'permFailed', 'transFailed', 'receivedDisplay',
+            'hasSavedLegacyCount', 'legacyTopicCount', 'permFailed', 'transFailed', 'receivedDisplay',
             'openedDisplay', 'deliveryRateDisplay', 'openRateDisplay',
             'usersCount', 'devicesCount', 'skippedTokensCount'
         ));

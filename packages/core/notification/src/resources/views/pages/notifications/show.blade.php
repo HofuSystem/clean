@@ -179,10 +179,23 @@
                                 </div>
                                 @endif
                             @elseif($isFcmChannel)
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted" data-metric="Legacy Topic Subscription" title="قبول من نظام Topic القديم — ليس دليلاً على وصول الإشعار للجهاز أو عرضه أو فتحه">@lang('قبول الإرسال القديم'):</span>
-                                    <span class="badge bg-label-primary badge-light-primary fs-6 fw-bolder">{{ is_numeric($legacyTopicCount) ? number_format($legacyTopicCount) : $legacyTopicCount }}</span>
-                                </div>
+                                @if(!empty($hasSavedLegacyCount) && ($legacyTopicCount ?? 0) > 0)
+                                    <div class="mb-2" data-metric="Legacy Topic Subscription">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted" title="هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار.">@lang('قبول الإرسال القديم'):</span>
+                                            <span class="badge bg-label-primary badge-light-primary fs-6 fw-bolder">{{ number_format($legacyTopicCount) }}</span>
+                                        </div>
+                                        <div class="text-muted fs-8 mt-1">هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار.</div>
+                                    </div>
+                                @else
+                                    <div class="mb-2" data-metric="Legacy Topic Subscription">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">مسار الإرسال القديم:</span>
+                                            <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">تمت المعالجة</span>
+                                        </div>
+                                        <div class="text-muted fs-8 mt-1">الوصول الفعلي غير قابل للقياس من الخادم</div>
+                                    </div>
+                                @endif
                                 <div class="d-flex justify-content-between mb-2">
                                     <span class="text-muted">@lang('قُبل من FCM'):</span>
                                     <span class="text-muted">—</span>
@@ -269,8 +282,15 @@
                         </div>
                         @endif
 
-                        @if($isDirect && $transFailed > 0)
-                            <button type="button" class="btn btn-sm btn-light-warning" data-bs-toggle="modal" data-bs-target="#modal-retry-transient">
+                        @php
+                            $isCompleted = ($item->processing_status === 'completed');
+                            $hasTransientErrors = ($transFailed > 0);
+                            $isQueued = ($item->processing_status === 'queued');
+                            $canShowRetry = ($hasTransientErrors || $isQueued) && !($isCompleted && !$hasTransientErrors);
+                        @endphp
+
+                        @if($canShowRetry)
+                            <button type="button" class="btn btn-sm btn-light-warning" data-bs-toggle="modal" data-bs-target="#modal-retry-transient" id="btn-retry-transient">
                                 <i class="fas fa-redo me-1"></i> @lang('إعادة محاولة الأخطاء المؤقتة') ({{ number_format($transFailed) }})
                             </button>
                         @endif
@@ -552,7 +572,7 @@
 </div>
 
 <!-- Modal: Retry Transient -->
-@if($isDirect)
+@if(!empty($canShowRetry))
 <div class="modal fade" id="modal-retry-transient" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

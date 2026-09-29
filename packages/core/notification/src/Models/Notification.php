@@ -35,6 +35,7 @@ class Notification extends CoreModel {
         'transient_failed_count',
         'received_count',
         'opened_count',
+        'sent_count',
         'payload',
         'title',
         'body',
@@ -509,6 +510,37 @@ class Notification extends CoreModel {
 
         $sentCount = $this->sent_count ?? $this->users()->wherePivot('status', 'sent')->count();
         return $sentCount > 0 ? (string) $sentCount : '—';
+    }
+
+    public function getSentCountAttribute()
+    {
+        $payload = is_array($this->payload) ? $this->payload : json_decode($this->payload ?? '{}', true);
+        if (isset($payload['sent_count']) && is_numeric($payload['sent_count'])) {
+            return (int) $payload['sent_count'];
+        }
+        $raw = $this->attributes['sent_count'] ?? null;
+        return $raw !== null && is_numeric($raw) ? (int) $raw : null;
+    }
+
+    public function setSentCountAttribute($value)
+    {
+        $payload = is_array($this->payload) ? $this->payload : json_decode($this->payload ?? '{}', true);
+        if ($value !== null && is_numeric($value)) {
+            $payload['sent_count'] = (int) $value;
+        } else {
+            unset($payload['sent_count']);
+        }
+        $this->attributes['payload'] = json_encode($payload);
+    }
+
+    public function setPayloadAttribute($value)
+    {
+        $existing = is_array($this->payload) ? $this->payload : json_decode($this->payload ?? '{}', true);
+        $new = is_array($value) ? $value : json_decode($value ?? '{}', true);
+        if (isset($existing['sent_count']) && !isset($new['sent_count'])) {
+            $new['sent_count'] = $existing['sent_count'];
+        }
+        $this->attributes['payload'] = is_array($new) ? json_encode($new) : $value;
     }
     //end Attributes
 

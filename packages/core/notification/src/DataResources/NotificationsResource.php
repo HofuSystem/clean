@@ -17,8 +17,14 @@ class NotificationsResource extends JsonResource
     public function toArray(Request $request): array
     {
         $actions = $this->actions;
-        if ($this->pending_count > 0) {
-            $btn = '<a href="javascript:void(0)" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-pending-btn" data-id="'.$this->id.'" title="إعادة إرسال للمُعلقين ('.$this->pending_count.')"><i class="fas fa-sync"></i> <span>إعادة إرسال</span></a>';
+        $isCompleted = ($this->processing_status === 'completed');
+        $transFailed = (int) ($this->transient_failed_count ?? 0);
+        $isQueued = ($this->processing_status === 'queued');
+        $canRetry = ($transFailed > 0) || ($isQueued) || (!$isCompleted && ($this->pending_count ?? 0) > 0);
+
+        if ($canRetry && (($this->pending_count ?? 0) > 0 || $transFailed > 0)) {
+            $countLabel = $transFailed > 0 ? $transFailed : ($this->pending_count ?? 0);
+            $btn = '<a href="javascript:void(0)" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-pending-btn" data-id="'.$this->id.'" title="إعادة إرسال للمُعلقين ('.$countLabel.')"><i class="fas fa-sync"></i> <span>إعادة إرسال</span></a>';
             $actions = str_replace('</div>', $btn . '</div>', $actions);
         }
 
