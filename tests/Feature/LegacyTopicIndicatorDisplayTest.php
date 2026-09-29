@@ -55,7 +55,7 @@ class LegacyTopicIndicatorDisplayTest extends TestCase
         $html1 = $resource1['sent_count'];
 
         $this->assertStringContainsString('قبول الإرسال القديم: 1', $html1);
-        $this->assertStringContainsString('title="هذا يعني أن FCM القديم قبل طلب الإرسال فقط، ولا يثبت وصول الإشعار أو فتحه."', $html1);
+        $this->assertStringContainsString('title="هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار."', $html1);
 
         // Case B: Value = 450
         $notification2 = Notification::create([
@@ -73,13 +73,13 @@ class LegacyTopicIndicatorDisplayTest extends TestCase
         $html2 = $resource2['sent_count'];
 
         $this->assertStringContainsString('قبول الإرسال القديم: 450', $html2);
-        $this->assertStringContainsString('title="هذا يعني أن FCM القديم قبل طلب الإرسال فقط، ولا يثبت وصول الإشعار أو فتحه."', $html2);
+        $this->assertStringContainsString('title="هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار."', $html2);
     }
 
     /**
      * Requirement 2: If value = 0:
-     * Display: "قبول الإرسال القديم: 0"
-     * Tooltip: "لم يتم قبول أي إرسال عبر المسار القديم."
+     * Do NOT display 0. Display "مسار الإرسال القديم: تمت المعالجة"
+     * Tooltip: "الوصول الفعلي غير قابل للقياس من الخادم"
      */
     public function test_legacy_topic_indicator_when_value_is_zero()
     {
@@ -97,15 +97,16 @@ class LegacyTopicIndicatorDisplayTest extends TestCase
         $resource = (new NotificationsResource($notification))->toArray(Request::create('/admin/notifications'));
         $html = $resource['sent_count'];
 
-        $this->assertStringContainsString('قبول الإرسال القديم: 0', $html);
-        $this->assertStringContainsString('title="لم يتم قبول أي إرسال عبر المسار القديم."', $html);
+        $this->assertStringNotContainsString('قبول الإرسال القديم: 0', $html);
+        $this->assertStringContainsString('مسار الإرسال القديم: تمت المعالجة', $html);
+        $this->assertStringContainsString('title="الوصول الفعلي غير قابل للقياس من الخادم"', $html);
     }
 
     /**
      * Requirement 3: If value is NULL or unavailable:
-     * Do NOT display the dash "—".
-     * Display: "غير منطبق"
-     * Tooltip: "هذا الإشعار لا يستخدم مسار Legacy Topic أو لا يتوفر له هذا القياس."
+     * Do NOT display the dash "—" or "0".
+     * Display: "مسار الإرسال القديم: تمت المعالجة"
+     * Tooltip: "الوصول الفعلي غير قابل للقياس من الخادم"
      */
     public function test_legacy_topic_indicator_when_value_is_null_or_unavailable()
     {
@@ -125,10 +126,11 @@ class LegacyTopicIndicatorDisplayTest extends TestCase
 
         // Must NOT contain dash —
         $this->assertStringNotContainsString('—', $html);
-        // Must display "غير منطبق"
-        $this->assertStringContainsString('غير منطبق', $html);
+        $this->assertStringNotContainsString('قبول الإرسال القديم: 0', $html);
+        // Must display processed unmeasurable label
+        $this->assertStringContainsString('مسار الإرسال القديم: تمت المعالجة', $html);
         // Tooltip check
-        $this->assertStringContainsString('title="هذا الإشعار لا يستخدم مسار Legacy Topic أو لا يتوفر له هذا القياس."', $html);
+        $this->assertStringContainsString('title="الوصول الفعلي غير قابل للقياس من الخادم"', $html);
     }
 
     /**

@@ -61,16 +61,13 @@ class NotificationsResource extends JsonResource
                 $acceptedDisplay = '<span class="badge bg-label-success badge-light-success fs-7 fw-bold" title="Direct FCM (Push)"><i class="fas fa-bolt me-1"></i>' .
                     trans('قُبل من FCM') . ': ' . number_format($this->accepted_by_fcm_count ?? 0) . '</span>';
             } else {
-                $rawCount = $this->sent_count;
-                if ($rawCount !== null && is_numeric($rawCount)) {
+                $payload = is_array($this->payload) ? $this->payload : json_decode($this->payload ?? '{}', true);
+                $rawCount = $payload['sent_count'] ?? $this->sent_count;
+                if ($rawCount !== null && is_numeric($rawCount) && (int) $rawCount > 0) {
                     $intCount = (int) $rawCount;
-                    if ($intCount > 0) {
-                        $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="هذا يعني أن FCM القديم قبل طلب الإرسال فقط، ولا يثبت وصول الإشعار أو فتحه."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: ' . number_format($intCount) . '</span>';
-                    } else {
-                        $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7" data-metric="Legacy Topic Subscription" title="لم يتم قبول أي إرسال عبر المسار القديم."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: 0</span>';
-                    }
+                    $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: ' . number_format($intCount) . '</span>';
                 } else {
-                    $acceptedDisplay = '<span class="badge bg-label-secondary badge-light-secondary fs-7" data-metric="Legacy Topic Subscription" title="هذا الإشعار لا يستخدم مسار Legacy Topic أو لا يتوفر له هذا القياس."><i class="fas fa-minus-circle me-1"></i>غير منطبق</span>';
+                    $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="الوصول الفعلي غير قابل للقياس من الخادم"><i class="fas fa-layer-group me-1"></i>مسار الإرسال القديم: تمت المعالجة</span>';
                 }
             }
         } elseif (in_array($resolvedChannel, [

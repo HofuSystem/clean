@@ -108,7 +108,8 @@ class NotificationsController extends Controller
         $hasSavedLegacyCount = false;
         $legacyTopicCount = null;
         if (!$isDirect) {
-            $rawCount = $item->sent_count;
+            $payload = is_array($item->payload) ? $item->payload : json_decode($item->payload ?? '{}', true);
+            $rawCount = $payload['sent_count'] ?? $item->sent_count;
             if ($rawCount !== null && is_numeric($rawCount) && (int) $rawCount > 0) {
                 $hasSavedLegacyCount = true;
                 $legacyTopicCount = (int) $rawCount;

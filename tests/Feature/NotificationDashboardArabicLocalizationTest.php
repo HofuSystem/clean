@@ -209,7 +209,7 @@ class NotificationDashboardArabicLocalizationTest extends TestCase
             'types' => json_encode(['apps']),
             'processing_status' => 'completed',
             'sent_count' => 10,
-            'payload' => json_encode(['delivery_channel' => 'legacy_topic']),
+            'payload' => json_encode(['delivery_channel' => 'legacy_topic', 'sent_count' => 10]),
         ]);
 
         $response = $this->actingAs($this->adminUser)->get(route('dashboard.notifications.show', $campaign->id));
