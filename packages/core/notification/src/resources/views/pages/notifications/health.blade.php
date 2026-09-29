@@ -65,7 +65,7 @@
                     <div class="text-gray-900 fw-bolder fs-2 mb-1">{{ number_format($usersWithoutDevices) }}</div>
                     <div class="fw-bold text-gray-500">عملاء بلا أي جهاز مسجل</div>
                     <div class="text-muted fs-8 mt-2">
-                        <span class="badge bg-label-danger badge-light-danger fs-8">غير قابلين للوصول عبر Push</span>
+                        <span class="badge bg-label-danger badge-light-danger fs-8">@lang('غير قابلين للوصول عبر الإشعارات الفورية')</span>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">توزيع المنصات (Platforms)</span>
+                        <span class="card-label fw-bolder fs-3 mb-1">@lang('توزيع المنصات')</span>
                         <span class="text-muted mt-1 fw-bold fs-7">حسب نوع نظام التشغيل</span>
                     </h3>
                 </div>
@@ -145,8 +145,8 @@
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">صلاحيات الإشعارات في النظام (OS Permission)</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">صلاحية Push المسجلة على أجهزة العملاء</span>
+                        <span class="card-label fw-bolder fs-3 mb-1">@lang('صلاحية إشعارات النظام')</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">@lang('صلاحية الإشعارات الفورية المسجلة على أجهزة العملاء')</span>
                     </h3>
                 </div>
                 <div class="card-body pt-3">
@@ -161,22 +161,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><span class="badge bg-label-success badge-light-success">موافق عليها (Authorized)</span></td>
-                                    <td class="text-muted fs-7">العميل منح صلاحية Push للنظام</td>
+                                    <td><span class="badge bg-label-success badge-light-success">@lang('مسموح بها')</span></td>
+                                    <td class="text-muted fs-7">@lang('العميل منح صلاحية الإشعارات الفورية للنظام')</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['authorized'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge bg-label-danger badge-light-danger">مرفوضة (Denied)</span></td>
+                                    <td><span class="badge bg-label-danger badge-light-danger">@lang('مرفوضة')</span></td>
                                     <td class="text-muted fs-7">العميل عطّل الإشعارات من إعدادات الجوال</td>
                                     <td class="text-end fw-bold text-danger">{{ number_format($permissions['denied'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge bg-label-warning badge-light-warning">غير محدد (Not Determined)</span></td>
+                                    <td><span class="badge bg-label-warning badge-light-warning">@lang('غير محددة')</span></td>
                                     <td class="text-muted fs-7">لم يُعرض طلب الصلاحية بعد</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['not_determined'] ?? 0) }}</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="badge bg-label-secondary badge-light-secondary">غير معروفة (Legacy / Unknown)</span></td>
+                                    <td><span class="badge bg-label-secondary badge-light-secondary">@lang('قديمة / غير معروفة')</span></td>
                                     <td class="text-muted fs-7">أجهزة قديمة لم ترسل بعد تقرير الصلاحية</td>
                                     <td class="text-end fw-bold">{{ number_format($permissions['unknown'] ?? 0) }}</td>
                                 </tr>
@@ -195,8 +195,8 @@
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">التفضيل التسويقي (Marketing Preference)</span>
-                        <span class="text-muted mt-1 fw-bold fs-7">رغبة العميل داخل التطبيق (is_allow_notify)</span>
+                        <span class="card-label fw-bolder fs-3 mb-1">@lang('التفضيل التسويقي')</span>
+                        <span class="text-muted mt-1 fw-bold fs-7">@lang('رغبة العميل داخل التطبيق (تفضيلات الإشعارات التسويقية)')</span>
                     </h3>
                 </div>
                 <div class="card-body pt-3">
@@ -220,7 +220,7 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-history text-secondary me-2"></i>
-                                <span class="fw-bold">حالة قديمة غير مؤكدة (Legacy Unknown)</span>
+                                <span class="fw-bold">@lang('حالة قديمة غير مؤكدة')</span>
                                 <small class="text-muted d-block">قيمة افتراضية مسبقة لم يتم تأكيدها صراحة</small>
                             </div>
                             <span class="badge bg-secondary rounded-pill fs-7">{{ number_format($marketingLegacy) }}</span>
@@ -235,7 +235,7 @@
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-5">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder fs-3 mb-1">حداثة نشاط الأجهزة (Last Seen Recency)</span>
+                        <span class="card-label fw-bolder fs-3 mb-1">@lang('حداثة آخر نشاط للأجهزة')</span>
                         <span class="text-muted mt-1 fw-bold fs-7">مدى تواجد الأجهزة على السيرفر مؤخراً</span>
                     </h3>
                 </div>

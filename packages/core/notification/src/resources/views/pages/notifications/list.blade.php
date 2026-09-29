@@ -106,16 +106,16 @@
                                         </a>
                                     @endcan
                                     <!--begin::Add -->
-                                    <a href="{{ route('dashboard.notifications.queueMonitor') }}" class="btn-operation btn-operation-warning" title="مراقبة الطابور">
+                                    <a href="{{ route('dashboard.notifications.queueMonitor') }}" class="btn-operation btn-operation-warning" title="@lang('Notification Queue Monitor')">
                                         <i class="fas fa-tasks"></i>
                                         <span>
-                                            مراقبة الطابور
+                                            @lang('Notification Queue Monitor')
                                         </span>
                                     </a>
-                                    <a href="{{ route('dashboard.notifications.health') }}" class="btn-operation btn-operation-teal" title="صحة الأجهزة">
+                                    <a href="{{ route('dashboard.notifications.health') }}" class="btn-operation btn-operation-teal" title="@lang('Customer & Device Health')">
                                         <i class="fas fa-heartbeat"></i>
                                         <span>
-                                            صحة الأجهزة
+                                            @lang('Customer & Device Health')
                                         </span>
                                     </a>
                                     @can('dashboard.notifications.create')

@@ -43,7 +43,7 @@
                                 </span>
                             </div>
                             <div>
-                                <span class="text-muted fs-7 d-block">@lang('أقدم دفعة معلقة (Oldest Pending)')</span>
+                                <span class="text-muted fs-7 d-block">@lang('أقدم دفعة معلّقة')</span>
                                 <span class="fs-5 fw-bolder text-dark">
                                     {{ $oldestPending ? $oldestPending->diffForHumans() : trans('لا توجد دفعات معلقة') }}
                                 </span>
@@ -64,7 +64,7 @@
                                 </span>
                             </div>
                             <div>
-                                <span class="text-muted fs-7 d-block">@lang('آخر خطأ آمن مسجل (Safe Error)')</span>
+                                <span class="text-muted fs-7 d-block">@lang('آخر خطأ آمن مسجل')</span>
                                 @if($lastErrorToken)
                                     <span class="fs-6 fw-bold text-danger d-block">
                                         <code>{{ $lastErrorToken->error_code }}</code>
@@ -89,13 +89,13 @@
                                 </span>
                             </div>
                             <div>
-                                <span class="text-muted fs-7 d-block">@lang('حالة Direct FCM Kill Switch')</span>
+                                <span class="text-muted fs-7 d-block">@lang('حالة مفتاح إيقاف FCM المباشر')</span>
                                 @if(config('notification.direct_fcm_enabled', false))
-                                    <span class="badge bg-label-success badge-light-success fs-7 fw-bold">Active (Enabled)</span>
+                                    <span class="badge bg-label-success badge-light-success fs-7 fw-bold">@lang('مفعّل (نشط)')</span>
                                 @else
-                                    <span class="badge bg-label-warning badge-light-warning fs-7 fw-bold">Standby (Direct FCM Disabled)</span>
+                                    <span class="badge bg-label-warning badge-light-warning fs-7 fw-bold">@lang('في الانتظار (FCM المباشر معطّل)')</span>
                                 @endif
-                                <span class="text-muted fs-8 d-block mt-1">الوظائف تنهي بأمان عند تعطيل الـ Flag</span>
+                                <span class="text-muted fs-8 d-block mt-1">@lang('الوظائف تنهي بأمان عند تعطيل الـ Flag')</span>
                             </div>
                         </div>
                     </div>
@@ -144,9 +144,9 @@
                                             <div class="text-muted fs-8">
                                                 {{ $notif->created_at?->format('Y-m-d H:i') }}
                                                 @if($isDirect)
-                                                    <span class="badge bg-label-success badge-light-success py-0 px-1 ms-1">Direct</span>
+                                                    <span class="badge bg-label-success badge-light-success py-0 px-1 ms-1">@lang('مباشر')</span>
                                                 @else
-                                                    <span class="badge bg-label-primary badge-light-primary py-0 px-1 ms-1">Legacy</span>
+                                                    <span class="badge bg-label-primary badge-light-primary py-0 px-1 ms-1">@lang('المسار القديم')</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -171,7 +171,7 @@
                                             @endphp
                                             @if($st === 'completed')
                                                 @if($isSkipped)
-                                                    <span class="badge bg-label-warning badge-light-warning text-warning fw-bold" title="Completed — skipped by feature flag">مكتمل — تخطي بـ Flag</span>
+                                                    <span class="badge bg-label-warning badge-light-warning text-warning fw-bold" title="@lang('مكتمل — تم التخطي عبر Flag')">مكتمل — تخطي بـ Flag</span>
                                                 @elseif($isPartialSkipped)
                                                     <span class="badge bg-label-info badge-light-info text-info fw-bold">مكتمل جزئياً — تخطي بـ Flag</span>
                                                 @else
