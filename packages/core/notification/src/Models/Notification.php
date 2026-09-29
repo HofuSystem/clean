@@ -23,6 +23,7 @@ class Notification extends CoreModel {
         'for',
         'for_data',
         'purpose',
+        'channel',
         'processing_status',
         'started_at',
         'completed_at',
@@ -70,7 +71,80 @@ class Notification extends CoreModel {
 
         //filter select on  types
         if((request()->has("filters.types")) and !empty(request("filters.types"))){
-            $query->where("types",request("filters.types"));
+            $type = request("filters.types");
+            $channelMap = [
+                'apps' => 'app_fcm',
+                'whats_app' => 'whatsapp',
+                'sms' => 'sms',
+                'email' => 'email',
+            ];
+            $mappedChannel = $channelMap[$type] ?? null;
+
+            $query->where(function($q) use ($type, $mappedChannel) {
+                $q->where('types', $type)
+                  ->orWhere('types', 'LIKE', '%"' . $type . '"%')
+                  ->orWhere('types', 'LIKE', '%' . $type . '%');
+                if ($mappedChannel) {
+                    $q->orWhere('channel', $mappedChannel);
+                }
+            });
+        }
+
+        //filter select on  channel
+        if((request()->has("filters.channel")) and !empty(request("filters.channel"))){
+            $channel = request("filters.channel");
+            $query->where(function($sub) use ($channel) {
+                $sub->where('channel', $channel);
+                if ($channel === 'app_fcm') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')
+                          ->where(function($t) {
+                              $t->where('types', 'LIKE', '%apps%')
+                                ->orWhere('types', 'LIKE', '%app_fcm%')
+                                ->orWhere('types', 'LIKE', '%fcm%')
+                                ->orWhere('types', 'LIKE', '%push%');
+                          });
+                    });
+                } elseif ($channel === 'whatsapp') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')
+                          ->where(function($t) {
+                              $t->where('types', 'LIKE', '%whats_app%')
+                                ->orWhere('types', 'LIKE', '%whatsapp%');
+                          });
+                    });
+                } elseif ($channel === 'sms') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')->where('types', 'LIKE', '%sms%');
+                    });
+                } elseif ($channel === 'email') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')
+                          ->where(function($t) {
+                              $t->where('types', 'LIKE', '%email%')
+                                ->orWhere('types', 'LIKE', '%mail%');
+                          });
+                    });
+                } elseif ($channel === 'in_app') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')
+                          ->where(function($t) {
+                              $t->where('types', 'LIKE', '%in_app%')
+                                ->orWhere('types', 'LIKE', '%inapp%');
+                          });
+                    });
+                } elseif ($channel === 'legacy_unknown') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('channel')
+                          ->where(function($t) {
+                              $t->whereNull('types')
+                                ->orWhere('types', '')
+                                ->orWhere('types', '[]')
+                                ->orWhere('types', 'null');
+                          });
+                    });
+                }
+            });
         }
 
         //filter select on  for
@@ -80,7 +154,79 @@ class Notification extends CoreModel {
 
         //filter select on purpose
         if((request()->has("filters.purpose")) and !empty(request("filters.purpose"))){
-            $query->where("purpose",request("filters.purpose"));
+            $purpose = request("filters.purpose");
+            $query->where(function($sub) use ($purpose) {
+                $sub->where('purpose', $purpose);
+                if ($purpose === 'authentication') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('purpose')
+                          ->where(function($t) {
+                              $t->where('title', 'LIKE', '%verify%')
+                                ->orWhere('title', 'LIKE', '%رمز التحقق%')
+                                ->orWhere('title', 'LIKE', '%كود التحقق%')
+                                ->orWhere('title', 'LIKE', '%otp%')
+                                ->orWhere('body', 'LIKE', '%verify message%')
+                                ->orWhere('body', 'LIKE', '%رمز التحقق%')
+                                ->orWhere('body', 'LIKE', '%كود التحقق%')
+                                ->orWhere('body', 'LIKE', '%رمز التأكيد%')
+                                ->orWhere('body', 'LIKE', '%كود الدخول%')
+                                ->orWhere('body', 'LIKE', '%otp%');
+                          });
+                    });
+                } elseif ($purpose === 'transactional') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('purpose')
+                          ->where(function($t) {
+                              $t->whereNotNull('order_id')
+                                ->orWhere('title', 'LIKE', '%طلب%')
+                                ->orWhere('title', 'LIKE', '%سائق%')
+                                ->orWhere('title', 'LIKE', '%مندوب%')
+                                ->orWhere('title', 'LIKE', '%توصيل%')
+                                ->orWhere('body', 'LIKE', '%طلب%')
+                                ->orWhere('body', 'LIKE', '%سائق%')
+                                ->orWhere('body', 'LIKE', '%مندوب%')
+                                ->orWhere('body', 'LIKE', '%توصيل%');
+                          });
+                    });
+                } elseif ($purpose === 'marketing') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('purpose')
+                          ->whereNull('order_id')
+                          ->where(function($t) {
+                              $t->where('title', 'LIKE', '%خصم%')
+                                ->orWhere('title', 'LIKE', '%عرض%')
+                                ->orWhere('title', 'LIKE', '%عروض%')
+                                ->orWhere('title', 'LIKE', '%كوبون%')
+                                ->orWhere('body', 'LIKE', '%خصم%')
+                                ->orWhere('body', 'LIKE', '%عرض%')
+                                ->orWhere('body', 'LIKE', '%عروض%')
+                                ->orWhere('body', 'LIKE', '%كوبون%')
+                                ->orWhere('body', 'LIKE', '%سلة متروكة%');
+                          });
+                    });
+                } elseif ($purpose === 'system') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('purpose')
+                          ->where(function($t) {
+                              $t->where('title', 'LIKE', '%صيانة%')
+                                ->orWhere('title', 'LIKE', '%تحديث النظام%')
+                                ->orWhere('body', 'LIKE', '%صيانة%')
+                                ->orWhere('body', 'LIKE', '%تحديث النظام%');
+                          });
+                    });
+                } elseif ($purpose === 'legacy_unknown') {
+                    $sub->orWhere(function($s) {
+                        $s->whereNull('purpose')
+                          ->whereNull('order_id')
+                          ->where(function($t) {
+                              $t->whereNull('title')->orWhere('title', '');
+                          })
+                          ->where(function($b) {
+                              $b->whereNull('body')->orWhere('body', '');
+                          });
+                    });
+                }
+            });
         }
 
         //filter select on processing_status

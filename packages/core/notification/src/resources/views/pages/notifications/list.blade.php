@@ -162,18 +162,53 @@
                                 <div class="p-1 row" data-kt-user-table-filter="form">
 
 
-                                    <div class="col-md-4 mb-1">
+                                    <div class="col-md-3 mb-1">
+                                        <label for="channel">@lang("channel")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="channel"
+                                            id="channel">
+                                            <option value=""> @lang("select channel")</option>
+                                            <option value="app_fcm" @selected("app_fcm" == request("channel"))>App FCM (التطبيقات)</option>
+                                            <option value="whatsapp" @selected("whatsapp" == request("channel"))>WhatsApp (واتساب)</option>
+                                            <option value="sms" @selected("sms" == request("channel"))>SMS (رسائل نصية)</option>
+                                            <option value="email" @selected("email" == request("channel"))>Email (البريد الإلكتروني)</option>
+                                            <option value="in_app" @selected("in_app" == request("channel"))>In-App (داخل التطبيق)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3 mb-1">
+                                        <label for="purpose">@lang("purpose")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="purpose"
+                                            id="purpose">
+                                            <option value=""> @lang("select purpose")</option>
+                                            <option value="marketing" @selected("marketing" == request("purpose"))>@lang("marketing")</option>
+                                            <option value="transactional" @selected("transactional" == request("purpose"))>@lang("transactional")</option>
+                                            <option value="authentication" @selected("authentication" == request("purpose"))>@lang("authentication")</option>
+                                            <option value="system" @selected("system" == request("purpose"))>@lang("system")</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3 mb-1">
                                         <label for="types">@lang("types")</label>
                                         <select class="custom-select filter-input form-select advance-select" name="types"
                                             id="types">
                                             <option value=""> @lang("select types")</option>
-                                            <option value="apps" @selected("apps" == request("types"))>{{trans("apps")}}
-                                            </option>
-                                            <option value="email" @selected("email" == request("types"))>{{trans("email")}}
-                                            </option>
+                                            <option value="apps" @selected("apps" == request("types"))>{{trans("apps")}}</option>
+                                            <option value="whats_app" @selected("whats_app" == request("types"))>{{trans("whats_app")}}</option>
                                             <option value="sms" @selected("sms" == request("types"))>{{trans("sms")}}</option>
-                                            <option value="whats_app" @selected("whats_app" == request("types"))>
-                                                {{trans("whats_app")}}</option>
+                                            <option value="email" @selected("email" == request("types"))>{{trans("email")}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3 mb-1">
+                                        <label for="processing_status">@lang("processing_status")</label>
+                                        <select class="custom-select filter-input form-select advance-select" name="processing_status"
+                                            id="processing_status">
+                                            <option value=""> @lang("select processing_status")</option>
+                                            <option value="completed" @selected("completed" == request("processing_status"))>مكتمل</option>
+                                            <option value="processing" @selected("processing" == request("processing_status"))>جاري الإرسال</option>
+                                            <option value="queued" @selected("queued" == request("processing_status"))>في الطابور</option>
+                                            <option value="failed" @selected("failed" == request("processing_status"))>فشل</option>
+                                            <option value="draft" @selected("draft" == request("processing_status"))>مسودة</option>
                                         </select>
                                     </div>
 
@@ -187,17 +222,7 @@
                                         <input type="text" name="phone" class="form-control filter-input"
                                             placeholder="@lang("search for phone") " value="{{ request("phone") }}">
                                     </div>
-                                    <div class="col-md-6 mb-1">
-                                        <label for="title"> @lang("title") </label>
-                                        <input type="text" name="title" class="form-control filter-input"
-                                            placeholder="@lang("search for title") " value="{{ request("title") }}">
-                                    </div>
-                                    <div class="col-md-6 mb-1">
-                                        <label for="body"> @lang("body") </label>
-                                        <input type="text" name="body" class="form-control filter-input"
-                                            placeholder="@lang("search for body") " value="{{ request("body") }}">
-                                    </div>
-                                    <div class="col-md-6 mb-1">
+                                    <div class="col-md-4 mb-1">
                                         <label for="city_id">@lang("city")</label>
                                         <select class="custom-select filter-input form-select advance-select" name="city_id"
                                             id="city_id">
@@ -210,7 +235,18 @@
 
                                         </select>
                                     </div>
-                                    <div class="col-md-6 mb-1">
+
+                                    <div class="col-md-4 mb-1">
+                                        <label for="title"> @lang("title") </label>
+                                        <input type="text" name="title" class="form-control filter-input"
+                                            placeholder="@lang("search for title") " value="{{ request("title") }}">
+                                    </div>
+                                    <div class="col-md-4 mb-1">
+                                        <label for="body"> @lang("body") </label>
+                                        <input type="text" name="body" class="form-control filter-input"
+                                            placeholder="@lang("search for body") " value="{{ request("body") }}">
+                                    </div>
+                                    <div class="col-md-4 mb-1">
                                         <label for="sender_id">@lang("sender")</label>
                                         <select class="custom-select filter-input form-select advance-select"
                                             name="sender_id" id="sender_id">

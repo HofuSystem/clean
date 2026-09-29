@@ -330,4 +330,126 @@ class NotificationChannelSeparationTest extends TestCase
     {
         Http::assertNothingSent();
     }
+
+    /**
+     * 13. Scope search filters by types correctly for JSON arrays and strings
+     */
+    public function test_13_scope_search_filters_by_types_json(): void
+    {
+        $notifWhatsApp = Notification::create([
+            'types' => '["whats_app"]',
+            'for' => 'all',
+            'title' => 'WA Test ' . uniqid(),
+            'body' => 'verify message test',
+        ]);
+
+        $notifApps = Notification::create([
+            'types' => '["apps"]',
+            'for' => 'all',
+            'title' => 'Apps Test ' . uniqid(),
+            'body' => 'app notification test',
+        ]);
+
+        // Simulate request with filters.types = 'whats_app'
+        request()->merge(['filters' => ['types' => 'whats_app']]);
+        $waResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifWhatsApp->id, $waResults);
+        $this->assertNotContains($notifApps->id, $waResults);
+
+        // Simulate request with filters.types = 'apps'
+        request()->merge(['filters' => ['types' => 'apps']]);
+        $appsResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifApps->id, $appsResults);
+        $this->assertNotContains($notifWhatsApp->id, $appsResults);
+
+        // Clean up request
+        request()->replace([]);
+    }
+
+    /**
+     * 14. Scope search filters by channel for both explicit column and legacy inferred
+     */
+    public function test_14_scope_search_filters_by_channel(): void
+    {
+        $notifExplicit = Notification::create([
+            'channel' => 'app_fcm',
+            'types' => '["apps"]',
+            'for' => 'all',
+            'title' => 'Explicit Channel ' . uniqid(),
+            'body' => 'explicit test',
+        ]);
+
+        $notifLegacyWa = Notification::create([
+            'channel' => null,
+            'types' => '["whats_app"]',
+            'for' => 'all',
+            'title' => 'Legacy WA ' . uniqid(),
+            'body' => 'legacy test',
+        ]);
+
+        request()->merge(['filters' => ['channel' => 'app_fcm']]);
+        $appResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifExplicit->id, $appResults);
+        $this->assertNotContains($notifLegacyWa->id, $appResults);
+
+        request()->merge(['filters' => ['channel' => 'whatsapp']]);
+        $waResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifLegacyWa->id, $waResults);
+        $this->assertNotContains($notifExplicit->id, $waResults);
+
+        request()->replace([]);
+    }
+
+    /**
+     * 15. Scope search filters by purpose for both explicit and legacy inferred
+     */
+    public function test_15_scope_search_filters_by_purpose(): void
+    {
+        $notifAuth = Notification::create([
+            'purpose' => null,
+            'types' => '["whats_app"]',
+            'for' => 'all',
+            'title' => 'كود التحقق الخاص بك هو 1234',
+            'body' => 'verify message code 1234',
+        ]);
+
+        $notifMkt = Notification::create([
+            'purpose' => 'marketing',
+            'types' => '["apps"]',
+            'for' => 'all',
+            'title' => 'عرض خاص ' . uniqid(),
+            'body' => 'خصم 50%',
+        ]);
+
+        request()->merge(['filters' => ['purpose' => 'authentication']]);
+        $authResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifAuth->id, $authResults);
+        $this->assertNotContains($notifMkt->id, $authResults);
+
+        request()->merge(['filters' => ['purpose' => 'marketing']]);
+        $mktResults = Notification::search()->pluck('id')->toArray();
+        $this->assertContains($notifMkt->id, $mktResults);
+        $this->assertNotContains($notifAuth->id, $mktResults);
+
+        request()->replace([]);
+    }
+
+    /**
+     * 16. Translation keys exist and resolve properly
+     */
+    public function test_16_translations_exist_and_resolve(): void
+    {
+        app()->setLocale('ar');
+        $this->assertNotEquals('reference', trans('reference'));
+        $this->assertNotEquals('search for reference', trans('search for reference'));
+        $this->assertEquals('المرجع', trans('reference'));
+        $this->assertEquals('القناة', trans('channel'));
+        $this->assertEquals('الغرض', trans('purpose'));
+        $this->assertEquals('واتساب', trans('whats_app'));
+
+        app()->setLocale('en');
+        $this->assertEquals('Reference', trans('reference'));
+        $this->assertEquals('Channel', trans('channel'));
+        $this->assertEquals('Purpose', trans('purpose'));
+    }
 }

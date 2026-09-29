@@ -60,7 +60,7 @@ class NotificationsService
         $recordsTotal       = Notification::count();
         $recordsFiltered    = Notification::search()->count();
         $records            = Notification::select([
-            'id', 'types', 'for', 'purpose', 'processing_status', 'title', 'body', 'media',
+            'id', 'types', 'channel', 'for', 'purpose', 'processing_status', 'title', 'body', 'media',
             'sender_id', 'created_at', 'targeted_users_count', 'eligible_users_count',
             'eligible_devices_count', 'accepted_by_fcm_count', 'permanent_failed_count',
             'transient_failed_count', 'received_count', 'opened_count'
