@@ -102,6 +102,7 @@ class ProductsService
             }
         }
 
+        \Core\Categories\Services\CategoryCacheService::flush();
         return $record;
     }
 
@@ -116,6 +117,7 @@ class ProductsService
         }else{
             $record->delete();
         }
+        \Core\Categories\Services\CategoryCacheService::flush();
         return true;
     }
 

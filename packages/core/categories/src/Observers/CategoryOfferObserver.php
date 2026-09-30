@@ -3,22 +3,14 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\CategoryOffer;
-use Illuminate\Support\Facades\Cache;
+use Core\Categories\Services\CategoryCacheService;
 use Illuminate\Support\Facades\Log;
 
 class CategoryOfferObserver
 {
     private function flushCategoriesCache()
     {
-        try {
-            if (Cache::supportsTags()) {
-                Cache::tags(['categories_api'])->flush();
-            } else {
-                Cache::forget('categories_api');
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Failed to flush category cache: ' . $e->getMessage());
-        }
+        CategoryCacheService::flush();
     }
     /**
      * Handle the Offer"creating" event.
@@ -101,7 +93,7 @@ class CategoryOfferObserver
      */
     public function restored(CategoryOffer $categoryOffer)
     {
-        //
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -112,6 +104,6 @@ class CategoryOfferObserver
      */
     public function forceDeleted(CategoryOffer $categoryOffer)
     {
-        //
+        $this->flushCategoriesCache();
     }
 }

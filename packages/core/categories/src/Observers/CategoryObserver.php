@@ -3,26 +3,14 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Category;
-use Illuminate\Support\Facades\Cache;
+use Core\Categories\Services\CategoryCacheService;
 use Illuminate\Support\Facades\Log;
 
 class CategoryObserver
 {
     private function flushCategoriesCache()
     {
-        try {
-            if (Cache::supportsTags()) {
-                Cache::tags(['categories_api'])->flush();
-            } else {
-                Cache::forget('categories_api');
-                foreach (['ar', 'en'] as $lang) {
-                    Cache::forget("home_economy_bags_{$lang}");
-                    Cache::forget("home_services_sales_{$lang}");
-                }
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Failed to flush category cache: ' . $e->getMessage());
-        }
+        CategoryCacheService::flush();
     }
     /**
      * Handle the Category "creating" event.
@@ -105,7 +93,7 @@ class CategoryObserver
      */
     public function restored(Category $category)
     {
-        //
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -116,6 +104,6 @@ class CategoryObserver
      */
     public function forceDeleted(Category $category)
     {
-        //
+        $this->flushCategoriesCache();
     }
 }

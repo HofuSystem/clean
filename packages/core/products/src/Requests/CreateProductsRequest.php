@@ -21,6 +21,14 @@ class CreateProductsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $isPackage = $this->boolean('is_package') || $this->category_id == 13;
+        $this->merge([
+            'is_package' => $isPackage ? 1 : 0,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,7 +36,9 @@ class CreateProductsRequest extends FormRequest
      */
     public function rules()
     {
-      return [ 
+        $isPackage = !empty($this->is_package);
+
+        return [ 
 			 "translations.en.name"  		=>  ['required','string'], 
 			 "translations.ar.name"  		=>  ['required','string'], 
 			 "translations.en.desc"  		=>  ['nullable','string'], 
@@ -36,17 +46,18 @@ class CreateProductsRequest extends FormRequest
 			 "type"                  		=>  ['required','in:clothes,sales,services'], 
 			 "is_package"            		=>  ['nullable','boolean'], 
 			 "category_id"           		=>  ['required','exists:categories,id'], 
-			 "version"    					=>  ['nullable','required_if:type,clothes','array'], 
+			 "sku"                   		=>  ['nullable','string','unique:products,sku'], 
+			 "version"    					=>  ['nullable',\Illuminate\Validation\Rule::requiredIf(fn() => $this->type === 'clothes' && !$isPackage),'array'], 
 			 "version.*.sub_category_id"    =>  ['nullable','exists:categories,id'], 
 			 "version.*.sku"                =>  ['required','unique:products,sku','string'], 
 			 "version.*.price"              =>  ['required','numeric'], 
 			 "version.*.points"             =>  ['required','numeric'], 
 			 "quantity"             		=>  ['nullable','numeric'], 
-			 "price"             			=>  ['nullable','required_if:type,sales','required_if:type,services','numeric'], 
-			 "points"             			=>  ['nullable','required_if:type,sales','required_if:type,services','numeric'], 
+			 "price"             			=>  ['nullable',\Illuminate\Validation\Rule::requiredIf(fn() => in_array($this->type, ['sales','services']) || $isPackage),'numeric'], 
+			 "points"             			=>  ['nullable',\Illuminate\Validation\Rule::requiredIf(fn() => in_array($this->type, ['sales','services']) || $isPackage),'numeric'], 
+			 "cost"                 		=>  ['nullable','numeric'], 
 			 "status"                		=>  ['required','in:active,not-active'], 
-			]; 
-
+		]; 
     }
 
     /**

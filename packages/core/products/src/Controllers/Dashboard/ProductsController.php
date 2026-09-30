@@ -56,7 +56,10 @@ class ProductsController extends Controller
         try {
             DB::beginTransaction();
             $data = $request->except('version');
-            if($request->type == 'clothes'){
+            if ($request->boolean('is_package') || $request->category_id == 13) {
+                $data['is_package'] = 1;
+            }
+            if ($request->type == 'clothes' && empty($data['is_package']) && !empty($request->version)) {
                 foreach ($request->version ?? [] as $versionData) {
                     $versionData = array_merge($data,$versionData);
                     $record      = $this->productsService->storeOrUpdate($versionData);
@@ -67,6 +70,7 @@ class ProductsController extends Controller
             $record->deleteUrl  = route('dashboard.products.delete',$record->id);
             $record->updateUrl  = route('dashboard.products.edit',$record->id);
             DB::commit();
+            \Core\Categories\Services\CategoryCacheService::flush();
             return $this->returnData(trans('Products were  saved'),['entity'=>$record->itemData]);
         }catch(ValidationException $e){
             DB::rollback();
@@ -111,6 +115,7 @@ class ProductsController extends Controller
             $record->deleteUrl  = route('dashboard.products.delete',$record->id);
             $record->updateUrl  = route('dashboard.products.edit',$record->id);
             DB::commit();
+            \Core\Categories\Services\CategoryCacheService::flush();
             return $this->returnData(trans('Product saved'),['entity'=>$record->itemData]);
         }catch(ValidationException $e){
             DB::rollback();
@@ -137,6 +142,7 @@ class ProductsController extends Controller
             DB::beginTransaction();
             $record             = $this->productsService->delete($id,$request->final);
             DB::commit();
+            \Core\Categories\Services\CategoryCacheService::flush();
             return $this->returnSuccessMessage(trans('Product deleted'));
         }catch(ValidationException $e){
             DB::rollback();

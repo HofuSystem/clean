@@ -171,6 +171,19 @@
                                     <div class="input-gallery"></div>
                                 </div>
                             </div>
+                            <div class="form-group mb-3 col-md-12" id="sku-div" style="display: none;">
+                                <label for="sku">{{ trans('sku') }}</label>
+                                <input type="text" name="sku" class="form-control"
+                                    placeholder="{{ trans('Enter sku') }}"
+                                    value="{{ old('sku') }}">
+                            </div>
+                            <div class="form-group mb-3 col-md-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is_package" name="is_package" value="1"
+                                        @checked(old('is_package') || request('is_package') || request('category_id') == 13)>
+                                    <label class="form-check-label" for="is_package">{{ trans('is package') }} ({{ trans('حقيبة أو باقة اقتصادية') }})</label>
+                                </div>
+                            </div>
                             <div class="form-group mb-3 col-md-6">
                                 <label class="required" for="category_id">{{ trans('category') }}</label>
                                 <select class="custom-select  form-select advance-select" name="category_id"
@@ -362,10 +375,40 @@
             var allSubCategories = $('.sub-category-select option').clone();
             var allCategories = $('#category_id option').clone();
             $('.sub-category-select,#category_id').empty();
+            function applyPackageOrTypeVisibility() {
+                var type = $('#type').val();
+                var isPackage = $('#is_package').is(':checked') || $('#category_id').val() == '13';
+
+                if (isPackage) {
+                    $('#vars-div').hide();
+                    $('#price-div,#points-div,#cost-div,#sku-div,#quantity-div,#images-div,#desc-div').show();
+                    if (type == 'clothes' || type == 'services') {
+                        $('#wash-type-div').show();
+                    }
+                    if ($('#category_id').val() == '13' && !$('#is_package').is(':checked')) {
+                        $('#is_package').prop('checked', true);
+                    }
+                } else {
+                    $('#sku-div').hide();
+                    if(type =="clothes"){
+                        $('#images-div,#vars-div,#wash-type-div,#desc-div').show();
+                        $('#price-div,#points-div,#cost-div,#sub-div,#quantity-div').hide();
+                    }else if(type =="sales"){
+                        $('#desc-div,#price-div,#points-div,#cost-div,#sub-div,#sku-div,#quantity-div').show();
+                        $('#vars-div,#wash-type-div').hide();
+                    }else if(type =="services"){
+                        $('#price-div,#points-div,#cost-div,#wash-type-div,#sku-div,#desc-div,#quantity-div').show();
+                        $('#vars-div,#sub-div').hide();
+                    }
+                }
+            }
+
+            $('#is_package').change(function() {
+                applyPackageOrTypeVisibility();
+            });
+
             // When the category changes
             $('#type').change(function() {
-                $('#vars-div,#quantity-div,#price-div,#points-div,#cost-div,#sub-div,#wash-type-div').hide();
-
                 var type        = $(this).val();
                 var $Category   = $('#category_id');
 
@@ -374,16 +417,7 @@
                 } else {
                     $('#operation-form').attr('redirect-to', "{{ route('dashboard.products.index') }}");
                 }
-                if(type =="clothes"){
-                    $('#images-div,#vars-div,#wash-type-div').show();
-                }else  if(type =="sales"){
-                    $('#desc-div,#price-div,#points-div,#cost-div,#sub-div').show();
 
-                }else  if(type =="services"){
-                    $('#price-div,#points-div,#cost-div,#wash-type-div').show();
-
-                }
-                $('#desc-div').show();
                 // Clear the current options
                 $Category.empty();
 
@@ -392,13 +426,14 @@
                     if ($(this).data('type') == type) {
                         $Category.append($(this).clone()); // Add matching options
                     }
-
                 });
+
+                applyPackageOrTypeVisibility();
 
                 // Trigger Select2 to update the dropdown
                 $Category.trigger('change');
-
             });
+
             $('#category_id').change(function() {
                 var category_id = $(this).val();
                 var $subCategory = $('.sub-category-select');
@@ -410,12 +445,16 @@
                     if ($(this).data('parent-id') == category_id) {
                         $subCategory.append($(this).clone()); // Add matching options
                     }
-
                 });
+
+                if (category_id == '13') {
+                    $('#is_package').prop('checked', true);
+                }
+
+                applyPackageOrTypeVisibility();
 
                 // Trigger Select2 to update the dropdown
                 $subCategory.trigger('change');
-
             });
             $(document).on("click", "#addToRow", function (e) {
                 e.preventDefault()

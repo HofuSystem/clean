@@ -3,22 +3,14 @@
 namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Price;
-use Illuminate\Support\Facades\Cache;
+use Core\Categories\Services\CategoryCacheService;
 use Illuminate\Support\Facades\Log;
 
 class PriceObserver
 {
     private function flushCategoriesCache()
     {
-        try {
-            if (Cache::supportsTags()) {
-                Cache::tags(['categories_api'])->flush();
-            } else {
-                Cache::forget('categories_api');
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Failed to flush category cache: ' . $e->getMessage());
-        }
+        CategoryCacheService::flush();
     }
     /**
      * Handle the Price "creating" event.
@@ -101,7 +93,7 @@ class PriceObserver
      */
     public function restored(Price $price)
     {
-        //
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -112,6 +104,6 @@ class PriceObserver
      */
     public function forceDeleted(Price $price)
     {
-        //
+        $this->flushCategoriesCache();
     }
 }

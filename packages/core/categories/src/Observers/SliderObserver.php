@@ -4,27 +4,15 @@ namespace Core\Categories\Observers;
 
 use Core\Categories\Models\Slider;
 use Core\Categories\Models\SliderView;
+use Core\Categories\Services\CategoryCacheService;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SliderObserver
 {
     private function flushCategoriesCache()
     {
-        try {
-            if (Cache::supportsTags()) {
-                Cache::tags(['categories_api'])->flush();
-            } else {
-                Cache::forget('categories_api');
-                foreach (['ar', 'en'] as $lang) {
-                    Cache::forget("home_economy_bags_{$lang}");
-                    Cache::forget("home_services_sales_{$lang}");
-                }
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Failed to flush category cache: ' . $e->getMessage());
-        }
+        CategoryCacheService::flush();
     }
     /**
      * Handle the Slider "creating" event.
@@ -124,7 +112,7 @@ class SliderObserver
      */
     public function restored(Slider $slider)
     {
-        //
+        $this->flushCategoriesCache();
     }
 
     /**
@@ -135,6 +123,6 @@ class SliderObserver
      */
     public function forceDeleted(Slider $slider)
     {
-        //
+        $this->flushCategoriesCache();
     }
 }

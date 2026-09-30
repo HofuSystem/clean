@@ -21,6 +21,14 @@ class ProductsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $isPackage = $this->boolean('is_package') || $this->category_id == 13;
+        $this->merge([
+            'is_package' => $isPackage ? 1 : 0,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

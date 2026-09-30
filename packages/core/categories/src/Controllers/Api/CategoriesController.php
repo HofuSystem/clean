@@ -60,6 +60,14 @@ class CategoriesController extends Controller
     {
     }
 
+    protected function rememberCache(string $key, int $ttl, \Closure $callback)
+    {
+        if (\Illuminate\Support\Facades\Cache::supportsTags()) {
+            return \Illuminate\Support\Facades\Cache::tags(['categories_api'])->remember($key, $ttl, $callback);
+        }
+        return \Illuminate\Support\Facades\Cache::remember($key, $ttl, $callback);
+    }
+
 
     public function index(Request $request)
     {
@@ -67,7 +75,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            $slider = \Illuminate\Support\Facades\Cache::remember("home_slider_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
+            $slider = $this->rememberCache("home_slider_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
                 return Slider::with('city.translations', 'category.translations', 'currentSliderView')
                     ->active()
                     ->where('type', 'clothes')
@@ -76,7 +84,7 @@ class CategoriesController extends Controller
                     })->latest()->get();
             });
 
-            $clothesCategory = \Illuminate\Support\Facades\Cache::remember("home_categories_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
+            $clothesCategory = $this->rememberCache("home_categories_clothes_{$cityId}_{$locale}", 600, function () use ($request) {
                 return Category::with(['translations', 'cities'])
                     ->whereNull('parent_id')
                     ->where('type', 'clothes')
@@ -88,7 +96,7 @@ class CategoriesController extends Controller
                     })->get();
             });
 
-            $economyBags = \Illuminate\Support\Facades\Cache::remember("home_economy_bags_{$locale}", 600, function () {
+            $economyBags = $this->rememberCache("home_economy_bags_{$locale}", 600, function () {
                 return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations'])
                     ->active()
                     ->with([
@@ -157,7 +165,7 @@ class CategoriesController extends Controller
             // Note: userId removed from cache key — product data is the same for all users
             $cacheKey = "api_category_clothes_details_v3_{$categoryId}_{$cityId}_{$locale}";
 
-            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 600, function () use ($categoryId, $request) {
+            $data = $this->rememberCache($cacheKey, 600, function () use ($categoryId, $request) {
                 $category = Category::with([
                     'translations',
                     'subCategories' => function ($query) {
@@ -207,7 +215,7 @@ class CategoriesController extends Controller
     {
         try {
             $locale = app()->getLocale();
-            $category = \Illuminate\Support\Facades\Cache::remember("api_package_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+            $category = $this->rememberCache("api_package_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
                 return Category::with(['translations', 'products.translations'])
                     ->active()
                     ->with([
@@ -241,7 +249,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            $slider = \Illuminate\Support\Facades\Cache::remember("home_services_slider_{$cityId}_{$locale}", 600, function () use ($request) {
+            $slider = $this->rememberCache("home_services_slider_{$cityId}_{$locale}", 600, function () use ($request) {
                 return Slider::with('city.translations', 'category.translations', 'currentSliderView')
                     ->where('type', 'services')
                     ->active()
@@ -250,7 +258,7 @@ class CategoriesController extends Controller
                     })->latest()->get();
             });
 
-            $servicesCategory = \Illuminate\Support\Facades\Cache::remember("home_services_categories_{$cityId}_{$locale}", 600, function () use ($request) {
+            $servicesCategory = $this->rememberCache("home_services_categories_{$cityId}_{$locale}", 600, function () use ($request) {
                 return Category::with(['translations', 'cities'])
                     ->where('type', 'services')
                     ->active()
@@ -261,7 +269,7 @@ class CategoriesController extends Controller
                     })->get();
             });
 
-            $sales = \Illuminate\Support\Facades\Cache::remember("home_services_sales_{$locale}", 600, function () {
+            $sales = $this->rememberCache("home_services_sales_{$locale}", 600, function () {
                 return CategoryOffer::whereType('service_category_sale')->latest()->get();
             });
 
@@ -284,7 +292,7 @@ class CategoriesController extends Controller
     {
         try {
             $locale = app()->getLocale();
-            $category = \Illuminate\Support\Facades\Cache::remember("api_services_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+            $category = $this->rememberCache("api_services_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
                 return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations', 'appFeatures.translations'])
                     ->active()
                     ->with([
@@ -317,7 +325,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            [$slider, $sales, $childs] = \Illuminate\Support\Facades\Cache::remember("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
+            [$slider, $sales, $childs] = $this->rememberCache("home_maid_{$cityId}_{$locale}", 600, function () use ($request) {
                 $slider = Slider::with(['city.translations', 'category.translations', 'currentSliderView'])
                     ->where('type', 'maid')
                     ->when($request->city_id, function ($q) use ($request) {
@@ -446,7 +454,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            [$slider, $careHost, $sales] = \Illuminate\Support\Facades\Cache::remember("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
+            [$slider, $careHost, $sales] = $this->rememberCache("home_host_{$cityId}_{$locale}", 600, function () use ($request) {
                 $slider = Slider::with(['city.translations', 'category.translations', 'currentSliderView'])
                     ->where('type', 'host')
                     ->active()
@@ -574,7 +582,7 @@ class CategoriesController extends Controller
             $cityId = $request->city_id ?? 'all';
             $locale = app()->getLocale();
 
-            $data = \Illuminate\Support\Facades\Cache::remember("home_flowers_and_gifts_{$cityId}_{$locale}", 600, function () use ($request) {
+            $data = $this->rememberCache("home_flowers_and_gifts_{$cityId}_{$locale}", 600, function () use ($request) {
                 $category = Category::with(['translations', 'cities'])->where('slug', 'gifts-and-flowers')->active()->first();
 
                 if (!$category) {
