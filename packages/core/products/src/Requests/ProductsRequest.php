@@ -31,6 +31,8 @@ class ProductsRequest extends FormRequest
       return [ 
 			 "translations.en.name"     =>  ['required','string'], 
 			 "translations.ar.name"     =>  ['required','string'], 
+			 "translations.en.desc"     =>  ['nullable','string'], 
+			 "translations.ar.desc"     =>  ['nullable','string'], 
 			 "type"                     =>  ['required','in:clothes,sales,services'], 
 			 "sku"                      =>  ['nullable','unique:products,sku,'.$this->id,'string'], 
 			 "is_package"               =>  ['nullable','boolean'], 

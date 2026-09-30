@@ -31,6 +31,8 @@ class CreateProductsRequest extends FormRequest
       return [ 
 			 "translations.en.name"  		=>  ['required','string'], 
 			 "translations.ar.name"  		=>  ['required','string'], 
+			 "translations.en.desc"  		=>  ['nullable','string'], 
+			 "translations.ar.desc"  		=>  ['nullable','string'], 
 			 "type"                  		=>  ['required','in:clothes,sales,services'], 
 			 "is_package"            		=>  ['nullable','boolean'], 
 			 "category_id"           		=>  ['required','exists:categories,id'], 

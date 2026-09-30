@@ -123,41 +123,39 @@
                                 </div>
                             </div>
                             <div class="col-12 mt-5" id="desc-div">
-                                <ul class="nav nav-tabs" id="languageTabs" role="tablist">
+                                <ul class="nav nav-tabs" id="descLanguageTabs" role="tablist">
 
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active " id="desc-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#desc-en" type="button" role="tab" aria-controls="desc-en"
-                                            aria-selected=" true">{{ trans('English') }}</button>
+                                            aria-selected="true">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="desc-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link" id="desc-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#desc-ar" type="button" role="tab"
                                             aria-controls="desc-ar"
-                                            aria-selected=" false">{{ trans('العربية') }}</button>
+                                            aria-selected="false">{{ trans('العربية') }}</button>
                                     </li>
 
                                 </ul>
-                                <div class="tab-content mt-3" id="languageTabsContent">
+                                <div class="tab-content mt-3" id="descLanguageTabsContent">
                                     <div class="tab-pane fade show active" id="desc-en" role="tabpanel"
-                                        aria-labelledby="en-tab">
+                                        aria-labelledby="desc-en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="desc">{{ trans('desc') }}</label>
-                                            <textarea type="text" name="translations[en][desc]" class="form-control "
-                                                placeholder="{{ trans('Enter desc') }} "></textarea>
-
+                                            <label class="" for="desc_en">{{ trans('desc') }} ({{ trans('English') }})</label>
+                                            <textarea name="translations[en][desc]" id="desc_en" class="form-control" rows="4"
+                                                placeholder="{{ trans('Enter desc') }}">{{ old('translations.en.desc') }}</textarea>
                                         </div>
 
                                     </div>
-                                    <div class="tab-pane fade " id="desc-ar" role="tabpanel" aria-labelledby="ar-tab">
+                                    <div class="tab-pane fade" id="desc-ar" role="tabpanel" aria-labelledby="desc-ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="desc">{{ trans('desc') }}</label>
-                                            <textarea type="text" name="translations[ar][desc]" class="form-control "
-                                                placeholder="{{ trans('Enter desc') }} "></textarea>
-
+                                            <label class="" for="desc_ar">{{ trans('desc') }} ({{ trans('العربية') }})</label>
+                                            <textarea name="translations[ar][desc]" id="desc_ar" class="form-control" rows="4"
+                                                placeholder="{{ trans('Enter desc') }}">{{ old('translations.ar.desc') }}</textarea>
                                         </div>
 
                                     </div>
@@ -366,7 +364,7 @@
             $('.sub-category-select,#category_id').empty();
             // When the category changes
             $('#type').change(function() {
-                $('#desc-div,#vars-div,#quantity-div,#price-div,#points-div,#cost-div,#sub-div,#wash-type-div').hide();
+                $('#vars-div,#quantity-div,#price-div,#points-div,#cost-div,#sub-div,#wash-type-div').hide();
 
                 var type        = $(this).val();
                 var $Category   = $('#category_id');
@@ -385,6 +383,7 @@
                     $('#price-div,#points-div,#cost-div,#wash-type-div').show();
 
                 }
+                $('#desc-div').show();
                 // Clear the current options
                 $Category.empty();
 
