@@ -98,7 +98,7 @@
 
             <!-- CTA Actions -->
             <div class="text-center pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="https://cleanstation.app.link/?channel=website" data-app-cta class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-500 to-sky-700 text-white px-8 py-4 rounded-full font-bold text-base shadow-lg hover:shadow-sky-500/30 transition hover:-translate-y-0.5">
+                <a href="https://cleanstation.app.link/?channel=services" data-app-cta class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-500 to-sky-700 text-white px-8 py-4 rounded-full font-bold text-base shadow-lg hover:shadow-sky-500/30 transition hover:-translate-y-0.5">
                     <i class="fa-solid fa-mobile-screen text-lg"></i>
                     <span>{{ $isRtl ? 'اطلب خدمتك عبر التطبيق الآن' : 'Order via App Now' }}</span>
                 </a>

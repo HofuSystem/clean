@@ -14,7 +14,9 @@ class UserObserver
      */
     public function creating(User $user)
     {
-    
+        if (empty($user->referral_code)) {
+            $user->referral_code = generate_referral_code(6);
+        }
     }
     /**
      * Handle the User "created" event.

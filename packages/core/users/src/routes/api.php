@@ -7,6 +7,8 @@ use Core\Users\Controllers\Api\FavsController;
 use Core\Users\Controllers\Api\PointsController;
 use Core\Users\Controllers\Api\Technical\AuthController as TechnicalAuthController;
 use Core\Users\Controllers\Api\UserController;
+use Core\Users\Controllers\Api\UserAttributionController;
+use Core\Users\Controllers\Api\BranchWebhookController;
 use Core\Users\Controllers\Api\DeviceSyncController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +21,9 @@ Route::group([
     Route::delete('devices/{installation_id}/user', [DeviceSyncController::class, 'detach']);
     Route::put('client/notification-preference', [DeviceSyncController::class, 'updateMarketingPreference']);
     Route::post('update_fcm', [UserController::class, 'updateFcm']);
-    Route::post('delete_account', [UserController::class, 'deleteAccount']);    Route::apiResource('addresses', AddressesController::class);
+    Route::post('delete_account', [UserController::class, 'deleteAccount']);
+    Route::post('attribution', [UserAttributionController::class, 'store']);
+    Route::apiResource('addresses', AddressesController::class);
     Route::post('addresses/{id}/delete', [AddressesController::class, 'destroy']);
     Route::post('addresses/delete/{id}', [AddressesController::class, 'destroy']);
 });
@@ -96,3 +100,7 @@ Route::group([
     Route::post('/logout', [TechnicalAuthController::class, 'logout']);
 });
 
+// Branch integrations
+Route::group(['prefix' => 'integrations/branch'], function () {
+    Route::post('/webhook', [BranchWebhookController::class, 'handle']);
+});

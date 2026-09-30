@@ -99,6 +99,28 @@
             </div>
         </div>
 
+        <!-- Order & Delivery Policy Banner -->
+        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs md:text-sm {{ $isRtl ? 'text-right' : 'text-left' }}">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center text-base flex-shrink-0">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-800">
+                        {{ $isRtl ? 'سياسة الطلب والتوصيل:' : 'Order & Delivery Policy:' }}
+                    </span>
+                    <span class="text-slate-600 mr-1 ml-1">
+                        {{ $isRtl ? 'الحد الأدنى للطلب 50 ر.س | التوصيل مجاني للطلبات 100 ر.س فأكثر (رسوم التوصيل 9 ر.س فقط للطلبات الأقل من 100 ر.س)' : 'Minimum order is 50 SAR | Free delivery for orders 100 SAR and above (Delivery fee is only 9 SAR for orders below 100 SAR)' }}
+                    </span>
+                </div>
+            </div>
+            <div class="flex-shrink-0">
+                <span class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-xs">
+                    <i class="fa-solid fa-check me-1"></i> {{ $isRtl ? 'توصيل مجاني من 100 ريال' : 'Free Delivery from 100 SAR' }}
+                </span>
+            </div>
+        </div>
+
         <!-- Live Search -->
         <div class="relative mb-6">
             <i class="fa-solid fa-magnifying-glass absolute {{ $isRtl ? 'right-4' : 'left-4' }} top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -384,10 +406,7 @@
                     </div>
                     
                     <!-- Pagination Controls -->
-                    <div class="px-6 py-4 bg-gray-50/70 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 pagination-controls" data-target="{{ $category->slug }}">
-                        <span class="text-xs text-gray-500 font-medium pagination-info">
-                            {{ $isRtl ? 'عرض 1 إلى 10 من 24 عنصر' : 'Showing 1 to 10 of 24 items' }}
-                        </span>
+                    <div class="px-6 py-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-center gap-3 pagination-controls" data-target="{{ $category->slug }}">
                         <div class="flex items-center gap-1.5 pagination-buttons">
                             <button class="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-600 hover:bg-sky-50 hover:text-sky-600 transition disabled:opacity-30 disabled:pointer-events-none prev-page">
                                 <i class="fa-solid fa-chevron-{{ $isRtl ? 'right' : 'left' }} text-xs"></i>
@@ -405,7 +424,7 @@
 
         <!-- Bottom CTA -->
         <div class="text-center py-12 mt-6">
-            <a href="https://cleanstation.app.link/?channel=website" data-app-cta class="inline-flex items-center gap-3 bg-[#008bd2] text-white px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-sky-600 transition hover:-translate-y-1">
+            <a href="https://cleanstation.app.link/?channel=pricing" data-app-cta class="inline-flex items-center gap-3 bg-[#008bd2] text-white px-10 py-4 rounded-full font-bold text-base shadow-lg hover:bg-sky-600 transition hover:-translate-y-1">
                 <i class="fa-solid fa-mobile-screen"></i>
                 {{ $isRtl ? 'اطلب عبر التطبيق الحين' : 'Order via App Now' }}
             </a>
@@ -554,12 +573,6 @@
                         item.classList.add('page-hidden');
                     }
                 });
-
-                if (infoEl) {
-                    infoEl.textContent = isRtl
-                        ? `عرض ${start + 1} إلى ${end} من ${totalItems} عنصر`
-                        : `Showing ${start + 1} to ${end} of ${totalItems} items`;
-                }
 
                 prevBtn.disabled = (currentPage === 1);
                 nextBtn.disabled = (currentPage === totalPages);

@@ -37,6 +37,19 @@ Route::get('/en/services/carpets-furnishings',  fn() => redirect('https://cleans
 Route::get('/ar/services/medical-military',     fn() => redirect('https://cleanstation.app/ar/b2b', 301));
 Route::get('/en/services/medical-military',     fn() => redirect('https://cleanstation.app/en/b2b', 301));
 
+// Old blog slugs → canonical blog slugs
+Route::get('/ar/blogs/best-underground-water-tank-cleaning-company', fn() => redirect('https://cleanstation.app/ar/blogs/laundry-prices-riyadh', 301));
+Route::get('/en/blogs/best-underground-water-tank-cleaning-company', fn() => redirect('https://cleanstation.app/en/blogs/laundry-prices-riyadh', 301));
+Route::get('/blogs/best-underground-water-tank-cleaning-company',    fn() => redirect('https://cleanstation.app/ar/blogs/laundry-prices-riyadh', 301));
+
+Route::get('/ar/blogs/termite-control-saudi-arabia',                fn() => redirect('https://cleanstation.app/ar/blogs/clean-station-app-features', 301));
+Route::get('/en/blogs/termite-control-saudi-arabia',                fn() => redirect('https://cleanstation.app/en/blogs/clean-station-app-features', 301));
+Route::get('/blogs/termite-control-saudi-arabia',                   fn() => redirect('https://cleanstation.app/ar/blogs/clean-station-app-features', 301));
+
+Route::get('/ar/blogs/air-conditioner-cleaning-importance',        fn() => redirect('https://cleanstation.app/ar/blogs/pickup-delivery-on-time', 301));
+Route::get('/en/blogs/air-conditioner-cleaning-importance',        fn() => redirect('https://cleanstation.app/en/blogs/pickup-delivery-on-time', 301));
+Route::get('/blogs/air-conditioner-cleaning-importance',           fn() => redirect('https://cleanstation.app/ar/blogs/pickup-delivery-on-time', 301));
+
 // /about-us → /why-us
 Route::get('/ar/about-us', fn() => redirect('https://cleanstation.app/ar/why-us', 301));
 Route::get('/en/about-us', fn() => redirect('https://cleanstation.app/en/why-us', 301));

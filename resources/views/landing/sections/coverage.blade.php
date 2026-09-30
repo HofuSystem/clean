@@ -132,7 +132,7 @@
                         </p>
                     </div>
                 </div>
-                <a href="https://cleanstation.app.link/?channel=website" data-app-cta data-placement="coverage_soon" class="bg-white text-orange-600 px-6 py-2.5 rounded-full font-bold text-xs shadow hover:bg-amber-50 transition whitespace-nowrap">
+                <a href="https://cleanstation.app.link/?channel=coverage" data-app-cta data-placement="coverage_soon" class="bg-white text-orange-600 px-6 py-2.5 rounded-full font-bold text-xs shadow hover:bg-amber-50 transition whitespace-nowrap">
                     {{ $isRtl ? 'حمّل التطبيق وكن أول المستفيدين' : 'Download App & Be the First' }}
                 </a>
             </div>
@@ -168,7 +168,7 @@
                     </p>
                 </div>
             </div>
-            <a href="https://cleanstation.app.link/?channel=website" data-app-cta data-placement="coverage_not_found" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-xs shadow hover:bg-sky-700 transition whitespace-nowrap">
+            <a href="https://cleanstation.app.link/?channel=coverage" data-app-cta data-placement="coverage_not_found" class="bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold text-xs shadow hover:bg-sky-700 transition whitespace-nowrap">
                 {{ $isRtl ? 'اطلب بالتطبيق الحين' : 'Order via App Now' }}
             </a>
         </div>
@@ -178,7 +178,7 @@
             <p class="text-gray-500 text-sm mb-4 font-medium">
                 {{ $isRtl ? 'كل أحياء الرياض والمبرز مغطاة بالكامل' : 'All districts in Riyadh and Al-Mubarraz are fully covered' }}
             </p>
-            <a href="https://cleanstation.app.link/?channel=website" data-app-cta data-placement="coverage_bottom_cta" class="inline-block bg-sky-600 text-white px-10 py-3.5 rounded-full font-bold text-base shadow-lg hover:bg-sky-700 transition hover:-translate-y-0.5">
+            <a href="https://cleanstation.app.link/?channel=coverage" data-app-cta data-placement="coverage_bottom_cta" class="inline-block bg-sky-600 text-white px-10 py-3.5 rounded-full font-bold text-base shadow-lg hover:bg-sky-700 transition hover:-translate-y-0.5">
                 <i class="fa-solid fa-mobile-screen {{ $isRtl ? 'ml-2' : 'mr-2' }}"></i> {{ $isRtl ? 'اطلب الآن عبر التطبيق' : 'Order Now via App' }}
             </a>
         </div>

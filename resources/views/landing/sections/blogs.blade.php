@@ -40,6 +40,12 @@
                         <a href="{{ route('blogs-single', $post->slug) }}"
                             class="bg-white rounded-3xl p-6 flex flex-col md:flex-row gap-6 shadow-md hover:shadow-xl transition-all group cursor-pointer border border-gray-100 h-full block">
                             <div class="w-full md:w-1/3 h-48 md:h-full rounded-2xl overflow-hidden relative">
+                                @if($post->is_recently_published)
+                                <div
+                                    class="absolute top-4 right-4 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold z-10 shadow-sm">
+                                    <i class="fa-solid fa-bolt text-brand-500"></i> {{ trans('new') }}
+                                </div>
+                                @endif
                                 <x-website-image :src="$post->image_url" sizes="(min-width: 768px) 33vw, 100vw" width="640" height="480" loading="lazy" decoding="async" alt="{{ $post->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                             </div>
                             <div class="flex-1 flex flex-col justify-center">
@@ -60,7 +66,7 @@
             </div>
         @endif
         <div class="grid md:grid-cols-3 gap-8">
-            @foreach ($posts->skip(1) as $post)
+            @foreach ($posts->skip(2) as $post)
                 <a href="{{ route('blogs-single', $post->slug) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all group border border-gray-100 block"
                     data-aos="fade-up">
                     <div class="h-48 overflow-hidden relative">

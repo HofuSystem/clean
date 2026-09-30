@@ -55,7 +55,7 @@ class AuthenticationController extends Controller
                 'verified_code' => null,
                 'phone_verified_at' => now(),
                 'last_login_at' => now(),
-                'referral_code' => $this->generate_unique_code(8, '\\Core\\Users\\Models\\User', 'referral_code', 'alpha_numbers', 'lower')
+                'referral_code' => generate_referral_code(6)
             ];
 
             $user = User::create($userData);
@@ -252,6 +252,10 @@ class AuthenticationController extends Controller
     public function referral()
     {
         $user = auth()->user();
+        if (!$user->referral_code) {
+            $user->update(['referral_code' => generate_referral_code(6)]);
+            $user->refresh();
+        }
         $data = [];
         $data['referral_code'] = $user->referral_code;
         $data['earned_referral_points'] = $user->earned_referral_points;
@@ -267,7 +271,11 @@ class AuthenticationController extends Controller
         try {
             \DB::beginTransaction();
             $user = auth()->user();
-            $referralUser = User::where('referral_code', $request->referral_code)->first();
+            $inputCode = trim($request->referral_code);
+            $referralUser = User::where('referral_code', $inputCode)
+                ->orWhere('referral_code', strtoupper($inputCode))
+                ->orWhere('referral_code', strtolower($inputCode))
+                ->first();
             if (!$referralUser) {
                 throw new \RuntimeException(trans('the referral code is incorrect'));
             }
@@ -380,34 +388,7 @@ class AuthenticationController extends Controller
 
     function generate_unique_code($length, $model, $col = 'code', $type = 'numbers', $letter_type = 'all')
     {
-        if ($type == 'numbers') {
-            $characters = '0123456789';
-        } else {
-            switch ($letter_type) {
-                case 'all':
-                    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    break;
-                case 'lower':
-                    $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-                    break;
-                case 'upper':
-                    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    break;
-
-                default:
-                    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                    break;
-            }
-        }
-        $generate_random_code = '';
-        $charactersLength = strlen($characters);
-        for ($i = 0; $i < $length; $i++) {
-            $generate_random_code .= $characters[rand(0, $charactersLength - 1)];
-        }
-        if ($model::where($col, $generate_random_code)->exists()) {
-            $this->generate_unique_code($length, $model, $col, $type);
-        }
-        return $generate_random_code;
+        return \generate_unique_code($length, $model, $col, $type, $letter_type);
     }
 
     public function checkProfile(Request $request)

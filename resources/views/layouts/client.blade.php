@@ -193,19 +193,22 @@
                     @if ($tiktok)
                         <a href="{{ $tiktok }}" class="social-link"><i class="fab fa-tiktok"></i></a>
                     @endif
+                    @if (settings('snapchat'))
+                        <a href="{{ settings('snapchat') }}" class="social-link" title="Snapchat"><svg style="width:16px;height:16px;fill:currentColor;display:inline-block;vertical-align:middle" viewBox="0 0 24 24"><path d="M12.065 2c-3.107 0-5.467 2.314-5.467 5.258 0 .808.204 1.638.384 2.277.087.311.168.601.218.847-.323.098-.748.24-1.144.372-.455.152-.897.3-1.187.447-.282.143-.44.33-.44.516 0 .425.688.75 1.134.887.378.117.842.174 1.054.407.241.264.123.864.041 1.282-.047.243-.102.527-.087.771.026.425.321.674.83.674.321 0 .692-.093 1.077-.19.467-.117.962-.241 1.488-.241.341 0 .673.056.985.166.495.176 1.018.528 1.148.618.355.244.697.387 1.043.387.348 0 .692-.144 1.048-.388.13-.09.654-.442 1.149-.618.312-.11.644-.166.985-.166.526 0 1.021.124 1.488.241.385.097.756.19 1.077.19.509 0 .804-.249.83-.674.015-.244-.04-.528-.087-.771-.082-.418-.201-.864.041-1.282.212-.233.676-.29 1.054-.407.446-.137 1.134-.462 1.134-.887 0-.186-.158-.373-.44-.516-.29-.147-.732-.295-1.187-.447-.396-.132-.821-.274-1.144-.372.05-.246.131-.536.218-.847.18-.639.384-1.469.384-2.277C17.532 4.314 15.172 2 12.065 2z"/></svg></a>
+                    @endif
                 </div>
                 <p class="copyright">© {{ date('Y') }} {{ trans('app.name') }}</p>
             </div>
             <div class="footer-apps">
                 <p class="footer-text">{{ trans('client.download_app_message') }}</p>
                 <div class="app-buttons">
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=client_portal" target="_blank" rel="noopener"
                         onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'google', campaign_source: 'client_footer' });"
                         class="app-button">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
                             alt="{{ trans('client.google_play') }}">
                     </a>
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=client_portal" target="_blank" rel="noopener"
                         onclick="typeof gtag === 'function' && gtag('event', 'click_download', { app_store: 'apple', campaign_source: 'client_footer' });"
                         class="app-button">
                         <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"

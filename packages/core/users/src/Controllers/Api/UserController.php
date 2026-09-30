@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $user = auth('api')->user();
         if (!$user->referral_code) {
-            $user->update(['referral_code' => generate_unique_code(8, '\\App\\Models\\User', 'referral_code', 'alpha_numbers', 'lower')]);
+            $user->update(['referral_code' => generate_referral_code(6)]);
         }
         return (new UserProfileResource($user))->additional(['status' => 'success', 'message' => '']);
     }

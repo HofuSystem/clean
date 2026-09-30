@@ -856,7 +856,7 @@
                 @endif
             </div>
         </div>
-        <a href="https://cleanstation.app.link/?channel=website" class="sticky-mobile-cta-btn btn-glow-pulse">
+        <a href="https://cleanstation.app.link/?channel=mobile_sticky" class="sticky-mobile-cta-btn btn-glow-pulse">
             @if(LaravelLocalization::getCurrentLocale() === 'ar')
                 حمّل التطبيق
             @else

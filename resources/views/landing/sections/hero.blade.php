@@ -1,4 +1,5 @@
 @php
+    $isRtl = app()->getLocale() === 'ar';
     $counters = \Core\Pages\Models\Counter::with('translations')->get();
     $steps = \Core\Pages\Models\WorkStep::with('translations')->get();
 @endphp
@@ -39,32 +40,46 @@
                     {!! $section->description !!}
                 </div>
 
-                <div class="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start w-full">
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
+                <div class="flex flex-row items-center gap-3 justify-center lg:justify-start w-full">
+                    <a href="https://cleanstation.app.link/?channel=home" target="_blank" rel="noopener"
                        id="hero-appstore-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('ios', 'hero')"
-                       class="w-full xs:w-auto">
-                        <img width="119.66407" height="40" src="{{ asset('assets/store-badges/app-store.svg') }}" decoding="async" alt="Download Clean Station on the App Store"
+                       class="inline-block hover:scale-105 transition-transform duration-200" aria-label="App Store">
+                        <img width="144" height="48" src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" decoding="async" alt="{{ $isRtl ? 'حمله من App Store' : 'Download Clean Station on the App Store' }}"
                              class="store-badge store-badge-apple">
                     </a>
-                    <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener"
+                    <a href="https://cleanstation.app.link/?channel=home" target="_blank" rel="noopener"
                        id="hero-googleplay-btn"
                        onclick="window.cleanTrack && window.cleanTrack.appDownload('android', 'hero')"
-                       class="w-full xs:w-auto">
-                        <img width="646" height="192" src="{{ asset('assets/store-badges/google-play.svg') }}" decoding="async" alt="Download Clean Station on Google Play"
+                       class="inline-block hover:scale-105 transition-transform duration-200" aria-label="Google Play">
+                        <img width="161" height="48" src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" decoding="async" alt="{{ $isRtl ? 'احصل عليه من Google Play' : 'Download Clean Station on Google Play' }}"
                              class="store-badge store-badge-google">
                     </a>
                 </div>
 
-                <div class="flex items-center justify-center lg:justify-start gap-4 pt-2">
-                    <div class="flex -space-x-3 space-x-reverse">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=11" width="32" height="32" alt="{{ trans('trusted client') }}" loading="lazy" decoding="async">
-                        <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=12" width="32" height="32" alt="{{ trans('trusted client') }}" loading="lazy" decoding="async">
-                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-900 text-white flex items-center justify-center text-[10px] font-bold">+11k</div>
+                <div class="flex items-center justify-center lg:justify-start gap-3.5 pt-2">
+                    <div class="flex -space-x-2.5 space-x-reverse items-center">
+                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-tr from-sky-400 to-blue-500 flex items-center justify-center shadow-sm ring-1 ring-black/5" title="{{ trans('trusted client') }}">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-tr from-indigo-400 to-purple-500 flex items-center justify-center shadow-sm ring-1 ring-black/5" title="{{ trans('trusted client') }}">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-tr from-emerald-400 to-teal-500 flex items-center justify-center shadow-sm ring-1 ring-black/5" title="{{ trans('trusted client') }}">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-900 text-white flex items-center justify-center text-[10px] font-black shadow-sm ring-1 ring-black/5">+12K</div>
                     </div>
                     <div class="text-start">
-                        <div class="flex text-yellow-400 text-xs mb-0.5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                        <div class="text-[10px] font-bold text-gray-500">{{ trans('trusted clients') }}</div>
+                        <div class="flex items-center gap-1 mb-0.5">
+                            <div class="flex text-amber-400 gap-0.5">
+                                @for($s=0; $s<5; $s++)
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                @endfor
+                            </div>
+                            <span class="text-xs font-black text-slate-800 {{ $isRtl ? 'mr-1' : 'ml-1' }}">4.9</span>
+                        </div>
+                        <div class="text-[11px] font-bold text-gray-500">{{ trans('trusted clients') }}</div>
                     </div>
                 </div>
             </div>
@@ -254,7 +269,7 @@
 
         <!-- زر الطلب (تحميل التطبيق مباشرة عبر رابط الفرع الذكي) -->
         <div class="text-center relative z-10">
-            <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+            <a href="https://cleanstation.app.link/?channel=home" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 <span>اطلب هديتك عبر التطبيق</span>
             </a>
@@ -321,7 +336,7 @@
 
         <!-- Call to Action Button -->
         <div class="text-center relative z-10">
-            <a href="https://cleanstation.app.link/?channel=website" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
+            <a href="https://cleanstation.app.link/?channel=home" target="_blank" rel="noopener" class="btn-shimmer inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm md:text-base w-full md:w-auto text-decoration-none text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 <span>Order Your Gift via App</span>
             </a>

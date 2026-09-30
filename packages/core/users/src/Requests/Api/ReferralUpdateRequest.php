@@ -17,6 +17,15 @@ class ReferralUpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->has('referral_code')) {
+            $this->merge([
+                'referral_code' => trim($this->referral_code),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

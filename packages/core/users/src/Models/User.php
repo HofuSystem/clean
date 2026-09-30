@@ -386,7 +386,17 @@ class User extends Authenticatable
     {
         return $this->hasOne(Contract::class, 'client_id', 'id');
     }
-//start Attributes
+
+    public function attribution()
+    {
+        return $this->hasOne(UserAttribution::class, 'user_id', 'id');
+    }
+
+    public function branchEvents()
+    {
+        return $this->hasMany(BranchEventLog::class, 'user_id', 'id');
+    }
+    //start Attributes
 
 
     // Mutator for password hashing

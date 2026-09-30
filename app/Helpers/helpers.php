@@ -166,7 +166,13 @@ function distance($startLat, $startLng, $endLat, $endLng, $unit = "K")
 
 function generate_unique_code($length, $model, $col = 'code', $type = 'numbers', $letter_type = 'all')
 {
-    if ($type == 'numbers') {
+    if ($col === 'referral_code' || $type === 'referral' || in_array($letter_type, ['unambiguous', 'no_ambiguous'])) {
+        // Uppercase alphanumeric excluding ambiguous characters: 0, O, 1, I, L (e.g. KX7EYG)
+        $characters = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+        if ($length === 8 && $col === 'referral_code') {
+            $length = 6;
+        }
+    } elseif ($type == 'numbers') {
         $characters = '0123456789';
     } else {
         switch ($letter_type) {
@@ -185,15 +191,26 @@ function generate_unique_code($length, $model, $col = 'code', $type = 'numbers',
                 break;
         }
     }
-    $generate_random_code = '';
+
     $charactersLength = strlen($characters);
-    for ($i = 0; $i < $length; $i++) {
-        $generate_random_code .= $characters[rand(0, $charactersLength - 1)];
-    }
-    if ($model::where($col, $generate_random_code)->exists()) {
-        generate_unique_code($length, $model, $col, $type);
-    }
+    do {
+        $generate_random_code = '';
+        for ($i = 0; $i < $length; $i++) {
+            $generate_random_code .= $characters[random_int(0, $charactersLength - 1)];
+        }
+    } while ($model::where($col, $generate_random_code)->exists());
+
     return $generate_random_code;
+}
+
+if (!function_exists('generate_referral_code')) {
+    /**
+     * Generate an unambiguous 6-character uppercase referral code without 0, O, 1, I, L (e.g. KX7EYG)
+     */
+    function generate_referral_code($length = 6)
+    {
+        return generate_unique_code($length, \Core\Users\Models\User::class, 'referral_code', 'alpha_numbers', 'unambiguous');
+    }
 }
 
 
