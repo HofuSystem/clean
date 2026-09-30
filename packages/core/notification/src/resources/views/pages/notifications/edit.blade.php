@@ -88,9 +88,9 @@
                                 <select class="custom-select form-select advance-select" name="for" id="for">
                                     <option value="">{{ trans('select for') }}</option>
                                     <option value="all" @selected(isset($item) and $item->for == 'all')>{{ trans('الكل (جميع المستخدمين)') }}</option>
-                                    <option value="users" @selected(isset($item) and $item->for == 'users')>{{ trans('users') }}</option>
-                                    <option value="email" @selected(isset($item) and $item->for == 'email')>{{ trans('email') }}</option>
-                                    <option value="phone" @selected(isset($item) and $item->for == 'phone')>{{ trans('phone') }}</option>
+                                    <option value="users" @selected(isset($item) and $item->for == 'users')>{{ trans('مستخدمين محددين (اختيار بالاسم أو الجوال)') }}</option>
+                                    <option value="email" @selected(isset($item) and $item->for == 'email')>{{ trans('البريد الإلكتروني (إدخال يدوي)') }}</option>
+                                    <option value="phone" @selected(isset($item) and $item->for == 'phone')>{{ trans('رقم الجوال (إدخال يدوي)') }}</option>
                                 </select>
                             </div>
 
@@ -474,6 +474,8 @@
             if (forVal === 'users') {
                 $('#selected-users').slideDown();
                 $('#for-data-group').hide();
+                let userVal = $('#selected_users').val() || [];
+                $('[name=for_data]').val(userVal.length ? JSON.stringify(userVal) : '');
             } else if (forVal === 'email') {
                 $('#selected-users').hide();
                 $('#for-data-group').slideDown();
@@ -488,18 +490,35 @@
                 // 'all' or empty
                 $('#selected-users').slideUp();
                 $('#for-data-group').slideUp();
+                $('[name=for_data]').val('');
             }
         }
 
         $('#for').on('change', function() {
             updateForFields();
+            if (typeof DataTable !== 'undefined') {
+                DataTable.draw();
+            }
         });
         updateForFields();
 
-        $('#selected_users').change(function(e) {
+        $('#selected_users').on('change', function(e) {
             e.preventDefault();
-            let value = $(this).val();
-            $('[name=for_data]').val(JSON.stringify(value));
+            let value = $(this).val() || [];
+            $('[name=for_data]').val(value.length ? JSON.stringify(value) : '');
+            if (typeof DataTable !== 'undefined') {
+                DataTable.draw();
+            }
+        });
+
+        let forDataTimeout = null;
+        $('#for_data').on('input change', function() {
+            clearTimeout(forDataTimeout);
+            forDataTimeout = setTimeout(function() {
+                if (typeof DataTable !== 'undefined') {
+                    DataTable.draw();
+                }
+            }, 400);
         });
 
         var cols = [];
@@ -509,7 +528,7 @@
             @else
                 '{{ route('dashboard.notifications.getusers') }}'
             @endif ;
-        let formData = getFormData($('#operation-form'));
+        let filterParams = {};
         cols = [];
         $('table#view-datatable-notification-users thead th').each(function(index, element) {
             let data = $(this).data('name');
@@ -559,7 +578,8 @@
                 url: url,
                 type: 'POST',
                 data: function(data) {
-                    $.extend(data, formData);
+                    let currentFormData = getFormData($('#operation-form'));
+                    $.extend(data, currentFormData, filterParams);
                     return data;
                 },
                 error: function(xhr, error, thrown) {
@@ -572,12 +592,9 @@
         // Handle filter Apply button
         $('#filter-apply-btn').on('click', function(e) {
             e.preventDefault();
-            let filterData = {
-                filter_fullname: $('#filter_fullname').val(),
-                filter_phone: $('#filter_phone').val(),
-                filter_status: $('#filter_status').val()
-            };
-            $.extend(formData, filterData);
+            filterParams.filter_fullname = $('#filter_fullname').val();
+            filterParams.filter_phone = $('#filter_phone').val();
+            filterParams.filter_status = $('#filter_status').val();
             DataTable.draw();
         });
 
@@ -587,16 +604,15 @@
             $('#filter_fullname').val('');
             $('#filter_phone').val('');
             $('#filter_status').val('');
-            delete formData.filter_fullname;
-            delete formData.filter_phone;
-            delete formData.filter_status;
+            delete filterParams.filter_fullname;
+            delete filterParams.filter_phone;
+            delete filterParams.filter_status;
             DataTable.draw();
         });
 
         @if (!isset($item))
-            $('#for, #users-filters input, #selected_users, #purpose').change(function(e) {
+            $('#users-filters input, #purpose').change(function(e) {
                 e.preventDefault();
-                formData = getFormData($('#operation-form'));
                 DataTable.draw();
             });
         @endisset
