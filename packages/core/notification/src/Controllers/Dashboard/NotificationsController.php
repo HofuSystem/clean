@@ -778,6 +778,7 @@ class NotificationsController extends Controller
     }
 
     public function getUsers(Request $request){
+        $recordsTotal       = User::count();
         $users              = $this->notificationsManger->getNotificationUserQuery(
             $request->for,
             $request->for_data,

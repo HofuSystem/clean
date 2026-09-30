@@ -345,12 +345,14 @@ const fullToolbar = [
     if (typeof drawMediaCenters === 'function') {
       drawMediaCenters($('#operation-form'));
     }
-    $("table[orderable]").tableDnD({
-      onDragClass: "myDragClass",
-      onDragStop: function (table, row) {
-        reorderTable(table);
-      },
-    });
+    if (typeof $.fn.tableDnD === 'function') {
+      $("table[orderable]").tableDnD({
+        onDragClass: "myDragClass",
+        onDragStop: function (table, row) {
+          reorderTable(table);
+        },
+      });
+    }
 
     var select2ArLanguage = {
       noResults: function () { return "لا توجد نتائج"; },
