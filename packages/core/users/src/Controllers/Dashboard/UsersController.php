@@ -292,6 +292,8 @@ class UsersController extends Controller
                 return [
                     'id' => $user->id,
                     'text' => $user->fullname . ($user->phone ? ' (' . $user->phone . ')' : ''),
+                    'fullname' => $user->fullname,
+                    'phone' => $user->phone,
                     'image' => $user->avatar_url ?? null
                 ];
             })

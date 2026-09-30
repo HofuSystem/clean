@@ -418,19 +418,25 @@
             if (user.loading) {
                 return user.text;
             }
-            var markup = `
-                <div class="d-flex align-items-center">
-                    <img src="${user.image}" class="rounded-circle me-2" style="width: 30px; height: 30px;" />
+            if (!user.id) {
+                return user.text;
+            }
+            let name = user.fullname || user.text || '';
+            let phone = user.phone ? `<div class="text-muted" style="font-size: 0.82rem; margin-top: 2px;">${user.phone}</div>` : '';
+            let img = user.image ? `<img src="${user.image}" class="rounded-circle me-2" style="width: 28px; height: 28px; object-fit: cover;" onerror="this.style.display='none'" />` : '';
+
+            return `
+                <div class="d-flex align-items-center py-1">
+                    ${img}
                     <div>
-                        <div class="fw-bold">${user.text}</div>
-                        <div class="text-muted fs-7">${user.phone}</div>
+                        <div class="fw-bold">${name}</div>
+                        ${phone}
                     </div>
                 </div>`;
-            return markup;
         }
 
         function formatUserSelection(user) {
-            return user.text || user.id;
+            return user.text || (user.fullname ? user.fullname + (user.phone ? ' (' + user.phone + ')' : '') : user.id);
         }
 
         $('#selected_users').select2({
