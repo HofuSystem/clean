@@ -115,8 +115,8 @@ class NotificationsResource extends JsonResource
         ];
 
         $for = $this->for;
-        if ($for == "users") {
-            $count = $this->users()->count();
+        if ($for == "users" || $for == "all") {
+            $count = $this->targeted_users_count ?: $this->users()->count();
             $users = $this->users()->first();
             if ($count == 1 && $users) {
                 $for = "<a href='".route('dashboard.users.edit', $users->id)."'>".$users->phone." - ".$users->fullname."</a>";

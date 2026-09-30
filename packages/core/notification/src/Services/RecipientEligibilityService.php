@@ -40,8 +40,6 @@ class RecipientEligibilityService
             $userIds = NotificationDataNormalizer::toUserIds($forData);
             if (!empty($userIds)) {
                 $query->whereIn('id', $userIds);
-            } else {
-                $query->whereRaw('1 = 0'); // Empty user list
             }
         } elseif ($for === 'email') {
             $emails = NotificationDataNormalizer::toStringList($forData);

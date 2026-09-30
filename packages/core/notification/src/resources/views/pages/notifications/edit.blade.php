@@ -87,6 +87,7 @@
                                 <label class="required" for="for">{{ trans('for') }}</label>
                                 <select class="custom-select form-select advance-select" name="for" id="for">
                                     <option value="">{{ trans('select for') }}</option>
+                                    <option value="all" @selected(isset($item) and $item->for == 'all')>{{ trans('الكل (جميع المستخدمين)') }}</option>
                                     <option value="users" @selected(isset($item) and $item->for == 'users')>{{ trans('users') }}</option>
                                     <option value="email" @selected(isset($item) and $item->for == 'email')>{{ trans('email') }}</option>
                                     <option value="phone" @selected(isset($item) and $item->for == 'phone')>{{ trans('phone') }}</option>
@@ -107,9 +108,9 @@
                                 </select>
                             </div>
 
-                            <div class="form-group mb-3 col-md-12">
-                                <label class="" for="for_data">{{ trans('for data') }}</label>
-                                <textarea name="for_data" class="form-control" placeholder="{{ trans('Enter for data') }}">@isset($item){{ $item->for_data }}@endisset</textarea>
+                            <div class="form-group mb-3 col-md-12" id="for-data-group">
+                                <label id="for_data_label" class="" for="for_data">{{ trans('for data') }}</label>
+                                <textarea name="for_data" id="for_data" class="form-control" placeholder="{{ trans('Enter for data') }}">@isset($item){{ $item->for_data }}@endisset</textarea>
                             </div>
 
                             <div id="users-filters" class="row">
@@ -453,9 +454,47 @@
             templateSelection: formatUserSelection,
             escapeMarkup: function(markup) { return markup; },
             minimumInputLength: 2,
+            language: {
+                inputTooShort: function() {
+                    return "يرجى كتابة حرفين أو رقمين للبحث عن مستخدم بالاسم أو الجوال...";
+                },
+                noResults: function() {
+                    return "لم يتم العثور على أي مستخدم";
+                },
+                searching: function() {
+                    return "جاري البحث في قاعدة البيانات...";
+                }
+            },
             width: '100%',
             placeholder: "{{ trans('select users') }}"
         });
+
+        function updateForFields() {
+            let forVal = $('#for').val();
+            if (forVal === 'users') {
+                $('#selected-users').slideDown();
+                $('#for-data-group').hide();
+            } else if (forVal === 'email') {
+                $('#selected-users').hide();
+                $('#for-data-group').slideDown();
+                $('#for_data_label').text("عناوين البريد الإلكتروني (مفصولة بفواصل ,)");
+                $('#for_data').attr('placeholder', "مثال: a@example.com, b@example.com");
+            } else if (forVal === 'phone') {
+                $('#selected-users').hide();
+                $('#for-data-group').slideDown();
+                $('#for_data_label').text("أرقام الجوال (مفصولة بفواصل ,)");
+                $('#for_data').attr('placeholder', "مثال: 0501234567, 0551234567");
+            } else {
+                // 'all' or empty
+                $('#selected-users').slideUp();
+                $('#for-data-group').slideUp();
+            }
+        }
+
+        $('#for').on('change', function() {
+            updateForFields();
+        });
+        updateForFields();
 
         $('#selected_users').change(function(e) {
             e.preventDefault();

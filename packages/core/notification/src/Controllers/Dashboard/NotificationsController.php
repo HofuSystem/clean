@@ -778,8 +778,18 @@ class NotificationsController extends Controller
     }
 
     public function getUsers(Request $request){
-        $recordsTotal       = User::count();
-        $users              = $this->notificationsManger->getNotificationUserQuery($request->for,$request->for_data,$request->register_from,$request->register_to,$request->orders_from,$request->orders_to,$request->orders_min,$request->orders_max)
+        $users              = $this->notificationsManger->getNotificationUserQuery(
+            $request->for,
+            $request->for_data,
+            $request->register_from,
+            $request->register_to,
+            $request->orders_from,
+            $request->orders_to,
+            $request->orders_min,
+            $request->orders_max,
+            [],
+            $request->purpose
+        )
         ->when($request->filter_fullname, function ($query) use ($request) {
             $query->where('fullname', 'like', '%' . $request->filter_fullname . '%');
         })

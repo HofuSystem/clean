@@ -109,8 +109,6 @@ class NotificationsManger
             $userIds = NotificationDataNormalizer::toUserIds($forData);
             if (!empty($userIds)) {
                 $query->whereIn('id', $userIds);
-            } else {
-                $query->whereRaw('1 = 0');
             }
         })
         ->when($for === 'email', function ($query) use ($forData) {
