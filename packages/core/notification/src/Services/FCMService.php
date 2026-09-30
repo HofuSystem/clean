@@ -52,23 +52,42 @@ class FCMService
 
     public function convertIntegersToStrings($array)
     {
-        if (!is_array($array)) {
-            return $array;
+        if (empty($array)) {
+            return is_array($array) ? [] : $array;
         }
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $array[$key] = $this->convertIntegersToStrings($value);
-            } elseif (is_int($value)) {
-                $array[$key] = (string)$value;
+        if (is_string($array)) {
+            $decoded = json_decode($array, true);
+            if (is_array($decoded)) {
+                $array = $decoded;
+            } else {
+                return $array;
             }
         }
-        return $array;
+        if (!is_array($array)) {
+            return (string)$array;
+        }
+
+        $formatted = [];
+        foreach ($array as $key => $value) {
+            $strKey = (string)$key;
+            if (is_array($value) || is_object($value)) {
+                $formatted[$strKey] = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            } elseif (is_bool($value)) {
+                $formatted[$strKey] = $value ? '1' : '0';
+            } elseif (is_null($value)) {
+                $formatted[$strKey] = '';
+            } else {
+                $formatted[$strKey] = (string)$value;
+            }
+        }
+
+        return $formatted;
     }
 
     /**
      * Legacy topic subscription manager for IID Google API.
      */
-    public function manageTopicSubscription(string $type = 'add', array $deviceTokens, string $topic, string $accessToken)
+    public function manageTopicSubscription(string $type, array $deviceTokens, string $topic, string $accessToken)
     {
         $url = ($type == "add") ? "https://iid.googleapis.com/iid/v1:batchAdd" : "https://iid.googleapis.com/iid/v1:batchRemove";
         $data = [
@@ -167,6 +186,8 @@ class FCMService
                 return;
             }
 
+            $formattedData = !empty($payload) ? $this->convertIntegersToStrings($payload) : null;
+
             $data = [
                 'message' => [
                     'topic' => $topic,
@@ -174,7 +195,7 @@ class FCMService
                         'title' => $title,
                         'body' => $message,
                     ],
-                    'data' => !empty($payload) ? $this->convertIntegersToStrings($payload) : null
+                    'data' => !empty($formattedData) ? $formattedData : null
                 ]
             ];
             $url = "https://fcm.googleapis.com/v1/projects/{$fcmConfig['project_id']}/messages:send";
@@ -183,10 +204,15 @@ class FCMService
                 'Content-Type' => 'application/json',
             ])->post($url, $data);
 
-            try {
-                app(TelegramNotificationService::class)->sendMessage('@itcleanstation', $response->body());
-            } catch (\Throwable $e) {
-                // Ignore telegram failure
+            if ($response->failed()) {
+                try {
+                    app(TelegramNotificationService::class)->sendMessage(
+                        '@itcleanstation',
+                        "⚠️ خطأ في إرسال إشعار FCM للموضوع [{$topic}]:\n" . $response->body()
+                    );
+                } catch (\Throwable $e) {
+                    // Ignore telegram failure
+                }
             }
         } catch (\Throwable $e) {
             report($e);
@@ -249,7 +275,6 @@ class FCMService
             $rawPayload = is_string($notification->payload) ? json_decode($notification->payload, true) : (array)$notification->payload;
         }
         $payload = $this->convertIntegersToStrings($rawPayload);
-        unset($payload['sender_data']);
 
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
