@@ -112,6 +112,8 @@ class NotificationRecipientStatusAndLocalizationTest extends TestCase
             ]);
 
         $response->assertStatus(200);
+        $this->assertNotNull($response->json('data.0.orders_count'));
+        $this->assertEquals('0', (string)$response->json('data.0.orders_count'));
 
         // Verify that the record was healed to 'sent'
         $pivot = DB::table('users_notifications')

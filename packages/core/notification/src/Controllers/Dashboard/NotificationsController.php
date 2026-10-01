@@ -821,7 +821,9 @@ class NotificationsController extends Controller
         if ($item) {
             $this->syncCompletedCampaignStatuses($item);
         }
-        $users          = $item->users()->withPivot('status', 'response');
+        $users          = $item->users()
+            ->withPivot('status', 'response')
+            ->withCount('orders');
         $users          = $users->when($request->filter_fullname, function ($query) use ($request) {
             $query->where('fullname', 'like', '%' . $request->filter_fullname . '%');
         })
