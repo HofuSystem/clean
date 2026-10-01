@@ -541,7 +541,8 @@
             let name = (index == 0) ? data : $(this).text();
             let col = {
                 'name': name,
-                'data': data
+                'data': data,
+                'defaultContent': ''
             };
             if ($(this).attr('orderable')) {
                 col.orderable = ($(this).attr('orderable') == true);

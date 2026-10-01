@@ -1,7 +1,8 @@
 @extends('admin::layouts.dashboard')
 @php
-    $isFcmChannel = isset($item) ? $item->isFcm() : true;
-    $channel = isset($item) ? $item->getChannel() : 'app_fcm';
+    $isFcmChannel = isset($isFcmChannel) ? $isFcmChannel : (isset($item) ? $item->isFcm() : true);
+    $resolvedChannel = isset($resolvedChannel) ? $resolvedChannel : (isset($item) ? $item->getChannel() : 'app_fcm');
+    $channel = $resolvedChannel;
     $resolvedPurpose = isset($item) ? $item->getPurpose() : ($item->purpose ?? 'legacy_unknown');
     $transportType = isset($item) ? $item->getTransportType() : 'Legacy Topic Subscription';
 @endphp
@@ -515,7 +516,17 @@
 
                         <!-- Tab 4: Engagement -->
                         <div class="tab-pane fade" id="tab-engagement" role="tabpanel">
-                            @if(!$isDirect)
+                            @if(!$isFcmChannel)
+                                <div class="alert alert-secondary d-flex align-items-center p-4">
+                                    <i class="fas fa-info-circle fs-2 text-secondary me-3"></i>
+                                    <div>
+                                        <h5 class="fw-bold mb-1">قياس التفاعل عبر التطبيق غير منطبق لقناة {{ ucfirst($resolvedChannel) }}</h5>
+                                        <p class="mb-0 fs-7">
+                                            تم إرسال هذا الإشعار عبر قناة خارجية ({{ ucfirst($resolvedChannel) }}). تتبع أحداث الوصول والفتح داخل التطبيق مخصص لإشعارات التطبيق (Push Notifications).
+                                        </p>
+                                    </div>
+                                </div>
+                            @elseif(!$isDirect)
                                 <div class="alert alert-primary d-flex align-items-center p-4">
                                     <i class="fas fa-info-circle fs-2 text-primary me-3"></i>
                                     <div>

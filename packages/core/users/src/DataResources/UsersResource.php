@@ -88,6 +88,10 @@ class UsersResource extends JsonResource
             }
         }
 
+        // Aliases for DataTables in notifications to prevent "Requested unknown parameter" warnings
+        $data['pivot_status'] = $data['sent_status'] ?? '';
+        $data['resend_action'] = $data['showActions'] ?? ($data['actions'] ?? '');
+
         return $data;
     }
 }

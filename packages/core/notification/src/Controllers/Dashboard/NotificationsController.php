@@ -93,6 +93,8 @@ class NotificationsController extends Controller
         $comments = $item->comments()->where('parent_id', null)->get();
 
         $deliveryChannel = $item->getDeliveryChannel();
+        $isFcmChannel = $item->isFcm();
+        $resolvedChannel = $item->getChannel();
         
         $isDirect = ($deliveryChannel === 'direct_fcm');
         $deliveryEventsEnabled = config('notification.delivery_events_enabled', true);
@@ -149,6 +151,7 @@ class NotificationsController extends Controller
 
         return view('notification::pages.notifications.show', compact(
             'title', 'screen', 'item', 'comments', 'isDirect', 'deliveryChannel',
+            'isFcmChannel', 'resolvedChannel',
             'totalTargeted', 'eligibleUsers', 'eligibleDevices', 'acceptedByFcm',
             'hasSavedLegacyCount', 'legacyTopicCount', 'permFailed', 'transFailed', 'receivedDisplay',
             'openedDisplay', 'deliveryRateDisplay', 'openRateDisplay',
