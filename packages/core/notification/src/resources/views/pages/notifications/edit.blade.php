@@ -233,12 +233,12 @@
 
                                         @isset($item)
                                             <div class="col-md-4 mb-1">
-                                                <label for="filter_status"> @lang('status') </label>
+                                                <label for="filter_status"> {{ app()->getLocale() == 'ar' ? 'الحالة' : 'Status' }} </label>
                                                 <select name="filter_status" id="filter_status" class="form-select filter-input">
-                                                    <option value="">@lang('all statuses')</option>
-                                                    <option value="sent">@lang('sent')</option>
-                                                    <option value="pending">@lang('pending')</option>
-                                                    <option value="failed">@lang('failed')</option>
+                                                    <option value="">{{ app()->getLocale() == 'ar' ? 'جميع الحالات' : 'All Statuses' }}</option>
+                                                    <option value="sent">{{ app()->getLocale() == 'ar' ? 'تم الإرسال' : 'Sent' }}</option>
+                                                    <option value="pending">{{ app()->getLocale() == 'ar' ? 'قيد الانتظار' : 'Pending' }}</option>
+                                                    <option value="failed">{{ app()->getLocale() == 'ar' ? 'فشل الإرسال' : 'Failed' }}</option>
                                                 </select>
                                             </div>
                                         @endisset

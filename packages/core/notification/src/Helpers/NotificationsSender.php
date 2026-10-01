@@ -149,8 +149,21 @@ class NotificationsSender
         try {
             $lastOne = end($receivers);
             $notificationId = is_array($lastOne) ? ($lastOne['notificationId'] ?? null) : ($lastOne->notificationId ?? null);
-            $tokens = collect($receivers)->pluck('token')->toArray();
+            $tokens = collect($receivers)->pluck('token')->filter()->toArray();
             FCMService::getInstance()->sendToCustomTopic($notificationId,'fcm-function-v5',$tokens,$title,$message,$payload);
+
+            $userIds = collect($receivers)->pluck('id')->filter()->unique()->toArray();
+            if (!empty($userIds) && !empty($notificationId)) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notificationId)
+                    ->whereIn('user_id', $userIds)
+                    ->where('status', 'pending')
+                    ->update([
+                        'status' => 'sent',
+                        'response' => 'Sent successfully via FCM'
+                    ]);
+            }
         } catch (\Throwable $e) {
             report($e);
         }

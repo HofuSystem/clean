@@ -60,6 +60,9 @@ class NotificationsController extends Controller
 
     public function createOrEdit(Request $request, $id = null){
         $item       = isset($id)    ? $this->notificationsService->get($id) : null;
+        if ($item) {
+            $this->syncCompletedCampaignStatuses($item);
+        }
         $screen     = isset($item)  ? 'Notification-edit'          : 'Notification-create';
         $title      = isset($item)  ? trans("Notification  edit")  : trans("Notification  create");
         $selectedIds = isset($item) ? (ToolHelper::isJson($item->for_data) ? json_decode($item->for_data, true) : []) : [];
@@ -815,6 +818,9 @@ class NotificationsController extends Controller
 
     public function getSentToUsers(Request $request,$id){
         $item           = $this->notificationsService->get($id);
+        if ($item) {
+            $this->syncCompletedCampaignStatuses($item);
+        }
         $users          = $item->users()->withPivot('status', 'response');
         $users          = $users->when($request->filter_fullname, function ($query) use ($request) {
             $query->where('fullname', 'like', '%' . $request->filter_fullname . '%');
@@ -835,5 +841,43 @@ class NotificationsController extends Controller
             'recordsFiltered'   => $recordsFiltered,
             'data'              => $users
         ]);
+    }
+
+    /**
+     * Self-heal completed legacy notifications: ensure users with registered devices are marked as sent.
+     */
+    protected function syncCompletedCampaignStatuses(Notification $notification): void
+    {
+        if ($notification->processing_status === 'completed') {
+            $eligibleUserIds = DB::table('users_notifications')
+                ->join('devices', 'users_notifications.user_id', '=', 'devices.user_id')
+                ->where('users_notifications.notifications_type', Notification::class)
+                ->where('users_notifications.notifications_id', $notification->id)
+                ->where('users_notifications.status', 'pending')
+                ->whereNotNull('devices.device_token')
+                ->where('devices.token_status', '!=', 'invalid')
+                ->pluck('users_notifications.user_id')
+                ->unique()
+                ->toArray();
+
+            if (!empty($eligibleUserIds)) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->whereIn('user_id', $eligibleUserIds)
+                    ->update([
+                        'status' => 'sent',
+                        'response' => 'Sent successfully via FCM'
+                    ]);
+
+                $sentCount = DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->where('status', 'sent')
+                    ->count();
+
+                $notification->update(['sent_count' => $sentCount]);
+            }
+        }
     }
 }

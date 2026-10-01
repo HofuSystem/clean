@@ -160,6 +160,59 @@ class FCMService
                     'invalid_reason' => 'Legacy topic subscription failure'
                 ]);
             }
+
+            // Update users_notifications status and notification sent_count
+            if (!empty($notificationId)) {
+                $workingTokensOnly = array_column($workingTokens, 'token');
+                if (!empty($workingTokensOnly)) {
+                    $workingUserIds = Device::whereIn('device_token', $workingTokensOnly)
+                        ->pluck('user_id')
+                        ->filter()
+                        ->unique()
+                        ->toArray();
+
+                    if (!empty($workingUserIds)) {
+                        DB::table('users_notifications')
+                            ->where('notifications_type', Notification::class)
+                            ->where('notifications_id', $notificationId)
+                            ->whereIn('user_id', $workingUserIds)
+                            ->update([
+                                'status' => 'sent',
+                                'response' => 'Sent successfully via FCM'
+                            ]);
+                    }
+                }
+
+                if (!empty($notWorkingTokens)) {
+                    $failedUserIds = Device::whereIn('device_token', $notWorkingTokens)
+                        ->pluck('user_id')
+                        ->filter()
+                        ->unique()
+                        ->toArray();
+
+                    if (!empty($failedUserIds)) {
+                        DB::table('users_notifications')
+                            ->where('notifications_type', Notification::class)
+                            ->where('notifications_id', $notificationId)
+                            ->whereIn('user_id', $failedUserIds)
+                            ->where('status', 'pending')
+                            ->update([
+                                'status' => 'failed',
+                                'response' => 'Failed topic subscription'
+                            ]);
+                    }
+                }
+
+                $sentCount = DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notificationId)
+                    ->where('status', 'sent')
+                    ->count();
+
+                Notification::where('id', $notificationId)->update([
+                    'sent_count' => $sentCount,
+                ]);
+            }
         } catch (\Throwable $e) {
             report($e);
             DB::table('users_notifications')

@@ -25,6 +25,7 @@ class Notification extends CoreModel {
         'purpose',
         'channel',
         'processing_status',
+        'sent_count',
         'started_at',
         'completed_at',
         'targeted_users_count',

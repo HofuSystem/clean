@@ -541,9 +541,16 @@ class NotificationsManger
             dispatch(new SendApps($this->tokensList->toArray(), $this->title, $this->message));
         }
 
+        $sentCount = DB::table('users_notifications')
+            ->where('notifications_type', Notification::class)
+            ->where('notifications_id', $this->notification->id)
+            ->where('status', 'sent')
+            ->count();
+
         $this->notification->update([
             'processing_status' => 'completed',
             'completed_at' => now(),
+            'sent_count' => $sentCount ?: $this->tokensList->count(),
         ]);
     }
 
@@ -570,7 +577,7 @@ class NotificationsManger
         $this->title = $notification->title;
         $this->message = $notification->body;
 
-        $userIds = $users instanceof \Illuminate\Support\Collection ? $users->pluck('id')->toArray() : (array)$users;
+        $userIds = collect($users)->map(fn($u) => is_object($u) ? ($u->id ?? null) : (is_array($u) ? ($u['id'] ?? null) : $u))->filter()->unique()->values()->toArray();
         $devices = Device::whereIn('user_id', $userIds)
             ->whereNotNull('device_token')
             ->where('token_status', '!=', 'invalid')
@@ -597,8 +604,41 @@ class NotificationsManger
             if (config('notification.direct_fcm_enabled', false)) {
                 $this->dispatchAppPushes($eligibleDevices);
             } else {
-                $this->sendLegacyApps();
+                $eligibleTokens = array_column($eligibleDevices, 'token');
+                FCMService::getInstance()->sendToCustomTopic(
+                    $notification->id,
+                    'resend-function-v5',
+                    $eligibleTokens,
+                    $this->title,
+                    $this->message,
+                    $this->payload ?? []
+                );
+
+                $eligibleUserIds = array_unique(array_column($eligibleDevices, 'user_id'));
+                if (!empty($eligibleUserIds)) {
+                    DB::table('users_notifications')
+                        ->where('notifications_type', Notification::class)
+                        ->where('notifications_id', $notification->id)
+                        ->whereIn('user_id', $eligibleUserIds)
+                        ->update([
+                            'status' => 'sent',
+                            'response' => 'Sent successfully via FCM'
+                        ]);
+                }
             }
+        }
+
+        $userIdsWithTokens = array_unique(array_column($eligibleDevices, 'user_id'));
+        $userIdsWithoutTokens = array_diff($userIds, $userIdsWithTokens);
+        if (!empty($userIdsWithoutTokens)) {
+            DB::table('users_notifications')
+                ->where('notifications_id', $notification->id)
+                ->where('notifications_type', Notification::class)
+                ->whereIn('user_id', $userIdsWithoutTokens)
+                ->update([
+                    'status' => 'failed',
+                    'response' => 'No device token'
+                ]);
         }
     }
 
