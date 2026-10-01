@@ -236,7 +236,7 @@
                         <span>{{ trans('Short-term Rental Hosts') }}</span>
                     </span>
                     <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900">
-                        {{ $isRtl ? 'خدمات مخصصة لمضيفي الشقق والعطلات (Airbnb & جاذر إن)' : 'Tailored Services for Vacation & Airbnb Hosts' }}
+                        {{ $isRtl ? 'خدمات مخصصة لمضيفي الشقق والعطلات (Gathern & Airbnb)' : 'Tailored Services for Vacation & Airbnb Hosts' }}
                     </h2>
                     <p class="text-slate-600 text-base leading-relaxed max-w-2xl">
                         {{ trans('Boost your ratings with premium laundry service. Offer exclusive discounts to guests and earn commission on every order.') }}
@@ -271,7 +271,7 @@
                             <p class="text-xs text-slate-500 mt-0.5">{{ $isRtl ? 'كود الشريك المعتمد لضيوفك' : 'Approved Partner Code for Guests' }}</p>
                         </div>
                         <div class="bg-indigo-50/80 border border-dashed border-indigo-300 text-indigo-800 text-sm py-2.5 px-4 rounded-xl font-mono font-bold tracking-wider">
-                            CODE: HOST2026
+                            {{ $isRtl ? 'الرمز: HOST2026' : 'CODE: HOST2026' }}
                         </div>
                         <p class="text-[11px] text-slate-400 font-medium">{{ trans('Works with Gathern, Airbnb, Booking') }}</p>
                     </div>
@@ -340,7 +340,7 @@
                             <select name="type" class="w-full bg-slate-50 border @error('type') border-rose-500 @else border-slate-200 @enderror p-3.5 rounded-xl focus:bg-white focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all outline-none text-sm font-semibold text-slate-900">
                                 <option value="Hotel" {{ old('type') == 'Hotel' ? 'selected' : '' }}>{{ $isRtl ? 'فنادق ومنتجعات' : 'Hotels & Resorts' }}</option>
                                 <option value="Apartments" {{ old('type') == 'Apartments' ? 'selected' : '' }}>{{ $isRtl ? 'شقق مخدومة وعقارات مفروشة' : 'Serviced Apartments' }}</option>
-                                <option value="Host" {{ old('type') == 'Host' ? 'selected' : '' }}>{{ $isRtl ? 'مضيف (جاذر إن / Airbnb)' : 'Host (Gathern / Airbnb)' }}</option>
+                                <option value="Host" {{ old('type') == 'Host' ? 'selected' : '' }}>{{ $isRtl ? 'مضيف (Gathern / Airbnb)' : 'Host (Gathern / Airbnb)' }}</option>
                                 <option value="Medical" {{ old('type') == 'Medical' ? 'selected' : '' }}>{{ $isRtl ? 'مستشفيات ومراكز طبية' : 'Hospitals & Medical Centers' }}</option>
                                 <option value="Salon" {{ old('type') == 'Salon' ? 'selected' : '' }}>{{ $isRtl ? 'صالونات تجميل وسبا' : 'Beauty Salons & Spas' }}</option>
                                 <option value="Gym" {{ old('type') == 'Gym' ? 'selected' : '' }}>{{ $isRtl ? 'نوادي رياضية ولياقة' : 'Gyms & Fitness Centers' }}</option>
