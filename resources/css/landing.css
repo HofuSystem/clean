@@ -403,3 +403,11 @@
 #gifts-premium-section .text-sky-500 { color: #0369a1; }
 .btn-shimmer, .sticky-mobile-cta-btn { background-image: linear-gradient(135deg, #0369a1, #075985); }
 .text-gradient { background-image: linear-gradient(135deg, #075985, #0369a1, #075985); }
+
+/* Social Buttons Distinct Brand Hover States */
+.social-btn-twitter:hover { border-color: #0ea5e9 !important; background-color: #0284c7 !important; color: #ffffff !important; }
+.social-btn-instagram:hover { border-color: #ec4899 !important; background-color: #db2777 !important; color: #ffffff !important; }
+.social-btn-tiktok:hover { border-color: #a3a3a3 !important; background-color: #000000 !important; color: #ffffff !important; }
+.social-btn-snapchat:hover { border-color: #facc15 !important; background-color: #eab308 !important; color: #111827 !important; }
+.social-btn-youtube:hover { border-color: #ef4444 !important; background-color: #dc2626 !important; color: #ffffff !important; }
+.social-btn-facebook:hover { border-color: #3b82f6 !important; background-color: #2563eb !important; color: #ffffff !important; }

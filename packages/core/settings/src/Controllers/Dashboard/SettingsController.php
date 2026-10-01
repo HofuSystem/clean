@@ -56,9 +56,9 @@ class SettingsController extends Controller
                 $data['sales_allowed_payment_methods'] = json_encode($data['sales_allowed_payment_methods']);
             }
             
-            $data  = array_filter($data,function($value){
-                return $value !== null;
-            });
+            $data = array_map(function($value){
+                return $value === null ? '' : $value;
+            }, $data);
             $this->settingsService->saveSettings($data);
             return $this->returnSuccessMessage(trans('settings saved'));
         } catch (\Throwable $th) {

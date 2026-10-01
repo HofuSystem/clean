@@ -40,7 +40,7 @@ class SettingsService
     public function saveSettings(array $settings)
     {
        foreach ($settings as $key => $value) {
-            $encodedValue = (is_array($value) || is_object($value)) ? json_encode($value) : $value;
+            $encodedValue = (is_array($value) || is_object($value)) ? json_encode($value) : ($value ?? '');
             Setting::updateOrCreate([
                 'key' => $key,
             ], [
