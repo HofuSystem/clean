@@ -17,26 +17,34 @@
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-sm">{{ config('app.description') }}</p>
                 <div class="flex flex-wrap gap-2.5 justify-center md:justify-start">
-                    <a href="{{ setting('twitter', 'https://x.com/CleanStationSA') }}" target="_blank" rel="noopener" 
+                    @if(setting('twitter'))
+                    <a href="{{ setting('twitter') }}" target="_blank" rel="noopener" 
                        class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 hover:border-sky-500 hover:bg-sky-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-105" 
                        aria-label="X (Twitter)" title="X (Twitter)">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
-                    <a href="{{ setting('instagram', 'https://www.instagram.com/cleanstation.app/') }}" target="_blank" rel="noopener" 
+                    @endif
+                    @if(setting('instagram'))
+                    <a href="{{ setting('instagram') }}" target="_blank" rel="noopener" 
                        class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 hover:border-pink-500 hover:bg-pink-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-105" 
                        aria-label="Instagram" title="Instagram">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
-                    <a href="{{ setting('tiktok', 'https://www.tiktok.com/@cleanstationsa') }}" target="_blank" rel="noopener" 
+                    @endif
+                    @if(setting('tiktok'))
+                    <a href="{{ setting('tiktok') }}" target="_blank" rel="noopener" 
                        class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 hover:border-neutral-400 hover:bg-black text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-105" 
                        aria-label="TikTok" title="TikTok">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
                     </a>
-                    <a href="{{ setting('snapchat', 'https://www.snapchat.com/add/cleanstationsa') }}" target="_blank" rel="noopener" 
+                    @endif
+                    @if(setting('snapchat'))
+                    <a href="{{ setting('snapchat') }}" target="_blank" rel="noopener" 
                        class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 hover:border-yellow-400 hover:bg-yellow-500 text-gray-300 hover:text-gray-900 flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-105" 
                        aria-label="Snapchat" title="Snapchat">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.065 2c-3.107 0-5.467 2.314-5.467 5.258 0 .808.204 1.638.384 2.277.087.311.168.601.218.847-.323.098-.748.24-1.144.372-.455.152-.897.3-1.187.447-.282.143-.44.33-.44.516 0 .425.688.75 1.134.887.378.117.842.174 1.054.407.241.264.123.864.041 1.282-.047.243-.102.527-.087.771.026.425.321.674.83.674.321 0 .692-.093 1.077-.19.467-.117.962-.241 1.488-.241.341 0 .673.056.985.166.495.176 1.018.528 1.148.618.355.244.697.387 1.043.387.348 0 .692-.144 1.048-.388.13-.09.654-.442 1.149-.618.312-.11.644-.166.985-.166.526 0 1.021.124 1.488.241.385.097.756.19 1.077.19.509 0 .804-.249.83-.674.015-.244-.04-.528-.087-.771-.082-.418-.201-.864.041-1.282.212-.233.676-.29 1.054-.407.446-.137 1.134-.462 1.134-.887 0-.186-.158-.373-.44-.516-.29-.147-.732-.295-1.187-.447-.396-.132-.821-.274-1.144-.372.05-.246.131-.536.218-.847.18-.639.384-1.469.384-2.277C17.532 4.314 15.172 2 12.065 2z"/></svg>
                     </a>
+                    @endif
                     @if(setting('facebook'))
                     <a href="{{ setting('facebook') }}" target="_blank" rel="noopener" 
                        class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-800 hover:border-blue-500 hover:bg-blue-600 text-gray-300 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm hover:scale-105" 

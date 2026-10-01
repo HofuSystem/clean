@@ -491,10 +491,34 @@
                                         </div>
 
                                         <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="snapchat">{{ trans('Snapchat') }}</label>
+                                            <input type="text" name="snapchat" class="form-control "
+                                                placeholder="{{ trans('Enter Snapchat') }} "
+                                                value="{{ $settings['snapchat'] ?? null }}">
+
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="tiktok">{{ trans('TikTok') }}</label>
+                                            <input type="text" name="tiktok" class="form-control "
+                                                placeholder="{{ trans('Enter TikTok') }} "
+                                                value="{{ $settings['tiktok'] ?? null }}">
+
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
                                             <label class="" for="android_link">{{ trans('android link') }}</label>
                                             <input type="text" name="g_play_app" class="form-control "
                                                 placeholder="{{ trans('Enter android link') }} "
                                                 value="{{ $settings['g_play_app'] ?? null }}">
+
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label class="" for="ios_link">{{ trans('ios link') }}</label>
+                                            <input type="text" name="app_store_app" class="form-control "
+                                                placeholder="{{ trans('Enter ios link') }} "
+                                                value="{{ $settings['app_store_app'] ?? null }}">
 
                                         </div>
 
@@ -519,14 +543,6 @@
                                                 </button>
                                                 <div class="input-gallery"></div>
                                             </div>
-                                        </div>
-
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label class="" for="ios_link">{{ trans('ios link') }}</label>
-                                            <input type="text" name="app_store_app" class="form-control "
-                                                placeholder="{{ trans('Enter ios link') }} "
-                                                value="{{ $settings['app_store_app'] ?? null }}">
-
                                         </div>
                                     </div>
                                 </div>

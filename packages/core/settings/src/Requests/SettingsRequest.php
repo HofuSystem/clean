@@ -50,6 +50,8 @@ class SettingsRequest extends FormRequest
 			"twitter" => ['nullable', 'string'],
 			"youtube" => ['nullable', 'string'],
 			"instagram" => ['nullable', 'string'],
+			"snapchat" => ['nullable', 'string'],
+			"tiktok" => ['nullable', 'string'],
 			"g_play_app" => ['nullable', 'string'],
 			"app_store_app" => ['nullable', 'string'],
 			"carpets_hours" => ['required', 'numeric'],
