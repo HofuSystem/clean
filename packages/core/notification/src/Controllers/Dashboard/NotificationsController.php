@@ -878,7 +878,9 @@ class NotificationsController extends Controller
                     ->where('status', 'sent')
                     ->count();
 
-                $notification->update(['sent_count' => $sentCount]);
+                $payload = is_array($notification->payload) ? $notification->payload : (json_decode($notification->payload ?? '{}', true) ?: []);
+                $payload['sent_count'] = $sentCount;
+                $notification->update(['payload' => json_encode($payload)]);
             }
         }
     }

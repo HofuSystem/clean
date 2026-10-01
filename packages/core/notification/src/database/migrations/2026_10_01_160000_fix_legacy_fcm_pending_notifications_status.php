@@ -13,6 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('notifications', 'sent_count')) {
+                \Illuminate\Support\Facades\Schema::table('notifications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->unsignedInteger('sent_count')->nullable()->default(0)->after('completed_at');
+                });
+            }
+
             $completedNotifications = DB::table('notifications')
                 ->where('processing_status', 'completed')
                 ->pluck('id')
@@ -49,9 +55,16 @@ return new class extends Migration
                     ->count();
 
                 if ($sentCount > 0) {
-                    DB::table('notifications')
-                        ->where('id', $notifId)
-                        ->update(['sent_count' => $sentCount]);
+                    $notifRow = DB::table('notifications')->where('id', $notifId)->first();
+                    if ($notifRow) {
+                        $payload = json_decode($notifRow->payload ?? '{}', true) ?: [];
+                        $payload['sent_count'] = $sentCount;
+                        $updateData = ['payload' => json_encode($payload)];
+                        if (\Illuminate\Support\Facades\Schema::hasColumn('notifications', 'sent_count')) {
+                            $updateData['sent_count'] = $sentCount;
+                        }
+                        DB::table('notifications')->where('id', $notifId)->update($updateData);
+                    }
                 }
             }
         } catch (\Throwable $e) {

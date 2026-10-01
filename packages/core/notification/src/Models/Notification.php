@@ -25,7 +25,6 @@ class Notification extends CoreModel {
         'purpose',
         'channel',
         'processing_status',
-        'sent_count',
         'started_at',
         'completed_at',
         'targeted_users_count',
@@ -503,13 +502,22 @@ class Notification extends CoreModel {
         if ($channel === 'direct_fcm') {
             return (string) ($this->accepted_by_fcm_count ?? 0);
         }
+        $payload = is_array($this->payload) ? $this->payload : (json_decode($this->payload ?? '{}', true) ?: []);
+        $savedCount = $payload['sent_count'] ?? ($this->attributes['sent_count'] ?? null);
+
         if (in_array($channel, ['whatsapp', 'sms', 'email'], true)) {
-            $sent = $this->sent_count ?? $this->users()->wherePivot('status', 'sent')->count();
+            $sent = $savedCount ?? $this->users()->wherePivot('status', 'sent')->count();
             return $sent > 0 ? (string) $sent : '—';
         }
 
-        $sentCount = $this->sent_count ?? $this->users()->wherePivot('status', 'sent')->count();
+        $sentCount = $savedCount ?? $this->users()->wherePivot('status', 'sent')->count();
         return $sentCount > 0 ? (string) $sentCount : '—';
+    }
+
+    public function getSentCountAttribute(): int
+    {
+        $payload = is_array($this->payload) ? $this->payload : (json_decode($this->payload ?? '{}', true) ?: []);
+        return (int) ($payload['sent_count'] ?? ($this->attributes['sent_count'] ?? 0));
     }
     //end Attributes
 

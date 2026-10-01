@@ -336,12 +336,15 @@ class NotificationsManger
                 $this->sendLegacyApps();
             }
         } else {
-            // If apps was not selected, complete immediately and update sent_count
+            // If apps was not selected, complete immediately and update sent_count in payload
             $sentCount = $this->phonesList->count() ?: ($this->emailsList->count() ?: $targetedCount);
+            $payload = is_array($notification->payload) ? $notification->payload : (json_decode($notification->payload ?? '{}', true) ?: []);
+            $payload['sent_count'] = $sentCount;
+
             $notification->update([
                 'processing_status' => 'completed',
                 'completed_at' => now(),
-                'sent_count' => $sentCount,
+                'payload' => json_encode($payload),
             ]);
 
             DB::table('users_notifications')
@@ -547,10 +550,13 @@ class NotificationsManger
             ->where('status', 'sent')
             ->count();
 
+        $payload = is_array($this->notification->payload) ? $this->notification->payload : (json_decode($this->notification->payload ?? '{}', true) ?: []);
+        $payload['sent_count'] = $sentCount ?: $this->tokensList->count();
+
         $this->notification->update([
             'processing_status' => 'completed',
             'completed_at' => now(),
-            'sent_count' => $sentCount ?: $this->tokensList->count(),
+            'payload' => json_encode($payload),
         ]);
     }
 

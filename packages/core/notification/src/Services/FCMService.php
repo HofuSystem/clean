@@ -209,9 +209,12 @@ class FCMService
                     ->where('status', 'sent')
                     ->count();
 
-                Notification::where('id', $notificationId)->update([
-                    'sent_count' => $sentCount,
-                ]);
+                $notif = Notification::find($notificationId);
+                if ($notif) {
+                    $payload = is_array($notif->payload) ? $notif->payload : (json_decode($notif->payload ?? '{}', true) ?: []);
+                    $payload['sent_count'] = $sentCount;
+                    $notif->update(['payload' => json_encode($payload)]);
+                }
             }
         } catch (\Throwable $e) {
             report($e);
