@@ -23,7 +23,7 @@ class TelegramNotificationService
 
     public function sendMessage(string $chatId, string $message): void
     {
-        if (app()->environment() == 'local' || app()->environment() == 'Local') {
+        if (app()->environment('local', 'Local', 'testing') || app()->runningUnitTests()) {
             return;
         }
 

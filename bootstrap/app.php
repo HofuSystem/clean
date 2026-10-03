@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // Report all exceptions to Telegram automatically (including caught exceptions)
         $exceptions->report(function (Throwable $e) {
+            // Do not report exceptions during testing or local environment
+            if (app()->environment('local', 'Local', 'testing') || app()->runningUnitTests()) {
+                return false;
+            }
+
             // Skip specific exception types that we don't want to report
             $skipExceptions = [
                 \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
