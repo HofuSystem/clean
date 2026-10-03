@@ -38,17 +38,33 @@ Route::get('/ar/services/medical-military',     fn() => redirect('https://cleans
 Route::get('/en/services/medical-military',     fn() => redirect('https://cleanstation.app/en/b2b', 301));
 
 // Old blog slugs → canonical blog slugs
-Route::get('/ar/blogs/best-underground-water-tank-cleaning-company', fn() => redirect('https://cleanstation.app/ar/blogs/laundry-prices-riyadh', 301));
-Route::get('/en/blogs/best-underground-water-tank-cleaning-company', fn() => redirect('https://cleanstation.app/en/blogs/laundry-prices-riyadh', 301));
-Route::get('/blogs/best-underground-water-tank-cleaning-company',    fn() => redirect('https://cleanstation.app/ar/blogs/laundry-prices-riyadh', 301));
+// Blog 1
+Route::redirect('/ar/blogs/the-sparkle-you-deserve-why-a-professional-cleaning-service-is-a-game-changer', '/ar/blogs/laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/en/blogs/the-sparkle-you-deserve-why-a-professional-cleaning-service-is-a-game-changer', '/en/blogs/laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/blogs/the-sparkle-you-deserve-why-a-professional-cleaning-service-is-a-game-changer', '/ar/blogs/laundry-pickup-delivery-riyadh', 301);
+
+// Blog 13
+Route::redirect('/ar/blogs/best-underground-water-tank-cleaning-company', '/ar/blogs/laundry-fabric-care-prices-riyadh', 301);
+Route::redirect('/en/blogs/best-underground-water-tank-cleaning-company', '/en/blogs/laundry-fabric-care-prices-riyadh', 301);
+Route::redirect('/blogs/best-underground-water-tank-cleaning-company', '/ar/blogs/laundry-fabric-care-prices-riyadh', 301);
 
 Route::get('/ar/blogs/termite-control-saudi-arabia',                fn() => redirect('https://cleanstation.app/ar/blogs/clean-station-app-features', 301));
 Route::get('/en/blogs/termite-control-saudi-arabia',                fn() => redirect('https://cleanstation.app/en/blogs/clean-station-app-features', 301));
 Route::get('/blogs/termite-control-saudi-arabia',                   fn() => redirect('https://cleanstation.app/ar/blogs/clean-station-app-features', 301));
 
-Route::get('/ar/blogs/air-conditioner-cleaning-importance',        fn() => redirect('https://cleanstation.app/ar/blogs/pickup-delivery-on-time', 301));
-Route::get('/en/blogs/air-conditioner-cleaning-importance',        fn() => redirect('https://cleanstation.app/en/blogs/pickup-delivery-on-time', 301));
-Route::get('/blogs/air-conditioner-cleaning-importance',           fn() => redirect('https://cleanstation.app/ar/blogs/pickup-delivery-on-time', 301));
+// Blog 10
+Route::redirect('/ar/blogs/air-conditioner-cleaning-importance', '/ar/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/en/blogs/air-conditioner-cleaning-importance', '/en/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/blogs/air-conditioner-cleaning-importance', '/ar/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+
+// Intermediate slugs (prevent 404 for interim visits)
+Route::redirect('/ar/blogs/pickup-delivery-on-time', '/ar/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/en/blogs/pickup-delivery-on-time', '/en/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+Route::redirect('/blogs/pickup-delivery-on-time', '/ar/blogs/on-time-laundry-pickup-delivery-riyadh', 301);
+
+Route::redirect('/ar/blogs/laundry-prices-riyadh', '/ar/blogs/laundry-fabric-care-prices-riyadh', 301);
+Route::redirect('/en/blogs/laundry-prices-riyadh', '/en/blogs/laundry-fabric-care-prices-riyadh', 301);
+Route::redirect('/blogs/laundry-prices-riyadh', '/ar/blogs/laundry-fabric-care-prices-riyadh', 301);
 
 // /about-us → /why-us
 Route::get('/ar/about-us', fn() => redirect('https://cleanstation.app/ar/why-us', 301));
