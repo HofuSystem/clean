@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كلين ستيشن | التصميم (ب) - المنصة الذكية والاختيار المزدوج</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        tajawal: ['Tajawal', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        tech: {
+                            purple: '#7c3aed',
+                            indigo: '#4f46e5',
+                            dark: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+        .hero-pattern {
+            background-image: radial-gradient(rgba(2, 132, 199, 0.08) 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+        .mode-btn.active {
+            border-color: #0284c7;
+            background: #f0f9ff;
+            box-shadow: 0 4px 18px rgba(2, 132, 199, 0.15);
+        }
+        .mode-btn.active .mode-icon {
+            background: #0284c7;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 antialiased selection:bg-brand-500 selection:text-white hero-pattern">
+
+    <!-- Top Floating Tech Banner -->
+    <div class="bg-tech-dark text-white text-xs py-2 px-4 text-center font-bold flex items-center justify-center gap-3">
+        <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-black">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            نظام ذكي نشط
+        </span>
+        <span>تتبع مباشر لسيارة المندوب • استلام صامت على الباب • محفظة نقاط وكاش باك في كل طلب</span>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-10">
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-shirt text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-tight text-slate-900 font-outfit">CLEAN<span class="text-brand-600">STATION</span></span>
+                        <div class="text-[10px] font-extrabold text-slate-400 tracking-wider">منظومة العناية المتكاملة</div>
+                    </div>
+                </a>
+
+                <!-- Nav Menu -->
+                <nav class="hidden lg:flex items-center gap-7 text-sm font-bold text-slate-600">
+                    <a href="#dual-mode" class="hover:text-brand-600 transition-colors">طريقتي الطلب (سريع / مفصل)</a>
+                    <a href="#tech-features" class="hover:text-brand-600 transition-colors">الميزات الذكية</a>
+                    <a href="#services-grid" class="hover:text-brand-600 transition-colors">خدمات العناية الشاملة</a>
+                    <a href="#neighborhood-checker" class="hover:text-brand-600 transition-colors">فحص تغطية حيك</a>
+                    <a href="#b2b-cta" class="hover:text-brand-600 transition-colors">قطاع الأعمال B2B</a>
+                </nav>
+            </div>
+
+            <!-- Top Right Action -->
+            <div class="flex items-center gap-3">
+                <a href="#neighborhood-checker" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl transition-all">
+                    <i class="fa-solid fa-location-dot text-brand-600"></i>
+                    <span>تغطية 132 حياً</span>
+                </a>
+                <a href="https://cleanstation.app.link/?channel=concept_b" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-lg shadow-brand-500/25 transition-all">
+                    <i class="fa-solid fa-bolt text-amber-300"></i>
+                    <span>جرب التطبيق الآن</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION: The Dual-Journey Engine -->
+    <section class="pt-10 pb-16 lg:pt-16 lg:pb-24 relative overflow-hidden" id="dual-mode">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Hero Title Block -->
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200/80 px-4 py-1.5 rounded-full mb-4">
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-600 text-xs"></i>
+                    <span class="text-xs font-black text-indigo-900">تطبيق الغسيل الوحيد الذي يمنحك حرية الاختيار</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight">
+                    غسيلك على طريقتك:
+                    <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600">
+                        طلب سريع في 30 ثانية أو مفصل بالقطعة
+                    </span>
+                </h1>
+                <p class="text-slate-600 text-base sm:text-lg mt-4 font-medium leading-relaxed">
+                    سواء كنت مستعجلاً وتريد رمي الغسيل بدون عد، أو تريد تفصيل دقيق لكل قطعة وثوب مع معرفة التكلفة بدقة؛ كلين ستيشن تصمم تجربتها لتناسب يومك.
+                </p>
+            </div>
+
+            <!-- DUAL MODE INTERACTIVE CARDS -->
+            <div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto mb-16">
+                
+                <!-- Card 1: Fast Order (الطلب السريع) -->
+                <div onclick="selectMode('fast')" id="mode-fast" class="mode-btn active bg-white p-7 sm:p-8 rounded-3xl border-2 border-brand-500 transition-all cursor-pointer relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="mode-icon w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center text-2xl shadow-md transition-colors">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <span class="bg-brand-50 text-brand-700 text-xs font-black px-3 py-1 rounded-full border border-brand-200">
+                            الأسرع للأشخاص المشغولين ⚡
+                        </span>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-slate-900 mb-2">1. الطلب السريع (Quick Order)</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                        لا داعي لعد القطع أو فرز الملابس! حدد موقع بيتك والوقت، ونحن نتكفل بكل شيء: استلام صامت، فرز بالأجهزة الذكية، وتأكيد الفاتورة داخل التطبيق.
+                    </p>
+
+                    <div class="bg-white/80 p-4 rounded-2xl border border-slate-200/80 space-y-2.5 text-xs font-bold text-slate-700">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                            <span>طلب في 30 ثانية بدون إدخال تفاصيل</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                            <span>استلام صامت من مقبض الباب (علقها واخرج)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                            <span>غسيل منفصل 100% في غسالة مستقلة خاصة بك</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-xs font-black text-brand-700">ترجع نظيفة ومعقمة خلال 24 ساعة</span>
+                        <span class="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs group-hover:-translate-x-1 transition-transform">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Detailed Order (الطلب المفصل) -->
+                <div onclick="selectMode('detailed')" id="mode-detailed" class="mode-btn bg-white p-7 sm:p-8 rounded-3xl border-2 border-slate-200 hover:border-indigo-300 transition-all cursor-pointer relative overflow-hidden group">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="mode-icon w-14 h-14 rounded-2xl bg-slate-100 text-slate-700 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center text-2xl shadow-md transition-colors">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <span class="bg-indigo-50 text-indigo-700 text-xs font-black px-3 py-1 rounded-full border border-indigo-200">
+                            للعناية الدقيقة بالقطع الفاخرة 👔
+                        </span>
+                    </div>
+
+                    <h3 class="text-2xl font-black text-slate-900 mb-2">2. الطلب المفصل (Detailed Order)</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-6">
+                        تحكم كامل بكل قطعة: اختر عدد الثياب، البشوت، العبايات، الفساتين أو المفروشات، وحدد درجة النشاء، نوع الكوي، والتنظيف الجاف مع معرفة السعر هللة بهللة.
+                    </p>
+
+                    <div class="bg-white/80 p-4 rounded-2xl border border-slate-200/80 space-y-2.5 text-xs font-bold text-slate-700">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-indigo-500"></i>
+                            <span>تحديد دقيق لنوع القماش ودرجة الكوي</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-indigo-500"></i>
+                            <span>تسعير شفاف مسبق لكل قطعة قبل التأكيد</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-indigo-500"></i>
+                            <span>خدمات دراي كلين متخصصة للملابس الثمينة</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-xs font-black text-indigo-700">خصومات تلقائية كلما زادت القطع</span>
+                        <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs group-hover:-translate-x-1 transition-transform">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Floating KPI Strip with Tech Feel -->
+            <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 max-w-5xl mx-auto shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-20 -bottom-20 w-60 h-60 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center relative z-10 divide-x-0 md:divide-x divide-slate-800 rtl:divide-x-reverse">
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-brand-400 font-outfit mb-1">100%</div>
+                        <div class="text-xs font-bold text-slate-300">غسيل منفصل لكل عميل</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">غسالة مستقلة تماماً</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-emerald-400 font-outfit mb-1">24h</div>
+                        <div class="text-xs font-bold text-slate-300">سرعة الاستلام والتسليم</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">فترات كل ساعتين</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-amber-400 font-outfit mb-1">132+</div>
+                        <div class="text-xs font-bold text-slate-300">حياً مخدوماً بالكامل</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">الرياض والمبرز (الأحساء)</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl sm:text-4xl font-black text-purple-400 font-outfit mb-1">+12K</div>
+                        <div class="text-xs font-bold text-slate-300">عميل نشط يثق بنا</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">تقييم 4.9★ في المتاجر</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 2: Clean Station's Exclusive Tech Features (What Wilow Lacks) -->
+    <section id="tech-features" class="py-16 lg:py-24 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-brand-600 font-black text-xs uppercase tracking-widest bg-brand-100/60 px-3.5 py-1.5 rounded-full border border-brand-200">التقنية في خدمتك</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mt-3">ميزات منصة كلين ستيشن الحصرية</h2>
+                <p class="text-slate-600 text-sm sm:text-base mt-2">لسنا مجرد مغسلة توصل ملابس؛ نحن منصة رقمية متكاملة تمنحك تحكماً مطلقاً في هاتفك.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1: Live Driver Tracking -->
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-sky-100 text-brand-600 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2">التتبع اللحظي لسيارة المندوب</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                        شاهد سيارة المندوب تتحرك على الخريطة مباشرة في التطبيق. تعرف وقت الوصول بالدقيقة دون الحاجة للاتصال أو التساؤل "وين غسيلي؟".
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-bold text-brand-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-radar"></i> خريطة GPS حية 100%
+                    </div>
+                </div>
+
+                <!-- Feature 2: Smart Wallet & Points -->
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2">المحفظة الذكية وبرنامج النقاط</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                        مع كل غسلة أو طلب تجمع نقاط ولاء ورصيد كاش باك حقيقي في محفظتك. استخدم الرصيد لغسلات مجانية أو خصومات مستمرة دون شروط معقدة.
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-bold text-amber-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-gift"></i> استرجع حتى 15% من قيمة طلباتك
+                    </div>
+                </div>
+
+                <!-- Feature 3: Silent Pickup & Delivery -->
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-door-closed"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2">الاستلام الصامت (علقها على الباب)</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                        راحة بال تامة: لن يرن جرس بيتك ولن يقاطعك أحد أثناء نومك أو عملك. علق حقيبة ملابسك عند الباب، ومندوبنا يوثق الاستلام بصورة في التطبيق فوراً.
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] font-bold text-indigo-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-camera"></i> إشعار بصورة الحقيبة على الباب
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: Deep Services Catalog -->
+    <section id="services-grid" class="py-16 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-indigo-600 font-black text-xs uppercase tracking-widest bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-200">عناية متخصصة</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 mt-3">خدماتنا لا تقتصر على الملابس اليومية</h2>
+                <p class="text-slate-500 text-sm sm:text-base mt-2">نغطي كافة احتياجات منزلك ومظهرك بأحدث تقنيات الغسيل الإيطالية والألمانية.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Service 1: Men's Formal -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/80 hover:bg-brand-50/50 hover:border-brand-300 transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-600 text-white flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mb-1">الثياب والأزياء الرجالية</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">
+                        نشاء خاص حسب رغبتك (خفيف، متوسط، ثقيل)، مرازم أكمام وياقات دقيقة، وحماية البياض الناصع من الاصفرار.
+                    </p>
+                    <span class="text-xs font-black text-brand-700">تبدأ من 8 ر.س / ثوب</span>
+                </div>
+
+                <!-- Service 2: Women's Luxury -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/80 hover:bg-pink-50/50 hover:border-pink-300 transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-pink-600 text-white flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-person-dress"></i>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mb-1">العبايات والأقمشة الفاخرة</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">
+                        غسيل بالبخار مخصص للعبايات السوداء والمطرزة وفساتين السهرة للمحافظة على سواد القماش والخرز.
+                    </p>
+                    <span class="text-xs font-black text-pink-700">تبدأ من 14 ر.س / عباية</span>
+                </div>
+
+                <!-- Service 3: Carpets & Blankets -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/80 hover:bg-purple-50/50 hover:border-purple-300 transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-couch"></i>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mb-1">المفروشات والبطانيات</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">
+                        تنظيف عميق للمفارش وأغطية السرير والبطانيات الكبيرة مع تعقيم بالأوزون ضد عث الغبار والبكتيريا.
+                    </p>
+                    <span class="text-xs font-black text-purple-700">عناية منزلية شاملة</span>
+                </div>
+
+                <!-- Service 4: Medical & Uniforms -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200/80 hover:bg-teal-50/50 hover:border-teal-300 transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-user-nurse"></i>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mb-1">الزي الطبي والعسكري</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">
+                        بروتوكولات تطهير معتمدة لملابس المستشفيات والعيادات والأزياء الميدانية وفق اشتراطات السلامة الصحية.
+                    </p>
+                    <span class="text-xs font-black text-teal-700">تعقيم فائق 100%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: Interactive Neighborhood Checker (132+ Areas) -->
+    <section id="neighborhood-checker" class="py-16 bg-slate-900 text-white relative">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-black px-3.5 py-1.5 rounded-full">
+                تغطية نشطة الآن
+            </span>
+            <h2 class="text-3xl font-black mt-3 mb-2">ابحث عن حيك في الرياض والمبرز</h2>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mb-8 font-medium">
+                نخدم 104 أحياء في الرياض و28 حياً في المبرز والأحساء، وقريباً في جدة والدمام.
+            </p>
+
+            <!-- Search Input Box -->
+            <div class="bg-slate-800 p-2 rounded-2xl border border-slate-700 max-w-xl mx-auto flex items-center gap-2 mb-6">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 mr-3"></i>
+                <input type="text" id="hood-search" oninput="filterHoods()" placeholder="اكتب اسم حيك (مثال: الملقا، النرجس، العليا، المبرز...)" class="bg-transparent text-white placeholder-slate-400 text-sm font-bold w-full focus:outline-none">
+            </div>
+
+            <!-- Neighborhood Tags -->
+            <div id="hood-container" class="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto text-xs font-bold text-slate-300">
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">الملقا</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">الياسمين</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">حطين</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">النرجس</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">الصحافة</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">العقيق</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">القيروان</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">العليا</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">الروضة</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">السليمانية</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">قرطبة</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">المبرز - الأحساء</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">حي الراشدية</span>
+                <span class="hood-tag bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">حي الفلاح</span>
+                <span class="hood-tag bg-brand-600 text-white px-3 py-1.5 rounded-xl font-black">+118 حياً آخر مخدوم بالكامل</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: B2B Callout Strip -->
+    <section id="b2b-cta" class="py-12 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-200/80 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <span class="bg-brand-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider">كلين ستيشن للأعمال (B2B)</span>
+                    <h3 class="text-2xl font-black text-slate-900 mt-2">حلول غسيل وتعاقدات للمطاعم، الصالونات، والفنادق</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">عقود شهرية مخصصة، فواتير ضريبية معتمدة، وجداول استلام وتوصيل مجدولة يومياً.</p>
+                </div>
+                <a href="https://cleanstation.app/ar/b2b" class="inline-flex items-center gap-2 bg-slate-950 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all flex-shrink-0">
+                    <span>طلب عرض سعر للشركات</span>
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Download CTA Footer -->
+    <footer class="bg-slate-950 text-white py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl sm:text-4xl font-black mb-3">ابدأ تجربة الغسيل الذكي اليوم</h2>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto mb-8 font-medium">
+                حمّل التطبيق الآن واستمتع بغسيل منفصل 100% وتوصيل لباب بيتك خلال 24 ساعة.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <a href="https://cleanstation.app.link/?channel=concept_b_footer" target="_blank" class="inline-flex items-center gap-3 bg-white text-slate-950 font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-lg hover:bg-slate-100 transition-all">
+                    <i class="fa-brands fa-apple text-2xl"></i>
+                    <div class="text-right leading-tight">
+                        <div class="text-[10px] text-slate-500">متوفر على</div>
+                        <div class="text-sm font-black">App Store</div>
+                    </div>
+                </a>
+                <a href="https://cleanstation.app.link/?channel=concept_b_footer" target="_blank" class="inline-flex items-center gap-3 bg-white text-slate-950 font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-lg hover:bg-slate-100 transition-all">
+                    <i class="fa-brands fa-google-play text-xl text-emerald-600"></i>
+                    <div class="text-right leading-tight">
+                        <div class="text-[10px] text-slate-500">حمله من</div>
+                        <div class="text-sm font-black">Google Play</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="border-t border-slate-900 pt-6 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span>CLEAN STATION © 2026 • منظومة الغسيل والعناية الذكية</span>
+                <div class="flex gap-4">
+                    <a href="https://cleanstation.app/ar/privacy" class="hover:text-slate-300">الخصوصية</a>
+                    <a href="https://cleanstation.app/ar/terms" class="hover:text-slate-300">الشروط والأحكام</a>
+                    <a href="https://cleanstation.app/ar/faq" class="hover:text-slate-300">الأسئلة الشائعة</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        function selectMode(type) {
+            const fast = document.getElementById('mode-fast');
+            const detailed = document.getElementById('mode-detailed');
+            if (type === 'fast') {
+                fast.classList.add('active', 'border-brand-500');
+                fast.classList.remove('border-slate-200');
+                detailed.classList.remove('active', 'border-indigo-500');
+                detailed.classList.add('border-slate-200');
+            } else {
+                detailed.classList.add('active', 'border-indigo-500');
+                detailed.classList.remove('border-slate-200');
+                fast.classList.remove('active', 'border-brand-500');
+                fast.classList.add('border-slate-200');
+            }
+        }
+
+        function filterHoods() {
+            const query = document.getElementById('hood-search').value.toLowerCase().trim();
+            const tags = document.querySelectorAll('.hood-tag');
+            tags.forEach(tag => {
+                if (!query || tag.textContent.toLowerCase().includes(query)) {
+                    tag.style.display = 'inline-block';
+                } else {
+                    tag.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

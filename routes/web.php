@@ -117,6 +117,29 @@ Route::group(
 
     });
 
+// ============================================================
+// New Landing Page & Concepts Preview (For Team Review & Approval)
+// ============================================================
+Route::get('/preview', function () {
+    return response()->file(public_path('landing-concepts/concept-a-conversion.html'));
+})->name('preview.landing');
+
+Route::get('/new-landing', function () {
+    return response()->file(public_path('landing-concepts/concept-a-conversion.html'));
+})->name('new.landing');
+
+Route::get('/preview/showcase', function () {
+    return response()->file(public_path('landing-concepts/index.html'));
+})->name('preview.showcase');
+
+Route::get('/{page}.html', function ($page) {
+    $filePath = public_path("landing-concepts/{$page}.html");
+    if (file_exists($filePath)) {
+        return response()->file($filePath);
+    }
+    abort(404);
+})->where('page', 'concept-a-conversion|concept-b-platform|concept-c-premium|b2b|pricing|coverage|blog|terms|privacy');
+
 Route::get('/api-docs', function () {
     $username = env('API_DOCS_USERNAME', 'admin');
     $password = env('API_DOCS_PASSWORD', 'cleanstation');
