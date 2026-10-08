@@ -3,6 +3,7 @@
     $isRtl = $isRtl ?? ($lang === 'ar');
     $whatsappPhone = preg_replace('/[^0-9]/', '', $settings['whatsapp'] ?? '966559098685') ?: '966559098685';
     $appStoreLink = 'https://cleanstation.app.link/?channel=gifts';
+    $gPlayLink = function_exists('setting') ? (setting('g_play_app') ?: 'https://play.google.com/store/apps/details?id=com.googansolutions.cleanstation') : 'https://play.google.com/store/apps/details?id=com.googansolutions.cleanstation';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
@@ -303,32 +304,64 @@
         .final .contact-line { margin-top: 20px; font-size: 14px; opacity: .85; }
         .final .contact-line a { color: #fff; font-weight: 700; text-decoration: underline; }
 
-        /* Sticky Mobile Bar */
-        .sticky {
-            position: sticky;
-            bottom: 0;
-            z-index: 40;
-            background: #fff;
-            border-top: 1px solid var(--line);
-            padding: 12px 16px;
+        /* Stores */
+        .stores { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+        .store-link { display: inline-block; transition: transform 0.2s ease; border-radius: 8px; }
+        .store-link:hover { transform: translateY(-2px); }
+        .store-badge-img { height: 44px; width: auto; border-radius: 8px; display: block; }
+
+        /* Mobile Sticky Bar (Immediate, clean & modern) */
+        .mobile-sticky-bar {
             display: none;
-            gap: 10px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 10px 16px;
+            border-top: 1px solid rgba(227,232,238,0.9);
+            box-shadow: 0 -6px 20px rgba(15,23,42,0.08);
+            z-index: 9999;
+            gap: 12px;
             align-items: center;
-            box-shadow: 0 -6px 20px rgba(0,0,0,0.06);
+            justify-content: center;
         }
-        .sticky .btn {
+        .mobile-sticky-bar .bar-btn {
             flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 16px;
-            font-weight: 700;
-            font-size: 14px;
+            gap: 8px;
+            height: 44px;
+            padding: 0 16px;
             border-radius: 12px;
-            text-align: center;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s ease;
+            text-decoration: none;
         }
-        .sticky .btn-o { background: #fff; color: var(--navy); border: 1.5px solid var(--line); }
-        .sticky .btn-p { background: var(--rose); color: #fff; border: 1.5px solid var(--rose); }
+        .mobile-sticky-bar .bar-btn-contact {
+            background: #FFFFFF;
+            color: var(--navy);
+            border: 1.5px solid #CBD5E1;
+        }
+        .mobile-sticky-bar .bar-btn-contact:hover {
+            background: #F8FAFC;
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+        .mobile-sticky-bar .bar-btn-download {
+            background: var(--navy);
+            color: #FFFFFF;
+            border: 1.5px solid var(--navy);
+            box-shadow: 0 3px 10px rgba(31,51,100,0.2);
+        }
+        .mobile-sticky-bar .bar-btn-download:hover {
+            background: var(--mid);
+        }
 
         /* Navbar Logo position (left) and height */
         #navbar .h-20 { direction: ltr !important; }
@@ -407,7 +440,9 @@
             .cats { grid-template-columns: 1fr; }
             .gfeat { grid-template-columns: 1fr; }
             .gsteps { grid-template-columns: 1fr; }
-            .sticky { display: flex; }
+            .store-badge-img { height: 40px; }
+            .mobile-sticky-bar { display: flex !important; }
+            body { padding-bottom: 72px !important; }
             #footer .grid { grid-template-columns: 1fr !important; text-align: center !important; gap: 28px !important; }
             #footer .space-y-6, #footer .flex-col { align-items: center !important; }
             #footer .flex.flex-nowrap { justify-content: center !important; }
@@ -431,17 +466,11 @@
                         {{ $isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، وتختار موعد التوصيل من تطبيق كلين ستيشن' : 'Flower bouquets and luxury vases for yourself or someone special, with the delivery time you choose in the Clean Station app' }}
                     </p>
                     <div class="stores">
-                        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="App Store">
-                            <span class="sb">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.98.6-2.62 1.35-.57.66-.99 1.73-.86 2.76.99.08 2.02-.54 2.56-1.26z"/></svg>
-                                <span class="t"><small>{{ $isRtl ? 'حمّله من' : 'Download on the' }}</small><b>App Store</b></span>
-                            </span>
+                        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+                            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
                         </a>
-                        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="Google Play">
-                            <span class="sb">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00C4FF" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l12.195-12.12z"/><path fill="#00E676" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179z"/><path fill="#FFC400" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594z"/><path fill="#FF3A44" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54z"/></svg>
-                                <span class="t"><small>{{ $isRtl ? 'احصل عليه من' : 'GET IT ON' }}</small><b>Google Play</b></span>
-                            </span>
+                        <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
+                            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
                         </a>
                     </div>
                 </div>
@@ -622,17 +651,11 @@
                     <span>{{ $isRtl ? 'اطلبها الحين من قسم الهدايا في التطبيق' : 'Order now from the Gifts section in the app' }}</span>
                 </div>
                 <div class="stores" style="justify-content:center">
-                    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="App Store">
-                        <span class="sb">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.98.6-2.62 1.35-.57.66-.99 1.73-.86 2.76.99.08 2.02-.54 2.56-1.26z"/></svg>
-                            <span class="t"><small>{{ $isRtl ? 'حمّله من' : 'Download on the' }}</small><b>App Store</b></span>
-                        </span>
+                    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+                        <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
                     </a>
-                    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="Google Play">
-                        <span class="sb">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00C4FF" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l12.195-12.12z"/><path fill="#00E676" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179z"/><path fill="#FFC400" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594z"/><path fill="#FF3A44" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54z"/></svg>
-                            <span class="t"><small>{{ $isRtl ? 'احصل عليه من' : 'GET IT ON' }}</small><b>Google Play</b></span>
-                        </span>
+                    <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
+                        <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
                     </a>
                 </div>
                 <p class="contact-line">
@@ -648,12 +671,12 @@
     <!-- Footer (Preserved exactly as requested) -->
     @include('layouts.partials.footer')
 
-    <!-- Sticky Mobile Bar -->
-    <div class="sticky">
-        <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'استفسار عن خدمة الورود والهدايا' : 'Enquiry about Flowers & Gifts service') }}" target="_blank" rel="noopener" class="btn btn-o">
+    <!-- Modern Sticky Mobile Bar -->
+    <div class="mobile-sticky-bar">
+        <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'استفسار عن خدمة الورود والهدايا' : 'Enquiry about Flowers & Gifts service') }}" target="_blank" rel="noopener" class="bar-btn bar-btn-contact">
             {{ $isRtl ? 'تواصل معنا' : 'Contact us' }}
         </a>
-        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="btn btn-p">
+        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="bar-btn bar-btn-download">
             {{ $isRtl ? 'حمّل التطبيق' : 'Download the app' }}
         </a>
     </div>

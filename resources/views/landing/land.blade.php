@@ -149,21 +149,74 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .facts span{font-size:13px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;font-weight:500}
 .facts span::before{content:"✓";color:var(--green);font-weight:700}
 
-.stores{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
-.store{display:inline-flex;align-items:center;background:#000;color:#fff;border-radius:10px;padding:8px 14px;min-width:140px;box-shadow:0 3px 10px rgba(0,0,0,0.08);transition:transform 0.2s}
-.store:hover{transform:translateY(-2px)}
-.store .sb{display:flex;align-items:center;gap:10px}
-.store svg{width:22px;height:22px;flex-shrink:0}
-.store .t{display:flex;flex-direction:column;line-height:1.2}
-.store .t small{font-size:9.5px;opacity:.8;font-weight:500}
-.store .t b{font-size:14px;font-weight:700}
+.stores{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center}
+.store-link{display:inline-block;transition:transform 0.2s ease;border-radius:8px}
+.store-link:hover{transform:translateY(-2px)}
+.store-badge-img{height:44px;width:auto;border-radius:8px;display:block}
 
 .proof{display:flex;gap:28px;margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
 .proof b{font-size:22px;color:var(--navy);display:block;line-height:1.2}
 .proof span{font-size:12px;color:var(--muted)}
 
-.hero-img{display:flex;justify-content:center}
-.hero-img img{max-width:320px;width:100%;height:auto;border-radius:24px;box-shadow:0 10px 30px rgba(31,51,100,0.1);background:#fff}
+/* Hero Phone Mockup */
+.hero-phone-wrapper{position:relative;display:flex;justify-content:center;align-items:center;perspective:1000px;margin:10px auto 0}
+.hero-phone-mockup{
+  position:relative;
+  width:280px;
+  height:570px;
+  background:#0F172A;
+  border-radius:44px;
+  border:9px solid #1E293B;
+  box-shadow:0 25px 60px -15px rgba(15,23,42,0.35), 0 10px 25px -5px rgba(0,0,0,0.15);
+  overflow:hidden;
+  transform:rotate(-2.5deg);
+  transition:transform .4s ease, box-shadow .4s ease;
+  z-index:2;
+}
+.hero-phone-mockup:hover{transform:rotate(0) scale(1.02);box-shadow:0 30px 70px -15px rgba(15,23,42,0.45)}
+.phone-dynamic-island{
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:84px;
+  height:20px;
+  background:#000000;
+  border-radius:999px;
+  z-index:10;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,0.15);
+}
+.phone-screen{width:100%;height:100%;overflow:hidden;background:#FFFFFF;border-radius:35px}
+.phone-screen img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+
+/* Hero Floating Badges */
+.hero-badge{
+  position:absolute;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(227,232,238,0.9);
+  border-radius:14px;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 12px 28px rgba(15,23,42,0.12);
+  z-index:5;
+  animation:floatBadge 4s ease-in-out infinite;
+}
+@keyframes floatBadge{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+.badge-time{top:18%;inset-inline-end:-20px}
+.badge-service{bottom:22%;inset-inline-start:-20px;animation-delay:2s}
+.badge-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+.icon-time{background:#DCFCE7;color:#16A34A}
+.icon-service{background:#E0F2FE;color:#0284C7}
+.badge-text{display:flex;flex-direction:column;line-height:1.2;text-align:start}
+.badge-text small{font-size:10px;color:#64748B;font-weight:700;letter-spacing:.02em}
+.badge-text b{font-size:12.5px;color:#0F172A;font-weight:700}
 
 /* Order Widget Section */
 .ow-section{background:var(--bg-2)}
@@ -246,6 +299,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .r .who{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px}
 .r .who b{color:var(--navy)}
 .r .who .svc{font-size:12px;font-weight:600;color:var(--blue);background:var(--sky-soft);padding:3px 12px;border-radius:999px;display:inline-block}
+.reviews-dots{display:none}
 
 /* Brand Band (Navy Pill Banner) */
 .brand-band-section{background:#fff;padding:32px 0 44px}
@@ -328,9 +382,55 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .final .contact-line{margin-top:16px;font-size:13px;color:var(--muted)}
 .final .contact-line a{color:var(--wa);font-weight:600}
 
-/* Gift Strip */
-.gift-strip{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#FFF0F4;border:1px solid #FAD1DC;border-radius:14px;padding:12px 20px}
-.gift-strip p{color:#8A2846;font-size:14px;font-weight:600}
+/* Flower & Gifts Banner */
+.gift-banner-section{padding:20px 0 40px}
+.gift-banner-card{
+  background:#FFF5F8;
+  border:1.5px solid #FADBE5;
+  border-radius:20px;
+  padding:24px 30px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  box-shadow:0 2px 12px rgba(122,40,70,0.03);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.gift-banner-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(122,40,70,0.06);
+}
+.gift-banner-title{
+  color:#7A2846;
+  font-size:18px;
+  font-weight:700;
+  line-height:1.45;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.gift-banner-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:#FFFFFF;
+  color:#7A2846;
+  border:1.5px solid #E2E8F0;
+  border-radius:12px;
+  padding:11px 26px;
+  font-size:15px;
+  font-weight:700;
+  white-space:nowrap;
+  text-decoration:none;
+  transition:all .2s ease;
+  box-shadow:0 2px 6px rgba(0,0,0,0.03);
+}
+.gift-banner-btn:hover{
+  background:#FFF5F8;
+  border-color:#FADBE5;
+  color:#5C1B31;
+  transform:scale(1.02);
+}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
@@ -343,8 +443,58 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 .social a{width:34px;height:34px;border-radius:8px;background:var(--bg-2);display:grid;place-items:center;color:var(--navy);font-size:16px;transition:all 0.2s}
 .social a:hover{background:var(--navy);color:#fff}
 
-/* Mobile Sticky Bar */
-.sticky{display:none;position:fixed;bottom:0;inset-inline:0;background:#fff;padding:10px 16px;border-top:1px solid var(--line);gap:8px;z-index:40;box-shadow:0 -4px 12px rgba(0,0,0,0.05)}
+/* Mobile Sticky Bar (Immediate, clean & modern) */
+.mobile-sticky-bar{
+  display:none;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:rgba(255,255,255,0.98);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  padding:10px 16px;
+  border-top:1px solid rgba(227,232,238,0.9);
+  box-shadow:0 -6px 20px rgba(15,23,42,0.08);
+  z-index:9999;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+}
+.mobile-sticky-bar .bar-btn{
+  flex:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:44px;
+  padding:0 16px;
+  border-radius:12px;
+  font-size:14.5px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s ease;
+  text-decoration:none;
+}
+.mobile-sticky-bar .bar-btn-contact{
+  background:#FFFFFF;
+  color:var(--navy);
+  border:1.5px solid #CBD5E1;
+}
+.mobile-sticky-bar .bar-btn-contact:hover{
+  background:#F8FAFC;
+  border-color:var(--blue);
+  color:var(--blue);
+}
+.mobile-sticky-bar .bar-btn-download{
+  background:var(--navy);
+  color:#FFFFFF;
+  border:1.5px solid var(--navy);
+  box-shadow:0 3px 10px rgba(31,51,100,0.2);
+}
+.mobile-sticky-bar .bar-btn-download:hover{
+  background:var(--mid);
+}
 
 /* Responsive Queries */
 @media (max-width: 992px){
@@ -371,21 +521,158 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   .hero{padding:110px 0 44px}
   h1{font-size:32px}
   h2{font-size:24px}
+
+  /* 2 Facts per row on mobile */
+  .facts{
+    display:grid !important;
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:8px 10px !important;
+    max-width:100% !important;
+    margin-top:16px !important;
+    text-align:start !important;
+  }
+  .facts span{
+    font-size:12px !important;
+    line-height:1.4 !important;
+    background:#FFFFFF;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 10px !important;
+    box-shadow:0 1px 3px rgba(0,0,0,0.02);
+    display:flex !important;
+    align-items:center !important;
+    gap:6px !important;
+  }
+
+  /* Hero phone on mobile */
+  .hero-phone-mockup{width:230px;height:470px;border-radius:36px;border-width:7px;transform:none}
+  .phone-screen{border-radius:29px}
+  .hero-badge{display:none}
+
+  .store-badge-img{height:40px}
+
   .bags{grid-template-columns:1fr}
-  .why-grid{grid-template-columns:1fr}
-  .jgrid{grid-template-columns:1fr}
+
+  /* Why Us 2 per row on mobile */
+  .why-grid{
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px !important;
+  }
+  .why{
+    padding:14px 12px !important;
+    border-radius:14px !important;
+  }
+  .why .ic{
+    width:32px !important;
+    height:32px !important;
+    font-size:16px !important;
+    margin-bottom:8px !important;
+  }
+  .why h4{
+    font-size:13.5px !important;
+    line-height:1.35 !important;
+  }
+  .why p{
+    font-size:12px !important;
+    line-height:1.45 !important;
+    margin-top:4px !important;
+  }
+  .chips{
+    gap:4px !important;
+    margin-top:6px !important;
+  }
+  .chips span{
+    font-size:10.5px !important;
+    padding:2px 6px !important;
+  }
+
+  /* Journey steps 2 per row on mobile */
+  .jgrid{
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px !important;
+  }
+  .j{
+    padding:14px 12px !important;
+    border-radius:14px !important;
+  }
+  .j h4{
+    font-size:13.5px !important;
+    line-height:1.35 !important;
+  }
+  .j p{
+    font-size:12px !important;
+    line-height:1.45 !important;
+    margin-top:4px !important;
+  }
+
   .feat-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .feat-grid .f:last-child{grid-column:span 2}
-  .rgrid{grid-template-columns:1fr}
-  .gift-strip{flex-direction:column;text-align:center}
+
+  /* Reviews slider on mobile */
+  .rgrid{
+    display:flex !important;
+    overflow-x:auto !important;
+    scroll-snap-type:x mandatory !important;
+    gap:14px !important;
+    padding:10px 4px 14px !important;
+    scrollbar-width:none !important;
+    -ms-overflow-style:none !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+  .rgrid::-webkit-scrollbar{display:none}
+  .rgrid .r{
+    flex:0 0 86% !important;
+    min-width:86% !important;
+    scroll-snap-align:center !important;
+    box-shadow:0 4px 14px rgba(0,0,0,0.04) !important;
+  }
+  .reviews-dots{
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:6px !important;
+    margin-top:12px !important;
+  }
+  .reviews-dots .dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#CBD5E1;
+    transition:all .25s ease;
+    cursor:pointer;
+  }
+  .reviews-dots .dot.active{
+    width:22px;
+    background:var(--blue);
+  }
+
+  /* Flower banner card on mobile (matches reference image) */
+  .gift-banner-card{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:20px 20px;
+    gap:16px;
+  }
+  .gift-banner-title{
+    font-size:16px;
+  }
+  .gift-banner-btn{
+    align-self:flex-end;
+    font-size:14px;
+    padding:9px 20px;
+  }
+
   .brand-band{flex-direction:column;text-align:center;padding:20px 20px;gap:14px}
   .brand-band .bb-text{text-align:center}
   .brand-band p{font-size:20px !important}
   .brand-band small{font-size:14.5px !important}
   .brand-band img{height:58px}
   .fgrid{grid-template-columns:1fr}
-  .sticky{display:flex}
-  body{padding-bottom:60px}
+}
+
+@media (max-width: 768px){
+  .mobile-sticky-bar{display:flex !important}
+  body{padding-bottom:72px !important}
 }
 </style>
 </head>
@@ -418,19 +705,13 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           </div>
         @endif
 
-        <!-- App Store & Google Play Badges -->
+        <!-- Official App Store & Google Play Badges -->
         <div class="stores">
-          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="App Store">
-            <span class="sb">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-              <span class="t"><small>{{ $isRtl ? 'حمّله من' : 'Download on the' }}</small><b>App Store</b></span>
-            </span>
+          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
           </a>
-          <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store" aria-label="Google Play">
-            <span class="sb">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00C4FF" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l12.195-12.12z"/><path fill="#00E676" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179z"/><path fill="#FFC400" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594z"/><path fill="#FF3A44" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54z"/></svg>
-              <span class="t"><small>{{ $isRtl ? 'احصل عليه من' : 'GET IT ON' }}</small><b>Google Play</b></span>
-            </span>
+          <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
           </a>
         </div>
 
@@ -447,13 +728,33 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
         </div>
       </div>
 
-      <!-- Hero App Preview (Exact Backend Image from Home Page) -->
-      <div class="hero-img">
-        @if(!empty($heroImageUrl))
-          <img src="{{ $heroImageUrl }}" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
-        @else
-          <img src="{{ asset('assets/logo-main.png') }}" alt="Clean Station App">
-        @endif
+      <!-- Hero App Preview in Realistic Smartphone Mockup Chassis -->
+      <div class="hero-phone-wrapper">
+        <div class="hero-phone-mockup">
+          <div class="phone-dynamic-island"></div>
+          <div class="phone-screen">
+            @if(!empty($heroImageUrl))
+              <img src="{{ $heroImageUrl }}" onerror="this.onerror=null;this.src='{{ asset('assets/images/app-screen.png') }}';" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
+            @else
+              <img src="{{ asset('assets/images/app-screen.png') }}" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
+            @endif
+          </div>
+        </div>
+        <!-- Floating Badges from Original Home Page -->
+        <div class="hero-badge badge-time">
+          <div class="badge-icon icon-time"><i class="fa-solid fa-clock"></i></div>
+          <div class="badge-text">
+            <small>{{ $isRtl ? 'الوقت' : 'TIME' }}</small>
+            <b>{{ $isRtl ? 'في الوقت المحدد' : 'On time' }}</b>
+          </div>
+        </div>
+        <div class="hero-badge badge-service">
+          <div class="badge-icon icon-service"><i class="fa-solid fa-bolt"></i></div>
+          <div class="badge-text">
+            <small>{{ $isRtl ? 'الخدمة' : 'THE SERVICE' }}</small>
+            <b>{{ $isRtl ? 'سريع' : 'Quick' }}</b>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -745,17 +1046,11 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
         </div>
       </div>
       <div class="stores" style="justify-content:center;margin-top:28px">
-        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="App Store">
-          <span class="sb">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-            <span class="t"><small>{{ $isRtl ? 'حمّله من' : 'Download on the' }}</small><b>App Store</b></span>
-          </span>
+        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+          <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
         </a>
-        <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store" aria-label="Google Play">
-          <span class="sb">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00C4FF" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l12.195-12.12z"/><path fill="#00E676" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179z"/><path fill="#FFC400" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594z"/><path fill="#FF3A44" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54z"/></svg>
-            <span class="t"><small>{{ $isRtl ? 'احصل عليه من' : 'GET IT ON' }}</small><b>Google Play</b></span>
-          </span>
+        <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
+          <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
         </a>
       </div>
     </div>
@@ -766,7 +1061,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     <div class="wrap">
       <span class="kicker">{{ $isRtl ? 'آراء وتجارب' : 'Customer reviews' }}</span>
       <h2>{{ $isRtl ? 'ماذا قال عملاؤنا؟' : 'What our customers say' }}</h2>
-      <div class="rgrid">
+      <div class="rgrid" id="reviewsSlider">
         <div class="r">
           <q>{{ $isRtl ? 'نظافة الملابس روعة والريحة تجنن والتطبيق سهل جدا في الطلب وما ياخذ وقت صراحة انصح الكل يجربهم بدون تردد' : 'The clothes come back spotless and smell amazing, and ordering in the app is quick and easy. I recommend them to everyone' }}</q>
           <div class="who">
@@ -810,6 +1105,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           </div>
         </div>
       </div>
+      <div class="reviews-dots" id="reviewsDots"></div>
     </div>
   </section>
 
@@ -880,17 +1176,11 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <span>{{ $isRtl ? "توصيل مجاني للطلبات بـ{$freeDeliveryMin} ريال وما فوق" : "Free delivery on orders of SAR {$freeDeliveryMin} and above" }}</span>
         </div>
         <div class="stores" style="justify-content:center">
-          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store" aria-label="App Store">
-            <span class="sb">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-              <span class="t"><small>{{ $isRtl ? 'حمّله من' : 'Download on the' }}</small><b>App Store</b></span>
-            </span>
+          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
           </a>
-          <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store" aria-label="Google Play">
-            <span class="sb">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00C4FF" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l12.195-12.12z"/><path fill="#00E676" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179z"/><path fill="#FFC400" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594z"/><path fill="#FF3A44" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54z"/></svg>
-              <span class="t"><small>{{ $isRtl ? 'احصل عليه من' : 'GET IT ON' }}</small><b>Google Play</b></span>
-            </span>
+          <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
           </a>
         </div>
         <p class="contact-line">
@@ -903,13 +1193,17 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     </div>
   </section>
 
-  <!-- Flower & Gifts Strip -->
-  <section class="gift-strip-section">
+  <!-- Flower & Gifts Banner (Matches Reference Design) -->
+  <section class="gift-banner-section">
     <div class="wrap">
-      <div class="gift-strip">
-        <p>{{ $isRtl ? '✨ جديد: باقات ورود وفازات فاخرة بتوصيل كلين ستيشن' : '✨ New: flower bouquets and luxury vases delivered by Clean Station' }}</p>
-        <a href="{{ route('gifts') }}" class="btn btn-o" style="color:#A33A5B;border-color:#F5DDE3">
-          {{ $isRtl ? 'تصفح الهدايا ←' : 'Browse gifts →' }}
+      <div class="gift-banner-card">
+        <div class="gift-banner-title">
+          <span>✨</span>
+          <span>{{ $isRtl ? 'جديد: باقات ورود وفازات فاخرة بتوصيل كلين ستيشن' : 'New: Luxury flower bouquets & vases delivered by Clean Station' }}</span>
+        </div>
+        <a href="{{ route('gifts') }}" class="gift-banner-btn">
+          <span>{{ $isRtl ? 'تصفح الهدايا' : 'Browse gifts' }}</span>
+          <span style="font-size:16px;line-height:1">←</span>
         </a>
       </div>
     </div>
@@ -931,15 +1225,59 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <!-- Original Home Page Footer -->
   @include('layouts.partials.footer')
 
-  <!-- Sticky Mobile Bar -->
-  <div class="sticky">
-    <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'أبغى أطلب غسيل' : 'Hello, I want to request laundry service') }}" target="_blank" rel="noopener" class="btn btn-o">
+  <!-- Modern Sticky Mobile Bar (Immediate & Balanced) -->
+  <div class="mobile-sticky-bar">
+    <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'أبغى أطلب غسيل' : 'Hello, I want to request laundry service') }}" target="_blank" rel="noopener" class="bar-btn bar-btn-contact">
       {{ $isRtl ? 'تواصل معنا' : 'Contact us' }}
     </a>
-    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="btn btn-p">
+    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="bar-btn bar-btn-download">
       {{ $isRtl ? 'حمّل التطبيق' : 'Download the app' }}
     </a>
   </div>
+
+  <!-- Reviews Slider Dots Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var slider = document.getElementById('reviewsSlider');
+      var dotsContainer = document.getElementById('reviewsDots');
+      if (slider && dotsContainer) {
+        var cards = slider.querySelectorAll('.r');
+        dotsContainer.innerHTML = '';
+        cards.forEach(function(card, index) {
+          var dot = document.createElement('span');
+          dot.className = 'dot' + (index === 0 ? ' active' : '');
+          dot.addEventListener('click', function() {
+            card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+          dotsContainer.appendChild(dot);
+        });
+
+        var scrollTimer;
+        slider.addEventListener('scroll', function() {
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(function() {
+            var sliderRect = slider.getBoundingClientRect();
+            var sliderCenter = sliderRect.left + sliderRect.width / 2;
+            var closestIndex = 0;
+            var minDiff = Infinity;
+            cards.forEach(function(card, i) {
+              var cardRect = card.getBoundingClientRect();
+              var cardCenter = cardRect.left + cardRect.width / 2;
+              var diff = Math.abs(sliderCenter - cardCenter);
+              if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = i;
+              }
+            });
+            var dots = dotsContainer.querySelectorAll('.dot');
+            dots.forEach(function(d, idx) {
+              d.classList.toggle('active', idx === closestIndex);
+            });
+          }, 40);
+        }, { passive: true });
+      }
+    });
+  </script>
 
 </body>
 </html>
