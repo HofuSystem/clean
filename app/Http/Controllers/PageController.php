@@ -25,8 +25,10 @@ use Core\Services\Requests\PlaceOrderRequest;
 use Core\Settings\Models\Setting;
 use Core\Settings\Traits\ApiResponse;
 use Core\Users\Models\User;
+use Core\Products\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class PageController extends Controller
 {
@@ -648,5 +650,153 @@ class PageController extends Controller
         ]);
     }
 
+    /**
+     * Display the new landing page preview
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function land()
+    {
+        $lang = LaravelLocalization::getCurrentLocale() ?: app()->getLocale();
+        $isRtl = $lang === 'ar';
 
+        // 1. Home page & Hero image from backend
+        $homePage = Page::with(['translations', 'sections.translations'])
+            ->where('slug', 'home')
+            ->where('is_active', true)
+            ->first();
+        $heroSection = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
+        $heroImageUrl = $heroSection ? $heroSection->image_url : null;
+
+        // 2. Economic Bags (الحقائب الاقتصادية)
+        $bagCategory = Category::with(['products' => function ($q) {
+            $q->where('status', 'active')->where('is_package', 1);
+        }, 'products.translations'])->where('slug', 'economic-bags')->first();
+
+        $bags = $bagCategory ? $bagCategory->products->sortBy('price')->values() : collect();
+
+        // 3. Determine most ordered bag for badge from order_items
+        $mostOrderedBagId = null;
+        if ($bags->isNotEmpty()) {
+            $mostOrderedBagId = DB::table('order_items')
+                ->whereIn('product_id', $bags->pluck('id'))
+                ->groupBy('product_id')
+                ->orderByDesc(DB::raw('SUM(quantity)'))
+                ->value('product_id');
+        }
+
+        // 3.1 Extra piece prices from database products
+        $extraPrices = [
+            22 => (int) (Product::where('id', 310)->value('price') ?: 5),
+            23 => (int) (Product::where('id', 323)->value('price') ?: 4),
+            221 => (int) (Product::where('id', 329)->value('price') ?: 4),
+            318 => (int) (Product::where('id', 409)->value('price') ?: 19),
+        ];
+
+        // 4. Dynamic Products Sample (randomized on visit, limited to 5 as requested)
+        $sampleProducts = $this->getDynamicSampleProducts(5);
+
+        // 5. Free delivery threshold from backend settings
+        $freeDeliveryMin = (int) (Setting::where('key', 'free_delivery')->value('value') ?: 100);
+
+        // 6. Settings for social media and other data
+        $settings = Setting::all()->keyBy('key')->map->value;
+
+        return view('landing.land', [
+            'heroImageUrl' => $heroImageUrl,
+            'heroSection' => $heroSection,
+            'bags' => $bags,
+            'extraPrices' => $extraPrices,
+            'mostOrderedBagId' => $mostOrderedBagId,
+            'sampleProducts' => $sampleProducts,
+            'freeDeliveryMin' => $freeDeliveryMin,
+            'settings' => $settings,
+            'isRtl' => $isRtl,
+            'lang' => $lang,
+        ]);
+    }
+
+    /**
+     * Get dynamic sample products grouped by service prices
+     *
+     * @param int $limit
+     * @return array
+     */
+    protected function getDynamicSampleProducts($limit = 10)
+    {
+        $products = Product::with(['translations', 'subCategory.translations'])
+            ->where('status', 'active')
+            ->where('is_package', 0)
+            ->whereIn('type', ['clothes'])
+            ->get();
+
+        $grouped = [];
+
+        foreach ($products as $p) {
+            $arName = trim($p->translate('ar') ? $p->translate('ar')->name : $p->name);
+            $enName = trim($p->translate('en') ? $p->translate('en')->name : $arName);
+
+            // Normalize arabic key for grouping variations
+            $normKey = preg_replace('/[إأآا]/u', 'ا', mb_strtolower($arName));
+
+            if (!isset($grouped[$normKey])) {
+                $grouped[$normKey] = [
+                    'name_ar' => $arName,
+                    'name_en' => $enName,
+                    'wash_iron' => null,
+                    'iron_only' => null,
+                    'dry_clean' => null,
+                    'service_count' => 0,
+                ];
+            }
+
+            $subName = $p->subCategory ? ($p->subCategory->translate('ar')->name ?? $p->subCategory->name) : '';
+
+            if (str_contains($subName, 'كوي') && str_contains($subName, 'غسيل')) {
+                $grouped[$normKey]['wash_iron'] = $p->price;
+                $grouped[$normKey]['service_count']++;
+            } elseif (str_contains($subName, 'كوي')) {
+                $grouped[$normKey]['iron_only'] = $p->price;
+                $grouped[$normKey]['service_count']++;
+            } elseif (str_contains($subName, 'جاف') || str_contains($subName, 'دراي')) {
+                $grouped[$normKey]['dry_clean'] = $p->price;
+                $grouped[$normKey]['service_count']++;
+            }
+        }
+
+        // Filter to items that have at least one price
+        $validItems = array_values(array_filter($grouped, function ($item) {
+            return $item['wash_iron'] !== null || $item['iron_only'] !== null || $item['dry_clean'] !== null;
+        }));
+
+        // Shuffle so products change dynamically across visits
+        shuffle($validItems);
+
+        // Sort by service count descending so complete items show first while retaining randomness
+        usort($validItems, function ($a, $b) {
+            return $b['service_count'] <=> $a['service_count'];
+        });
+
+        return array_slice($validItems, 0, $limit);
+    }
+
+    /**
+     * Flowers & Gifts Page (الورود والهدايا)
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function gifts()
+    {
+        $lang = LaravelLocalization::getCurrentLocale() ?: app()->getLocale();
+        $isRtl = $lang === 'ar';
+
+        // Settings for whatsapp, phone, etc.
+        $settings = Setting::all()->keyBy('key')->map->value;
+
+        return view('landing.gifts', [
+            'settings' => $settings,
+            'isRtl' => $isRtl,
+            'lang' => $lang,
+        ]);
+    }
 }

@@ -1,6 +1,44 @@
-<nav class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-gray-100" id="navbar">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
+<style>
+    .nav-new-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        line-height: 1.5 !important;
+        background-color: #E5484D !important;
+        color: #ffffff !important;
+        border-radius: 999px !important;
+        padding: 1px 7px !important;
+        margin-inline-start: 5px !important;
+        vertical-align: middle !important;
+        white-space: nowrap !important;
+        letter-spacing: 0 !important;
+        box-shadow: 0 1px 3px rgba(229, 72, 77, 0.3) !important;
+    }
+    #navbar .h-10, #navbar img.h-10, #navbar a[href*="home"] img {
+        height: 58px !important;
+        max-height: 58px !important;
+        width: auto !important;
+        object-fit: contain !important;
+        transition: all 0.2s ease;
+    }
+    #navbar {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    @media (max-width: 640px) {
+        #navbar .h-10, #navbar img.h-10, #navbar a[href*="home"] img {
+            height: 46px !important;
+            max-height: 46px !important;
+        }
+    }
+</style>
+
+<nav class="fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100" id="navbar">
+    <div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20" style="direction: ltr !important;">
             
             <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2">
                 @if(config('app.logo'))
@@ -11,13 +49,17 @@
                 @endif
             </a>
 
-            <div class="hidden xl:flex items-center space-x-0.5 2xl:space-x-1 rtl:space-x-reverse bg-gray-50 px-2 py-1 2xl:px-2.5 2xl:py-1.5 rounded-full border border-gray-200/50 shrink-0">
+            <div id="nav-pill-menu" class="hidden xl:flex items-center gap-1 2xl:gap-1.5 bg-gray-50/90 px-2 py-1 2xl:px-2.5 2xl:py-1.5 rounded-full border border-gray-200/60 shadow-sm shrink-0" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }} !important;">
                 <a href="{{ route('home') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('home') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('home') }}</a>
                 <a href="{{ route('services') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('services*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('services') }}</a>
                 <a href="{{ route('pricing') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('pricing') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'الأسعار' : 'Pricing' }}</a>
                 <a href="{{ route('coverage') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('coverage') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'التغطية' : 'Coverage' }}</a>
                 <a href="{{ route('why-us') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('why-us') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('why_us') }}</a>
                 <a href="{{ route('b2b') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('b2b') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('business') }}</a>
+                <a href="{{ route('gifts') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 {{ Route::is('gifts*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">
+                    <span>{{ app()->getLocale() === 'ar' ? 'الورود والهدايا' : 'Flowers & Gifts' }}</span>
+                    <span class="nav-new-badge" style="background-color: #E5484D !important; color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border-radius: 999px !important; padding: 1px 7px !important; margin-inline-start: 5px !important; display: inline-flex !important; align-items: center !important; line-height: 1.5 !important; white-space: nowrap !important;">{{ app()->getLocale() === 'ar' ? 'جديد' : 'New' }}</span>
+                </a>
                 <a href="{{ route('blog') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('blog*') || Route::is('blogs*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('blog') }}</a>
                 <a href="{{ route('faq') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('faq') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('faq') }}</a>
             </div>
@@ -85,6 +127,10 @@
             <a href="{{ route('coverage') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-map-location-dot w-6 text-center text-brand-500"></i> {{ app()->getLocale() === 'ar' ? 'التغطية' : 'Coverage' }}</a>
             <a href="{{ route('why-us') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-crown w-6 text-center text-brand-500"></i> {{ trans('why_us') }}</a>
             <a href="{{ route('b2b') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-briefcase w-6 text-center text-brand-500"></i> {{ trans('business') }}</a>
+            <a href="{{ route('gifts') }}" class="block px-4 py-3 rounded-xl text-base font-bold {{ Route::is('gifts*') ? 'text-brand-600 bg-brand-50' : 'text-gray-700 hover:bg-brand-50' }} flex items-center justify-between">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-gift w-6 text-center text-rose-500"></i> {{ app()->getLocale() === 'ar' ? 'الورود والهدايا' : 'Flowers & Gifts' }}</span>
+                <span class="nav-new-badge" style="background-color: #E5484D !important; color: #ffffff !important; font-size: 11px !important; font-weight: 700 !important; border-radius: 999px !important; padding: 2px 8px !important; display: inline-flex !important; align-items: center !important; line-height: 1.5 !important;">{{ app()->getLocale() === 'ar' ? 'جديد' : 'New' }}</span>
+            </a>
             <a href="{{ route('blog') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-newspaper w-6 text-center text-brand-500"></i> {{ trans('blog') }}</a>
             <a href="{{ route('faq') }}" class="block px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-brand-50"><i class="fa-solid fa-circle-question w-6 text-center text-brand-500"></i> {{ trans('faq') }}</a>
             @if(Route::is('b2b'))

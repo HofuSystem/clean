@@ -10,7 +10,7 @@
             <div class="space-y-6 flex flex-col items-center {{ $isRtl ? 'md:items-start' : 'md:items-start' }}">
                 <div class="flex items-center gap-3 justify-center md:justify-start">
                     @if(config('app.logo'))
-                        <x-website-image :src="config('app.logo')" sizes="120px" width="1503" height="826" alt="Logo" class="h-10 w-auto mx-auto md:mx-0" />
+                        <x-website-image :src="config('app.logo')" sizes="120px" width="1503" height="826" alt="Logo" class="h-10 w-auto mx-auto md:mx-0 footer-logo" />
                     @else
                         <div class="text-2xl font-black text-white tracking-tight">{{ config('app.name') }}</div>
                     @endif

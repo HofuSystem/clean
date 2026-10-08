@@ -73,34 +73,34 @@ Route::get('/en/about-us', fn() => redirect('https://cleanstation.app/en/why-us'
 // ============================================================
 
 Route::group(
-[
-    'prefix' => LaravelLocalization::setLocale(),
-    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
-],
-        function () {
+    [
+        'prefix' => LaravelLocalization::setLocale(),
+        'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
+    ],
+    function () {
 
-        Route::get('', [PageController::class , 'home'])->name('home');
-        Route::get('/b2b', [PageController::class , 'b2b'])->name('b2b');
-        Route::get('/blogs', [PageController::class , 'blog'])->name('blog');
-        Route::get('/blogs/{slug}', [PageController::class , 'blogPost'])->name('blogs-single');
-        Route::get('/services', [PageController::class , 'services'])->name('services');
-        Route::get('/services/{slug}', [PageController::class , 'servicePost'])->name('services.single');
-        Route::get('/pricing', [PageController::class , 'pricing'])->name('pricing');
-        Route::get('/riyadh', [PageController::class , 'coverage'])->name('coverage');
-        Route::get('/contact-us', [PageController::class , 'contactUs'])->name('contact');
-        Route::post('/contact-us', [PageController::class , 'contactUsRequest'])->name('contact');
-        Route::get('/faq', [PageController::class , 'faq'])->name('faq');
-        Route::get('/why-us', [PageController::class , 'whyUs'])->name('why-us');
-        Route::get('/app-features', [PageController::class , 'appFeatures'])->name('app.features');
-        Route::get('/testimonials', [PageController::class , 'testimonials'])->name('testimonials');
+        Route::get('', [PageController::class, 'home'])->name('home');
+        Route::get('/b2b', [PageController::class, 'b2b'])->name('b2b');
+        Route::get('/blogs', [PageController::class, 'blog'])->name('blog');
+        Route::get('/blogs/{slug}', [PageController::class, 'blogPost'])->name('blogs-single');
+        Route::get('/services', [PageController::class, 'services'])->name('services');
+        Route::get('/services/{slug}', [PageController::class, 'servicePost'])->name('services.single');
+        Route::get('/pricing', [PageController::class, 'pricing'])->name('pricing');
+        Route::get('/riyadh', [PageController::class, 'coverage'])->name('coverage');
+        Route::get('/contact-us', [PageController::class, 'contactUs'])->name('contact');
+        Route::post('/contact-us', [PageController::class, 'contactUsRequest'])->name('contact');
+        Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+        Route::get('/why-us', [PageController::class, 'whyUs'])->name('why-us');
+        Route::get('/app-features', [PageController::class, 'appFeatures'])->name('app.features');
+        Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 
 
-        Route::get('/terms', [PageController::class , 'terms'])->name('terms');
-        Route::get('/privacy', [PageController::class , 'privacy'])->name('privacy');
-        Route::get('/payment-gateway', [PageController::class , 'paymentGateway'])->name('payment-gateway');
+        Route::get('/terms', [PageController::class, 'terms'])->name('terms');
+        Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
+        Route::get('/payment-gateway', [PageController::class, 'paymentGateway'])->name('payment-gateway');
         Route::view('/social', 'social')->name('social');
         Route::view('/allInfo', 'allInfo')->name('allInfo');
-        Route::get('sitemap.xml', [PageController::class , 'siteMap']);
+        Route::get('sitemap.xml', [PageController::class, 'siteMap']);
         Route::post('/newsletter', function () {
             $data = request()->validate([
                 'email' => 'required|email|max:255',
@@ -113,32 +113,48 @@ Route::group(
             return redirect()->back()->with('success', trans('Thank you for subscribing to our newsletter'));
         })->name('newsletter');
 
+        // New Landing Page (Localized)
+        Route::get('/land', [PageController::class, 'land'])->name('land');
 
-
-    });
-
-// ============================================================
-// New Landing Page & Concepts Preview (For Team Review & Approval)
-// ============================================================
-Route::get('/preview', function () {
-    return response()->file(public_path('landing-concepts/concept-a-conversion.html'));
-})->name('preview.landing');
-
-Route::get('/new-landing', function () {
-    return response()->file(public_path('landing-concepts/concept-a-conversion.html'));
-})->name('new.landing');
-
-Route::get('/preview/showcase', function () {
-    return response()->file(public_path('landing-concepts/index.html'));
-})->name('preview.showcase');
-
-Route::get('/{page}.html', function ($page) {
-    $filePath = public_path("landing-concepts/{$page}.html");
-    if (file_exists($filePath)) {
-        return response()->file($filePath);
+        // Flowers & Gifts Page (الورود والهدايا)
+        Route::get('/gifts', [PageController::class, 'gifts'])->name('gifts');
     }
-    abort(404);
-})->where('page', 'concept-a-conversion|concept-b-platform|concept-c-premium|b2b|pricing|coverage|blog|terms|privacy');
+);
+
+// ============================================================
+// New Landing Page Design Preview (Friendly Aliases)
+// ============================================================
+Route::get('/land/ar', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('ar', '/land', [], true));
+});
+
+Route::get('/land/en', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('en', '/land', [], true));
+});
+
+Route::get('/gifts/ar', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('ar', '/gifts', [], true));
+});
+
+Route::get('/gifts/en', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('en', '/gifts', [], true));
+});
+
+Route::get('/cleanstation-site-3.html', function () {
+    return redirect(LaravelLocalization::getLocalizedURL(app()->getLocale() ?: 'ar', '/gifts', [], true));
+});
+
+Route::get('/cleanstation-site-3', function () {
+    return redirect(LaravelLocalization::getLocalizedURL(app()->getLocale() ?: 'ar', '/gifts', [], true));
+});
+
+Route::get('/cleanstation-homepage-edits.html', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('ar', '/land', [], true));
+});
+
+Route::get('/cleanstation-homepage-en.html', function () {
+    return redirect(LaravelLocalization::getLocalizedURL('en', '/land', [], true));
+});
 
 Route::get('/api-docs', function () {
     $username = env('API_DOCS_USERNAME', 'admin');
@@ -168,14 +184,14 @@ Route::get('/docs.openapi', function () {
     if (!file_exists($path)) {
         abort(404, 'OpenAPI spec not found.');
     }
-    
+
     $content = file_get_contents($path);
     $appUrl = config('app.url');
     // Replace the hardcoded server URL dynamically
     $content = preg_replace('/(servers:\s*-\s*url:\s*)[\'"].*?[\'"]/', '$1\'' . $appUrl . '\'', $content);
     // Fallback replace any other instances
     $content = str_replace('http://localhost:8000', $appUrl, $content);
-    
+
     return response($content, 200, [
         'Content-Type' => 'text/yaml'
     ]);
