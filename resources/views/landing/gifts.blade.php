@@ -368,6 +368,10 @@
             width: auto !important;
             object-fit: contain !important;
         }
+        @media (max-width: 768px) {
+            #navbar, #navbar .h-20 { height: 60px !important; }
+            #navbar .h-10, #navbar img.h-10 { height: 38px !important; max-height: 38px !important; }
+        }
 
         /* Footer styling (Navy background + White large logo) */
         #footer {
@@ -431,7 +435,7 @@
 
         @media (max-width: 640px) {
             section { padding: 36px 0; }
-            .ghero { padding: 96px 0 32px; }
+            .ghero { padding: 84px 0 32px; }
             .ghero h1 { font-size: 28px; line-height: 1.3; }
             .ghero .lead { font-size: 14.5px; }
             .ghero .pic { max-width: 320px; margin: 0 auto; border-radius: 20px; }

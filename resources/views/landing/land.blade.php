@@ -116,8 +116,9 @@ img{max-width:100%;display:block}
 #navbar .h-20{direction:ltr !important}
 #navbar .hidden.xl\:flex, #navbar #nav-pill-menu{direction:{{ $isRtl ? 'rtl' : 'ltr' }} !important}
 #navbar img.h-10,#navbar .h-10,#navbar a[href*="home"] img{height:58px !important;max-height:58px !important;width:auto !important;object-fit:contain !important;transition:all 0.2s}
-@media (max-width:600px){
-  #navbar img.h-10,#navbar .h-10,#navbar a[href*="home"] img{height:48px !important;max-height:48px !important}
+@media (max-width:768px){
+  #navbar, #navbar .h-20{height:60px !important}
+  #navbar img.h-10,#navbar .h-10,#navbar a[href*="home"] img{height:38px !important;max-height:38px !important}
 }
 
 .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:all 0.2s}
@@ -475,7 +476,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 
 @media (max-width: 600px){
   section{padding:40px 0}
-  .hero{padding:100px 0 36px}
+  .hero{padding:84px 0 36px}
   h1{font-size:32px}
   h2{font-size:24px}
 
