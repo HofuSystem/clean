@@ -141,52 +141,63 @@ h2{font-size:28px;line-height:1.4;color:var(--navy);font-weight:700}
 .nw{white-space:nowrap}
 p,q,li,.desc,.fit{text-wrap:balance}
 
-/* Hero Section */
-.hero{background:linear-gradient(160deg,#EEF7FC 0%,#fff 60%);padding:130px 0 56px}
-.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
-.hero .lead{font-size:17px;color:var(--ink);margin-top:14px;max-width:540px;line-height:1.7}
-.facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:20px;max-width:560px}
-.facts span{font-size:13px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;font-weight:500}
-.facts span::before{content:"✓";color:var(--green);font-weight:700}
+/* Platform Badge (Kicker) */
+.sa-wrap{margin-bottom:12px}
+.kicker.sa{display:inline-flex;align-items:center;gap:10px;margin:0;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:var(--muted);border:1px solid #DCE6F0;padding:6px 16px 6px 14px;font-size:14px;font-weight:500;border-radius:999px;box-shadow:0 2px 10px rgba(31,51,100,.06);white-space:nowrap}
+.kicker.sa i{width:9px;height:9px;border-radius:50%;background:#0B7A3E;box-shadow:0 0 0 3px rgba(11,122,62,.15);flex:none}
+.kicker.sa b{color:var(--navy);font-weight:700}
+.kicker.sa em{width:1px;height:14px;background:#C9D5E2;flex:none}
 
-.stores{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center}
+/* Hero Section */
+.hero{background:linear-gradient(160deg,#EEF7FC 0%,#fff 60%);padding:100px 0 28px}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:28px 48px;align-items:center}
+.hero h1{font-size:40px;line-height:1.25;color:var(--navy);font-weight:700;margin:0 0 8px}
+.hero .lead{font-size:16.5px;color:var(--ink);margin-top:6px;max-width:580px;line-height:1.65}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:14px;max-width:620px}
+.facts span{font-size:14px;color:var(--ink);display:inline-flex;gap:8px;align-items:center;font-weight:500}
+.facts span::before{content:"";flex:none;width:20px;height:20px;background:var(--blue);-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2724%27%20height%3D%2724%27%20viewBox%3D%270%200%2024%2024%27%20%3E%3Cpath%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke-width%3D%271.5%27%20d%3D%27m5%2014l3.5%203.5L19%206.5%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2724%27%20height%3D%2724%27%20viewBox%3D%270%200%2024%2024%27%20%3E%3Cpath%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke-width%3D%271.5%27%20d%3D%27m5%2014l3.5%203.5L19%206.5%27/%3E%3C/svg%3E") center/contain no-repeat}
+
+.stores{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;align-items:center}
 .store-link{display:inline-block;transition:transform 0.2s ease;border-radius:8px}
 .store-link:hover{transform:translateY(-2px)}
-.store-badge-img{height:44px;width:auto;border-radius:8px;display:block}
+.store-badge-img{height:42px;width:auto;border-radius:8px;display:block}
 
-.proof{display:flex;gap:28px;margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
-.proof b{font-size:22px;color:var(--navy);display:block;line-height:1.2}
-.proof span{font-size:12px;color:var(--muted)}
+/* Hero Stats Bar: 5 Quality & Performance Metrics */
+.stats-bar{grid-column:1 / -1;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 0;margin-top:24px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(31,51,100,.05)}
+.stats-bar > div{display:flex;flex-direction:column;gap:2px;padding:0 20px;border-inline-start:1px solid var(--line);text-align:center}
+.stats-bar > div:first-child{border-inline-start:0}
+.stats-bar b{font-size:26px;font-weight:700;line-height:1.15;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.3px}
+.stats-bar span{font-size:13px;color:var(--muted);white-space:nowrap}
 
 /* Hero Phone Mockup */
-.hero-phone-wrapper{position:relative;display:flex;justify-content:center;align-items:center;perspective:1000px;margin:10px auto 0}
+.hero-phone-wrapper{position:relative;display:flex;justify-content:center;align-items:center;perspective:1000px;margin:0 auto}
 .hero-phone-mockup{
   position:relative;
-  width:280px;
-  height:570px;
+  width:265px;
+  height:510px;
   background:#0F172A;
-  border-radius:44px;
-  border:9px solid #1E293B;
-  box-shadow:0 25px 60px -15px rgba(15,23,42,0.35), 0 10px 25px -5px rgba(0,0,0,0.15);
+  border-radius:42px;
+  border:8px solid #1E293B;
+  box-shadow:0 20px 50px -12px rgba(15,23,42,0.3), 0 8px 20px -4px rgba(0,0,0,0.12);
   overflow:hidden;
-  transform:rotate(-2.5deg);
-  transition:transform .4s ease, box-shadow .4s ease;
+  transform:none;
+  transition:transform .3s ease, box-shadow .3s ease;
   z-index:2;
 }
-.hero-phone-mockup:hover{transform:rotate(0) scale(1.02);box-shadow:0 30px 70px -15px rgba(15,23,42,0.45)}
+.hero-phone-mockup:hover{transform:scale(1.02);box-shadow:0 25px 60px -12px rgba(15,23,42,0.4)}
 .phone-dynamic-island{
   position:absolute;
-  top:10px;
+  top:9px;
   left:50%;
   transform:translateX(-50%);
-  width:84px;
-  height:20px;
+  width:80px;
+  height:18px;
   background:#000000;
   border-radius:999px;
   z-index:10;
   box-shadow:inset 0 1px 2px rgba(255,255,255,0.15);
 }
-.phone-screen{width:100%;height:100%;overflow:hidden;background:#FFFFFF;border-radius:35px}
+.phone-screen{width:100%;height:100%;overflow:hidden;background:#FFFFFF;border-radius:34px}
 .phone-screen img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
 
 /* Hero Floating Badges */
@@ -254,39 +265,37 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .foot-info a{color:var(--blue);font-weight:600}
 
 /* Why Us */
-.why-section{background:var(--bg-2)}
-.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
-.why{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:#fff}
-.why .ic{width:38px;height:38px;border-radius:10px;background:var(--sky-soft);display:grid;place-items:center;font-size:18px;margin-bottom:10px}
-.why h4{color:var(--navy);font-size:15px;font-weight:600}
-.why p{color:var(--muted);font-size:13px;margin-top:4px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chips span{font-size:12px;background:var(--bg-2);color:var(--ink);padding:2px 10px;border-radius:999px;white-space:nowrap}
+.why-section{background:var(--bg-2);padding:64px 0}
+.why-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
+.why-section h2{text-align:start;font-size:28px;font-weight:700;color:var(--navy);margin:0 0 10px}
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.why{border:1px solid var(--line);border-radius:18px;padding:26px 20px 22px;background:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.why:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+.why .ic{color:var(--blue);margin-bottom:12px;display:flex;justify-content:center;align-items:center;background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
+.why h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
+.why p{color:var(--muted);font-size:13.5px;line-height:1.55;text-align:center;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}
+.chips span{font-size:12px;background:var(--bg-2);color:var(--ink);padding:3px 12px;border-radius:999px;white-space:nowrap}
 
 /* Journey */
-.journey-section{background:#fff}
+.journey, .journey-section{background:#fff}
 .jgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
-.j{background:#fff;border-radius:18px;padding:18px 20px;border:1px solid var(--line)}
-.j h4{color:var(--navy);font-size:15px;font-weight:600}
+.j{background:#fff;border-radius:14px;padding:16px 18px;border:1px solid var(--line)}
+.j h4{color:var(--navy);font-size:15px;font-weight:700}
 .j p{color:var(--muted);font-size:14px;margin-top:4px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
-.stats div{text-align:center;background:var(--navy);color:#fff;border-radius:16px;padding:16px 8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.stats div{text-align:center;background:var(--navy);color:#fff;border-radius:14px;padding:14px 6px}
 .stats b{font-size:22px;display:block;line-height:1.3}
-.stats span{font-size:12px;opacity:.85}
+.stats span{font-size:13px;opacity:.85}
 
 /* App Features */
 .app-section{background:#fff;padding:60px 0;border-top:1px solid var(--line)}
-.app-section .kicker{display:inline-block;text-align:center;margin:0 auto 10px;width:fit-content;background:var(--sky-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
-.app-section h2{text-align:center;font-size:32px;font-weight:800;color:var(--navy);margin:0 0 10px}
+.app-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
+.app-section h2{text-align:start;font-size:28px;font-weight:700;color:var(--navy);margin:0 0 10px}
 .feat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px}
-.f{background:#fff;border-radius:18px;padding:24px 14px 22px;border:1px solid var(--line);min-height:180px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.f{background:#fff;border-radius:18px;padding:26px 16px 22px;border:1px solid var(--line);min-height:180px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
 .f:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.06)}
-.f .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;margin:0 auto 14px}
-.f.ic-wallet .ic{background:#FDE7EE}
-.f.ic-friend .ic{background:#FFF1EC}
-.f.ic-loyalty .ic{background:#FEF9E7}
-.f.ic-track .ic{background:#FDE7EE}
-.f.ic-pricing .ic{background:#EAF6FB}
+.f .ic{color:var(--blue);margin-bottom:14px;display:flex;justify-content:center;align-items:center;background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
 .f h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
 .f p{color:var(--muted);font-size:13px;line-height:1.55;text-align:center;margin:0}
 .f p b{color:var(--green);font-weight:700}
@@ -301,13 +310,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .r .who .svc{font-size:12px;font-weight:600;color:var(--blue);background:var(--sky-soft);padding:3px 12px;border-radius:999px;display:inline-block}
 .reviews-dots{display:none}
 
-/* Brand Band (Navy Pill Banner) */
-.brand-band-section{background:#fff;padding:32px 0 44px}
-.brand-band{background:var(--navy);border-radius:24px;padding:26px 44px;display:flex;align-items:center;justify-content:center;gap:26px;box-shadow:0 8px 28px rgba(31,51,100,0.15)}
-.brand-band img{height:72px;width:auto;object-fit:contain;flex-shrink:0}
-.brand-band .bb-text{text-align:start}
-.brand-band p{color:#FFFFFF !important;font-size:24px !important;font-weight:800 !important;line-height:1.3 !important;margin:0 !important;letter-spacing:-0.01em}
-.brand-band small{display:block !important;color:rgba(255,255,255,0.9) !important;font-size:16px !important;font-weight:500 !important;margin-top:6px !important;line-height:1.4 !important}
+
 
 /* Original Home Page Footer (#footer) */
 #footer{background-color:#1F3364 !important;color:#fff;padding-top:4rem;padding-bottom:3rem;border-top:1px solid rgba(255,255,255,0.12);font-size:14px}
@@ -375,62 +378,15 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .faq p{margin-top:8px;color:var(--muted);font-size:14px}
 
 /* Final CTA */
-.final{text-align:center;padding:48px 24px;background:linear-gradient(160deg,#EAF6FB 0%,#fff 80%);border-radius:24px;border:1px solid var(--line);margin-top:40px}
-.final .pts{display:flex;gap:8px 22px;justify-content:center;margin:14px 0 22px;flex-wrap:wrap}
-.final .pts span{font-size:13px;color:var(--ink);display:inline-flex;align-items:center;gap:6px;font-weight:500}
-.final .pts span::before{content:"✓";color:var(--green);font-weight:700}
-.final .contact-line{margin-top:16px;font-size:13px;color:var(--muted)}
-.final .contact-line a{color:var(--wa);font-weight:600}
-
-/* Flower & Gifts Banner */
-.gift-banner-section{padding:20px 0 40px}
-.gift-banner-card{
-  background:#FFF5F8;
-  border:1.5px solid #FADBE5;
-  border-radius:20px;
-  padding:24px 30px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  box-shadow:0 2px 12px rgba(122,40,70,0.03);
-  transition:transform .2s ease, box-shadow .2s ease;
-}
-.gift-banner-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(122,40,70,0.06);
-}
-.gift-banner-title{
-  color:#7A2846;
-  font-size:18px;
-  font-weight:700;
-  line-height:1.45;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.gift-banner-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  background:#FFFFFF;
-  color:#7A2846;
-  border:1.5px solid #E2E8F0;
-  border-radius:12px;
-  padding:11px 26px;
-  font-size:15px;
-  font-weight:700;
-  white-space:nowrap;
-  text-decoration:none;
-  transition:all .2s ease;
-  box-shadow:0 2px 6px rgba(0,0,0,0.03);
-}
-.gift-banner-btn:hover{
-  background:#FFF5F8;
-  border-color:#FADBE5;
-  color:#5C1B31;
-  transform:scale(1.02);
-}
+.final{background:var(--navy);color:#fff;border-radius:20px;padding:32px 20px;text-align:center;margin-top:36px}
+.final h2{color:#fff;font-size:24px}
+.final .pts{margin-top:8px;font-size:14px;color:rgba(255,255,255,0.85);opacity:.85;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px}
+.final .pts span{white-space:nowrap;color:#fff}
+.final .stores{justify-content:center;margin-top:16px}
+.final .store-badge-img{border:1px solid #fff;border-radius:8px}
+.final .sb{border-color:#fff}
+.final .contact-line{margin-top:16px;font-size:13px;color:rgba(255,255,255,0.85);opacity:.85}
+.final .contact-line a{color:#fff;text-decoration:underline;white-space:nowrap;font-weight:600}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
@@ -443,57 +399,58 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 .social a{width:34px;height:34px;border-radius:8px;background:var(--bg-2);display:grid;place-items:center;color:var(--navy);font-size:16px;transition:all 0.2s}
 .social a:hover{background:var(--navy);color:#fff}
 
-/* Mobile Sticky Bar (Immediate, clean & modern) */
-.mobile-sticky-bar{
+/* Sticky Mobile CTA (Original Home Page Style) */
+.sticky-mobile-cta{
   display:none;
   position:fixed;
   bottom:0;
   left:0;
   right:0;
   background:rgba(255,255,255,0.98);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  padding:10px 16px;
-  border-top:1px solid rgba(227,232,238,0.9);
-  box-shadow:0 -6px 20px rgba(15,23,42,0.08);
-  z-index:9999;
-  gap:12px;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid #e2e8f0;
+  padding:10px 18px;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.08);
+  justify-content:space-between;
   align-items:center;
-  justify-content:center;
+  z-index:9999;
 }
-.mobile-sticky-bar .bar-btn{
-  flex:1;
+.sticky-mobile-cta .cta-content{
+  display:flex;
+  flex-direction:column;
+  text-align:start;
+}
+.sticky-mobile-cta .stars{
+  color:#fbbf24;
+  font-size:11px;
+  letter-spacing:2px;
+  margin-bottom:2px;
+  line-height:1;
+}
+.sticky-mobile-cta-title{
+  font-size:13.5px;
+  font-weight:800;
+  color:#0f172a;
+  line-height:1.3;
+}
+.sticky-mobile-cta-btn{
+  background:linear-gradient(135deg,#0ea5e9,#0284c7);
+  color:#ffffff !important;
+  padding:9px 20px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:13.5px;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(14,165,233,0.4);
+  white-space:nowrap;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  height:44px;
-  padding:0 16px;
-  border-radius:12px;
-  font-size:14.5px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s ease;
-  text-decoration:none;
+  transition:transform .2s ease;
 }
-.mobile-sticky-bar .bar-btn-contact{
-  background:#FFFFFF;
-  color:var(--navy);
-  border:1.5px solid #CBD5E1;
-}
-.mobile-sticky-bar .bar-btn-contact:hover{
-  background:#F8FAFC;
-  border-color:var(--blue);
-  color:var(--blue);
-}
-.mobile-sticky-bar .bar-btn-download{
-  background:var(--navy);
-  color:#FFFFFF;
-  border:1.5px solid var(--navy);
-  box-shadow:0 3px 10px rgba(31,51,100,0.2);
-}
-.mobile-sticky-bar .bar-btn-download:hover{
-  background:var(--mid);
+.sticky-mobile-cta-btn:active{
+  transform:scale(0.97);
 }
 
 /* Responsive Queries */
@@ -518,31 +475,52 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 
 @media (max-width: 600px){
   section{padding:40px 0}
-  .hero{padding:110px 0 44px}
+  .hero{padding:100px 0 36px}
   h1{font-size:32px}
   h2{font-size:24px}
 
-  /* 2 Facts per row on mobile */
+  .kicker.sa{font-size:12.5px;gap:8px;padding:5px 12px}
+  .kicker.sa em{height:12px}
+
+  /* Facts on mobile */
   .facts{
-    display:grid !important;
-    grid-template-columns:repeat(2, 1fr) !important;
-    gap:8px 10px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8px !important;
     max-width:100% !important;
-    margin-top:16px !important;
+    margin-top:14px !important;
     text-align:start !important;
   }
   .facts span{
-    font-size:12px !important;
-    line-height:1.4 !important;
-    background:#FFFFFF;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:8px 10px !important;
-    box-shadow:0 1px 3px rgba(0,0,0,0.02);
-    display:flex !important;
-    align-items:center !important;
-    gap:6px !important;
+    font-size:13.5px !important;
+    line-height:1.45 !important;
+    background:none !important;
+    border:none !important;
+    padding:0 !important;
+    box-shadow:none !important;
   }
+
+  /* Stats bar on mobile */
+  .stats-bar{
+    display:flex !important;
+    flex-direction:column !important;
+    padding:4px 18px !important;
+    border-radius:18px !important;
+    margin-top:20px !important;
+  }
+  .stats-bar > div{
+    flex-direction:row-reverse !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    gap:12px !important;
+    padding:13px 0 !important;
+    border-inline-start:0 !important;
+    border-top:1px solid var(--line) !important;
+    text-align:start !important;
+  }
+  .stats-bar > div:first-child{border-top:0 !important}
+  .stats-bar b{font-size:20px !important;letter-spacing:-.2px !important}
+  .stats-bar span{font-size:13.5px !important;color:var(--ink) !important;white-space:nowrap !important}
 
   /* Hero phone on mobile */
   .hero-phone-mockup{width:230px;height:470px;border-radius:36px;border-width:7px;transform:none}
@@ -551,7 +529,41 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 
   .store-badge-img{height:40px}
 
-  .bags{grid-template-columns:1fr}
+  /* Bags 2 per row on mobile */
+  .bags{
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px !important;
+  }
+  .bag{
+    padding:14px 10px !important;
+    border-radius:14px !important;
+  }
+  .bag .tag{
+    top:-9px !important;
+    inset-inline-end:8px !important;
+    font-size:9.5px !important;
+    padding:2px 7px !important;
+  }
+  .bag h4{
+    font-size:13.5px !important;
+    line-height:1.3 !important;
+  }
+  .bag .qty{
+    font-size:11px !important;
+    margin-top:2px !important;
+  }
+  .bag .price{
+    font-size:18px !important;
+    margin-top:8px !important;
+  }
+  .bag .price small{
+    font-size:11px !important;
+  }
+  .bag .ex{
+    font-size:10px !important;
+    margin-top:4px !important;
+    line-height:1.3 !important;
+  }
 
   /* Why Us 2 per row on mobile */
   .why-grid{
@@ -562,11 +574,15 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     padding:14px 12px !important;
     border-radius:14px !important;
   }
-  .why .ic{
-    width:32px !important;
-    height:32px !important;
-    font-size:16px !important;
+  .why .ic, .f .ic{
+    width:auto !important;
+    height:auto !important;
+    font-size:inherit !important;
     margin-bottom:8px !important;
+  }
+  .why .ic svg.hi, .f .ic svg.hi{
+    width:24px !important;
+    height:24px !important;
   }
   .why h4{
     font-size:13.5px !important;
@@ -646,32 +662,15 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     background:var(--blue);
   }
 
-  /* Flower banner card on mobile (matches reference image) */
-  .gift-banner-card{
-    flex-direction:column;
-    align-items:flex-start;
-    padding:20px 20px;
-    gap:16px;
-  }
-  .gift-banner-title{
-    font-size:16px;
-  }
-  .gift-banner-btn{
-    align-self:flex-end;
-    font-size:14px;
-    padding:9px 20px;
-  }
-
-  .brand-band{flex-direction:column;text-align:center;padding:20px 20px;gap:14px}
-  .brand-band .bb-text{text-align:center}
-  .brand-band p{font-size:20px !important}
-  .brand-band small{font-size:14.5px !important}
-  .brand-band img{height:58px}
+  /* Final CTA on mobile */
+  .final{padding:26px 16px;border-radius:18px}
+  .final h2{font-size:18px !important}
+  .final .pts{font-size:13px;gap:6px 12px}
   .fgrid{grid-template-columns:1fr}
 }
 
 @media (max-width: 768px){
-  .mobile-sticky-bar{display:flex !important}
+  .sticky-mobile-cta{display:flex !important}
   body{padding-bottom:72px !important}
 }
 </style>
@@ -685,6 +684,16 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <section class="hero" id="home">
     <div class="wrap hero-grid">
       <div>
+        <!-- Platform Badge (Kicker) -->
+        <div class="sa-wrap">
+          <span class="kicker sa">
+            <i></i>
+            <b>{{ $isRtl ? 'كلين ستيشن' : 'Clean Station' }}</b>
+            <em></em>
+            {{ $isRtl ? 'منصة سعودية للعناية بالغسيل' : 'Saudi Laundry Care Platform' }}
+          </span>
+        </div>
+
         @if($isRtl)
           <h1>غسيلك... أذكى وأنظف!</h1>
           <p class="lead">غسيل وكوي ودراي كلين لملابسك ومفروشاتك وسجادك وأحذيتك، نستلمها من بابك ونرجعها لك في الوقت اللي تختاره</p>
@@ -707,24 +716,12 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 
         <!-- Official App Store & Google Play Badges -->
         <div class="stores">
-          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
-            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
-          </a>
           <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
             <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
           </a>
-        </div>
-
-        <!-- Social Proof Stats -->
-        <div class="proof">
-          <div>
-            <b>{{ $isRtl ? '+15 ألف' : '15K+' }}</b>
-            <span>{{ $isRtl ? 'تحميل للتطبيق' : 'App downloads' }}</span>
-          </div>
-          <div>
-            <b>24/7</b>
-            <span>{{ $isRtl ? 'خدمة عملاء' : 'Customer service' }}</span>
-          </div>
+          <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
+          </a>
         </div>
       </div>
 
@@ -740,21 +737,15 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
             @endif
           </div>
         </div>
-        <!-- Floating Badges from Original Home Page -->
-        <div class="hero-badge badge-time">
-          <div class="badge-icon icon-time"><i class="fa-solid fa-clock"></i></div>
-          <div class="badge-text">
-            <small>{{ $isRtl ? 'الوقت' : 'TIME' }}</small>
-            <b>{{ $isRtl ? 'في الوقت المحدد' : 'On time' }}</b>
-          </div>
-        </div>
-        <div class="hero-badge badge-service">
-          <div class="badge-icon icon-service"><i class="fa-solid fa-bolt"></i></div>
-          <div class="badge-text">
-            <small>{{ $isRtl ? 'الخدمة' : 'THE SERVICE' }}</small>
-            <b>{{ $isRtl ? 'سريع' : 'Quick' }}</b>
-          </div>
-        </div>
+      </div>
+
+      <!-- Stats Bar (Downloads, Support + Quality Indicators) -->
+      <div class="stats-bar">
+        <div><b>{{ $isRtl ? '+15 ألف' : '15K+' }}</b><span>{{ $isRtl ? 'تحميل للتطبيق' : 'App downloads' }}</span></div>
+        <div><b>24/7</b><span>{{ $isRtl ? 'خدمة عملاء' : 'Customer service' }}</span></div>
+        <div><b>98%</b><span><span class="nw">{{ $isRtl ? 'استلام وتسليم في الموعد' : 'On-time pickup & delivery' }}</span></span></div>
+        <div><b>0.05%</b><span>{{ $isRtl ? 'نسبة الشكاوى' : 'Complaint rate' }}</span></div>
+        <div><b>0.00%</b><span><span class="nw">{{ $isRtl ? 'قطع ناقصة أو زائدة' : 'Missing or extra items' }}</span></span></div>
       </div>
     </div>
   </section>
@@ -918,30 +909,40 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <!-- Why Clean Station? -->
   <section class="why-section" id="why-us">
     <div class="wrap">
-      <span class="kicker">{{ $isRtl ? 'ليش كلين ستيشن؟' : 'Why Clean Station?' }}</span>
-      <h2>{{ $isRtl ? 'الكل يغسل… والفرق بالجودة والاهتمام' : 'Everyone washes. We care more' }}</h2>
+      <div>
+        <span class="kicker">{{ $isRtl ? 'ليش كلين ستيشن؟' : 'Why Clean Station?' }}</span>
+        <h2>{{ $isRtl ? 'كلهم يغسلون... بس كلين ستيشن غير الكل' : 'Everyone washes... but Clean Station is unlike the rest' }}</h2>
+      </div>
       <div class="why-grid">
         <div class="why">
-          <div class="ic">🧺</div>
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 14v-4c0-3.771 0-5.657 1.172-6.828S7.229 2 11 2h2c3.771 0 5.657 0 6.828 1.172S21 6.229 21 10v4c0 3.771 0 5.657-1.172 6.828S16.771 22 13 22h-2c-3.771 0-5.657 0-6.828-1.172S3 17.771 3 14"></path><path d="M17 13a5 5 0 1 1-10 0a5 5 0 0 1 10 0"></path><path d="M7 13q2.5-2 5 0t5 0M7.125 6H7m.25 0a.25.25 0 1 1-.5 0a.25.25 0 0 1 .5 0"></path></g></svg>
+          </div>
           <h4>{{ $isRtl ? 'طلبك يُغسل لحاله' : 'Washed on its own' }}</h4>
           <p>{{ $isRtl ? 'طلب كل عميل يُغسل لحاله، وما يختلط مع غيره' : "Every customer's order is washed separately, never mixed with others" }}</p>
         </div>
         <div class="why">
-          <div class="ic">✨</div>
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m15 2l.539 2.392a5.39 5.39 0 0 0 4.07 4.07L22 9l-2.392.539a5.39 5.39 0 0 0-4.07 4.07L15 16l-.539-2.392a5.39 5.39 0 0 0-4.07-4.07L8 9l2.392-.539a5.39 5.39 0 0 0 4.07-4.07zM7 12l.385 1.708a3.85 3.85 0 0 0 2.907 2.907L12 17l-1.708.385a3.85 3.85 0 0 0-2.907 2.907L7 22l-.385-1.708a3.85 3.85 0 0 0-2.907-2.907L2 17l1.708-.385a3.85 3.85 0 0 0 2.907-2.907z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+          </div>
           <h4>{{ $isRtl ? 'تفضيلاتك عند الطلب' : 'Your preferences' }}</h4>
-          <p>{{ $isRtl ? 'تحدد اللي تحبه، ونطبقه على كل طلب' : 'Choose what you like when you order, and we apply it every time' }}</p>
+          <p>{{ $isRtl ? 'تحدد اللي تحبه، ونطبقه على كل طلب' : 'Choose what you like, and we apply it every time' }}</p>
           <div class="chips">
             <span>{{ $isRtl ? 'النشا' : 'Starch' }}</span>
             <span>{{ $isRtl ? 'معطّرنا الخاص' : 'Signature fragrance' }}</span>
           </div>
         </div>
         <div class="why">
-          <div class="ic">🔍</div>
-          <h4>{{ $isRtl ? 'فحص قبل التسليم' : 'Quality checked' }}</h4>
-          <p>{{ $isRtl ? 'كي بالبخار، وفحص كل قطعة قبل التغليف' : 'Steam ironing and a check of every item before packing' }}</p>
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.99 19H19m-.01 0c-.622.617-1.75.464-2.542.464c-.972 0-1.44.19-2.133.883C13.725 20.937 12.934 22 12 22s-1.725-1.063-2.315-1.653c-.694-.693-1.162-.883-2.133-.883c-.791 0-1.92.154-2.543-.464c-.627-.622-.473-1.756-.473-2.552c0-1.007-.22-1.47-.937-2.186C2.533 13.196 2 12.662 2 12s.533-1.196 1.6-2.262c.64-.64.936-1.274.936-2.186c0-.791-.154-1.92.464-2.543c.622-.627 1.756-.473 2.552-.473c.912 0 1.546-.297 2.186-.937C10.804 2.533 11.338 2 12 2s1.196.533 2.262 1.6c.64.64 1.274.936 2.186.936c.791 0 1.92-.154 2.543.464c.627.622.473 1.756.473 2.552c0 1.007.22 1.47.937 2.186C21.467 10.804 22 11.338 22 12s-.533 1.196-1.6 2.262c-.716.717-.936 1.18-.936 2.186c0 .796.154 1.93-.473 2.552Z"></path><path d="M9 12.893s1.2.652 1.8 1.607c0 0 1.8-3.75 4.2-5" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+          </div>
+          <h4>{{ $isRtl ? 'فحص قبل التسليم' : 'Pre-delivery check' }}</h4>
+          <p>{{ $isRtl ? 'كي بالبخار، وفحص كل قطعة قبل التغليف' : 'Steam ironing and quality check before packing' }}</p>
         </div>
         <div class="why">
-          <div class="ic">🏠</div>
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+          </div>
           <h4>{{ $isRtl ? 'كل غسيل بيتك' : 'All home laundry' }}</h4>
           <p>{{ $isRtl ? 'من مكان واحد، وبنفس التطبيق' : 'From one place, in one app' }}</p>
           <div class="chips">
@@ -957,30 +958,30 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   </section>
 
   <!-- Laundry Journey (6 Steps + Counters) -->
-  <section class="journey-section" id="services">
+  <section class="journey journey-section" id="services">
     <div class="wrap">
-      <span class="kicker">{{ $isRtl ? 'رحلة العناية بغسيلك' : 'Our care journey' }}</span>
-      <h2>{{ $isRtl ? 'من بابك إلى بابك، خطوة بخطوة' : 'Door to door, step by step' }}</h2>
+      <span class="kicker">{{ $isRtl ? 'خطوات العمل' : 'Work steps' }}</span>
+      <h2>{{ $isRtl ? 'رحلة العناية المتكاملة' : 'Complete care journey' }}</h2>
       <div class="jgrid">
         <div class="j">
-          <h4>{{ $isRtl ? '1 · الطلب' : '1 · Order' }}</h4>
-          <p>{{ $isRtl ? 'طلب سريع بنقرة واحدة أو مفصل بالقطعة' : 'Quick one-tap or detailed item order' }}</p>
+          <h4>{{ $isRtl ? '1 · الطلب الذكي' : '1 · Smart order' }}</h4>
+          <p>{{ $isRtl ? 'حدد الموقع ووقت الاستلام والتسليم من التطبيق' : 'Set location and pickup & delivery times from the app' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '2 · التجهيز' : '2 · Prepare' }}</h4>
-          <p>{{ $isRtl ? 'حط غسيلك في أي كيس متوفر عندك' : 'Put your laundry in any bag you have' }}</p>
+          <h4>{{ $isRtl ? '2 · جهّز غسيلك' : '2 · Prepare laundry' }}</h4>
+          <p>{{ $isRtl ? 'سلّمه للمندوب بيدك، أو علّقه على الباب لو تفضّل' : 'Hand it to the driver or hang it on the door if you prefer' }}</p>
         </div>
         <div class="j">
           <h4>{{ $isRtl ? '3 · الاستلام' : '3 · Pickup' }}</h4>
-          <p>{{ $isRtl ? 'مندوبنا الرسمي يستلم في الوقت اللي حددته' : 'Our driver collects it at the time you chose' }}</p>
+          <p>{{ $isRtl ? 'مندوبنا الرسمي يستلم في الوقت اللي حددته' : 'Our official driver collects it at the time you chose' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '4 · الغسيل والمعالجة' : '4 · Washing' }}</h4>
+          <h4>{{ $isRtl ? '4 · الغسيل والمعالجة' : '4 · Washing & treatment' }}</h4>
           <p>{{ $isRtl ? 'غسيل منفصل 100%، وطلب كل عميل يُغسل لحاله' : "100% separate washing, every customer's order on its own" }}</p>
         </div>
         <div class="j">
           <h4>{{ $isRtl ? '5 · الكوي والفرز' : '5 · Ironing & sorting' }}</h4>
-          <p>{{ $isRtl ? 'كي بالبخار، وفحص الجودة، وتغليف مرتب' : 'Steam ironing, quality check and neat packing' }}</p>
+          <p>{{ $isRtl ? 'كي بالبخار، وفحص الجودة، وتغليف مرتب' : 'Steam ironing, quality check and neat packaging' }}</p>
         </div>
         <div class="j">
           <h4>{{ $isRtl ? '6 · ترجع لك' : '6 · Back to you' }}</h4>
@@ -1013,44 +1014,53 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <!-- App Features -->
   <section class="app-section" id="app">
     <div class="wrap">
-      <span class="kicker">{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station app' }}</span>
-      <h2>{{ $isRtl ? 'كل شي من جوالك' : 'Everything from your phone' }}</h2>
+      <div>
+        <span class="kicker">{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}</span>
+        <h2>{{ $isRtl ? 'كل شي من جوالك' : 'Everything from your phone' }}</h2>
+      </div>
       <div class="feat-grid">
-        <div class="f ic-wallet">
-          <div class="ic">👛</div>
+        <div class="f">
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 3H5a2 2 0 1 0 0 4h13c0-.93 0-1.395-.102-1.776a3 3 0 0 0-2.121-2.122C15.395 3 14.93 3 14 3"></path><path d="M3 5v10c0 2.828 0 4.243.879 5.121C4.757 21 6.172 21 9 21h6c2.828 0 4.243 0 5.121-.879C21 19.243 21 17.828 21 15v-2c0-2.828 0-4.243-.879-5.121C19.243 7 17.828 7 15 7H7"></path><path d="M21 12h-2c-.465 0-.698 0-.888.051a1.5 1.5 0 0 0-1.06 1.06C17 13.303 17 13.536 17 14s0 .697.051.888a1.5 1.5 0 0 0 1.06 1.06c.191.052.424.052.889.052h2"></path></g></svg>
+          </div>
           <h4>{{ $isRtl ? 'المحفظة الذكية' : 'Smart wallet' }}</h4>
-          <p>
-            @if($isRtl) ادفع 440 ريال واحصل على رصيد 500، <b style="color:var(--green)">وفّر حق 13%</b>
-            @else Pay SAR 440 and get SAR 500 credit, <b style="color:var(--green)">save up to 13%</b> @endif
-          </p>
+          <p>{{ $isRtl ? 'ادفع 440 ريال واحصل على رصيد 500، ' : 'Pay SAR 440 and get SAR 500 credit, ' }}<b>{{ $isRtl ? 'وفّر حتى 13%' : 'save up to 13%' }}</b></p>
         </div>
-        <div class="f ic-friend">
-          <div class="ic">🎁</div>
+        <div class="f">
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 20.5c.284-3.694 3.3-6.78 7-6.962q.469-.023 1-.038l.995.066a7.5 7.5 0 0 1 2.005.412m4 1.522v6m3-3h-6"></path><circle cx="11" cy="6.5" r="4"></circle></g></svg>
+          </div>
           <h4>{{ $isRtl ? 'ادعُ صديقك' : 'Invite a friend' }}</h4>
           <p>{{ $isRtl ? '30 ريال لك إذا صديقك سوّى أول طلب' : 'Get SAR 30 when your friend places their first order' }}</p>
         </div>
-        <div class="f ic-loyalty">
-          <div class="ic">⭐</div>
+        <div class="f">
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m13.728 3.444l1.76 3.549c.24.494.88.968 1.42 1.058l3.189.535c2.04.343 2.52 1.835 1.05 3.307l-2.48 2.5c-.42.423-.65 1.24-.52 1.825l.71 3.095c.56 2.45-.73 3.397-2.88 2.117l-2.99-1.785c-.54-.322-1.43-.322-1.98 0L8.019 21.43c-2.14 1.28-3.44.322-2.88-2.117l.71-3.095c.13-.585-.1-1.402-.52-1.825l-2.48-2.5C1.39 10.42 1.86 8.929 3.899 8.586l3.19-.535c.53-.09 1.17-.564 1.41-1.058l1.76-3.549c.96-1.925 2.52-1.925 3.47 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+          </div>
           <h4>{{ $isRtl ? 'نقاط الولاء' : 'Loyalty points' }}</h4>
-          <p>{{ $isRtl ? 'كل ريال = نقطة، واستبدلها بخدمات مجانية' : 'Every riyal earns a point you can redeem for free services' }}</p>
+          <p>{{ $isRtl ? 'كل ريال = نقطة،' : 'Every SAR = 1 pt,' }}<br>{{ $isRtl ? 'وكل 1000 نقطة =' : 'and every 1000 pts =' }}<br><b>{{ $isRtl ? '10 ريال خصم من طلبك' : 'SAR 10 off your order' }}</b></p>
         </div>
-        <div class="f ic-track">
-          <div class="ic">📍</div>
-          <h4>{{ $isRtl ? 'تتبع حالة الطلب' : 'Order status' }}</h4>
+        <div class="f">
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M21 7v5M3 7v10.161c0 1.383 1.946 2.205 5.837 3.848C10.4 21.67 11.182 22 12 22V11.355M15 19s.875 0 1.75 2c0 0 2.78-5 5.25-6"></path><path d="M8.326 9.691L5.405 8.278C3.802 7.502 3 7.114 3 6.5s.802-1.002 2.405-1.778l2.92-1.413C10.13 2.436 11.03 2 12 2s1.871.436 3.674 1.309l2.921 1.413C20.198 5.498 21 5.886 21 6.5s-.802 1.002-2.405 1.778l-2.92 1.413C13.87 10.564 12.97 11 12 11s-1.871-.436-3.674-1.309M6 12l2 1m9-9L7 9"></path></g></svg>
+          </div>
+          <h4>{{ $isRtl ? 'تتبع حالة الطلب' : 'Order tracking' }}</h4>
           <p>{{ $isRtl ? 'تعرف وين وصل طلبك خطوة بخطوة، من الاستلام حق التسليم' : 'Track where your order is step by step, from pickup to delivery' }}</p>
         </div>
-        <div class="f ic-pricing">
-          <div class="ic">🏷️</div>
-          <h4>{{ $isRtl ? 'شفافية الأسعار' : 'Transparent pricing' }}</h4>
+        <div class="f">
+          <div class="ic">
+            <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="1.5" cy="1.5" r="1.5" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1 0 0 -1 16 8)"></circle><path d="M2.774 11.144c-1.003 1.12-1.024 2.81-.104 4a34 34 0 0 0 6.186 6.186c1.19.92 2.88.899 4-.104a92 92 0 0 0 8.516-8.698a1.95 1.95 0 0 0 .47-1.094c.164-1.796.503-6.97-.902-8.374s-6.578-1.066-8.374-.901a1.95 1.95 0 0 0-1.094.47a92 92 0 0 0-8.698 8.515Z"></path><path d="m7 14l3 3" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+          </div>
+          <h4>{{ $isRtl ? 'شفافية الأسعار' : 'Price transparency' }}</h4>
           <p>{{ $isRtl ? 'تعرف تكلفة كل قطعة قبل الطلب' : 'See the cost of every item before you order' }}</p>
         </div>
       </div>
       <div class="stores" style="justify-content:center;margin-top:28px">
-        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
-          <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
-        </a>
         <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
           <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
+        </a>
+        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
+          <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
         </a>
       </div>
     </div>
@@ -1193,45 +1203,22 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     </div>
   </section>
 
-  <!-- Flower & Gifts Banner (Matches Reference Design) -->
-  <section class="gift-banner-section">
-    <div class="wrap">
-      <div class="gift-banner-card">
-        <div class="gift-banner-title">
-          <span>✨</span>
-          <span>{{ $isRtl ? 'جديد: باقات ورود وفازات فاخرة بتوصيل كلين ستيشن' : 'New: Luxury flower bouquets & vases delivered by Clean Station' }}</span>
-        </div>
-        <a href="{{ route('gifts') }}" class="gift-banner-btn">
-          <span>{{ $isRtl ? 'تصفح الهدايا' : 'Browse gifts' }}</span>
-          <span style="font-size:16px;line-height:1">←</span>
-        </a>
-      </div>
-    </div>
-  </section>
 
-  <!-- Brand Band (Navy Banner) -->
-  <section class="brand-band-section">
-    <div class="wrap">
-      <div class="brand-band">
-        <img src="{{ asset('assets/clean-station-badge.png') }}" alt="Clean Station - كلين ستيشن">
-        <div class="bb-text">
-          <p>{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station app' }}</p>
-          <small>{{ $isRtl ? 'منصة سعودية للعناية بالغسيل' : 'A Saudi laundry care platform' }}</small>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- Original Home Page Footer -->
   @include('layouts.partials.footer')
 
-  <!-- Modern Sticky Mobile Bar (Immediate & Balanced) -->
-  <div class="mobile-sticky-bar">
-    <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'أبغى أطلب غسيل' : 'Hello, I want to request laundry service') }}" target="_blank" rel="noopener" class="bar-btn bar-btn-contact">
-      {{ $isRtl ? 'تواصل معنا' : 'Contact us' }}
-    </a>
-    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="bar-btn bar-btn-download">
-      {{ $isRtl ? 'حمّل التطبيق' : 'Download the app' }}
+  <!-- Sticky Mobile CTA (Original Home Page Style) -->
+  <div id="smart-mobile-cta" class="sticky-mobile-cta">
+    <div class="cta-content">
+      <div class="stars">★ ★ ★ ★ ★</div>
+      <div class="sticky-mobile-cta-title">
+        {{ $isRtl ? 'أسرع تطبيق غسيل بالرياض' : 'Fastest Laundry App in Riyadh' }}
+      </div>
+    </div>
+    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="sticky-mobile-cta-btn">
+      {{ $isRtl ? 'حمّل التطبيق' : 'Download App' }}
     </a>
   </div>
 

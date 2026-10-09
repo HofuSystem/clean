@@ -266,29 +266,24 @@
         .gsteps .j h4 { color: var(--navy); font-size: 16px; font-weight: 700; margin-bottom: 6px; }
         .gsteps .j p { color: var(--muted); font-size: 13.5px; margin: 0; line-height: 1.6; }
 
-        /* FAQ Section */
+        /* FAQ Section (matches land.blade.php style without +/-) */
         .faq { max-width: 760px; margin: 24px auto 0; }
         .faq details {
             border: 1px solid var(--line);
             border-radius: 14px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             background: #fff;
-            padding: 14px 20px;
+            padding: 12px 18px;
         }
         .faq summary {
-            font-weight: 700;
-            font-size: 15.5px;
+            font-weight: 600;
+            font-size: 15px;
             color: var(--navy);
             cursor: pointer;
             list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .faq summary::-webkit-details-marker { display: none; }
-        .faq summary::after { content: "+"; color: var(--rose); font-size: 22px; font-weight: 400; line-height: 1; }
-        .faq details[open] summary::after { content: "–"; }
-        .faq p { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+        .faq p { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
         /* Final CTA */
         .final {
@@ -310,57 +305,58 @@
         .store-link:hover { transform: translateY(-2px); }
         .store-badge-img { height: 44px; width: auto; border-radius: 8px; display: block; }
 
-        /* Mobile Sticky Bar (Immediate, clean & modern) */
-        .mobile-sticky-bar {
+        /* Sticky Mobile CTA (Original Home Page Style) */
+        .sticky-mobile-cta {
             display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255,255,255,0.98);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 10px 16px;
-            border-top: 1px solid rgba(227,232,238,0.9);
-            box-shadow: 0 -6px 20px rgba(15,23,42,0.08);
-            z-index: 9999;
-            gap: 12px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-top: 1px solid #e2e8f0;
+            padding: 10px 18px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            z-index: 9999;
         }
-        .mobile-sticky-bar .bar-btn {
-            flex: 1;
+        .sticky-mobile-cta .cta-content {
+            display: flex;
+            flex-direction: column;
+            text-align: start;
+        }
+        .sticky-mobile-cta .stars {
+            color: #fbbf24;
+            font-size: 11px;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+        .sticky-mobile-cta-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+        .sticky-mobile-cta-btn {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: #ffffff !important;
+            padding: 9px 20px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13.5px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            height: 44px;
-            padding: 0 16px;
-            border-radius: 12px;
-            font-size: 14.5px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s ease;
-            text-decoration: none;
+            transition: transform .2s ease;
         }
-        .mobile-sticky-bar .bar-btn-contact {
-            background: #FFFFFF;
-            color: var(--navy);
-            border: 1.5px solid #CBD5E1;
-        }
-        .mobile-sticky-bar .bar-btn-contact:hover {
-            background: #F8FAFC;
-            border-color: var(--blue);
-            color: var(--blue);
-        }
-        .mobile-sticky-bar .bar-btn-download {
-            background: var(--navy);
-            color: #FFFFFF;
-            border: 1.5px solid var(--navy);
-            box-shadow: 0 3px 10px rgba(31,51,100,0.2);
-        }
-        .mobile-sticky-bar .bar-btn-download:hover {
-            background: var(--mid);
+        .sticky-mobile-cta-btn:active {
+            transform: scale(0.97);
         }
 
         /* Navbar Logo position (left) and height */
@@ -434,14 +430,64 @@
         }
 
         @media (max-width: 640px) {
-            .ghero { padding: 96px 0 36px; }
-            .ghero h1 { font-size: 28px; }
-            .ghero .lead { font-size: 15px; }
-            .cats { grid-template-columns: 1fr; }
-            .gfeat { grid-template-columns: 1fr; }
-            .gsteps { grid-template-columns: 1fr; }
+            section { padding: 36px 0; }
+            .ghero { padding: 96px 0 32px; }
+            .ghero h1 { font-size: 28px; line-height: 1.3; }
+            .ghero .lead { font-size: 14.5px; }
+            .ghero .pic { max-width: 320px; margin: 0 auto; border-radius: 20px; }
+
+            /* Collection: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            .cats {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .cat { border-radius: 16px !important; }
+            .cat .in { padding: 12px 10px !important; }
+            .cat .k { font-size: 11px !important; }
+            .cat h3 { font-size: 14px !important; line-height: 1.3 !important; }
+            .cat p { font-size: 11.5px !important; line-height: 1.5 !important; margin-top: 2px !important; }
+            .inapp { font-size: 12px !important; margin-top: 12px !important; }
+
+            .occ-row { margin-top: 14px !important; padding-top: 14px !important; gap: 8px !important; }
+            .occ-l { font-size: 13.5px !important; }
+            .occ { gap: 5px !important; }
+            .occ span { font-size: 11.5px !important; padding: 3px 10px !important; }
+
+            /* Gifting Features: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            .gfeat {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .gfeat .why { padding: 13px 12px !important; border-radius: 14px !important; }
+            .gfeat .why .ic { width: 34px !important; height: 34px !important; border-radius: 10px !important; margin-bottom: 8px !important; }
+            .gfeat .why .ic svg { width: 22px !important; height: 22px !important; }
+            .gfeat .why h4 { font-size: 13.5px !important; line-height: 1.35 !important; }
+            .gfeat .why p { font-size: 11.5px !important; line-height: 1.45 !important; margin-top: 3px !important; }
+            .chips.slots { gap: 4px !important; margin-top: 6px !important; }
+            .chips.slots span { font-size: 10px !important; padding: 2px 7px !important; }
+
+            /* How to order steps: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            .gsteps {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .gsteps .j { padding: 13px 12px !important; border-radius: 14px !important; }
+            .gsteps .j h4 { font-size: 13.5px !important; line-height: 1.35 !important; }
+            .gsteps .j p { font-size: 11.5px !important; line-height: 1.45 !important; margin-top: 3px !important; }
+
+            /* FAQ: matches land on mobile without +/- */
+            .faq details { padding: 12px 16px !important; margin-bottom: 8px !important; border-radius: 12px !important; }
+            .faq summary { font-size: 14px !important; }
+            .faq p { font-size: 13px !important; line-height: 1.55 !important; margin-top: 6px !important; }
+
+            /* Final Banner */
+            .final { padding: 32px 18px !important; border-radius: 18px !important; margin-top: 28px !important; }
+            .final h2 { font-size: 20px !important; }
+            .final .pts { font-size: 13.5px !important; }
+            .final .contact-line { font-size: 12.5px !important; }
+
             .store-badge-img { height: 40px; }
-            .mobile-sticky-bar { display: flex !important; }
+            .sticky-mobile-cta { display: flex !important; }
             body { padding-bottom: 72px !important; }
             #footer .grid { grid-template-columns: 1fr !important; text-align: center !important; gap: 28px !important; }
             #footer .space-y-6, #footer .flex-col { align-items: center !important; }
@@ -671,13 +717,16 @@
     <!-- Footer (Preserved exactly as requested) -->
     @include('layouts.partials.footer')
 
-    <!-- Modern Sticky Mobile Bar -->
-    <div class="mobile-sticky-bar">
-        <a href="https://wa.me/{{ $whatsappPhone }}?text={{ urlencode($isRtl ? 'استفسار عن خدمة الورود والهدايا' : 'Enquiry about Flowers & Gifts service') }}" target="_blank" rel="noopener" class="bar-btn bar-btn-contact">
-            {{ $isRtl ? 'تواصل معنا' : 'Contact us' }}
-        </a>
-        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="bar-btn bar-btn-download">
-            {{ $isRtl ? 'حمّل التطبيق' : 'Download the app' }}
+    <!-- Sticky Mobile CTA (Original Home Page Style) -->
+    <div id="smart-mobile-cta" class="sticky-mobile-cta">
+        <div class="cta-content">
+            <div class="stars">★ ★ ★ ★ ★</div>
+            <div class="sticky-mobile-cta-title">
+                {{ $isRtl ? 'أسرع تطبيق غسيل بالرياض' : 'Fastest Laundry App in Riyadh' }}
+            </div>
+        </div>
+        <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="sticky-mobile-cta-btn">
+            {{ $isRtl ? 'حمّل التطبيق' : 'Download App' }}
         </a>
     </div>
 
