@@ -143,11 +143,11 @@
     }
 </style>
 
-<nav class="fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100" id="navbar">
+<nav class="fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100" id="navbar" aria-label="{{ app()->getLocale() === 'ar' ? 'التنقل الرئيسي' : 'Main Navigation' }}">
     <div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20" style="direction: ltr !important;">
             
-            <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2">
+            <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2" aria-label="{{ app()->getLocale() === 'ar' ? 'الصفحة الرئيسية لكلين ستيشن' : 'Clean Station Homepage' }}">
                 @if(config('app.logo'))
                     <x-website-image :src="config('app.logo')" sizes="104px" width="1503" height="826" alt="Logo" class="h-10 w-auto" />
                 @else
@@ -177,7 +177,7 @@
                     $otherLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'en' : 'ar';
                     $waText = app()->getLocale() === 'ar' ? 'أبغى أطلب استلام غسيل، الحي:' : 'I want to request laundry pickup, District:';
                 @endphp
-                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="mobile-action-btn sm:w-9 sm:h-9 sm:rounded-full bg-gray-100 hover:bg-brand-50 hover:text-brand-600 border border-gray-200/60 flex items-center justify-center transition-all text-xs font-black uppercase text-gray-700 shadow-sm shrink-0" title="{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}">
+                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="mobile-action-btn sm:w-9 sm:h-9 sm:rounded-full bg-gray-100 hover:bg-brand-50 hover:text-brand-600 border border-gray-200/60 flex items-center justify-center transition-all text-xs font-black uppercase text-gray-700 shadow-sm shrink-0" title="{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}" aria-label="{{ $otherLocale === 'ar' ? 'التبديل إلى العربية' : 'Switch to English' }}">
                     {{ $otherLocale }}
                 </a>
 
@@ -186,6 +186,7 @@
                    target="_blank" 
                    rel="noopener" 
                    id="navbar-whatsapp-order-btn"
+                   aria-label="{{ app()->getLocale() === 'ar' ? 'اطلب عبر واتساب' : 'Order via WhatsApp' }}"
                    onclick="window.cleanTrack && window.cleanTrack.contact('whatsapp_header')"
                    class="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 2xl:px-3.5 py-2 rounded-xl font-bold text-xs transition-all shadow-md shadow-emerald-200 whitespace-nowrap shrink-0">
                     <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.586 1.861.882 2.79.882 3.182 0 5.768-2.587 5.768-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2c4.284 0 7.768 3.484 7.768 7.768 0 4.285-3.484 7.768-7.768 7.768-1.229 0-2.427-.29-3.513-.843l-4.518 1.185 1.206-4.41c-.636-1.127-.975-2.404-.975-3.7 0-4.284 3.484-7.768 7.768-7.768zm3.435 11.053c-.15.422-.767.771-1.077.818-.31.047-.704.062-2.313-.578-1.928-.767-3.174-2.736-3.27-2.864-.096-.129-.778-1.036-.778-1.975 0-.94.492-1.402.668-1.593.176-.191.385-.239.513-.239.129 0 .257.001.369.006.118.006.276-.045.432.329.16.385.546 1.332.594 1.428.048.096.08.209.016.337-.064.129-.096.209-.193.321-.096.113-.203.252-.289.339-.096.096-.197.201-.085.393.112.193.498.823 1.07 1.332.736.657 1.356.86 1.549.957.193.096.305.08.417-.048.113-.129.482-.562.61-.755.129-.193.257-.161.433-.096.177.064 1.124.53 1.317.626.193.096.321.144.369.225.048.08.048.466-.102.888z"/></svg>
@@ -197,6 +198,7 @@
                    target="_blank" 
                    rel="noopener" 
                    id="navbar-download-btn"
+                   aria-label="{{ app()->getLocale() === 'ar' ? 'تحميل تطبيق كلين ستيشن' : 'Download Clean Station App' }}"
                    class="hidden lg:inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white px-3 2xl:px-3.5 py-2 rounded-xl font-bold text-xs transition-all shadow-md shadow-brand-200 whitespace-nowrap shrink-0">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     <span>{{ app()->getLocale() === 'ar' ? 'تحميل التطبيق' : 'Download App' }}</span>
@@ -212,7 +214,7 @@
                 </a>
                 
                 {{-- Hamburger / Close Toggle Button --}}
-                <button onclick="toggleMobileMenu()" id="mobile-menu-toggle-btn" class="xl:hidden mobile-action-btn flex items-center justify-center transition-colors focus:outline-none" aria-label="Toggle Menu">
+                <button onclick="toggleMobileMenu()" id="mobile-menu-toggle-btn" class="xl:hidden mobile-action-btn flex items-center justify-center transition-colors focus:outline-none" aria-label="{{ app()->getLocale() === 'ar' ? 'فتح القائمة الرئيسية' : 'Toggle navigation menu' }}" aria-expanded="false" aria-controls="mobile-menu">
                     <svg id="mobile-menu-burger-icon" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="4" y1="6" x2="20" y2="6"></line>
                         <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -319,6 +321,8 @@
         const backdrop = document.getElementById('mobile-menu-backdrop');
         const burgerIcon = document.getElementById('mobile-menu-burger-icon');
         const closeIcon = document.getElementById('mobile-menu-close-icon');
+        const toggleBtn = document.getElementById('mobile-menu-toggle-btn');
+        const isRtl = document.documentElement.dir === 'rtl' || document.documentElement.lang === 'ar';
         const ctas = document.querySelectorAll('.sticky-mobile-cta, #smart-mobile-cta, .mobile-sticky-bar');
         
         if (menu) {
@@ -328,6 +332,10 @@
                 if (backdrop) backdrop.classList.remove('hidden');
                 if (burgerIcon) burgerIcon.classList.add('hidden');
                 if (closeIcon) closeIcon.classList.remove('hidden');
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-expanded', 'true');
+                    toggleBtn.setAttribute('aria-label', isRtl ? 'إغلاق القائمة الرئيسية' : 'Close navigation menu');
+                }
                 ctas.forEach(el => el.style.setProperty('display', 'none', 'important'));
                 document.body.style.overflow = 'hidden';
             } else {
@@ -335,6 +343,10 @@
                 if (backdrop) backdrop.classList.add('hidden');
                 if (burgerIcon) burgerIcon.classList.remove('hidden');
                 if (closeIcon) closeIcon.classList.add('hidden');
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    toggleBtn.setAttribute('aria-label', isRtl ? 'فتح القائمة الرئيسية' : 'Open navigation menu');
+                }
                 ctas.forEach(el => el.style.removeProperty('display'));
                 document.body.style.overflow = '';
             }

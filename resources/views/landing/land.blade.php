@@ -91,20 +91,89 @@
     $facebook = setting('facebook');
     $youtube = setting('youtube');
     $email = setting('email') ?: 'support@cleanstation.app';
+@php
+    $seoTitle = $metaTitle ?? ($title ?? ($isRtl ? 'كلين ستيشن — غسيلك... أذكى وأنظف!' : 'Clean Station — Your laundry, smarter and cleaner'));
+    $seoDesc = $metaDescription ?? ($description ?? ($isRtl ? 'تطبيق كلين ستيشن لخدمات الغسيل والكوي والدراي كلين بالرياض والمبرز (الأحساء). استلام وتسليم مجاني لباب بيتك وباقات اقتصادية توفّر عليك.' : 'Clean Station laundry app in Riyadh & Al-Mubarraz. Doorstep laundry pickup & delivery for wash & iron, dry clean, and value laundry bags within 21 to 24 hours.'));
 @endphp
 <!doctype html>
 <html lang="{{ $lang }}" dir="{{ $dir }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $isRtl ? 'كلين ستيشن — غسيلك... أذكى وأنظف!' : 'Clean Station — Your laundry, smarter and cleaner' }}</title>
+<title>{{ $seoTitle }}</title>
+<meta name="description" content="{{ $seoDesc }}">
+<link rel="canonical" href="{{ url()->current() }}">
+<link rel="alternate" hreflang="ar" href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
+<link rel="alternate" hreflang="en" href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
+<link rel="alternate" hreflang="x-default" href="https://cleanstation.app/ar">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:title" content="{{ $seoTitle }}">
+<meta property="og:description" content="{{ $seoDesc }}">
+<meta property="og:image" content="{{ asset('assets/logo-main.png') }}">
+<meta property="og:locale" content="{{ $isRtl ? 'ar_SA' : 'en_US' }}">
+<meta property="og:site_name" content="Clean Station">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $seoTitle }}">
+<meta name="twitter:description" content="{{ $seoDesc }}">
+<meta name="twitter:image" content="{{ asset('assets/logo-main.png') }}">
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://cleanstation.app/#organization",
+      "name": "Clean Station",
+      "url": "https://cleanstation.app",
+      "logo": "{{ asset('assets/logo-main.png') }}",
+      "sameAs": [
+        "https://twitter.com/cleanstation_sa",
+        "https://www.instagram.com/cleanstation.sa"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+966559098685",
+        "contactType": "customer service",
+        "areaServed": "SA",
+        "availableLanguage": ["Arabic", "English"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://cleanstation.app/#website",
+      "url": "https://cleanstation.app",
+      "name": "Clean Station",
+      "inLanguage": "{{ $lang }}",
+      "publisher": { "@id": "https://cleanstation.app/#organization" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "{{ url()->current() }}#webpage",
+      "url": "{{ url()->current() }}",
+      "name": "{{ $seoTitle }}",
+      "description": "{{ $seoDesc }}",
+      "inLanguage": "{{ $lang }}",
+      "isPartOf": { "@id": "https://cleanstation.app/#website" }
+    }
+  ]
+}
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 @vite(['resources/css/landing.css'])
 <style>
 :root{
   --navy:#1F3364; --blue:#027BC0; --sky:#68C9E2; --mid:#4675B9; --sky-soft:#EAF6FB;
-  --ink:#16222E; --muted:#5D6B78; --line:#E3E8EE; --bg:#FFFFFF; --bg-2:#F5F8FB;
+  --ink:#16222E; --muted:#475569; --line:#E3E8EE; --bg:#FFFFFF; --bg-2:#F5F8FB;
   --green:#3BA55C; --wa:#25D366;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -247,7 +316,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .bags{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
 .bag{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:#fff;position:relative;display:flex;flex-direction:column;justify-content:space-between}
 .bag .tag{position:absolute;top:-10px;inset-inline-end:14px;font-size:11px;font-weight:600;color:#fff;background:var(--blue);padding:2px 10px;border-radius:999px}
-.bag h4{font-size:16px;font-weight:700;color:var(--navy)}
+.bag h3, .bag h4{font-size:16px;font-weight:700;color:var(--navy)}
 .bag .qty{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
 .bag .price{font-size:24px;font-weight:700;color:var(--navy);margin-top:10px;line-height:1.2}
 .bag .price small{font-size:13px;font-weight:500;color:var(--muted)}
@@ -267,13 +336,13 @@ p,q,li,.desc,.fit{text-wrap:balance}
 
 /* Why Us */
 .why-section{background:var(--bg-2);padding:64px 0}
-.why-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
+.why-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:#01659f;border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
 .why-section h2{text-align:start;font-size:28px;font-weight:700;color:var(--navy);margin:0 0 10px}
 .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
 .why{border:1px solid var(--line);border-radius:18px;padding:26px 20px 22px;background:#fff;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
 .why:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.06)}
 .why .ic{color:var(--blue);margin-bottom:12px;display:flex;justify-content:center;align-items:center;background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
-.why h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
+.why h3, .why h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
 .why p{color:var(--muted);font-size:13.5px;line-height:1.55;text-align:center;margin:0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}
 .chips span{font-size:12px;background:var(--bg-2);color:var(--ink);padding:3px 12px;border-radius:999px;white-space:nowrap}
@@ -282,7 +351,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .journey, .journey-section{background:#fff}
 .jgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .j{background:#fff;border-radius:14px;padding:16px 18px;border:1px solid var(--line)}
-.j h4{color:var(--navy);font-size:15px;font-weight:700}
+.j h3, .j h4{color:var(--navy);font-size:15px;font-weight:700}
 .j p{color:var(--muted);font-size:14px;margin-top:4px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
 .stats div{text-align:center;background:var(--navy);color:#fff;border-radius:14px;padding:14px 6px}
@@ -291,13 +360,13 @@ p,q,li,.desc,.fit{text-wrap:balance}
 
 /* App Features */
 .app-section{background:#fff;padding:60px 0;border-top:1px solid var(--line)}
-.app-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
+.app-section .kicker{display:inline-block;text-align:start;margin:0 0 10px;width:fit-content;background:var(--sky-soft);color:#01659f;border-radius:999px;padding:4px 14px;font-size:12.5px;font-weight:600}
 .app-section h2{text-align:start;font-size:28px;font-weight:700;color:var(--navy);margin:0 0 10px}
 .feat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:26px}
 .f{background:#fff;border-radius:18px;padding:26px 16px 22px;border:1px solid var(--line);min-height:180px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
 .f:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.06)}
 .f .ic{color:var(--blue);margin-bottom:14px;display:flex;justify-content:center;align-items:center;background:none!important;width:auto!important;height:auto!important;border-radius:0!important}
-.f h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
+.f h3, .f h4{color:var(--navy);font-size:16px;font-weight:700;margin:0 0 8px;text-align:center}
 .f p{color:var(--muted);font-size:13px;line-height:1.55;text-align:center;margin:0}
 .f p b{color:var(--green);font-weight:700}
 
@@ -308,7 +377,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .r q{font-size:14px;color:var(--ink);line-height:1.6;quotes:none}
 .r .who{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px}
 .r .who b{color:var(--navy)}
-.r .who .svc{font-size:12px;font-weight:600;color:var(--blue);background:var(--sky-soft);padding:3px 12px;border-radius:999px;display:inline-block}
+.r .who .svc{font-size:12px;font-weight:600;color:#01659f;background:var(--sky-soft);padding:3px 12px;border-radius:999px;display:inline-block}
 .reviews-dots{display:none}
 
 
@@ -545,7 +614,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     font-size:9.5px !important;
     padding:2px 7px !important;
   }
-  .bag h4{
+  .bag h3, .bag h4{
     font-size:13.5px !important;
     line-height:1.3 !important;
   }
@@ -585,7 +654,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     width:24px !important;
     height:24px !important;
   }
-  .why h4{
+  .why h3, .why h4{
     font-size:13.5px !important;
     line-height:1.35 !important;
   }
@@ -612,7 +681,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     padding:14px 12px !important;
     border-radius:14px !important;
   }
-  .j h4{
+  .j h3, .j h4{
     font-size:13.5px !important;
     line-height:1.35 !important;
   }
@@ -655,6 +724,9 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     height:8px;
     border-radius:999px;
     background:#CBD5E1;
+    border:none;
+    padding:0;
+    outline:none;
     transition:all .25s ease;
     cursor:pointer;
   }
@@ -678,8 +750,15 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 </head>
 <body>
 
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[9999] focus:bg-[#027BC0] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none">
+    {{ $isRtl ? 'تخطي إلى المحتوى الرئيسي' : 'Skip to main content' }}
+  </a>
+
   <!-- Original Home Page Navbar -->
   @include('layouts.partials.navbar')
+
+  <main id="main-content">
 
   <!-- Hero Section -->
   <section class="hero" id="home">
@@ -830,7 +909,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
             @if($isMostPopular)
               <span class="tag">{{ $isRtl ? 'الأكثر طلباً' : 'Most popular' }}</span>
             @endif
-            <h4>{{ $cleanTitle }}</h4>
+            <h3>{{ $cleanTitle }}</h3>
             @if($subText)
               <span class="qty">{{ $subText }}</span>
             @endif
@@ -856,13 +935,13 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <span>{{ $isRtl ? 'أو بالقطعة، حسب الخدمة' : 'Or per item, by service' }}</span>
           <a href="{{ route('pricing') }}">{{ $isRtl ? 'قائمة الأسعار كاملة ←' : 'Full price list →' }}</a>
         </div>
-        <table>
+        <table aria-label="{{ $isRtl ? 'جدول عينات أسعار القطع' : 'Sample per-item pricing table' }}">
           <thead>
             <tr>
-              <th>{{ $isRtl ? 'القطعة' : 'Item' }}</th>
-              <th>{{ $isRtl ? 'غسيل وكوي' : 'Wash & iron' }}</th>
-              <th>{{ $isRtl ? 'كوي فقط' : 'Iron only' }}</th>
-              <th>{{ $isRtl ? 'دراي كلين' : 'Dry clean' }}</th>
+              <th scope="col">{{ $isRtl ? 'القطعة' : 'Item' }}</th>
+              <th scope="col">{{ $isRtl ? 'غسيل وكوي' : 'Wash & iron' }}</th>
+              <th scope="col">{{ $isRtl ? 'كوي فقط' : 'Iron only' }}</th>
+              <th scope="col">{{ $isRtl ? 'دراي كلين' : 'Dry clean' }}</th>
             </tr>
           </thead>
           <tbody>
@@ -919,14 +998,14 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 14v-4c0-3.771 0-5.657 1.172-6.828S7.229 2 11 2h2c3.771 0 5.657 0 6.828 1.172S21 6.229 21 10v4c0 3.771 0 5.657-1.172 6.828S16.771 22 13 22h-2c-3.771 0-5.657 0-6.828-1.172S3 17.771 3 14"></path><path d="M17 13a5 5 0 1 1-10 0a5 5 0 0 1 10 0"></path><path d="M7 13q2.5-2 5 0t5 0M7.125 6H7m.25 0a.25.25 0 1 1-.5 0a.25.25 0 0 1 .5 0"></path></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'طلبك يُغسل لحاله' : 'Washed on its own' }}</h4>
+          <h3>{{ $isRtl ? 'طلبك يُغسل لحاله' : 'Washed on its own' }}</h3>
           <p>{{ $isRtl ? 'طلب كل عميل يُغسل لحاله، وما يختلط مع غيره' : "Every customer's order is washed separately, never mixed with others" }}</p>
         </div>
         <div class="why">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m15 2l.539 2.392a5.39 5.39 0 0 0 4.07 4.07L22 9l-2.392.539a5.39 5.39 0 0 0-4.07 4.07L15 16l-.539-2.392a5.39 5.39 0 0 0-4.07-4.07L8 9l2.392-.539a5.39 5.39 0 0 0 4.07-4.07zM7 12l.385 1.708a3.85 3.85 0 0 0 2.907 2.907L12 17l-1.708.385a3.85 3.85 0 0 0-2.907 2.907L7 22l-.385-1.708a3.85 3.85 0 0 0-2.907-2.907L2 17l1.708-.385a3.85 3.85 0 0 0 2.907-2.907z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg>
           </div>
-          <h4>{{ $isRtl ? 'تفضيلاتك عند الطلب' : 'Your preferences' }}</h4>
+          <h3>{{ $isRtl ? 'تفضيلاتك عند الطلب' : 'Your preferences' }}</h3>
           <p>{{ $isRtl ? 'تحدد اللي تحبه، ونطبقه على كل طلب' : 'Choose what you like, and we apply it every time' }}</p>
           <div class="chips">
             <span>{{ $isRtl ? 'النشا' : 'Starch' }}</span>
@@ -937,14 +1016,14 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18.99 19H19m-.01 0c-.622.617-1.75.464-2.542.464c-.972 0-1.44.19-2.133.883C13.725 20.937 12.934 22 12 22s-1.725-1.063-2.315-1.653c-.694-.693-1.162-.883-2.133-.883c-.791 0-1.92.154-2.543-.464c-.627-.622-.473-1.756-.473-2.552c0-1.007-.22-1.47-.937-2.186C2.533 13.196 2 12.662 2 12s.533-1.196 1.6-2.262c.64-.64.936-1.274.936-2.186c0-.791-.154-1.92.464-2.543c.622-.627 1.756-.473 2.552-.473c.912 0 1.546-.297 2.186-.937C10.804 2.533 11.338 2 12 2s1.196.533 2.262 1.6c.64.64 1.274.936 2.186.936c.791 0 1.92-.154 2.543.464c.627.622.473 1.756.473 2.552c0 1.007.22 1.47.937 2.186C21.467 10.804 22 11.338 22 12s-.533 1.196-1.6 2.262c-.716.717-.936 1.18-.936 2.186c0 .796.154 1.93-.473 2.552Z"></path><path d="M9 12.893s1.2.652 1.8 1.607c0 0 1.8-3.75 4.2-5" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'فحص قبل التسليم' : 'Pre-delivery check' }}</h4>
+          <h3>{{ $isRtl ? 'فحص قبل التسليم' : 'Pre-delivery check' }}</h3>
           <p>{{ $isRtl ? 'كي بالبخار، وفحص كل قطعة قبل التغليف' : 'Steam ironing and quality check before packing' }}</p>
         </div>
         <div class="why">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
           </div>
-          <h4>{{ $isRtl ? 'كل غسيل بيتك' : 'All home laundry' }}</h4>
+          <h3>{{ $isRtl ? 'كل غسيل بيتك' : 'All home laundry' }}</h3>
           <p>{{ $isRtl ? 'من مكان واحد، وبنفس التطبيق' : 'From one place, in one app' }}</p>
           <div class="chips">
             <span>{{ $isRtl ? 'ملابس' : 'Clothes' }}</span>
@@ -965,27 +1044,27 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
       <h2>{{ $isRtl ? 'رحلة العناية المتكاملة' : 'Complete care journey' }}</h2>
       <div class="jgrid">
         <div class="j">
-          <h4>{{ $isRtl ? '1 · الطلب الذكي' : '1 · Smart order' }}</h4>
+          <h3>{{ $isRtl ? '1 · الطلب الذكي' : '1 · Smart order' }}</h3>
           <p>{{ $isRtl ? 'حدد الموقع ووقت الاستلام والتسليم من التطبيق' : 'Set location and pickup & delivery times from the app' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '2 · جهّز غسيلك' : '2 · Prepare laundry' }}</h4>
+          <h3>{{ $isRtl ? '2 · جهّز غسيلك' : '2 · Prepare laundry' }}</h3>
           <p>{{ $isRtl ? 'سلّمه للمندوب بيدك، أو علّقه على الباب لو تفضّل' : 'Hand it to the driver or hang it on the door if you prefer' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '3 · الاستلام' : '3 · Pickup' }}</h4>
+          <h3>{{ $isRtl ? '3 · الاستلام' : '3 · Pickup' }}</h3>
           <p>{{ $isRtl ? 'مندوبنا الرسمي يستلم في الوقت اللي حددته' : 'Our official driver collects it at the time you chose' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '4 · الغسيل والمعالجة' : '4 · Washing & treatment' }}</h4>
+          <h3>{{ $isRtl ? '4 · الغسيل والمعالجة' : '4 · Washing & treatment' }}</h3>
           <p>{{ $isRtl ? 'غسيل منفصل 100%، وطلب كل عميل يُغسل لحاله' : "100% separate washing, every customer's order on its own" }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '5 · الكوي والفرز' : '5 · Ironing & sorting' }}</h4>
+          <h3>{{ $isRtl ? '5 · الكوي والفرز' : '5 · Ironing & sorting' }}</h3>
           <p>{{ $isRtl ? 'كي بالبخار، وفحص الجودة، وتغليف مرتب' : 'Steam ironing, quality check and neat packaging' }}</p>
         </div>
         <div class="j">
-          <h4>{{ $isRtl ? '6 · ترجع لك' : '6 · Back to you' }}</h4>
+          <h3>{{ $isRtl ? '6 · ترجع لك' : '6 · Back to you' }}</h3>
           <p>{{ $isRtl ? 'في الوقت اللي اخترته، بيدك أو معلّقة على الباب' : 'At the time you chose, in person or hung on your door' }}</p>
         </div>
       </div>
@@ -1024,35 +1103,35 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 3H5a2 2 0 1 0 0 4h13c0-.93 0-1.395-.102-1.776a3 3 0 0 0-2.121-2.122C15.395 3 14.93 3 14 3"></path><path d="M3 5v10c0 2.828 0 4.243.879 5.121C4.757 21 6.172 21 9 21h6c2.828 0 4.243 0 5.121-.879C21 19.243 21 17.828 21 15v-2c0-2.828 0-4.243-.879-5.121C19.243 7 17.828 7 15 7H7"></path><path d="M21 12h-2c-.465 0-.698 0-.888.051a1.5 1.5 0 0 0-1.06 1.06C17 13.303 17 13.536 17 14s0 .697.051.888a1.5 1.5 0 0 0 1.06 1.06c.191.052.424.052.889.052h2"></path></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'المحفظة الذكية' : 'Smart wallet' }}</h4>
+          <h3>{{ $isRtl ? 'المحفظة الذكية' : 'Smart wallet' }}</h3>
           <p>{{ $isRtl ? 'ادفع 440 ريال واحصل على رصيد 500، ' : 'Pay SAR 440 and get SAR 500 credit, ' }}<b>{{ $isRtl ? 'وفّر حتى 13%' : 'save up to 13%' }}</b></p>
         </div>
         <div class="f">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 20.5c.284-3.694 3.3-6.78 7-6.962q.469-.023 1-.038l.995.066a7.5 7.5 0 0 1 2.005.412m4 1.522v6m3-3h-6"></path><circle cx="11" cy="6.5" r="4"></circle></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'ادعُ صديقك' : 'Invite a friend' }}</h4>
+          <h3>{{ $isRtl ? 'ادعُ صديقك' : 'Invite a friend' }}</h3>
           <p>{{ $isRtl ? '30 ريال لك إذا صديقك سوّى أول طلب' : 'Get SAR 30 when your friend places their first order' }}</p>
         </div>
         <div class="f">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><path d="m13.728 3.444l1.76 3.549c.24.494.88.968 1.42 1.058l3.189.535c2.04.343 2.52 1.835 1.05 3.307l-2.48 2.5c-.42.423-.65 1.24-.52 1.825l.71 3.095c.56 2.45-.73 3.397-2.88 2.117l-2.99-1.785c-.54-.322-1.43-.322-1.98 0L8.019 21.43c-2.14 1.28-3.44.322-2.88-2.117l.71-3.095c.13-.585-.1-1.402-.52-1.825l-2.48-2.5C1.39 10.42 1.86 8.929 3.899 8.586l3.19-.535c.53-.09 1.17-.564 1.41-1.058l1.76-3.549c.96-1.925 2.52-1.925 3.47 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
           </div>
-          <h4>{{ $isRtl ? 'نقاط الولاء' : 'Loyalty points' }}</h4>
+          <h3>{{ $isRtl ? 'نقاط الولاء' : 'Loyalty points' }}</h3>
           <p>{{ $isRtl ? 'كل ريال = نقطة،' : 'Every SAR = 1 pt,' }}<br>{{ $isRtl ? 'وكل 1000 نقطة =' : 'and every 1000 pts =' }}<br><b>{{ $isRtl ? '10 ريال خصم من طلبك' : 'SAR 10 off your order' }}</b></p>
         </div>
         <div class="f">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M21 7v5M3 7v10.161c0 1.383 1.946 2.205 5.837 3.848C10.4 21.67 11.182 22 12 22V11.355M15 19s.875 0 1.75 2c0 0 2.78-5 5.25-6"></path><path d="M8.326 9.691L5.405 8.278C3.802 7.502 3 7.114 3 6.5s.802-1.002 2.405-1.778l2.92-1.413C10.13 2.436 11.03 2 12 2s1.871.436 3.674 1.309l2.921 1.413C20.198 5.498 21 5.886 21 6.5s-.802 1.002-2.405 1.778l-2.92 1.413C13.87 10.564 12.97 11 12 11s-1.871-.436-3.674-1.309M6 12l2 1m9-9L7 9"></path></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'تتبع حالة الطلب' : 'Order tracking' }}</h4>
+          <h3>{{ $isRtl ? 'تتبع حالة الطلب' : 'Order tracking' }}</h3>
           <p>{{ $isRtl ? 'تعرف وين وصل طلبك خطوة بخطوة، من الاستلام حق التسليم' : 'Track where your order is step by step, from pickup to delivery' }}</p>
         </div>
         <div class="f">
           <div class="ic">
             <svg aria-hidden="true" class="hi" height="28" viewbox="0 0 24 24" width="28" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="1.5" cy="1.5" r="1.5" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1 0 0 -1 16 8)"></circle><path d="M2.774 11.144c-1.003 1.12-1.024 2.81-.104 4a34 34 0 0 0 6.186 6.186c1.19.92 2.88.899 4-.104a92 92 0 0 0 8.516-8.698a1.95 1.95 0 0 0 .47-1.094c.164-1.796.503-6.97-.902-8.374s-6.578-1.066-8.374-.901a1.95 1.95 0 0 0-1.094.47a92 92 0 0 0-8.698 8.515Z"></path><path d="m7 14l3 3" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
           </div>
-          <h4>{{ $isRtl ? 'شفافية الأسعار' : 'Price transparency' }}</h4>
+          <h3>{{ $isRtl ? 'شفافية الأسعار' : 'Price transparency' }}</h3>
           <p>{{ $isRtl ? 'تعرف تكلفة كل قطعة قبل الطلب' : 'See the cost of every item before you order' }}</p>
         </div>
       </div>
@@ -1207,18 +1286,20 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 
 
 
+  </main>
+
   <!-- Original Home Page Footer -->
   @include('layouts.partials.footer')
 
   <!-- Sticky Mobile CTA (Original Home Page Style) -->
   <div id="smart-mobile-cta" class="sticky-mobile-cta">
     <div class="cta-content">
-      <div class="stars">★ ★ ★ ★ ★</div>
+      <div class="stars" aria-hidden="true">★ ★ ★ ★ ★</div>
       <div class="sticky-mobile-cta-title">
         {{ $isRtl ? 'أسرع تطبيق غسيل بالرياض' : 'Fastest Laundry App in Riyadh' }}
       </div>
     </div>
-    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="sticky-mobile-cta-btn">
+    <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="sticky-mobile-cta-btn" aria-label="{{ $isRtl ? 'تحميل تطبيق كلين ستيشن' : 'Download Clean Station App' }}">
       {{ $isRtl ? 'حمّل التطبيق' : 'Download App' }}
     </a>
   </div>
@@ -1232,8 +1313,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
         var cards = slider.querySelectorAll('.r');
         dotsContainer.innerHTML = '';
         cards.forEach(function(card, index) {
-          var dot = document.createElement('span');
+          var dot = document.createElement('button');
+          dot.type = 'button';
           dot.className = 'dot' + (index === 0 ? ' active' : '');
+          dot.setAttribute('aria-label', (document.documentElement.lang === 'ar' ? 'الانتقال إلى التقييم ' : 'Go to review ') + (index + 1));
           dot.addEventListener('click', function() {
             card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           });

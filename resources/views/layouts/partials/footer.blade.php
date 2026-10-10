@@ -91,8 +91,9 @@
                 <h3 class="font-extrabold text-white mb-5 text-sm uppercase tracking-wider">{{ trans('subscribe') }}</h3>
                 <form action="{{ route('newsletter') }}" method="POST" class="relative mb-5 w-full max-w-xs mx-auto md:mx-0">
                     @csrf
-                    <input type="email" name="email" placeholder="{{ trans('email') }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl py-2.5 px-4 text-sm text-white focus:border-brand-500 focus:outline-none" required>
-                    <button type="submit" aria-label="Subscribe" class="absolute top-1/2 transform -translate-y-1/2 {{ $isRtl ? 'left-2' : 'right-2' }} text-brand-400 hover:text-white transition-colors">
+                    <label for="newsletter-email-input" class="sr-only">{{ trans('email') }}</label>
+                    <input id="newsletter-email-input" type="email" name="email" aria-label="{{ trans('email') }}" placeholder="{{ trans('email') }}" class="w-full bg-gray-900 border border-gray-800 rounded-xl py-2.5 px-4 text-sm text-white focus:border-brand-500 focus:outline-none" required>
+                    <button type="submit" aria-label="{{ trans('subscribe') ?: 'Subscribe' }}" class="absolute top-1/2 transform -translate-y-1/2 {{ $isRtl ? 'left-2' : 'right-2' }} text-brand-400 hover:text-white transition-colors">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     </button>
                 </form>

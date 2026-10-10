@@ -522,6 +522,40 @@
 
                                         </div>
 
+                                        <div class="col-12 mt-2 mb-1">
+                                            <h5 class="fw-bold mb-1">
+                                                {{ app()->getLocale() === 'ar' ? 'نص معاينة المشاركة' : 'Social sharing preview text' }}
+                                            </h5>
+                                            <div class="text-muted fs-7">
+                                                {{ app()->getLocale() === 'ar'
+                                                    ? 'يظهر هذا النص عند مشاركة روابط الموقع على واتساب ومنصات التواصل. اترك الحقل فارغًا لاستخدام عنوان ووصف الصفحة.'
+                                                    : 'Shown when website links are shared on WhatsApp and social platforms. Leave a field empty to use that page's title or description.' }}
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label for="social_share_title_ar" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'عنوان المشاركة (العربية)' : 'Social sharing title (Arabic)' }}</label>
+                                            <input type="text" id="social_share_title_ar" name="social_share_title_ar"
+                                                class="form-control" maxlength="255"
+                                                value="{{ $settings['social_share_title_ar'] ?? '' }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label for="social_share_title_en" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'عنوان المشاركة (الإنجليزية)' : 'Social sharing title (English)' }}</label>
+                                            <input type="text" id="social_share_title_en" name="social_share_title_en"
+                                                class="form-control" maxlength="255"
+                                                value="{{ $settings['social_share_title_en'] ?? '' }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label for="social_share_description_ar" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'وصف المشاركة (العربية)' : 'Social sharing description (Arabic)' }}</label>
+                                            <textarea id="social_share_description_ar" name="social_share_description_ar"
+                                                class="form-control" rows="4" maxlength="2000">{{ $settings['social_share_description_ar'] ?? '' }}</textarea>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-6">
+                                            <label for="social_share_description_en" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'وصف المشاركة (الإنجليزية)' : 'Social sharing description (English)' }}</label>
+                                            <textarea id="social_share_description_en" name="social_share_description_en"
+                                                class="form-control" rows="4" maxlength="2000">{{ $settings['social_share_description_en'] ?? '' }}</textarea>
+                                        </div>
+
                                         <div class="form-group mb-3 col-md-12">
                                             <label for="social_share_image" class="fw-bold">
                                                 {{ app()->getLocale() === 'ar' ? 'صورة معاينة رابط الموقع' : 'Website link preview image' }}

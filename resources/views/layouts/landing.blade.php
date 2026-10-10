@@ -208,6 +208,10 @@
         $socialShareImageUrl = $socialShareImagePath
             ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('social_share_image')
             : asset('assets/images/social-share-cover.jpg');
+
+        $socialShareLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar' : 'en';
+        $socialShareTitle = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_title_' . $socialShareLocale));
+        $socialShareDescription = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_description_' . $socialShareLocale));
     @endphp
 
     @php
@@ -234,18 +238,18 @@
     <meta property="og:site_name" content="Clean Station">
     <meta property="og:locale" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
     <meta property="og:locale:alternate" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'en_US' : 'ar_SA' }}">
-    <meta property="og:title" content="{{ $metaTitle ?? 'Clean Station | أفضل تطبيق غسيل ملابس في السعودية' }}">
-    <meta property="og:description" content="{{ $actualDesc ?: 'اطلب غسيل ملابسك وتتبع المندوب لحظياً. غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
+    <meta property="og:title" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station | أفضل تطبيق غسيل ملابس في السعودية') }}">
+    <meta property="og:description" content="{{ $socialShareDescription ?: ($actualDesc ?: 'اطلب غسيل ملابسك وتتبع المندوب لحظياً. غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!') }}">
     <meta property="og:image" content="{{ $socialShareImageUrl }}">
     <meta property="og:image:secure_url" content="{{ $socialShareImageUrl }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $metaTitle ?? 'Clean Station' }}">
+    <meta property="og:image:alt" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station') }}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@CleanStationSA">
-    <meta name="twitter:title" content="{{ $metaTitle ?? 'Clean Station | تطبيق غسيل الملابس رقم 1' }}">
-    <meta name="twitter:description" content="{{ $actualDesc ?: 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!' }}">
+    <meta name="twitter:title" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station | تطبيق غسيل الملابس رقم 1') }}">
+    <meta name="twitter:description" content="{{ $socialShareDescription ?: ($actualDesc ?: 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!') }}">
     <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
     @vite(['resources/css/landing.css'])
