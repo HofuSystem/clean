@@ -529,7 +529,7 @@
                                             <div class="text-muted fs-7">
                                                 {{ app()->getLocale() === 'ar'
                                                     ? 'يظهر هذا النص عند مشاركة روابط الموقع على واتساب ومنصات التواصل. اترك الحقل فارغًا لاستخدام عنوان ووصف الصفحة.'
-                                                    : 'Shown when website links are shared on WhatsApp and social platforms. Leave a field empty to use that page's title or description.' }}
+                                                    : 'Shown when website links are shared on WhatsApp and social platforms. Leave a field empty to use the page title or description.' }}
                                             </div>
                                         </div>
 
