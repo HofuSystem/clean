@@ -537,23 +537,23 @@
                                             <label for="social_share_title_ar" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'عنوان المشاركة (العربية)' : 'Social sharing title (Arabic)' }}</label>
                                             <input type="text" id="social_share_title_ar" name="social_share_title_ar"
                                                 class="form-control" maxlength="255"
-                                                value="{{ $settings['social_share_title_ar'] ?? '' }}">
+                                                value="{{ ($settings['social_share_title_ar'] ?? '') ?: 'كلين ستيشن | غسيل الملابس والعناية بالمفروشات في الرياض' }}">
                                         </div>
                                         <div class="form-group mb-3 col-md-6">
                                             <label for="social_share_title_en" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'عنوان المشاركة (الإنجليزية)' : 'Social sharing title (English)' }}</label>
                                             <input type="text" id="social_share_title_en" name="social_share_title_en"
                                                 class="form-control" maxlength="255"
-                                                value="{{ $settings['social_share_title_en'] ?? '' }}">
+                                                value="{{ ($settings['social_share_title_en'] ?? '') ?: 'Clean Station | Laundry and upholstery care in Riyadh' }}">
                                         </div>
                                         <div class="form-group mb-3 col-md-6">
                                             <label for="social_share_description_ar" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'وصف المشاركة (العربية)' : 'Social sharing description (Arabic)' }}</label>
                                             <textarea id="social_share_description_ar" name="social_share_description_ar"
-                                                class="form-control" rows="4" maxlength="2000">{{ $settings['social_share_description_ar'] ?? '' }}</textarea>
+                                                class="form-control" rows="4" maxlength="2000">{{ ($settings['social_share_description_ar'] ?? '') ?: 'اطلب غسيل وكي الملابس، الدراي كلين، العناية بالسجاد والمفروشات والأحذية في الرياض، مع استلام وتوصيل من الباب. التوصيل مجاني للطلبات 100 ريال فأكثر.' }}</textarea>
                                         </div>
                                         <div class="form-group mb-3 col-md-6">
                                             <label for="social_share_description_en" class="fw-bold">{{ app()->getLocale() === 'ar' ? 'وصف المشاركة (الإنجليزية)' : 'Social sharing description (English)' }}</label>
                                             <textarea id="social_share_description_en" name="social_share_description_en"
-                                                class="form-control" rows="4" maxlength="2000">{{ $settings['social_share_description_en'] ?? '' }}</textarea>
+                                                class="form-control" rows="4" maxlength="2000">{{ ($settings['social_share_description_en'] ?? '') ?: 'Order laundry and ironing, dry cleaning, carpet, upholstery and shoe care in Riyadh, with doorstep pickup and delivery. Free delivery on orders of SAR 100 or more.' }}</textarea>
                                         </div>
 
                                         <div class="form-group mb-3 col-md-12">
