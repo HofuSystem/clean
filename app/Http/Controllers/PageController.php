@@ -41,22 +41,66 @@ class PageController extends Controller
      */
     public function home()
     {
-        $pageData = Page::with(['translations', 'sections.translations'])
-            ->where('slug', 'home')->where('is_active',true)
+        $lang = LaravelLocalization::getCurrentLocale() ?: app()->getLocale();
+        $isRtl = $lang === 'ar';
+
+        // 1. Home page & Hero image from backend
+        $homePage = Page::with(['translations', 'sections.translations'])
+            ->where('slug', 'home')
+            ->where('is_active', true)
             ->first();
+        $heroSection = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
+        $heroImageUrl = $heroSection ? $heroSection->image_url : null;
 
+        // 2. Economic Bags (الحقائب الاقتصادية)
+        $bagCategory = Category::with(['products' => function ($q) {
+            $q->where('status', 'active')->where('is_package', 1);
+        }, 'products.translations'])->where('slug', 'economic-bags')->first();
 
-        if (!$pageData) {
-            return abort(404, 'Page not found');
+        $bags = $bagCategory ? $bagCategory->products->sortBy('price')->values() : collect();
+
+        // 3. Determine most ordered bag for badge from order_items
+        $mostOrderedBagId = null;
+        if ($bags->isNotEmpty()) {
+            $mostOrderedBagId = DB::table('order_items')
+                ->whereIn('product_id', $bags->pluck('id'))
+                ->groupBy('product_id')
+                ->orderByDesc(DB::raw('SUM(quantity)'))
+                ->value('product_id');
         }
 
-        return view('pages.home', [
-            'title'           => $pageData->title,
-            'description'     => $pageData->description,
-            'metaTitle'       => $pageData->meta_title,
-            'metaDescription' => $pageData->meta_description,
-            'page'            => $pageData,
+        // 3.1 Extra piece prices from database products
+        $extraPrices = [
+            22 => (int) (Product::where('id', 310)->value('price') ?: 5),
+            23 => (int) (Product::where('id', 323)->value('price') ?: 4),
+            221 => (int) (Product::where('id', 329)->value('price') ?: 4),
+            318 => (int) (Product::where('id', 409)->value('price') ?: 19),
+        ];
 
+        // 4. Dynamic Products Sample (randomized on visit, limited to 5 as requested)
+        $sampleProducts = $this->getDynamicSampleProducts(5);
+
+        // 5. Free delivery threshold from backend settings
+        $freeDeliveryMin = (int) (Setting::where('key', 'free_delivery')->value('value') ?: 100);
+
+        // 6. Settings for social media and other data
+        $settings = Setting::all()->keyBy('key')->map->value;
+
+        return view('landing.land', [
+            'heroImageUrl'     => $heroImageUrl,
+            'heroSection'      => $heroSection,
+            'bags'             => $bags,
+            'extraPrices'      => $extraPrices,
+            'mostOrderedBagId' => $mostOrderedBagId,
+            'sampleProducts'   => $sampleProducts,
+            'freeDeliveryMin'  => $freeDeliveryMin,
+            'settings'         => $settings,
+            'isRtl'            => $isRtl,
+            'lang'             => $lang,
+            'page'             => $homePage,
+            'title'            => $homePage ? $homePage->title : ($isRtl ? 'كلين ستيشن — غسيلك... أذكى وأنظف!' : 'Clean Station — Your laundry, smarter and cleaner'),
+            'metaTitle'        => $homePage ? $homePage->meta_title : ($isRtl ? 'كلين ستيشن — غسيلك... أذكى وأنظف!' : 'Clean Station — Your laundry, smarter and cleaner'),
+            'metaDescription'  => $homePage ? $homePage->meta_description : null,
         ]);
     }
     /**
@@ -657,62 +701,20 @@ class PageController extends Controller
      */
     public function land()
     {
-        $lang = LaravelLocalization::getCurrentLocale() ?: app()->getLocale();
-        $isRtl = $lang === 'ar';
-
-        // 1. Home page & Hero image from backend
-        $homePage = Page::with(['translations', 'sections.translations'])
-            ->where('slug', 'home')
-            ->where('is_active', true)
+        $pageData = Page::with(['translations', 'sections.translations'])
+            ->where('slug', 'home')->where('is_active', true)
             ->first();
-        $heroSection = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
-        $heroImageUrl = $heroSection ? $heroSection->image_url : null;
 
-        // 2. Economic Bags (الحقائب الاقتصادية)
-        $bagCategory = Category::with(['products' => function ($q) {
-            $q->where('status', 'active')->where('is_package', 1);
-        }, 'products.translations'])->where('slug', 'economic-bags')->first();
-
-        $bags = $bagCategory ? $bagCategory->products->sortBy('price')->values() : collect();
-
-        // 3. Determine most ordered bag for badge from order_items
-        $mostOrderedBagId = null;
-        if ($bags->isNotEmpty()) {
-            $mostOrderedBagId = DB::table('order_items')
-                ->whereIn('product_id', $bags->pluck('id'))
-                ->groupBy('product_id')
-                ->orderByDesc(DB::raw('SUM(quantity)'))
-                ->value('product_id');
+        if (!$pageData) {
+            return abort(404, 'Page not found');
         }
 
-        // 3.1 Extra piece prices from database products
-        $extraPrices = [
-            22 => (int) (Product::where('id', 310)->value('price') ?: 5),
-            23 => (int) (Product::where('id', 323)->value('price') ?: 4),
-            221 => (int) (Product::where('id', 329)->value('price') ?: 4),
-            318 => (int) (Product::where('id', 409)->value('price') ?: 19),
-        ];
-
-        // 4. Dynamic Products Sample (randomized on visit, limited to 5 as requested)
-        $sampleProducts = $this->getDynamicSampleProducts(5);
-
-        // 5. Free delivery threshold from backend settings
-        $freeDeliveryMin = (int) (Setting::where('key', 'free_delivery')->value('value') ?: 100);
-
-        // 6. Settings for social media and other data
-        $settings = Setting::all()->keyBy('key')->map->value;
-
-        return view('landing.land', [
-            'heroImageUrl' => $heroImageUrl,
-            'heroSection' => $heroSection,
-            'bags' => $bags,
-            'extraPrices' => $extraPrices,
-            'mostOrderedBagId' => $mostOrderedBagId,
-            'sampleProducts' => $sampleProducts,
-            'freeDeliveryMin' => $freeDeliveryMin,
-            'settings' => $settings,
-            'isRtl' => $isRtl,
-            'lang' => $lang,
+        return view('pages.home', [
+            'title'           => $pageData->title,
+            'description'     => $pageData->description,
+            'metaTitle'       => $pageData->meta_title,
+            'metaDescription' => $pageData->meta_description,
+            'page'            => $pageData,
         ]);
     }
 

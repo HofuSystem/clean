@@ -55,19 +55,19 @@
                 @endif
             </p>
 
-            <!-- City Filters -->
-            <div class="flex flex-wrap items-center justify-center gap-2 mb-6" id="cityTabs">
-                <button class="city-tab active px-5 py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5" data-city="all">
+            <!-- City Filters (Scrollable on mobile, centered wrap on desktop) -->
+            <div class="flex overflow-x-auto pb-2 mb-6 gap-2 sm:flex-wrap justify-start sm:justify-center -mx-4 px-4 sm:mx-0 sm:px-0" id="cityTabs" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <button class="city-tab active px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-all" data-city="all">
                     <i class="fa-solid fa-map-location-dot {{ $isRtl ? 'ml-1' : 'mr-1' }}"></i> {{ $isRtl ? 'جميع الأحياء' : 'All Districts' }} (<span id="totalCount">{{ $totalDistrictsCount }}</span>)
                 </button>
 
                 @foreach($cities as $c)
-                    <button class="city-tab px-5 py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5" data-city="{{ $c->id }}">
+                    <button class="city-tab px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-all" data-city="{{ $c->id }}">
                         <i class="fa-solid {{ getCityIcon($c->name, $cityIcons) }} {{ $isRtl ? 'ml-1' : 'mr-1' }}"></i> {{ getCityDisplayName($c) }} ({{ $c->districts->count() }})
                     </button>
                 @endforeach
 
-                <button class="city-tab px-5 py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5" data-city="soon" data-city-name="{{ $isRtl ? 'جدة والدمام' : 'Jeddah & Dammam' }}">
+                <button class="city-tab px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-all" data-city="soon" data-city-name="{{ $isRtl ? 'جدة والدمام' : 'Jeddah & Dammam' }}">
                     <i class="fa-solid fa-sparkles {{ $isRtl ? 'ml-1' : 'mr-1' }}"></i> {{ $isRtl ? 'قريباً (جدة والدمام)' : 'Coming Soon (Jeddah & Dammam)' }}
                 </button>
             </div>
@@ -75,39 +75,39 @@
             <!-- Instant Search -->
             <div class="relative max-w-xl mx-auto">
                 <i class="fa-solid fa-magnifying-glass absolute {{ $isRtl ? 'right-4' : 'left-4' }} top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="districtSearch" placeholder="{{ $isRtl ? 'ابحث عن اسم حيّك مباشرة... (مثال: الياسمين، الملقا، المبرز، العارض)' : 'Search your district directly... (e.g. Al-Yasmin, Al-Malqa, Al-Mubarraz)' }}" class="w-full {{ $isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4' }} py-3.5 rounded-2xl border-2 border-gray-200 bg-white text-sm outline-none font-medium focus:border-sky-600 transition shadow-sm">
+                <input type="text" id="districtSearch" placeholder="{{ $isRtl ? 'ابحث عن اسم حيّك مباشرة... (مثال: الياسمين، الملقا، المبرز، العارض)' : 'Search your district directly... (e.g. Al-Yasmin, Al-Malqa, Al-Mubarraz)' }}" class="w-full {{ $isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4' }} py-3 sm:py-3.5 rounded-2xl border-2 border-gray-200 bg-white text-xs sm:text-sm outline-none font-medium focus:border-sky-600 transition shadow-sm">
             </div>
         </div>
     </section>
 
     <!-- Highlights Bar -->
     <section class="max-w-6xl mx-auto px-4 mb-8">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 {{ $isRtl ? 'text-right' : 'text-left' }}">
-            <div class="bg-white p-5 rounded-3xl border border-sky-100 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-xl flex-shrink-0">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 {{ $isRtl ? 'text-right' : 'text-left' }}">
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-sky-100 shadow-sm flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg sm:text-xl shrink-0">
                     <i class="fa-solid fa-truck-ramp-box"></i>
                 </div>
                 <div>
-                    <div class="font-bold text-slate-900 text-sm">{{ $isRtl ? 'استلام وتوصيل مجاني' : 'Free Pickup & Delivery' }}</div>
-                    <div class="text-xs text-gray-500">{{ $isRtl ? 'للطلبات بـ 100 ر.س وفوق وعروض مستمرة' : 'For orders 100 SAR+ and ongoing deals' }}</div>
+                    <div class="font-bold text-slate-900 text-xs sm:text-sm">{{ $isRtl ? 'استلام وتوصيل مجاني' : 'Free Pickup & Delivery' }}</div>
+                    <div class="text-[11px] sm:text-xs text-gray-500">{{ $isRtl ? 'للطلبات بـ 100 ر.س وفوق وعروض مستمرة' : 'For orders 100 SAR+ and ongoing deals' }}</div>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-3xl border border-sky-100 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-sky-100 shadow-sm flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg sm:text-xl shrink-0">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </div>
                 <div>
-                    <div class="font-bold text-slate-900 text-sm">{{ $isRtl ? 'الملابس في 21 إلى 24 ساعة' : 'Clothes in 21 to 24 Hours' }}</div>
-                    <div class="text-xs text-gray-500">{{ $isRtl ? 'استلام سريع وتسليم بالوقت المحدد' : 'Fast pickup & on-time delivery' }}</div>
+                    <div class="font-bold text-slate-900 text-xs sm:text-sm">{{ $isRtl ? 'الملابس في 21 إلى 24 ساعة' : 'Clothes in 21 to 24 Hours' }}</div>
+                    <div class="text-[11px] sm:text-xs text-gray-500">{{ $isRtl ? 'استلام سريع وتسليم بالوقت المحدد' : 'Fast pickup & on-time delivery' }}</div>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-3xl border border-sky-100 shadow-sm flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0">
+            <div class="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-sky-100 shadow-sm flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg sm:text-xl shrink-0">
                     <i class="fa-solid fa-clock"></i>
                 </div>
                 <div>
-                    <div class="font-bold text-slate-900 text-sm">{{ $isRtl ? 'سردات كل ساعتين' : 'Slots Every 2 Hours' }}</div>
-                    <div class="text-xs text-gray-500">{{ $isRtl ? 'من 10 صباحاً إلى 11:59 ليلاً' : 'From 10:00 AM to 11:59 PM' }}</div>
+                    <div class="font-bold text-slate-900 text-xs sm:text-sm">{{ $isRtl ? 'سردات كل ساعتين' : 'Slots Every 2 Hours' }}</div>
+                    <div class="text-[11px] sm:text-xs text-gray-500">{{ $isRtl ? 'من 10 صباحاً إلى 11:59 ليلاً' : 'From 10:00 AM to 11:59 PM' }}</div>
                 </div>
             </div>
         </div>
@@ -142,13 +142,18 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" id="districtsGrid">
             @foreach($cities as $city)
                 @foreach($city->districts as $district)
-                    <div class="district-card bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm {{ $isRtl ? 'text-right' : 'text-left' }}" data-city="{{ $city->id }}" data-name="{{ $district->name }}">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-slate-900 text-xs">{{ $district->name }}</span>
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    @php
+                        $distName = trim($district->name ?? '');
+                    @endphp
+                    @if(!empty($distName))
+                        <div class="district-card bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm {{ $isRtl ? 'text-right' : 'text-left' }}" data-city="{{ $city->id }}" data-name="{{ $distName }}">
+                            <div class="flex items-center justify-between gap-1.5 mb-1">
+                                <span class="font-bold text-slate-900 text-xs truncate" title="{{ $distName }}">{{ $distName }}</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                            </div>
+                            <span class="text-[10px] text-gray-500 truncate block">{{ $city->name }} • {{ $isRtl ? 'نشط' : 'Active' }}</span>
                         </div>
-                        <span class="text-[10px] text-gray-500">{{ $city->name }} • {{ $isRtl ? 'نشط' : 'Active' }}</span>
-                    </div>
+                    @endif
                 @endforeach
             @endforeach
         </div>
@@ -189,6 +194,10 @@
 <style>
     .district-card { transition: all 0.2s ease; }
     .district-card:hover { transform: translateY(-2px); border-color: #0284c7; box-shadow: 0 8px 20px -6px rgba(2,132,199,0.15); }
+    .district-card:empty,
+    .district-card:not(:has(*)) {
+        display: none !important;
+    }
     .city-tab { transition: all 0.2s ease; background-color: #ffffff; color: #475569; border: 1px solid #e2e8f0; cursor: pointer; }
     .city-tab.active { background-color: #0284c7 !important; color: #ffffff !important; box-shadow: 0 4px 12px rgba(2,132,199,0.25); border-color: #0284c7 !important; }
     .city-tab:not(.active):hover { background-color: #f8fafc; color: #0284c7; }
@@ -196,6 +205,13 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Safety cleanup: remove any empty/blank card artifacts if present
+    document.querySelectorAll('.district-card').forEach(function(card) {
+        if (!card.textContent.trim()) {
+            card.remove();
+        }
+    });
+
     const isRtl = {{ $isRtl ? 'true' : 'false' }};
     const tabs = document.querySelectorAll('.city-tab');
     const soonBanner = document.getElementById('soonBanner');

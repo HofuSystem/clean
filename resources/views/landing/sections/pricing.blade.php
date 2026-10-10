@@ -100,9 +100,9 @@
         </div>
 
         <!-- Order & Delivery Policy Banner -->
-        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs md:text-sm {{ $isRtl ? 'text-right' : 'text-left' }}">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center text-base flex-shrink-0">
+        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-2xl p-3.5 sm:p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs md:text-sm {{ $isRtl ? 'text-right' : 'text-left' }}">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center text-base shrink-0">
                     <i class="fa-solid fa-circle-info"></i>
                 </div>
                 <div>
@@ -114,9 +114,10 @@
                     </span>
                 </div>
             </div>
-            <div class="flex-shrink-0">
-                <span class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-xs">
-                    <i class="fa-solid fa-check me-1"></i> {{ $isRtl ? 'توصيل مجاني من 100 ريال' : 'Free Delivery from 100 SAR' }}
+            <div class="shrink-0 self-center sm:self-auto">
+                <span class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-xs inline-flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span>{{ $isRtl ? 'توصيل مجاني من 100 ريال' : 'Free Delivery from 100 SAR' }}</span>
                 </span>
             </div>
         </div>
@@ -124,13 +125,13 @@
         <!-- Live Search -->
         <div class="relative mb-6">
             <i class="fa-solid fa-magnifying-glass absolute {{ $isRtl ? 'right-4' : 'left-4' }} top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="text" id="priceSearch" placeholder="{{ $isRtl ? 'ابحث عن أي قطعة أو خدمة... (مثال: ثوب، عباية، سكراب، بدلة عسكرية، حقيبة، بطانية)' : 'Search for any item or service... (e.g. Thobe, Abaya, Scrubs, Military uniform, Bag, Blanket)' }}" class="w-full {{ $isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4' }} py-3.5 rounded-2xl border-2 border-gray-200 bg-white text-sm outline-none font-medium focus:border-sky-600 transition shadow-sm">
+            <input type="text" id="priceSearch" placeholder="{{ $isRtl ? 'ابحث عن أي قطعة أو خدمة... (مثال: ثوب، عباية، سكراب، بدلة عسكرية، حقيبة، بطانية)' : 'Search for any item or service... (e.g. Thobe, Abaya, Scrubs, Military uniform, Bag, Blanket)' }}" class="w-full {{ $isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4' }} py-3 sm:py-3.5 rounded-2xl border-2 border-gray-200 bg-white text-xs sm:text-sm outline-none font-medium focus:border-sky-600 transition shadow-sm">
         </div>
 
-        <!-- Tabs Container -->
-        <div class="flex flex-wrap gap-2 mb-6" id="priceTabs">
+        <!-- Tabs Container (Horizontally scrollable on mobile, wrapping on desktop) -->
+        <div class="flex overflow-x-auto pb-2 mb-6 gap-2 sm:flex-wrap -mx-4 px-4 sm:mx-0 sm:px-0" id="priceTabs" style="scrollbar-width: none; -ms-overflow-style: none;">
             @foreach($categories as $index => $category)
-                <button class="pricing-tab {{ $index === 0 ? 'active' : '' }} px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5" 
+                <button class="pricing-tab {{ $index === 0 ? 'active' : '' }} px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold text-xs md:text-sm border shadow-sm flex items-center gap-1.5 whitespace-nowrap shrink-0 transition-all" 
                         data-tab="{{ $category->slug }}"
                         data-color="{{ getCatColorHex($category->slug) }}"
                         @if($index === 0) style="background-color: {{ getCatColorHex($category->slug) }}; border-color: {{ getCatColorHex($category->slug) }};" @endif>
@@ -320,15 +321,15 @@
                         <table class="w-full text-sm {{ $isRtl ? 'text-right' : 'text-left' }} price-table" data-slug="{{ $category->slug }}">
                             <thead class="bg-white text-gray-500 border-b border-gray-100 font-bold sticky top-0 shadow-sm">
                                 <tr>
-                                    <th class="px-6 py-4">{{ $isRtl ? 'القطعة' : 'Item' }}</th>
-                                    <th class="px-6 py-4 text-center {{ $category->slug == 'carpets-furnishings' ? 'text-indigo-700' : 'text-[#008bd2]' }}">{{ $isRtl ? 'غسيل وكي' : 'Wash & Iron' }}</th>
+                                    <th class="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">{{ $isRtl ? 'القطعة' : 'Item' }}</th>
+                                    <th class="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm {{ $category->slug == 'carpets-furnishings' ? 'text-indigo-700' : 'text-[#008bd2]' }}">{{ $isRtl ? 'غسيل وكي' : 'Wash & Iron' }}</th>
                                     @if($category->slug != 'carpets-furnishings')
-                                    <th class="px-6 py-4 text-center text-gray-600">{{ $isRtl ? 'كوي فقط' : 'Iron Only' }}</th>
+                                    <th class="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm text-gray-600">{{ $isRtl ? 'كوي فقط' : 'Iron Only' }}</th>
                                     @endif
-                                    <th class="px-6 py-4 text-center text-purple-600">{{ $isRtl ? 'غسيل جاف (Dry Clean)' : 'Dry Clean' }}</th>
+                                    <th class="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm text-purple-600">{{ $isRtl ? 'غسيل جاف' : 'Dry Clean' }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 text-[13px] pagination-container">
+                            <tbody class="divide-y divide-gray-100 text-xs sm:text-[13px] pagination-container">
                                 @php
                                     $filteredProducts = $category->products->filter(function($p) {
                                         $n = mb_strtolower($p->name);
@@ -379,17 +380,17 @@
                                         $currency = $isRtl ? 'ر.س' : 'SAR';
                                     @endphp
                                     <tr class="hover:bg-sky-50/30 transition group pagination-item" data-search="{{ mb_strtolower($productName) }}">
-                                        <td class="px-6 py-4 font-medium text-slate-800">{{ $productName }}</td>
+                                        <td class="px-3 sm:px-6 py-3 sm:py-4 font-bold sm:font-medium text-slate-800 text-xs sm:text-sm">{{ $productName }}</td>
                                         
-                                        <td class="px-6 py-4 text-center {{ $category->slug == 'carpets-furnishings' ? 'text-indigo-700' : 'text-[#008bd2]' }} font-bold">
+                                        <td class="px-3 sm:px-6 py-3 sm:py-4 text-center {{ $category->slug == 'carpets-furnishings' ? 'text-indigo-700' : 'text-[#008bd2]' }} font-bold text-xs sm:text-sm whitespace-nowrap">
                                             {{ $washIron ? $washIron->price . ' ' . $currency : '-' }}
                                         </td>
                                         @if($category->slug != 'carpets-furnishings')
-                                        <td class="px-6 py-4 text-center text-gray-600 font-bold">
+                                        <td class="px-3 sm:px-6 py-3 sm:py-4 text-center text-gray-600 font-bold text-xs sm:text-sm whitespace-nowrap">
                                             {{ $ironOnly ? $ironOnly->price . ' ' . $currency : '-' }}
                                         </td>
                                         @endif
-                                        <td class="px-6 py-4 text-center text-purple-600 font-bold">
+                                        <td class="px-3 sm:px-6 py-3 sm:py-4 text-center text-purple-600 font-bold text-xs sm:text-sm whitespace-nowrap">
                                             {{ $dryClean ? $dryClean->price . ' ' . $currency : '-' }}
                                         </td>
                                     </tr>

@@ -6,8 +6,8 @@
     $isRtl = ($lang === 'ar');
     $dir = LaravelLocalization::getCurrentLocaleDirection() ?: ($isRtl ? 'rtl' : 'ltr');
     $otherLocale = $isRtl ? 'en' : 'ar';
-    $otherLocaleText = $isRtl ? 'English' : 'العربية';
-    $otherLocaleUrl = LaravelLocalization::getLocalizedURL($otherLocale, route('land', [], false), [], true);
+    $currRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?: 'home';
+    $otherLocaleUrl = LaravelLocalization::getLocalizedURL($otherLocale, route($currRoute, [], false), [], true);
 
     // Fallbacks if accessed directly without controller
     if (!isset($heroImageUrl)) {
