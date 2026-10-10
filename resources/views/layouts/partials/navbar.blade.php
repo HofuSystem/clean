@@ -36,8 +36,10 @@
         transition: all 0.2s ease;
     }
     .mobile-action-btn {
-        width: 38px;
-        height: 38px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         border-radius: 10px;
         display: inline-flex;
         align-items: center;
@@ -46,7 +48,7 @@
         border: 1px solid #E2E8F0;
         color: #1E293B;
         transition: all 0.2s ease;
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 700;
         cursor: pointer;
     }
@@ -85,10 +87,12 @@
             width: auto !important;
         }
         .mobile-action-btn {
-            width: 36px !important;
-            height: 36px !important;
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            min-height: 44px !important;
             border-radius: 10px !important;
-            font-size: 11.5px !important;
+            font-size: 12.5px !important;
         }
     }
 

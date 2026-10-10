@@ -91,39 +91,233 @@
     $facebook = setting('facebook');
     $youtube = setting('youtube');
     $email = setting('email') ?: 'support@cleanstation.app';
-@php
-    $seoTitle = $metaTitle ?? ($title ?? ($isRtl ? 'كلين ستيشن — غسيلك... أذكى وأنظف!' : 'Clean Station — Your laundry, smarter and cleaner'));
-    $seoDesc = $metaDescription ?? ($description ?? ($isRtl ? 'تطبيق كلين ستيشن لخدمات الغسيل والكوي والدراي كلين بالرياض والمبرز (الأحساء). استلام وتسليم مجاني لباب بيتك وباقات اقتصادية توفّر عليك.' : 'Clean Station laundry app in Riyadh & Al-Mubarraz. Doorstep laundry pickup & delivery for wash & iron, dry clean, and value laundry bags within 21 to 24 hours.'));
+
+    $actualDesc = trim($metaDescription ?? '');
+    if (empty($actualDesc)) {
+        $actualDesc = $isRtl 
+            ? 'حمل تطبيق كلين ستيشن الآن. خدمة غسيل وكوي الملابس والتنظيف الجاف وغسيل السجاد في الرياض، غسيل منفصل 100% مع استلام وتسليم عند الباب وتوصيل مجاني للطلبات فوق 100 ريال.'
+            : 'Download Clean Station App. Professional laundry, dry cleaning, and carpet cleaning in Riyadh. 100% separate washing with door-to-door pickup and free delivery on orders over 100 SAR.';
+    }
+
+    $seoTitle = trim($metaTitle ?? '') ?: ($title ?? ($isRtl 
+        ? 'كلين ستيشن | أسرع تطبيق غسيل ملابس ومفروشات مع استلام وتوصيل بالمملكة' 
+        : 'Clean Station | Fastest Laundry & Upholstery App - Pickup & Delivery KSA'));
+
+    if ($lang === 'ar') {
+        $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
+    } else {
+        $actualKeywords = "laundry near me, laundry app Riyadh, dry cleaning Riyadh, separate washing Riyadh, free laundry pickup, carpet cleaning Riyadh, shoe cleaning Riyadh, gift delivery Riyadh, flower delivery Riyadh, online laundry Riyadh, best laundry Riyadh, premium flower boutique Riyadh, express laundry Riyadh, door to door laundry Riyadh, dry cleaner near me Riyadh";
+    }
+
+    $pathSuffix = preg_replace('/^\/(ar|en)\b/', '', request()->getPathInfo());
+    if ($pathSuffix === '') {
+        $pathSuffix = '/';
+    }
+
+    $resolvedCanonicalUrl = \App\Support\CanonicalUrl::fromRequest(request(), config('app.url'));
+
+    $socialShareImagePath = \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_image');
+    $socialShareImageUrl = $socialShareImagePath
+        ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('social_share_image')
+        : asset('assets/images/social-share-cover.jpg');
+
+    $socialShareLocale = $isRtl ? 'ar' : 'en';
+    $socialShareTitle = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_title_' . $socialShareLocale));
+    $socialShareDescription = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_description_' . $socialShareLocale));
 @endphp
 <!doctype html>
-<html lang="{{ $lang }}" dir="{{ $dir }}">
+<html lang="{{ $lang }}" dir="{{ $dir }}" class="scroll-smooth">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
 <title>{{ $seoTitle }}</title>
-<meta name="description" content="{{ $seoDesc }}">
-<link rel="canonical" href="{{ url()->current() }}">
-<link rel="alternate" hreflang="ar" href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
-<link rel="alternate" hreflang="en" href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
-<link rel="alternate" hreflang="x-default" href="https://cleanstation.app/ar">
+<meta name="description" content="{{ $actualDesc }}">
+<meta name="keywords" content="{{ $actualKeywords }}">
+<link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
+
+{{-- Hreflang – bilingual site (AR default, EN alternate) --}}
+<link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+<link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+<link rel="alternate" hreflang="x-default" href="https://cleanstation.app{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:title" content="{{ $seoTitle }}">
-<meta property="og:description" content="{{ $seoDesc }}">
-<meta property="og:image" content="{{ asset('assets/logo-main.png') }}">
-<meta property="og:locale" content="{{ $isRtl ? 'ar_SA' : 'en_US' }}">
+<meta property="og:url" content="{{ $resolvedCanonicalUrl }}">
 <meta property="og:site_name" content="Clean Station">
+<meta property="og:locale" content="{{ $isRtl ? 'ar_SA' : 'en_US' }}">
+<meta property="og:locale:alternate" content="{{ $isRtl ? 'en_US' : 'ar_SA' }}">
+<meta property="og:title" content="{{ $socialShareTitle ?: $seoTitle }}">
+<meta property="og:description" content="{{ $socialShareDescription ?: $actualDesc }}">
+<meta property="og:image" content="{{ $socialShareImageUrl }}">
+<meta property="og:image:secure_url" content="{{ $socialShareImageUrl }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ $socialShareTitle ?: $seoTitle }}">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ $seoTitle }}">
-<meta name="twitter:description" content="{{ $seoDesc }}">
-<meta name="twitter:image" content="{{ asset('assets/logo-main.png') }}">
+<meta name="twitter:site" content="@CleanStationSA">
+<meta name="twitter:title" content="{{ $socialShareTitle ?: $seoTitle }}">
+<meta name="twitter:description" content="{{ $socialShareDescription ?: $actualDesc }}">
+<meta name="twitter:image" content="{{ $socialShareImageUrl }}">
 
-<!-- Structured Data (JSON-LD) -->
+<!-- Structured Data (JSON-LD) - Complete Schema from Original Landing -->
+@if($isRtl)
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://cleanstation.app/#organization",
+      "name": "كلين ستيشن",
+      "alternateName": "Clean Station",
+      "url": "https://cleanstation.app",
+      "logo": "https://cleanstation.app/assets/images/logo.png",
+      "sameAs": [
+        "https://twitter.com/cleanstation_sa",
+        "https://www.instagram.com/cleanstation.sa"
+      ],
+      "areaServed": { "@type": "City", "name": "Riyadh" },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+966559098685",
+        "contactType": "customer service",
+        "areaServed": "SA",
+        "availableLanguage": ["Arabic", "English"]
+      },
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "تطبيق غسيل ملابس بالرياض",
+            "serviceType": "Laundry App",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "غسيل وكوي الملابس",
+            "serviceType": "Laundry and Ironing",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "دراي كلين بالرياض",
+            "serviceType": "Dry Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "استلام وتوصيل منزلي",
+            "serviceType": "Pickup and Delivery",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "غسيل بطانيات ومفروشات بالرياض",
+            "serviceType": "Blanket and Bedding Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "غسيل سجاد وموكيت بالرياض",
+            "serviceType": "Carpet and Rug Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "تنظيف وتلميع الأحذية",
+            "serviceType": "Shoe Cleaning",
+            "areaServed": "Riyadh"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://cleanstation.app/#website",
+      "url": "https://cleanstation.app",
+      "name": "كلين ستيشن",
+      "alternateName": "Clean Station",
+      "inLanguage": "ar-SA",
+      "publisher": { "@id": "https://cleanstation.app/#organization" }
+    },
+    {
+      "@type": "MobileApplication",
+      "@id": "https://cleanstation.app/#mobileapplication",
+      "name": "كلين ستيشن",
+      "alternateName": "Clean Station",
+      "operatingSystem": "iOS, Android",
+      "applicationCategory": "LifestyleApplication",
+      "url": "https://cleanstation.app.link/?channel=website",
+      "installUrl": "https://cleanstation.app.link/?channel=website",
+      "downloadUrl": "https://cleanstation.app.link/?channel=website",
+      "description": "تطبيق كلين ستيشن يقدم خدمات الغسيل، الكوي، الدراي كلين، البطانيات، السجاد، الاستلام والتوصيل المجاني داخل الرياض.",
+      "areaServed": { "@type": "City", "name": "Riyadh" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "{{ $resolvedCanonicalUrl }}#webpage",
+      "url": "{{ $resolvedCanonicalUrl }}",
+      "name": "{{ $seoTitle }}",
+      "description": "{{ $actualDesc }}",
+      "inLanguage": "ar-SA",
+      "isPartOf": { "@id": "https://cleanstation.app/#website" }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "ar-SA",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "هل تطبيق كلين ستيشن يوفر خدمات غسيل ملابس في الرياض؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "نعم، يوفر تطبيق كلين ستيشن خدمات غسيل ملابس في الرياض تشمل الغسيل، الكوي، الدراي كلين، البطانيات، السجاد، والاستلام والتوصيل المنزلي."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "كيف يتم حساب تكلفة الغسيل؟",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "الأسعار واضحة ومحددة مسبقاً في التطبيق سواء بالقطعة أو عبر الحقائب الاقتصادية مع توصيل مجاني للطلبات فوق 100 ريال."
+      }
+    }
+  ]
+}
+</script>
+@else
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -132,40 +326,148 @@
       "@type": "Organization",
       "@id": "https://cleanstation.app/#organization",
       "name": "Clean Station",
+      "alternateName": "كلين ستيشن",
       "url": "https://cleanstation.app",
-      "logo": "{{ asset('assets/logo-main.png') }}",
+      "logo": "https://cleanstation.app/assets/images/logo.png",
       "sameAs": [
         "https://twitter.com/cleanstation_sa",
         "https://www.instagram.com/cleanstation.sa"
       ],
+      "areaServed": { "@type": "City", "name": "Riyadh" },
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+966559098685",
         "contactType": "customer service",
         "areaServed": "SA",
         "availableLanguage": ["Arabic", "English"]
-      }
+      },
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Laundry App in Riyadh",
+            "serviceType": "Laundry App",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Laundry and Ironing",
+            "serviceType": "Laundry and Ironing",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Dry Cleaning in Riyadh",
+            "serviceType": "Dry Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Doorstep Pickup and Delivery",
+            "serviceType": "Pickup and Delivery",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Blanket and Bedding Cleaning",
+            "serviceType": "Blanket and Bedding Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Carpet and Rug Cleaning",
+            "serviceType": "Carpet and Rug Cleaning",
+            "areaServed": "Riyadh"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Shoe Cleaning",
+            "serviceType": "Shoe Cleaning",
+            "areaServed": "Riyadh"
+          }
+        }
+      ]
     },
     {
       "@type": "WebSite",
       "@id": "https://cleanstation.app/#website",
       "url": "https://cleanstation.app",
       "name": "Clean Station",
-      "inLanguage": "{{ $lang }}",
+      "alternateName": "كلين ستيشن",
+      "inLanguage": "en-SA",
       "publisher": { "@id": "https://cleanstation.app/#organization" }
     },
     {
+      "@type": "MobileApplication",
+      "@id": "https://cleanstation.app/#mobileapplication",
+      "name": "Clean Station",
+      "alternateName": "كلين ستيشن",
+      "operatingSystem": "iOS, Android",
+      "applicationCategory": "LifestyleApplication",
+      "url": "https://cleanstation.app.link/?channel=website",
+      "installUrl": "https://cleanstation.app.link/?channel=website",
+      "downloadUrl": "https://cleanstation.app.link/?channel=website",
+      "description": "Clean Station app offers laundry, ironing, dry cleaning, blanket cleaning, carpet cleaning, and doorstep pickup and delivery in Riyadh.",
+      "areaServed": { "@type": "City", "name": "Riyadh" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "SAR" }
+    },
+    {
       "@type": "WebPage",
-      "@id": "{{ url()->current() }}#webpage",
-      "url": "{{ url()->current() }}",
+      "@id": "{{ $resolvedCanonicalUrl }}#webpage",
+      "url": "{{ $resolvedCanonicalUrl }}",
       "name": "{{ $seoTitle }}",
-      "description": "{{ $seoDesc }}",
-      "inLanguage": "{{ $lang }}",
+      "description": "{{ $actualDesc }}",
+      "inLanguage": "en-SA",
       "isPartOf": { "@id": "https://cleanstation.app/#website" }
     }
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en-SA",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Clean Station a laundry app in Riyadh?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Clean Station is a laundry and dry cleaning app in Riyadh offering wash, iron, dry clean, blankets, rugs, and doorstep delivery."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does pricing work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Transparent upfront pricing per item or with money-saving economy bags, and free delivery on orders over SAR 100."
+      }
+    }
+  ]
+}
+</script>
+@endif
 
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -228,9 +530,9 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .facts span::before{content:"";flex:none;width:20px;height:20px;background:var(--blue);-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2724%27%20height%3D%2724%27%20viewBox%3D%270%200%2024%2024%27%20%3E%3Cpath%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke-width%3D%271.5%27%20d%3D%27m5%2014l3.5%203.5L19%206.5%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2724%27%20height%3D%2724%27%20viewBox%3D%270%200%2024%2024%27%20%3E%3Cpath%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20stroke-width%3D%271.5%27%20d%3D%27m5%2014l3.5%203.5L19%206.5%27/%3E%3C/svg%3E") center/contain no-repeat}
 
 .stores{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;align-items:center}
-.store-link{display:inline-block;transition:transform 0.2s ease;border-radius:8px}
+.store-link{display:inline-flex;align-items:center;justify-content:center;min-height:48px;transition:transform 0.2s ease;border-radius:8px}
 .store-link:hover{transform:translateY(-2px)}
-.store-badge-img{height:42px;width:auto;border-radius:8px;display:block}
+.store-badge-img{height:46px;min-height:46px;width:auto;border-radius:8px;display:block}
 
 /* Hero Stats Bar: 5 Quality & Performance Metrics */
 .stats-bar{grid-column:1 / -1;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 0;margin-top:24px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(31,51,100,.05)}
@@ -324,7 +626,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 
 .ptbl{margin-top:24px;border:1px solid var(--line);border-radius:18px;overflow:hidden}
 .ptbl .cap{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;background:var(--bg-2);font-size:14px;font-weight:600}
-.ptbl .cap a{font-size:13px;font-weight:500;color:var(--blue)}
+.ptbl .cap a{font-size:13px;font-weight:600;color:var(--blue);min-height:48px;display:inline-flex;align-items:center;padding:4px 8px}
 .ptbl table{width:100%;border-collapse:collapse;font-size:14px}
 .ptbl th{font-weight:500;color:var(--muted);font-size:12px;text-align:center;padding:10px 8px;border-bottom:1px solid var(--line)}
 .ptbl th:first-child,.ptbl td:first-child{text-align:start;padding-inline-start:18px}
@@ -332,7 +634,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .ptbl tr:last-child td{border-bottom:0}
 .unit{font-size:12px;color:var(--muted)}
 .foot-info{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px}
-.foot-info a{color:var(--blue);font-weight:600}
+.foot-info a{color:var(--blue);font-weight:600;min-height:48px;display:inline-flex;align-items:center;padding:2px 8px}
 
 /* Why Us */
 .why-section{background:var(--bg-2);padding:64px 0}
@@ -443,7 +745,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 /* FAQ */
 .faq{max-width:760px;margin:24px auto 0}
 .faq details{border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:#fff;padding:12px 18px}
-.faq summary{font-weight:600;font-size:15px;color:var(--navy);cursor:pointer;list-style:none}
+.faq summary{font-weight:600;font-size:15px;color:var(--navy);cursor:pointer;list-style:none;min-height:48px;display:flex;align-items:center}
 .faq summary::-webkit-details-marker{display:none}
 .faq p{margin-top:8px;color:var(--muted);font-size:14px}
 
@@ -456,7 +758,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .final .store-badge-img{border:1px solid #fff;border-radius:8px}
 .final .sb{border-color:#fff}
 .final .contact-line{margin-top:16px;font-size:13px;color:rgba(255,255,255,0.85);opacity:.85}
-.final .contact-line a{color:#fff;text-decoration:underline;white-space:nowrap;font-weight:600}
+.final .contact-line a{color:#fff;text-decoration:underline;white-space:nowrap;font-weight:600;min-height:44px;display:inline-flex;align-items:center;padding:4px 8px}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
@@ -507,7 +809,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 .sticky-mobile-cta-btn{
   background:linear-gradient(135deg,#0ea5e9,#0284c7);
   color:#ffffff !important;
-  padding:9px 20px;
+  padding:12px 22px;
+  min-height:48px;
   border-radius:999px;
   font-weight:700;
   font-size:13.5px;
@@ -597,7 +900,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   .phone-screen{border-radius:29px}
   .hero-badge{display:none}
 
-  .store-badge-img{height:40px}
+  .store-link{min-height:48px;display:inline-flex;align-items:center;justify-content:center}
+  .store-badge-img{height:46px !important}
 
   /* Bags 2 per row on mobile */
   .bags{
@@ -611,7 +915,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   .bag .tag{
     top:-9px !important;
     inset-inline-end:8px !important;
-    font-size:9.5px !important;
+    font-size:10.5px !important;
     padding:2px 7px !important;
   }
   .bag h3, .bag h4{
@@ -619,7 +923,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     line-height:1.3 !important;
   }
   .bag .qty{
-    font-size:11px !important;
+    font-size:12px !important;
     margin-top:2px !important;
   }
   .bag .price{
@@ -627,10 +931,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     margin-top:8px !important;
   }
   .bag .price small{
-    font-size:11px !important;
+    font-size:11.5px !important;
   }
   .bag .ex{
-    font-size:10px !important;
+    font-size:11.5px !important;
     margin-top:4px !important;
     line-height:1.3 !important;
   }
@@ -716,21 +1020,34 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     display:flex !important;
     justify-content:center !important;
     align-items:center !important;
-    gap:6px !important;
+    gap:4px !important;
     margin-top:12px !important;
   }
   .reviews-dots .dot{
+    position:relative;
+    width:44px;
+    height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent !important;
+    border:none;
+    padding:0;
+    margin:0;
+    outline:none;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .reviews-dots .dot::before{
+    content:"";
+    display:block;
     width:8px;
     height:8px;
     border-radius:999px;
     background:#CBD5E1;
-    border:none;
-    padding:0;
-    outline:none;
     transition:all .25s ease;
-    cursor:pointer;
   }
-  .reviews-dots .dot.active{
+  .reviews-dots .dot.active::before{
     width:22px;
     background:var(--blue);
   }
