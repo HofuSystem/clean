@@ -493,7 +493,7 @@
 @vite(['resources/css/landing.css'])
 <style>
 :root{
-  --navy:#1F3364; --blue:#027BC0; --sky:#68C9E2; --mid:#4675B9; --sky-soft:#EAF6FB;
+  --navy:#1F3364; --blue:#01659f; --sky:#68C9E2; --mid:#4675B9; --sky-soft:#EAF6FB;
   --ink:#16222E; --muted:#475569; --line:#E3E8EE; --bg:#FFFFFF; --bg-2:#F5F8FB;
   --green:#3BA55C; --wa:#25D366;
 }
@@ -534,7 +534,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 
 /* Platform Badge (Kicker) */
 .sa-wrap{margin-bottom:12px}
-.kicker.sa{display:inline-flex;align-items:center;gap:10px;margin:0;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:var(--muted);border:1px solid #DCE6F0;padding:6px 16px 6px 14px;font-size:14px;font-weight:500;border-radius:999px;box-shadow:0 2px 10px rgba(31,51,100,.06);white-space:nowrap}
+.kicker.sa{display:inline-flex;align-items:center;gap:10px;margin:0;background:#ffffff;color:var(--navy);border:1px solid #DCE6F0;padding:6px 16px 6px 14px;font-size:14px;font-weight:600;border-radius:999px;box-shadow:0 2px 10px rgba(31,51,100,.06);white-space:nowrap}
 .kicker.sa i{width:9px;height:9px;border-radius:50%;background:#0B7A3E;box-shadow:0 0 0 3px rgba(11,122,62,.15);flex:none}
 .kicker.sa b{color:var(--navy);font-weight:700}
 .kicker.sa em{width:1px;height:14px;background:#C9D5E2;flex:none}
@@ -614,10 +614,10 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .badge-time{top:18%;inset-inline-end:-20px}
 .badge-service{bottom:22%;inset-inline-start:-20px;animation-delay:2s}
 .badge-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
-.icon-time{background:#DCFCE7;color:#16A34A}
-.icon-service{background:#E0F2FE;color:#0284C7}
+.icon-time{background:#DCFCE7;color:#15803D}
+.icon-service{background:#E0F2FE;color:#0369a1}
 .badge-text{display:flex;flex-direction:column;line-height:1.2;text-align:start}
-.badge-text small{font-size:10px;color:#64748B;font-weight:700;letter-spacing:.02em}
+.badge-text small{font-size:10px;color:#475569;font-weight:700;letter-spacing:.02em}
 .badge-text b{font-size:12.5px;color:#0F172A;font-weight:700}
 
 /* Order Widget Section */
@@ -625,7 +625,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .ow{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px}
 .ow .card{border:1px solid var(--line);border-radius:18px;padding:20px 22px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.02)}
 .ow h3{font-size:18px;color:var(--navy);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.ow h3 small{font-size:12px;font-weight:600;color:var(--blue);background:var(--sky-soft);padding:3px 10px;border-radius:999px}
+.ow h3 small{font-size:12px;font-weight:600;color:#01659f;background:var(--sky-soft);padding:3px 10px;border-radius:999px}
 .ow .desc{color:var(--ink);font-size:14px;margin-top:8px}
 .ow .fit{color:var(--muted);font-size:13px;margin-top:4px}
 .steps{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
@@ -710,9 +710,10 @@ p,q,li,.desc,.fit{text-wrap:balance}
 #footer h3{font-size:14px !important;font-weight:800 !important;color:#fff !important;text-transform:uppercase !important;letter-spacing:0.05em !important;margin-bottom:18px !important}
 #footer ul{list-style:none !important;padding:0 !important;margin:0 !important}
 #footer li{margin:9px 0 !important;font-size:13.5px !important}
-#footer a{color:rgba(255,255,255,0.75) !important;transition:color 0.2s !important}
+#footer a{color:rgba(255,255,255,0.92) !important;transition:color 0.2s !important}
 #footer a:hover{color:#fff !important}
-#footer p{color:rgba(255,255,255,0.75) !important;font-size:13.5px !important;line-height:1.65 !important}
+#footer p{color:rgba(255,255,255,0.92) !important;font-size:13.5px !important;line-height:1.65 !important}
+#footer span{color:rgba(255,255,255,0.92) !important}
 
 /* Footer Images and SVGs - Fix Gigantic Icons */
 #footer svg{width:16px !important;height:16px !important;max-width:16px !important;max-height:16px !important;flex-shrink:0 !important;display:inline-block !important;fill:currentColor !important}
@@ -738,7 +739,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 #footer form{position:relative !important;width:100% !important;max-width:300px !important;margin-bottom:18px !important}
 #footer input[type="email"]{width:100% !important;background:rgba(255,255,255,0.08) !important;border:1px solid rgba(255,255,255,0.2) !important;border-radius:12px !important;padding:10px 42px 10px 14px !important;font-size:13.5px !important;color:#fff !important;outline:none !important}
 [dir="rtl"] #footer input[type="email"]{padding:10px 14px 10px 42px !important}
-#footer input[type="email"]::placeholder{color:rgba(255,255,255,0.5) !important}
+#footer input[type="email"]::placeholder{color:rgba(255,255,255,0.75) !important}
 #footer input[type="email"]:focus{border-color:#38BDF8 !important;background:rgba(255,255,255,0.12) !important}
 #footer button[type="submit"]{position:absolute !important;top:50% !important;transform:translateY(-50%) !important;background:none !important;border:none !important;cursor:pointer !important;padding:6px !important;color:#38BDF8 !important;display:flex !important;align-items:center !important;justify-content:center !important}
 [dir="rtl"] #footer button[type="submit"]{left:8px !important;right:auto !important}
@@ -747,7 +748,7 @@ p,q,li,.desc,.fit{text-wrap:balance}
 
 /* Footer Bottom */
 #footer .border-t{border-top:1px solid rgba(255,255,255,0.12) !important;padding-top:24px !important;margin-top:12px !important;display:flex !important;justify-content:space-between !important;align-items:center !important;flex-wrap:wrap !important;gap:16px !important}
-#footer .border-t p{color:rgba(255,255,255,0.65) !important;font-size:13px !important;margin:0 !important}
+#footer .border-t p{color:rgba(255,255,255,0.85) !important;font-size:13px !important;margin:0 !important}
 #footer .store-badge{height:42px !important;width:auto !important;border-radius:8px !important;display:inline-block !important}
 
 /* Footer Responsive */
@@ -771,12 +772,12 @@ p,q,li,.desc,.fit{text-wrap:balance}
 /* Final CTA */
 .final{background:var(--navy);color:#fff;border-radius:20px;padding:32px 20px;text-align:center;margin-top:36px}
 .final h2{color:#fff;font-size:24px}
-.final .pts{margin-top:8px;font-size:14px;color:rgba(255,255,255,0.85);opacity:.85;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px}
+.final .pts{margin-top:8px;font-size:14px;color:#ffffff;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px}
 .final .pts span{white-space:nowrap;color:#fff}
 .final .stores{justify-content:center;margin-top:16px}
 .final .store-badge-img{border:1px solid #fff;border-radius:8px}
 .final .sb{border-color:#fff}
-.final .contact-line{margin-top:16px;font-size:13px;color:rgba(255,255,255,0.85);opacity:.85}
+.final .contact-line{margin-top:16px;font-size:13.5px;color:#ffffff}
 .final .contact-line a{color:#fff;text-decoration:underline;white-space:nowrap;font-weight:600;min-height:44px;display:inline-flex;align-items:center;padding:4px 8px}
 
 /* Footer */
@@ -826,7 +827,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   line-height:1.3;
 }
 .sticky-mobile-cta-btn{
-  background:linear-gradient(135deg,#0ea5e9,#0284c7);
+  background:linear-gradient(135deg,#0369a1,#075985);
   color:#ffffff !important;
   padding:12px 22px;
   min-height:48px;
@@ -834,7 +835,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   font-weight:700;
   font-size:13.5px;
   text-decoration:none;
-  box-shadow:0 4px 14px rgba(14,165,233,0.4);
+  box-shadow:0 4px 14px rgba(3,105,161,0.35);
   white-space:nowrap;
   display:inline-flex;
   align-items:center;
@@ -1087,7 +1088,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
 <body>
 
   <!-- Skip Link for Accessibility -->
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[9999] focus:bg-[#027BC0] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[9999] focus:bg-[#01659f] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none">
     {{ $isRtl ? 'تخطي إلى المحتوى الرئيسي' : 'Skip to main content' }}
   </a>
 

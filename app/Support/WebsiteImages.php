@@ -36,7 +36,7 @@ class WebsiteImages
     }
 
     /** Read-only: rendering never resizes images or changes the original. */
-    public static function attributes(?string $url): array
+    public static function attributes(?string $url, bool $autoPrepare = true): array
     {
         try {
             $source = self::source($url);
@@ -46,7 +46,12 @@ class WebsiteImages
             [$relative, $path, $directory] = $source;
             $disk = Storage::disk('public');
             if (! $disk->exists($directory.'/manifest.json')) {
-                return [];
+                if ($autoPrepare) {
+                    self::prepare($relative);
+                }
+                if (! $disk->exists($directory.'/manifest.json')) {
+                    return [];
+                }
             }
             $data = json_decode($disk->get($directory.'/manifest.json'), true, 512, JSON_THROW_ON_ERROR);
             if (($data['version'] ?? 0) !== self::VERSION || $data['size'] !== filesize($path) || $data['mtime'] !== filemtime($path)) {
@@ -88,7 +93,7 @@ class WebsiteImages
             if (! $source || ! function_exists('imagewebp')) {
                 return false;
             }
-            if (self::attributes($url)) {
+            if (self::attributes($url, false)) {
                 return true;
             }
             [$relative, $path, $directory] = $source;

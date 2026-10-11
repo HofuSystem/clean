@@ -54,7 +54,7 @@
     }
     .mobile-action-btn:hover {
         background: #F1F5F9;
-        color: #0284c7;
+        color: #0369a1;
         border-color: #CBD5E1;
     }
     .mobile-action-btn:active {
@@ -161,18 +161,18 @@
             </a>
 
             <div id="nav-pill-menu" class="hidden xl:flex items-center gap-1 2xl:gap-1.5 bg-gray-50/90 px-2 py-1 2xl:px-2.5 2xl:py-1.5 rounded-full border border-gray-200/60 shadow-sm shrink-0" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" style="direction: {{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }} !important;">
-                <a href="{{ route('home') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('home') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('home') }}</a>
-                <a href="{{ route('services') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('services*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('services') }}</a>
-                <a href="{{ route('pricing') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('pricing') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'الأسعار' : 'Pricing' }}</a>
-                <a href="{{ route('coverage') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('coverage') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'التغطية' : 'Coverage' }}</a>
-                <a href="{{ route('why-us') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('why-us') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('why_us') }}</a>
-                <a href="{{ route('b2b') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('b2b') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('business') }}</a>
-                <a href="{{ route('gifts') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 {{ Route::is('gifts*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">
+                <a href="{{ route('home') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('home') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('home') }}</a>
+                <a href="{{ route('services') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('services*') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('services') }}</a>
+                <a href="{{ route('pricing') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('pricing') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'الأسعار' : 'Pricing' }}</a>
+                <a href="{{ route('coverage') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('coverage') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ app()->getLocale() === 'ar' ? 'التغطية' : 'Coverage' }}</a>
+                <a href="{{ route('why-us') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('why-us') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('why_us') }}</a>
+                <a href="{{ route('b2b') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('b2b') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('business') }}</a>
+                <a href="{{ route('gifts') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold inline-flex items-center gap-1 {{ Route::is('gifts*') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">
                     <span>{{ app()->getLocale() === 'ar' ? 'الورود والهدايا' : 'Flowers & Gifts' }}</span>
                     <span class="nav-new-badge" style="background-color: #E5484D !important; color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border-radius: 999px !important; padding: 1px 7px !important; margin-inline-start: 5px !important; display: inline-flex !important; align-items: center !important; line-height: 1.5 !important; white-space: nowrap !important;">{{ app()->getLocale() === 'ar' ? 'جديد' : 'New' }}</span>
                 </a>
-                <a href="{{ route('blog') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('blog*') || Route::is('blogs*') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('blog') }}</a>
-                <a href="{{ route('faq') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('faq') ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-600 hover:text-brand-600' }} transition-all whitespace-nowrap">{{ trans('faq') }}</a>
+                <a href="{{ route('blog') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('blog*') || Route::is('blogs*') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('blog') }}</a>
+                <a href="{{ route('faq') }}" class="px-2.5 2xl:px-3 py-1.5 rounded-full text-xs font-bold {{ Route::is('faq') ? 'bg-white text-brand-700 shadow-sm' : 'text-gray-700 hover:text-brand-700' }} transition-all whitespace-nowrap">{{ trans('faq') }}</a>
             </div>
 
             <div class="flex items-center gap-2 sm:gap-2 xl:gap-2.5 shrink-0">
@@ -213,7 +213,7 @@
                         {{ trans('login') }}
                     </a>
                 @endif
-                <a href="{{ route('contact') }}" class="hidden sm:inline-flex items-center justify-center border border-brand-600 text-brand-600 hover:bg-brand-50 px-3 2xl:px-3.5 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap shrink-0">
+                <a href="{{ route('contact') }}" class="hidden sm:inline-flex items-center justify-center border border-brand-700 text-brand-700 hover:bg-brand-50 px-3 2xl:px-3.5 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap shrink-0">
                     {{ trans('contact') }}
                 </a>
                 
@@ -253,62 +253,62 @@
 
             {{-- Compact Nav Links with Crisp Inline SVGs --}}
             <div class="divide-y divide-slate-100">
-                <a href="{{ route('home') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('home') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>
+                <a href="{{ route('home') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('home') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>
                     <span>{{ trans('home') }}</span>
                 </a>
-                <a href="{{ route('services') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('services*') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <a href="{{ route('services') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('services*') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                     <span>{{ trans('services') }}</span>
                 </a>
-                <a href="{{ route('pricing') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('pricing') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                <a href="{{ route('pricing') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('pricing') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                     <span>{{ app()->getLocale() === 'ar' ? 'الأسعار' : 'Pricing' }}</span>
                 </a>
-                <a href="{{ route('coverage') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('coverage') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <a href="{{ route('coverage') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('coverage') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span>{{ app()->getLocale() === 'ar' ? 'التغطية' : 'Coverage' }}</span>
                 </a>
-                <a href="{{ route('why-us') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('why-us') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <a href="{{ route('why-us') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('why-us') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>{{ trans('why_us') }}</span>
                 </a>
-                <a href="{{ route('b2b') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('b2b') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <a href="{{ route('b2b') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('b2b') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span>{{ trans('business') }}</span>
                 </a>
-                <a href="{{ route('gifts') }}" class="flex items-center justify-between py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('gifts*') ? 'text-brand-600 bg-brand-50/70' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
+                <a href="{{ route('gifts') }}" class="flex items-center justify-between py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('gifts*') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
                     <span class="flex items-center gap-3">
                         <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 0H7a2 2 0 00-2 2v3a2 2 0 002 2h10a2 2 0 002-2v-3a2 2 0 00-2-2h-5z"/></svg>
                         <span>{{ app()->getLocale() === 'ar' ? 'الورود والهدايا' : 'Flowers & Gifts' }}</span>
                     </span>
                     <span class="nav-new-badge">{{ app()->getLocale() === 'ar' ? 'جديد' : 'New' }}</span>
                 </a>
-                <a href="{{ route('blog') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('blog*') || Route::is('blogs*') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                <a href="{{ route('blog') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('blog*') || Route::is('blogs*') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
                     <span>{{ trans('blog') }}</span>
                 </a>
-                <a href="{{ route('faq') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('faq') ? 'text-brand-600 bg-brand-50/60' : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50' }} transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <a href="{{ route('faq') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold {{ Route::is('faq') ? 'text-brand-700 bg-brand-50' : 'text-slate-700 hover:text-brand-700 hover:bg-slate-50' }} transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>{{ trans('faq') }}</span>
                 </a>
                 @if(Route::is('b2b'))
-                <a href="{{ route('client.login') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-600 hover:bg-slate-50 transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                <a href="{{ route('client.login') }}" class="flex items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-brand-700 hover:bg-slate-50 transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                     <span>{{ trans('login') }}</span>
                 </a>
                 @endif
-                <a href="{{ route('contact') }}" class="flex sm:hidden items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold text-brand-600 hover:bg-brand-50 transition-colors">
-                    <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <a href="{{ route('contact') }}" class="flex sm:hidden items-center gap-3 py-2.5 px-2 rounded-lg text-sm font-semibold text-brand-700 hover:bg-brand-50 transition-colors">
+                    <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span>{{ trans('contact') }}</span>
                 </a>
             </div>
 
             {{-- Bottom Language Switcher --}}
             <div class="mt-4 pt-3 border-t border-slate-200/80">
-                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-600 transition-colors text-sm font-bold">
+                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 hover:bg-brand-50 text-slate-700 hover:text-brand-700 transition-colors text-sm font-bold">
                     <span class="flex items-center gap-2.5">
-                        <svg class="w-4 h-4 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                        <svg class="w-4 h-4 text-brand-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
                         <span>{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}</span>
                     </span>
                     <span class="text-xs uppercase bg-white border border-slate-200 px-2 py-0.5 rounded-md text-slate-600 font-extrabold">{{ $otherLocale }}</span>
