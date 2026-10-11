@@ -150,7 +150,7 @@ class Order extends CoreModel
             $join->on('orders.id', '=', 'or_delivery.order_id')
                  ->where('or_delivery.type', '=', 'delivery');
         })
-        ->select('orders.*', 'or_receiver.date as receiver_date', 'or_delivery.date as delivery_date');
+        ->select('orders.*', 'or_receiver.date as receiver_date', 'or_delivery.date as delivery_date', 'or_delivery.time as delivery_time');
 
         //filter text on  reference_id
         if ((request()->has("filters.reference_id")) and !empty(request("filters.reference_id"))) {

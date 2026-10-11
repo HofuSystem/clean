@@ -54,6 +54,30 @@ class GlobalModelObserver
         ];
     }
 
+    /**
+     * Replace malformed UTF-8 only in audit properties so logging cannot
+     * make a valid model operation fail during JSON encoding.
+     */
+    protected function sanitizeActivityValue(mixed $value): mixed
+    {
+        if (is_string($value)) {
+            if (function_exists('mb_scrub')) {
+                return mb_scrub($value, 'UTF-8');
+            }
+
+            $sanitized = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            return $sanitized === false ? '' : $sanitized;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $key => $item) {
+                $value[$key] = $this->sanitizeActivityValue($item);
+            }
+        }
+
+        return $value;
+    }
+
     public function created(Model $model)
     {
         $traceInfo = $this->getTraceInfo();
@@ -63,7 +87,7 @@ class GlobalModelObserver
         
         activity()
             ->performedOn($model)
-            ->withProperties($properties)
+            ->withProperties($this->sanitizeActivityValue($properties))
             ->tap(function (Activity $activity) use ($traceInfo) {
                 $activity->trace = $traceInfo;
             })
@@ -80,7 +104,7 @@ class GlobalModelObserver
         
         activity()
             ->performedOn($model)
-            ->withProperties($properties)
+            ->withProperties($this->sanitizeActivityValue($properties))
             ->tap(function (Activity $activity) use ($traceInfo) {
                 $activity->trace = $traceInfo;
             })
@@ -96,7 +120,7 @@ class GlobalModelObserver
         
         activity()
             ->performedOn($model)
-            ->withProperties($properties)
+            ->withProperties($this->sanitizeActivityValue($properties))
             ->tap(function (Activity $activity) use ($traceInfo) {
                 $activity->trace = $traceInfo;
             })
@@ -112,7 +136,7 @@ class GlobalModelObserver
         
         activity()
             ->performedOn($model)
-            ->withProperties($properties)
+            ->withProperties($this->sanitizeActivityValue($properties))
             ->tap(function (Activity $activity) use ($traceInfo) {
                 $activity->trace = $traceInfo;
             })
@@ -128,7 +152,7 @@ class GlobalModelObserver
         
         activity()
             ->performedOn($model)
-            ->withProperties($properties)
+            ->withProperties($this->sanitizeActivityValue($properties))
             ->tap(function (Activity $activity) use ($traceInfo) {
                 $activity->trace = $traceInfo;
             })

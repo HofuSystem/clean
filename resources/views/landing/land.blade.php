@@ -92,16 +92,22 @@
     $youtube = setting('youtube');
     $email = setting('email') ?: 'support@cleanstation.app';
 
-    $actualDesc = trim($metaDescription ?? '');
-    if (empty($actualDesc)) {
-        $actualDesc = $isRtl 
+    $actualDesc = trim((string) ($metaDescription ?? ''));
+    if ($actualDesc === '') {
+        $actualDesc = $isRtl
             ? 'حمل تطبيق كلين ستيشن الآن. خدمة غسيل وكوي الملابس والتنظيف الجاف وغسيل السجاد في الرياض، غسيل منفصل 100% مع استلام وتسليم عند الباب وتوصيل مجاني للطلبات فوق 100 ريال.'
             : 'Download Clean Station App. Professional laundry, dry cleaning, and carpet cleaning in Riyadh. 100% separate washing with door-to-door pickup and free delivery on orders over 100 SAR.';
     }
 
-    $seoTitle = trim($metaTitle ?? '') ?: ($title ?? ($isRtl 
-        ? 'كلين ستيشن | أسرع تطبيق غسيل ملابس ومفروشات مع استلام وتوصيل بالمملكة' 
-        : 'Clean Station | Fastest Laundry & Upholstery App - Pickup & Delivery KSA'));
+    $seoTitle = trim((string) ($metaTitle ?? ''));
+    if ($seoTitle === '') {
+        $seoTitle = trim((string) ($title ?? ''));
+    }
+    if ($seoTitle === '') {
+        $seoTitle = $isRtl
+            ? 'كلين ستيشن | أسرع تطبيق غسيل ملابس ومفروشات مع استلام وتوصيل بالمملكة'
+            : 'Clean Station | Fastest Laundry & Upholstery App - Pickup & Delivery KSA';
+    }
 
     if ($lang === 'ar') {
         $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
