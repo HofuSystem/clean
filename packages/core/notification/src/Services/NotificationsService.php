@@ -5,6 +5,7 @@ namespace Core\Notification\Services;
 use Core\Comments\Services\CommentingService;
 use Core\Notification\Models\Notification;
 use Core\Notification\DataResources\NotificationsResource;
+use Illuminate\Support\Facades\DB;
 
 class NotificationsService
 {
@@ -136,7 +137,29 @@ class NotificationsService
         if ($pendingUsers->count() > 0) {
             \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $pendingUsers);
         }
+        $this->completeLegacyRetryIfSettled($notification);
         return $pendingUsers->count();
+    }
+
+    protected function completeLegacyRetryIfSettled(Notification $notification): void
+    {
+        if (config('notification.direct_fcm_enabled', false)
+            || $notification->processing_status !== 'processing') {
+            return;
+        }
+
+        $hasPendingUsers = DB::table('users_notifications')
+            ->where('notifications_type', Notification::class)
+            ->where('notifications_id', $notification->id)
+            ->where('status', 'pending')
+            ->exists();
+
+        if (!$hasPendingUsers) {
+            $notification->update([
+                'processing_status' => 'completed',
+                'completed_at' => now(),
+            ]);
+        }
     }
 
     public function resendUser(int $id, int $userId){
@@ -149,6 +172,7 @@ class NotificationsService
         if ($user->count() > 0) {
             \Core\Notification\Helpers\NotificationsManger::getInstance()->resendToUsers($notification, $user);
         }
+        $this->completeLegacyRetryIfSettled($notification);
         return $user->count();
     }
 }
