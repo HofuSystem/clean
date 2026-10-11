@@ -138,6 +138,38 @@ $allowedServiceSlugs = ['wash-and-iron', 'dry-cleaning', 'carpet-upholstery-clea
         <priority>0.60</priority>
     </url>
 
+    {{-- ===== App Features ===== --}}
+    <url>
+        <loc>https://cleanstation.app/ar/app-features</loc>
+        <xhtml:link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar/app-features"/>
+        <xhtml:link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en/app-features"/>
+        <changefreq>monthly</changefreq>
+        <priority>0.65</priority>
+    </url>
+    <url>
+        <loc>https://cleanstation.app/en/app-features</loc>
+        <xhtml:link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar/app-features"/>
+        <xhtml:link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en/app-features"/>
+        <changefreq>monthly</changefreq>
+        <priority>0.60</priority>
+    </url>
+
+    {{-- ===== Gifts ===== --}}
+    <url>
+        <loc>https://cleanstation.app/ar/gifts</loc>
+        <xhtml:link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar/gifts"/>
+        <xhtml:link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en/gifts"/>
+        <changefreq>monthly</changefreq>
+        <priority>0.65</priority>
+    </url>
+    <url>
+        <loc>https://cleanstation.app/en/gifts</loc>
+        <xhtml:link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar/gifts"/>
+        <xhtml:link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en/gifts"/>
+        <changefreq>monthly</changefreq>
+        <priority>0.60</priority>
+    </url>
+
     {{-- ===== Contact ===== --}}
     <url>
         <loc>https://cleanstation.app/ar/contact-us</loc>
