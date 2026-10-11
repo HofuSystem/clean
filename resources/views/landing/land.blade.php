@@ -18,6 +18,7 @@
         $heroSec = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
         $heroImageUrl = $heroSec ? $heroSec->image_url : null;
     }
+    $heroResponsive = !empty($heroImageUrl) ? \App\Support\WebsiteImages::attributes($heroImageUrl) : [];
 
     if (!isset($bags)) {
         $bagCat = \Core\Categories\Models\Category::with(['products' => function ($q) {
@@ -145,9 +146,18 @@
 <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
 
 {{-- Hreflang – bilingual site (AR default, EN alternate) --}}
+<link rel="alternate" hreflang="ar" href="https://cleanstation.app/ar{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
 <link rel="alternate" hreflang="ar-SA" href="https://cleanstation.app/ar{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+<link rel="alternate" hreflang="en" href="https://cleanstation.app/en{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
 <link rel="alternate" hreflang="en-SA" href="https://cleanstation.app/en{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
-<link rel="alternate" hreflang="x-default" href="https://cleanstation.app{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+<link rel="alternate" hreflang="x-default" href="https://cleanstation.app/ar{{ $pathSuffix !== '/' ? $pathSuffix : '' }}" />
+
+{{-- Preload LCP Hero Image for 100% Performance Score --}}
+@if(!empty($heroImageUrl))
+<link rel="preload" as="image" href="{{ $heroResponsive['preload'] ?? $heroResponsive['src'] ?? $heroImageUrl }}" fetchpriority="high" @if(!empty($heroResponsive['srcset'])) imagesrcset="{{ $heroResponsive['srcset'] }}" imagesizes="(min-width: 768px) 265px, 220px" @endif>
+@else
+<link rel="preload" as="image" href="{{ asset('assets/images/app-screen.png') }}" fetchpriority="high">
+@endif
 
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
@@ -475,8 +485,11 @@
 </script>
 @endif
 
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 @vite(['resources/css/landing.css'])
 <style>
 :root{
@@ -510,7 +523,7 @@ img{max-width:100%;display:block}
 /* Page Containers */
 .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
 section{padding:56px 0}
-.kicker{display:inline-block;font-size:13px;font-weight:600;color:var(--blue);background:var(--sky-soft);padding:3px 12px;border-radius:999px;margin-bottom:8px}
+.kicker{display:inline-block;font-size:13px;font-weight:600;color:#01659f;background:var(--sky-soft);padding:3px 12px;border-radius:999px;margin-bottom:8px}
 h1{font-size:42px;line-height:1.3;color:var(--navy);font-weight:700}
 h2{font-size:28px;line-height:1.4;color:var(--navy);font-weight:700}
 .sub{color:var(--muted);margin-top:6px;font-size:15px}
@@ -800,7 +813,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   text-align:start;
 }
 .sticky-mobile-cta .stars{
-  color:#fbbf24;
+  color:#b45309;
   font-size:11px;
   letter-spacing:2px;
   margin-bottom:2px;
@@ -1120,10 +1133,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
         <!-- Official App Store & Google Play Badges -->
         <div class="stores">
           <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
-            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img" width="161" height="48" fetchpriority="high" decoding="async">
           </a>
           <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
-            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img" width="144" height="48" fetchpriority="high" decoding="async">
           </a>
         </div>
       </div>
@@ -1134,9 +1147,14 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           <div class="phone-dynamic-island"></div>
           <div class="phone-screen">
             @if(!empty($heroImageUrl))
-              <img src="{{ $heroImageUrl }}" onerror="this.onerror=null;this.src='{{ asset('assets/images/app-screen.png') }}';" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
+              <img src="{{ $heroResponsive['src'] ?? $heroImageUrl }}"
+                   @if(!empty($heroResponsive['srcset'])) srcset="{{ $heroResponsive['srcset'] }}" sizes="(min-width: 768px) 265px, 220px" @endif
+                   width="265" height="510"
+                   fetchpriority="high" loading="eager" decoding="async"
+                   onerror="this.onerror=null;this.src='{{ asset('assets/images/app-screen.png') }}';"
+                   alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
             @else
-              <img src="{{ asset('assets/images/app-screen.png') }}" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
+              <img src="{{ asset('assets/images/app-screen.png') }}" width="265" height="510" fetchpriority="high" loading="eager" decoding="async" alt="{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}">
             @endif
           </div>
         </div>
@@ -1460,10 +1478,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
       </div>
       <div class="stores" style="justify-content:center;margin-top:28px">
         <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
-          <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
+          <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img" width="161" height="48" loading="lazy" decoding="async">
         </a>
         <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
-          <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
+          <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img" width="144" height="48" loading="lazy" decoding="async">
         </a>
       </div>
     </div>
@@ -1590,10 +1608,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
         </div>
         <div class="stores" style="justify-content:center">
           <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
-            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/app-store-ar.svg' : 'assets/store-badges/app-store.svg') }}" alt="App Store" class="store-badge-img" width="144" height="48" loading="lazy" decoding="async">
           </a>
           <a href="{{ $gPlayLink }}" target="_blank" rel="noopener" class="store-link" aria-label="Google Play">
-            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img">
+            <img src="{{ asset($isRtl ? 'assets/store-badges/google-play-ar.png' : 'assets/store-badges/google-play.svg') }}" alt="Google Play" class="store-badge-img" width="161" height="48" loading="lazy" decoding="async">
           </a>
         </div>
         <p class="contact-line">
