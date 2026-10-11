@@ -244,18 +244,7 @@ class NotificationsManger
             $targetedIds = $targetedUsers->pluck('id')->toArray();
             $notification->users()->sync($targetedIds);
 
-            foreach ($userEligibility as $userId => $eligibility) {
-                DB::table('users_notifications')
-                    ->where('notifications_type', Notification::class)
-                    ->where('notifications_id', $notification->id)
-                    ->where('user_id', $userId)
-                    ->update([
-                        'eligibility_status' => $eligibility['status'],
-                        'eligibility_reason' => $eligibility['reason'],
-                        'status' => $eligibility['status'] === 'eligible' ? 'pending' : 'failed',
-                        'response' => $eligibility['reason'] ?: 'pending device dispatch',
-                    ]);
-            }
+            $this->updateEligibilityStatuses($notification, $userEligibility);
         } else {
             // Non-FCM Path (WhatsApp, SMS, Email):
             // Zero FCM device token evaluation or dependency
@@ -274,11 +263,11 @@ class NotificationsManger
             $targetedIds = $targetedUsers->pluck('id')->toArray();
             $notification->users()->sync($targetedIds);
 
-            foreach ($targetedIds as $uId) {
+            foreach (array_chunk($targetedIds, 500) as $userIdChunk) {
                 DB::table('users_notifications')
                     ->where('notifications_type', Notification::class)
                     ->where('notifications_id', $notification->id)
-                    ->where('user_id', $uId)
+                    ->whereIn('user_id', $userIdChunk)
                     ->update([
                         'eligibility_status' => 'eligible',
                         'eligibility_reason' => null,
@@ -351,6 +340,48 @@ class NotificationsManger
                 ->where('notifications_type', Notification::class)
                 ->where('notifications_id', $notification->id)
                 ->update(['status' => 'sent']);
+        }
+    }
+
+    /**
+     * Persist recipient eligibility in bounded bulk updates instead of one
+     * SQL update per user. Large campaigns otherwise exceed worker runtimes.
+     */
+    protected function updateEligibilityStatuses(Notification $notification, array $userEligibility): void
+    {
+        $groups = [];
+
+        foreach ($userEligibility as $userId => $eligibility) {
+            $status = $eligibility['status'] ?? 'legacy_unknown';
+            $reason = $eligibility['reason'] ?? null;
+            $key = hash('sha256', serialize([$status, $reason]));
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [
+                    'eligibility_status' => $status,
+                    'eligibility_reason' => $reason,
+                    'status' => $status === 'eligible' ? 'pending' : 'failed',
+                    'response' => $reason ?: 'pending device dispatch',
+                    'user_ids' => [],
+                ];
+            }
+
+            $groups[$key]['user_ids'][] = (int) $userId;
+        }
+
+        foreach ($groups as $group) {
+            foreach (array_chunk($group['user_ids'], 500) as $userIdChunk) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->whereIn('user_id', $userIdChunk)
+                    ->update([
+                        'eligibility_status' => $group['eligibility_status'],
+                        'eligibility_reason' => $group['eligibility_reason'],
+                        'status' => $group['status'],
+                        'response' => $group['response'],
+                    ]);
+            }
         }
     }
 

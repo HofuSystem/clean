@@ -192,9 +192,9 @@
                                     <div class="mb-2" data-metric="Legacy Topic Subscription">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span class="text-muted">مسار الإرسال القديم:</span>
-                                            <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">تمت المعالجة</span>
+                                            <span class="badge bg-label-primary badge-light-primary fs-7 fw-bold">لا يوجد عدد إرسال محفوظ</span>
                                         </div>
-                                        <div class="text-muted fs-8 mt-1">الوصول الفعلي غير قابل للقياس من الخادم</div>
+                                        <div class="text-muted fs-8 mt-1">المسار القديم لا يؤكد وصول الإشعار إلى الجهاز</div>
                                     </div>
                                 @endif
                                 <div class="d-flex justify-content-between mb-2">

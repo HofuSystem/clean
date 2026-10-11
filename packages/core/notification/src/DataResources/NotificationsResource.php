@@ -67,7 +67,7 @@ class NotificationsResource extends JsonResource
                     $intCount = (int) $rawCount;
                     $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="هذا يعني قبول طلب الإرسال من المسار القديم، وليس إثبات وصول أو فتح الإشعار."><i class="fas fa-layer-group me-1"></i>قبول الإرسال القديم: ' . number_format($intCount) . '</span>';
                 } else {
-                    $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="الوصول الفعلي غير قابل للقياس من الخادم"><i class="fas fa-layer-group me-1"></i>مسار الإرسال القديم: تمت المعالجة</span>';
+                    $acceptedDisplay = '<span class="badge bg-label-primary badge-light-primary fs-7" data-metric="Legacy Topic Subscription" title="المسار القديم لا يؤكد وصول الإشعار إلى الجهاز"><i class="fas fa-layer-group me-1"></i>مسار الإرسال القديم: لا يوجد عدد محفوظ</span>';
                 }
             }
         } elseif (in_array($resolvedChannel, [

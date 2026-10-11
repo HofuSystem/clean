@@ -31,4 +31,19 @@ class SendNotificationJob implements ShouldQueue
     {
         NotificationsManger::getInstance()->sendNotification($this->notification);
     }
+
+    /**
+     * Mark campaigns that exhaust their queue attempts as failed instead of
+     * leaving the dashboard at "processing" indefinitely.
+     */
+    public function failed(?\Throwable $exception): void
+    {
+        Notification::query()
+            ->whereKey($this->notification->getKey())
+            ->where('processing_status', 'processing')
+            ->update([
+                'processing_status' => 'failed',
+                'completed_at' => now(),
+            ]);
+    }
 }
