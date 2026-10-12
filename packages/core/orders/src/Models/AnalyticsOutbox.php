@@ -2,9 +2,9 @@
 
 namespace Core\Orders\Models;
 
-use Core\Settings\Models\CoreModel;
+use Illuminate\Database\Eloquent\Model;
 
-class AnalyticsOutbox extends CoreModel
+class AnalyticsOutbox extends Model
 {
     protected $table = 'analytics_outbox';
 
