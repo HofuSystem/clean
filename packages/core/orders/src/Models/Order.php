@@ -473,6 +473,11 @@ class Order extends CoreModel
         return $this->hasMany(OrderTransaction::class, 'order_id', 'id');
     }
 
+    public function analyticsContext()
+    {
+        return $this->hasOne(OrderAnalyticsContext::class, 'order_id', 'id');
+    }
+
     public function invoice()
     {
         return $this->hasOne(Invoice::class, 'order_id', 'id');

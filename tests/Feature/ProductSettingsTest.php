@@ -488,6 +488,27 @@ class ProductSettingsTest extends TestCase
             'wallet_used' => false,
             'wallet_balance' => 0,
             'total_after_wallet' => 125,
+            'analytics_context' => [
+                'app_instance_id' => 'c4d5e6f7-test-instance',
+                'session_id' => 1712345678,
+                'platform' => 'ios',
+                'branch_first' => [
+                    'channel' => 'facebook',
+                    'feature' => 'cpc',
+                    'campaign' => 'ramadan_2026',
+                    'click_id' => 'first-click',
+                    'clicked_branch_link' => true,
+                    'click_timestamp' => 1712345600,
+                ],
+                'branch_latest' => [
+                    'channel' => 'snapchat',
+                    'feature' => 'paid',
+                    'campaign' => 'eid_offer',
+                    'click_id' => 'latest-click',
+                    'clicked_branch_link' => true,
+                    'click_timestamp' => 1712345650,
+                ],
+            ],
             'products' => [
                 [
                     'id' => $product->id,
@@ -511,6 +532,10 @@ class ProductSettingsTest extends TestCase
         $order = \Core\Orders\Models\Order::where('client_id', $user->id)->first();
         $this->assertNotNull($order);
         $this->assertCount(1, $order->items);
+        $this->assertSame('c4d5e6f7-test-instance', $order->analyticsContext->app_instance_id);
+        $this->assertSame(2, $order->analyticsContext->schema_version);
+        $this->assertSame('facebook', $order->analyticsContext->branch_first['channel']);
+        $this->assertSame('snapchat', $order->analyticsContext->branch_latest['channel']);
 
         $item = $order->items->first();
         $this->assertEquals($product->id, $item->product_id);

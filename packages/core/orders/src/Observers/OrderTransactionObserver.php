@@ -68,6 +68,44 @@ class OrderTransactionObserver
     {
         if($orderTransaction->order){
             OrderTransactionsService::updateOrderPaid($orderTransaction->order);
+
+            // Cash rows are created by driver/technician completion endpoints,
+            // where the operator confirms collection. Keep this idempotent by
+            // keying the analytics event to the immutable ledger row.
+            if ($orderTransaction->wasRecentlyCreated && $orderTransaction->type === 'cash') {
+                $order = $orderTransaction->order->fresh();
+                if ($order) {
+                    $outbox = app(\Core\Orders\Services\AnalyticsOutboxService::class);
+                    if ((float) $order->paid >= (float) $order->total_price) {
+                        $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order);
+                        $outbox->record(
+                            'purchase',
+                            $order,
+                            $purchase['ready']
+                                ? $purchase['payload']
+                                : ['_analytics_blocked_reason' => $purchase['reason']],
+                            'purchase'
+                        );
+                    }
+                }
+            }
+
+            if ($orderTransaction->wasRecentlyCreated
+                && in_array($orderTransaction->type, ['wallet', 'points'], true)
+                && (float) $orderTransaction->amount > 0) {
+                $order = $orderTransaction->order->fresh();
+                if ($order && (float) $order->paid >= (float) $order->total_price) {
+                    $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order);
+                    app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                        'purchase',
+                        $order,
+                        $purchase['ready']
+                            ? $purchase['payload']
+                            : ['_analytics_blocked_reason' => $purchase['reason']],
+                        'purchase'
+                    );
+                }
+            }
         }
     }
 

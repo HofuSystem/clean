@@ -167,6 +167,26 @@ class CreateOrderRequest extends FormRequest
       'online_payment_method'         => 'nullable',
       'city_id'                       => 'nullable|numeric|exists:cities,id',
       'district_id'                   => 'nullable|numeric|exists:districts,id',
+
+      // Optional V2 attribution context. Older app versions do not send this object.
+      'analytics_context'                         => 'nullable|array:app_instance_id,session_id,platform,branch_first,branch_latest',
+      'analytics_context.app_instance_id'         => 'nullable|string|max:255',
+      'analytics_context.session_id'               => 'nullable|integer|min:0',
+      'analytics_context.platform'                 => 'nullable|string|in:ios,android',
+      'analytics_context.branch_first'             => 'nullable|array:channel,feature,campaign,click_id,clicked_branch_link,click_timestamp',
+      'analytics_context.branch_first.channel'     => 'nullable|string|max:255',
+      'analytics_context.branch_first.feature'     => 'nullable|string|max:255',
+      'analytics_context.branch_first.campaign'    => 'nullable|string|max:255',
+      'analytics_context.branch_first.click_id'    => 'nullable|string|max:255',
+      'analytics_context.branch_first.clicked_branch_link' => 'nullable|boolean',
+      'analytics_context.branch_first.click_timestamp' => 'nullable|integer|min:0',
+      'analytics_context.branch_latest'            => 'nullable|array:channel,feature,campaign,click_id,clicked_branch_link,click_timestamp',
+      'analytics_context.branch_latest.channel'    => 'nullable|string|max:255',
+      'analytics_context.branch_latest.feature'    => 'nullable|string|max:255',
+      'analytics_context.branch_latest.campaign'   => 'nullable|string|max:255',
+      'analytics_context.branch_latest.click_id'   => 'nullable|string|max:255',
+      'analytics_context.branch_latest.clicked_branch_link' => 'nullable|boolean',
+      'analytics_context.branch_latest.click_timestamp' => 'nullable|integer|min:0',
     ];
     if($this->pay_type == 'card' && $this->status != 'pending_payment'){
       $data['transaction_id'] .= '|required';

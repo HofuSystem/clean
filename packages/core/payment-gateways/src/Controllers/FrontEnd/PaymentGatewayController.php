@@ -312,6 +312,28 @@ class PaymentGatewayController extends Controller
         $transaction->status = 'success';
         $transaction->save();
 
+        if (in_array($transaction->for, ['order_payment', 'fast_payment'], true)) {
+            $order = Order::find($requestData['order_id'] ?? null);
+            if ($order) {
+                $outbox = app(\Core\Orders\Services\AnalyticsOutboxService::class);
+                $outbox->record('payment_succeeded', $order, [
+                    'payment_type' => $this->analyticsPaymentType($transaction->payment_method),
+                    'value' => (float) $transaction->amount,
+                ], 'payment:' . $transaction->id);
+                if ((float) $order->paid >= (float) $order->total_price) {
+                    $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order);
+                    $outbox->record(
+                        'purchase',
+                        $order,
+                        $purchase['ready']
+                            ? $purchase['payload']
+                            : ['_analytics_blocked_reason' => $purchase['reason']],
+                        'purchase'
+                    );
+                }
+            }
+        }
+
         return $this->successfulPaymentRedirect($transaction);
     }
 
@@ -332,11 +354,17 @@ class PaymentGatewayController extends Controller
         $transaction->status = 'failed';
         $transaction->save();
 
-        if ($transaction->for == 'order_payment') {
+        if (in_array($transaction->for, ['order_payment', 'fast_payment'], true)) {
             $requestData = json_decode($transaction->request_data, true);
             $order = Order::where('id', $requestData['order_id'])->lockForUpdate()->first();
-            if ($order && $order->status == 'pending_payment') {
+            if ($order && $transaction->for === 'order_payment' && $order->status == 'pending_payment') {
                 $order->update(['status' => 'failed_payment']);
+            }
+            if ($order) {
+                app(\Core\Orders\Services\AnalyticsOutboxService::class)->record('payment_failed', $order, [
+                    'payment_type' => $this->analyticsPaymentType($transaction->payment_method),
+                    'value' => (float) $transaction->amount,
+                ], 'payment:' . $transaction->id);
             }
         }
         return redirect()->route('payment-gateway.web', [
@@ -344,6 +372,18 @@ class PaymentGatewayController extends Controller
             'status' => 'failed',
             'message' => $message,
         ]);
+    }
+
+    private function analyticsPaymentType(?string $method): string
+    {
+        $method = strtolower((string) $method);
+        if (str_contains($method, 'apple')) {
+            return 'apple_pay';
+        }
+        if (str_contains($method, 'wallet')) {
+            return 'wallet';
+        }
+        return 'online_card';
     }
 
     /**

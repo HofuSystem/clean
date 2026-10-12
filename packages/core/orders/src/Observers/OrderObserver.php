@@ -48,7 +48,37 @@ class OrderObserver
      */
     public function updated(Order $order)
     {
+        if (! $order->wasChanged('status')) {
+            return;
+        }
 
+        $eventName = match ($order->status) {
+            'order_has_been_delivered_to_admin' => 'order_collected',
+            'service_started', 'started' => 'order_processing',
+            'delivered' => 'order_delivered',
+            'canceled' => 'order_cancelled',
+            default => null,
+        };
+
+        if ($eventName) {
+            $parameters = [];
+            if ($eventName === 'order_cancelled') {
+                $rawReason = trim((string) $order->admin_cancel_reason);
+                $knownReasons = array_unique(array_merge(
+                    array_keys(\Core\Orders\Services\OrdersService::issues()),
+                    array_values(\Core\Orders\Services\OrdersService::issues())
+                ));
+                // Cancellation text is free-form in the admin API and may contain
+                // personal details. Send only a known reason category.
+                $parameters['cancel_reason'] = in_array($rawReason, $knownReasons, true) ? $rawReason : 'other';
+            }
+            app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                $eventName,
+                $order,
+                $parameters,
+                'status:' . $order->status
+            );
+        }
     }
     /**
      * Handle the Order "saving" event.

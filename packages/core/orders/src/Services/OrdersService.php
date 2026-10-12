@@ -14,6 +14,7 @@ use Core\Coupons\Models\ClientCoupon;
 use Core\Coupons\Models\Coupon;
 use Core\Coupons\Services\CouponsService;
 use Core\Orders\Models\Order;
+use Core\Orders\Models\OrderAnalyticsContext;
 use Core\Orders\DataResources\OrdersResource;
 use Core\Orders\Models\DeliveryPrice;
 use Core\Orders\Models\OrderItem;
@@ -193,6 +194,18 @@ class OrdersService
         $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
         if (!in_array($clientId, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
+        }
+        app(AnalyticsOutboxService::class)->record('order_created', $order);
+        if ($order->pay_type === 'wallet' && (float) $order->paid >= (float) $order->total_price) {
+            $purchase = app(PurchasePayloadBuilder::class)->build($order);
+            app(AnalyticsOutboxService::class)->record(
+                'purchase',
+                $order,
+                $purchase['ready']
+                    ? $purchase['payload']
+                    : ['_analytics_blocked_reason' => $purchase['reason']],
+                'purchase'
+            );
         }
         return $order;
     }
@@ -761,6 +774,11 @@ class OrdersService
     //api function
     public function createOrder($data, $products = [], $user = null)
     {
+        // Keep analytics metadata out of the financial/order attribute mass assignment.
+        // This field is optional so app versions that predate schema v2 remain compatible.
+        $analyticsContext = $data['analytics_context'] ?? null;
+        unset($data['analytics_context']);
+
         if ($data['type'] == 'clothes' || $data['type'] == 'fastorder') {
             $reference_id = 'L' . rand(100000000, 999999999);
         } else if ($data['type'] == 'services') {
@@ -917,6 +935,30 @@ class OrdersService
         $createOrderData['note'] = !empty($noteParts) ? implode(' - ', array_map('trim', $noteParts)) : null;
         $order = Order::create($createOrderData);
 
+        if (is_array($analyticsContext)) {
+            $branchKeys = ['channel', 'feature', 'campaign', 'click_id', 'clicked_branch_link', 'click_timestamp'];
+            $branchSnapshot = static function (string $key) use ($analyticsContext, $branchKeys) {
+                $snapshot = $analyticsContext[$key] ?? null;
+                if (!is_array($snapshot)) {
+                    return null;
+                }
+
+                return array_intersect_key($snapshot, array_flip($branchKeys));
+            };
+
+            OrderAnalyticsContext::create([
+                'order_id' => $order->id,
+                'schema_version' => 2,
+                'app_instance_id' => $analyticsContext['app_instance_id'] ?? null,
+                'session_id' => isset($analyticsContext['session_id']) ? (int) $analyticsContext['session_id'] : null,
+                'platform' => in_array($analyticsContext['platform'] ?? null, ['ios', 'android'], true)
+                    ? $analyticsContext['platform']
+                    : null,
+                'branch_first' => $branchSnapshot('branch_first'),
+                'branch_latest' => $branchSnapshot('branch_latest'),
+            ]);
+        }
+
 
         if ($data['pay_type'] == 'card') {
             $order->paid             = $data['paid'];
@@ -1050,6 +1092,7 @@ class OrdersService
         if (!in_array($order->client_id, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
         }
+        app(AnalyticsOutboxService::class)->record('order_created', $order);
         return $order;
     }
     public function storeOrderItems($orderId, $products)
