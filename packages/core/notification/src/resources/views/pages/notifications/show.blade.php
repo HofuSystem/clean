@@ -454,6 +454,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="eligibility-pagination" class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3" aria-live="polite"></div>
                         </div>
 
                         <!-- Tab 3: Device Results -->
@@ -512,6 +513,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="devices-pagination" class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3" aria-live="polite"></div>
                         </div>
 
                         <!-- Tab 4: Engagement -->
@@ -631,6 +633,32 @@
 $(document).ready(function() {
     let eligibilityLoaded = false;
     let devicesLoaded = false;
+    const pageSize = 15;
+
+    function renderPagination(container, page, pageSize, recordsFiltered, recordsTotal, onPage) {
+        const totalPages = Math.ceil(recordsFiltered / pageSize);
+        const from = recordsFiltered === 0 ? 0 : page * pageSize + 1;
+        const to = Math.min((page + 1) * pageSize, recordsFiltered);
+        const totalLabel = recordsFiltered === recordsTotal
+            ? `${recordsFiltered}`
+            : `${recordsFiltered} من أصل ${recordsTotal}`;
+
+        const controls = recordsFiltered === 0
+            ? ''
+            : `<div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-light-primary" data-page="${page - 1}" ${page <= 0 ? 'disabled' : ''}>السابق</button>
+                    <span class="text-muted fs-7">صفحة ${page + 1} من ${totalPages}</span>
+                    <button type="button" class="btn btn-sm btn-light-primary" data-page="${page + 1}" ${page + 1 >= totalPages ? 'disabled' : ''}>التالي</button>
+                </div>`;
+
+        $(container).html(`<span class="text-muted fs-7">عرض ${from}–${to} من ${totalLabel}</span>${controls}`);
+        $(container).find('button[data-page]').on('click', function() {
+            const requestedPage = Number($(this).data('page'));
+            if (Number.isInteger(requestedPage) && requestedPage >= 0 && requestedPage < totalPages) {
+                onPage(requestedPage);
+            }
+        });
+    }
 
     // Load Eligibility Table
     function loadEligibility(page = 0) {
@@ -642,8 +670,8 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 _token: "{{ csrf_token() }}",
-                start: page * 15,
-                length: 15,
+                start: page * pageSize,
+                length: pageSize,
                 filter_status: status,
                 search: search
             },
@@ -666,10 +694,12 @@ $(document).ready(function() {
                     html = '<tr><td colspan="8" class="text-center text-muted py-4">@lang("لا توجد سجلات مطابقة")</td></tr>';
                 }
                 $('#table-eligibility tbody').html(html);
+                renderPagination('#eligibility-pagination', page, pageSize, Number(res.recordsFiltered || 0), Number(res.recordsTotal || 0), loadEligibility);
                 eligibilityLoaded = true;
             },
             error: function() {
                 $('#table-eligibility tbody').html('<tr><td colspan="8" class="text-center text-danger py-4">@lang("خطأ في تحميل البيانات")</td></tr>');
+                $('#eligibility-pagination').empty();
             }
         });
     }
@@ -685,8 +715,8 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 _token: "{{ csrf_token() }}",
-                start: page * 15,
-                length: 15,
+                start: page * pageSize,
+                length: pageSize,
                 filter_status: status,
                 filter_platform: platform,
                 search: search
@@ -712,10 +742,12 @@ $(document).ready(function() {
                     html = '<tr><td colspan="10" class="text-center text-muted py-4">@lang("لا توجد أجهزة مطابقة")</td></tr>';
                 }
                 $('#table-devices tbody').html(html);
+                renderPagination('#devices-pagination', page, pageSize, Number(res.recordsFiltered || 0), Number(res.recordsTotal || 0), loadDevices);
                 devicesLoaded = true;
             },
             error: function() {
                 $('#table-devices tbody').html('<tr><td colspan="10" class="text-center text-danger py-4">@lang("خطأ في تحميل البيانات")</td></tr>');
+                $('#devices-pagination').empty();
             }
         });
     }
