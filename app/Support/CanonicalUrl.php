@@ -19,6 +19,11 @@ class CanonicalUrl
         ksort($query);
         $queryString = http_build_query($query, '', '&', PHP_QUERY_RFC3986);
 
-        return rtrim($baseUrl, '/').$request->getPathInfo().($queryString !== '' ? '?'.$queryString : '');
+        $path = $request->getPathInfo();
+        if ($path !== '/' && str_ends_with($path, '/')) {
+            $path = rtrim($path, '/');
+        }
+
+        return rtrim($baseUrl, '/').$path.($queryString !== '' ? '?'.$queryString : '');
     }
 }

@@ -4,10 +4,15 @@ Allow: /
 # Disallow admin and control panel areas
 Disallow: /control/
 Disallow: /admin/
+Disallow: /client/
+Disallow: /api/
+Disallow: /api-docs
+Disallow: /docs.openapi
 Disallow: /storage/
 Allow: /storage/images/
 Allow: /storage/gallery/
 Allow: /storage/thumbnails/
+Allow: /storage/_website/
 Disallow: /vendor/
 Disallow: /bootstrap/
 Disallow: /config/

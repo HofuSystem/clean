@@ -17,9 +17,21 @@ use Core\Orders\Models\OrderTransaction;
 use Core\Settings\Helpers\ToolHelper;
 
 // ============================================================
+// Direct Sitemap Routes (Always return 200 XML directly)
+// ============================================================
+Route::get('/sitemap.xml', [PageController::class, 'siteMap']);
+Route::get('/ar/sitemap.xml', [PageController::class, 'siteMap']);
+Route::get('/en/sitemap.xml', [PageController::class, 'siteMap']);
+
+// ============================================================
 // Legacy 301 Redirects — CS-01 / CS-05
 // One-hop redirects; no chain through localization middleware.
 // ============================================================
+
+// /land → Homepage (CS landing page consolidation)
+Route::get('/land',                        fn() => redirect('https://cleanstation.app/ar', 301));
+Route::get('/ar/land',                     fn() => redirect('https://cleanstation.app/ar', 301));
+Route::get('/en/land',                     fn() => redirect('https://cleanstation.app/en', 301));
 
 // .html extension removals
 Route::get('/ar/services.html',            fn() => redirect('https://cleanstation.app/ar/services', 301));
@@ -100,7 +112,6 @@ Route::group(
         Route::get('/payment-gateway', [PageController::class, 'paymentGateway'])->name('payment-gateway');
         Route::view('/social', 'social')->name('social');
         Route::view('/allInfo', 'allInfo')->name('allInfo');
-        Route::get('sitemap.xml', [PageController::class, 'siteMap']);
         Route::post('/newsletter', function () {
             $data = request()->validate([
                 'email' => 'required|email|max:255',
@@ -113,9 +124,6 @@ Route::group(
             return redirect()->back()->with('success', trans('Thank you for subscribing to our newsletter'));
         })->name('newsletter');
 
-        // New Landing Page (Localized)
-        Route::get('/land', [PageController::class, 'land'])->name('land');
-
         // Flowers & Gifts Page (الورود والهدايا)
         Route::get('/gifts', [PageController::class, 'gifts'])->name('gifts');
     }
@@ -124,13 +132,8 @@ Route::group(
 // ============================================================
 // New Landing Page Design Preview (Friendly Aliases)
 // ============================================================
-Route::get('/land/ar', function () {
-    return redirect(LaravelLocalization::getLocalizedURL('ar', '/land', [], true));
-});
-
-Route::get('/land/en', function () {
-    return redirect(LaravelLocalization::getLocalizedURL('en', '/land', [], true));
-});
+Route::get('/land/ar', fn() => redirect('https://cleanstation.app/ar', 301));
+Route::get('/land/en', fn() => redirect('https://cleanstation.app/en', 301));
 
 Route::get('/gifts/ar', function () {
     return redirect(LaravelLocalization::getLocalizedURL('ar', '/gifts', [], true));
@@ -149,11 +152,11 @@ Route::get('/cleanstation-site-3', function () {
 });
 
 Route::get('/cleanstation-homepage-edits.html', function () {
-    return redirect(LaravelLocalization::getLocalizedURL('ar', '/land', [], true));
+    return redirect(LaravelLocalization::getLocalizedURL('ar', '/', [], true), 301);
 });
 
 Route::get('/cleanstation-homepage-en.html', function () {
-    return redirect(LaravelLocalization::getLocalizedURL('en', '/land', [], true));
+    return redirect(LaravelLocalization::getLocalizedURL('en', '/', [], true), 301);
 });
 
 Route::get('/api-docs', function () {
