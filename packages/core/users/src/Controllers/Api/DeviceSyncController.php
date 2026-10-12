@@ -77,17 +77,30 @@ class DeviceSyncController extends Controller
             }
 
             $device = DB::transaction(function () use ($request, $user) {
-                $existing = null;
+                // Both identifiers are client supplied, so check every matching row
+                // before choosing one; trusting only installation_id could otherwise
+                // let a request overwrite a token already linked to another account.
+                $matches = Device::withTrashed()
+                    ->where(function ($query) use ($request) {
+                        if (!empty($request->installation_id)) {
+                            $query->where('installation_id', $request->installation_id)
+                                ->orWhere('device_token', $request->device_token);
+                        } else {
+                            $query->where('device_token', $request->device_token);
+                        }
+                    })
+                    ->lockForUpdate()
+                    ->get();
 
-                // 1. Look up by installation_id first if provided
-                if (!empty($request->installation_id)) {
-                    $existing = Device::withTrashed()->where('installation_id', $request->installation_id)->first();
+                if ($matches->contains(function ($match) use ($user) {
+                    return !is_null($match->user_id) && (int) $match->user_id !== (int) $user->id;
+                })) {
+                    return false;
                 }
 
-                // 2. Look up by device_token if not found by installation_id
-                if (!$existing && !empty($request->device_token)) {
-                    $existing = Device::withTrashed()->where('device_token', $request->device_token)->first();
-                }
+                $existing = (!empty($request->installation_id)
+                    ? $matches->firstWhere('installation_id', $request->installation_id)
+                    : null) ?? $matches->firstWhere('device_token', $request->device_token);
 
                 $appContext = $request->app_context ?: 'client';
                 $permission = $request->notification_permission ?: 'unknown';
@@ -135,6 +148,15 @@ class DeviceSyncController extends Controller
                     'device_model' => $request->device_model,
                 ]);
             });
+
+            if ($device === false) {
+                return $this->returnErrorMessage(
+                    trans('This device is linked to another account. Please sign out from that account first.'),
+                    [],
+                    [],
+                    409
+                );
+            }
 
             return $this->returnData(trans('device synced successfully'), [
                 'data' => [

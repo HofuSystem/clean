@@ -165,6 +165,80 @@ class NotificationRemediationPhase1Test extends TestCase
         ]);
     }
 
+    public function test_device_sync_cannot_claim_installation_owned_by_another_user()
+    {
+        $foreignUser = User::create([
+            'fullname' => 'Device Owner',
+            'email' => 'device-owner-' . uniqid() . '@example.com',
+            'phone' => '9665' . rand(1000000, 9999999),
+            'password' => bcrypt('secret123'),
+            'is_active' => 1,
+        ]);
+        $device = Device::create([
+            'user_id' => $foreignUser->id,
+            'device_token' => 'owned-token-' . uniqid(),
+            'installation_id' => 'owned-installation-' . uniqid(),
+            'type' => 'ios',
+            'token_status' => 'active',
+        ]);
+
+        $response = $this->actingAs($this->clientUser, 'sanctum')->postJson('/api/devices/sync', [
+            'device_token' => 'attacker-token-' . uniqid(),
+            'platform' => 'android',
+            'installation_id' => $device->installation_id,
+        ]);
+
+        $response->assertStatus(409);
+        $this->assertDatabaseHas('devices', [
+            'id' => $device->id,
+            'user_id' => $foreignUser->id,
+            'device_token' => $device->device_token,
+            'type' => 'ios',
+        ]);
+    }
+
+    public function test_device_sync_rejects_foreign_token_even_when_installation_matches_current_user()
+    {
+        $foreignUser = User::create([
+            'fullname' => 'Token Owner',
+            'email' => 'token-owner-' . uniqid() . '@example.com',
+            'phone' => '9665' . rand(1000000, 9999999),
+            'password' => bcrypt('secret123'),
+            'is_active' => 1,
+        ]);
+        $ownedInstallation = 'own-installation-' . uniqid();
+        $currentDevice = Device::create([
+            'user_id' => $this->clientUser->id,
+            'device_token' => 'own-token-' . uniqid(),
+            'installation_id' => $ownedInstallation,
+            'type' => 'ios',
+        ]);
+        $foreignDevice = Device::create([
+            'user_id' => $foreignUser->id,
+            'device_token' => 'foreign-token-' . uniqid(),
+            'installation_id' => 'foreign-installation-' . uniqid(),
+            'type' => 'android',
+        ]);
+
+        $response = $this->actingAs($this->clientUser, 'sanctum')->postJson('/api/devices/sync', [
+            'device_token' => $foreignDevice->device_token,
+            'platform' => 'ios',
+            'installation_id' => $ownedInstallation,
+        ]);
+
+        $response->assertStatus(409);
+        $this->assertDatabaseHas('devices', [
+            'id' => $currentDevice->id,
+            'user_id' => $this->clientUser->id,
+            'device_token' => $currentDevice->device_token,
+        ]);
+        $this->assertDatabaseHas('devices', [
+            'id' => $foreignDevice->id,
+            'user_id' => $foreignUser->id,
+            'device_token' => $foreignDevice->device_token,
+        ]);
+    }
+
     public function test_notification_events_rejects_when_feature_flag_is_disabled()
     {
         config(['notification.delivery_events_enabled' => false]);
@@ -262,6 +336,49 @@ class NotificationRemediationPhase1Test extends TestCase
         $resOpenedDup->assertStatus(200);
         $notification->refresh();
         $this->assertEquals(1, $notification->opened_count, 'Duplicate opened event must not increment counter twice');
+    }
+
+    public function test_late_received_event_does_not_downgrade_opened_delivery()
+    {
+        config(['notification.delivery_events_enabled' => true]);
+        $installationId = 'ordered-event-' . uniqid();
+        $deviceToken = 'ordered-token-' . uniqid();
+        $device = Device::create([
+            'user_id' => $this->clientUser->id,
+            'device_token' => $deviceToken,
+            'installation_id' => $installationId,
+            'type' => 'ios',
+            'token_status' => 'active',
+        ]);
+        $notification = Notification::create([
+            'title' => 'Event order',
+            'body' => 'Event order test',
+            'for' => 'all',
+            'purpose' => 'marketing',
+            'types' => json_encode(['apps']),
+        ]);
+        $tokenRecord = NotificationToken::create([
+            'topic' => 'direct',
+            'token' => $deviceToken,
+            'status' => 'opened',
+            'title' => 'Event order',
+            'notification_id' => $notification->id,
+            'user_id' => $this->clientUser->id,
+            'device_id' => $device->id,
+            'installation_id' => $installationId,
+            'platform' => 'ios',
+            'opened_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->clientUser, 'sanctum')->postJson('/api/client/notifications/events', [
+            'notification_id' => $notification->id,
+            'event_type' => 'received',
+            'installation_id' => $installationId,
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertSame('opened', $tokenRecord->fresh()->status);
+        $this->assertSame(1, (int) $notification->fresh()->received_count);
     }
 
     public function test_notification_events_rejects_foreign_device_owner()

@@ -105,22 +105,29 @@ class NotificationEventsController extends Controller
             DB::transaction(function () use ($device, $notification, $tokenRecord, $eventType) {
                 $now = now();
 
-                // 7. Idempotent recording of received / opened
+                // 7. Record each event atomically. The conditional UPDATE makes
+                // concurrent duplicate callbacks idempotent as well as sequential ones.
                 if ($eventType === 'received') {
-                    if (is_null($tokenRecord->received_at)) {
-                        $tokenRecord->update([
+                    $updated = NotificationToken::whereKey($tokenRecord->id)
+                        ->whereNull('received_at')
+                        ->update([
                             'received_at' => $now,
-                            'status' => in_array($tokenRecord->status, ['opened']) ? $tokenRecord->status : 'received',
+                            'status' => DB::raw("CASE WHEN status = 'opened' THEN status ELSE 'received' END"),
+                            'updated_at' => $now,
                         ]);
+                    if ($updated === 1) {
                         $notification->increment('received_count');
                     }
                     $device->update(['last_notification_received_at' => $now, 'last_seen_at' => $now]);
                 } elseif ($eventType === 'opened') {
-                    if (is_null($tokenRecord->opened_at)) {
-                        $tokenRecord->update([
+                    $updated = NotificationToken::whereKey($tokenRecord->id)
+                        ->whereNull('opened_at')
+                        ->update([
                             'opened_at' => $now,
                             'status' => 'opened',
+                            'updated_at' => $now,
                         ]);
+                    if ($updated === 1) {
                         $notification->increment('opened_count');
                     }
                     $device->update(['last_notification_opened_at' => $now, 'last_seen_at' => $now]);

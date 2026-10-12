@@ -547,21 +547,27 @@
                                     </div>
                                 </div>
                             @else
+                                <div class="alert alert-info d-flex align-items-center p-3 mb-4">
+                                    <i class="fas fa-info-circle text-info me-3"></i>
+                                    <div class="fs-7">
+                                        أرقام الاستلام والفتح واردة من تطبيق الهاتف وتعتمد على إبلاغ الجهاز؛ هي مؤشرات تفاعل وليست إثباتاً مستقلاً لوصول الإشعار أو فتحه.
+                                    </div>
+                                </div>
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <div class="border rounded p-4 text-center bg-light">
                                             <i class="fas fa-inbox fs-1 text-primary mb-2"></i>
                                             <h3 class="fw-bolder fs-2 text-dark">{{ $receivedDisplay }}</h3>
-                                            <span class="text-muted fw-bold">الأجهزة التي استلمت الإشعار فعلياً</span>
-                                            <div class="mt-2 text-primary fw-bold">نسبة الوصول: {{ $deliveryRateDisplay }}</div>
+                                            <span class="text-muted fw-bold">أجهزة أبلغ التطبيق عن استلام الإشعار</span>
+                                            <div class="mt-2 text-primary fw-bold">نسبة الإبلاغ بالاستلام: {{ $deliveryRateDisplay }}</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="border rounded p-4 text-center bg-light">
                                             <i class="fas fa-envelope-open-text fs-1 text-success mb-2"></i>
                                             <h3 class="fw-bolder fs-2 text-dark">{{ $openedDisplay }}</h3>
-                                            <span class="text-muted fw-bold">الأجهزة التي فتحت الإشعار وتفاعلت معه</span>
-                                            <div class="mt-2 text-success fw-bold">معدل الفتح: {{ $openRateDisplay }}</div>
+                                            <span class="text-muted fw-bold">أجهزة أبلغ التطبيق عن فتح الإشعار</span>
+                                            <div class="mt-2 text-success fw-bold">معدل الإبلاغ بالفتح: {{ $openRateDisplay }}</div>
                                         </div>
                                     </div>
                                 </div>
