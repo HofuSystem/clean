@@ -38,6 +38,25 @@ class CreateOrderRequest extends FormRequest
       }
     }
 
+    // Branch SDK payloads can serialize this boolean as "true"/"false".
+    // Normalize those values before Laravel's boolean validation so optional
+    // attribution metadata does not reject an otherwise valid order.
+    $analyticsContext = $this->input('analytics_context');
+    if (is_array($analyticsContext)) {
+      foreach (['branch_first', 'branch_latest'] as $branchKey) {
+        $clickedBranchLink = $analyticsContext[$branchKey]['clicked_branch_link'] ?? null;
+        if (is_string($clickedBranchLink)) {
+          $normalized = strtolower($clickedBranchLink);
+          if (in_array($normalized, ['true', '1'], true)) {
+            $analyticsContext[$branchKey]['clicked_branch_link'] = true;
+          } elseif (in_array($normalized, ['false', '0'], true)) {
+            $analyticsContext[$branchKey]['clicked_branch_link'] = false;
+          }
+        }
+      }
+      $merge['analytics_context'] = $analyticsContext;
+    }
+
     if ($this->has('starch_level')) {
       $starch = is_string($this->input('starch_level')) ? trim($this->input('starch_level')) : $this->input('starch_level');
       if (empty($starch) || $starch === 'null') {
