@@ -27,13 +27,14 @@ class PointsController extends Controller
         $screen     = 'points-index';
         $total      = $this->pointsService->totalCount();
         $trash      = $this->pointsService->trashCount();
+        $summary    = $this->pointsService->summary();
 
         $users = DB::table('users')
             ->select('id', 'fullname')
             ->whereIn('id', DB::table('points')->select('user_id')->whereNotNull('user_id'))
             ->get();
 
-        return view('users::pages.points.list', compact('title','screen','users',"total","trash"));
+        return view('users::pages.points.list', compact('title','screen','users',"total","trash","summary"));
     }
 
 
@@ -69,7 +70,7 @@ class PointsController extends Controller
     public function show($id){
         $title      = trans('points index');
         $screen     = 'points-index';
-        $item       = $this->pointsService->get($id);;
+        $item       = $this->pointsService->get($id);
         $comments   = $item->comments()->where('parent_id',null)->get();
         return view('users::pages.points.show', compact('title','screen','item','comments'));
     }

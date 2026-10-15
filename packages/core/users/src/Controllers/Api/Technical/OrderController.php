@@ -198,6 +198,7 @@ class OrderController extends Controller
                   'amount'    => round($pointReferral),
                   'operation' => 'deposit',
                   'user_id'   => $referralUser->id,
+                  'order_id'  => $order->id,
                ]);
             }
             $pointRiyals    = SettingsService::getDataBaseSetting('referral_riyals');
@@ -268,6 +269,7 @@ class OrderController extends Controller
                 'amount'    => $totalPoints,
                 'operation' => 'deposit',
                 'user_id'   => $order->client_id,
+                'order_id'  => $order->id,
             ]);
             Notification::create([
                 'types'     => json_encode(['apps']),

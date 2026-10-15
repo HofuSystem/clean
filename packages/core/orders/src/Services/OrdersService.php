@@ -289,6 +289,7 @@ class OrdersService
                     'amount' => $order->points_amount,
                     'operation' => 'deposit',
                     'user_id' => $order->client_id,
+                    'order_id' => $order->id,
                 ]);
                  //add order transaction 
                 $order->transactions()->create([
@@ -1001,7 +1002,7 @@ class OrdersService
             $order->points_amount      = $data['points_amount'];
             $order->update();
             if ($data['status'] != 'pending_payment') {
-                $pointsData                = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'added_by_id' => $user->id];
+                $pointsData                = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
                 $user->points()->create($pointsData);
                 //add to the order transactions
                 $order->transactions()->create([
@@ -1197,7 +1198,7 @@ class OrdersService
             $alreadyPointsPaid   += $data['points_amount_used'];
             $alreadyPointsAmount += $data['points_amount'];
 
-            $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted'];
+            $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
             $pointModel = $user->points()->create($pointsData);
             //add to the order transactions
             $order->transactions()->create([
@@ -1258,7 +1259,7 @@ class OrdersService
             }
             if ($pointsUsedAmount > 0) {
                 //add to the points records
-                $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $order->points_amount, 'operation' => 'withdraw', 'added_by_id' => $order->client->id, 'status' => 'accepted'];
+                $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $order->points_amount, 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $order->client->id];
                 $pointModel = $order->client?->points()->create($pointsData);
 
                 //add to the order transactions

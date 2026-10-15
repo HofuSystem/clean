@@ -16,7 +16,12 @@ class PointObserver
      */
     public function creating(Point $point)
     {
-      
+        if (!$point->creator_id) {
+            $actor = auth('web')->user() ?? auth('api')->user();
+            if ($actor) {
+                $point->creator_id = $actor->id;
+            }
+        }
     }
     /**
      * Handle the Point "created" event.

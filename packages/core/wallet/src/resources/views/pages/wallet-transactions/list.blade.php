@@ -1,7 +1,7 @@
 @extends('admin::layouts.dashboard')
 
 @section('content')
-<div class="container-fluid flex-grow-1 container-p-y px-4">
+<div class="container-fluid flex-grow-1 container-p-y px-4 wallet-page">
 
     <!-- Top Header & Actions -->
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
@@ -478,6 +478,47 @@
 /* Hide default DataTables search & buttons bar */
 .dt-buttons, .dataTables_filter, .dataTables_length {
     display: none !important;
+}
+
+/* Apple inspired wallet ledger: restrained color, clear hierarchy, quiet surfaces. */
+.wallet-page { --wallet-ink: #1d1d1f; --wallet-muted: #86868b; --wallet-blue: #0071e3; color: var(--wallet-ink); }
+.wallet-page h1 { color: var(--wallet-ink) !important; font-size: 1.8rem !important; letter-spacing: -.035em; }
+.wallet-page .stat-card, .wallet-page .main-table-wrapper { border: 1px solid rgba(29,29,31,.07); border-radius: 18px; background: #fff; box-shadow: 0 3px 16px rgba(29,29,31,.045); }
+.wallet-page .stat-card { padding: 18px; gap: 15px; transition: transform .18s ease, box-shadow .18s ease; }
+.wallet-page .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(29,29,31,.08); }
+.wallet-page .stat-icon-box { width: 42px; height: 42px; border-radius: 13px; background: #f1f6fc !important; color: var(--wallet-blue) !important; }
+.wallet-page .stat-icon-box svg { color: var(--wallet-blue) !important; }
+.wallet-page .stat-icon-box svg [fill]:not([fill="none"]) { fill: currentColor !important; }
+.wallet-page .stat-icon-box svg [stroke]:not([stroke="none"]) { stroke: currentColor !important; }
+.wallet-page .stat-title { color: var(--wallet-muted); font-size: .8rem; }
+.wallet-page .stat-value { color: var(--wallet-ink); font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.wallet-page .stat-unit, .wallet-page .stat-subtext { color: var(--wallet-muted) !important; font-size: .72rem; }
+.wallet-page .main-table-wrapper { padding: 22px; }
+.wallet-page [data-bs-target="#custom_date_range_wrapper"], .wallet-page [data-bs-toggle="modal"] { background: var(--wallet-blue) !important; border-radius: 11px !important; box-shadow: none !important; }
+.wallet-page #period_selector, .wallet-page #custom_page_length, .wallet-page .form-control { border-color: #d2d2d7 !important; border-radius: 10px !important; }
+.wallet-page #period_selector:focus, .wallet-page .form-control:focus { border-color: var(--wallet-blue) !important; box-shadow: 0 0 0 3px rgba(0,113,227,.12) !important; }
+.wallet-page .filter-tab-btn { border: 0; border-radius: 9px; padding: 8px 14px; color: #515154; background: #f5f5f7; box-shadow: none; }
+.wallet-page .filter-tab-btn:hover { color: var(--wallet-ink); background: #ebebed; }
+.wallet-page .filter-tab-btn.active { background: #e8f2fc !important; color: var(--wallet-blue) !important; box-shadow: none !important; }
+.wallet-page .total-badge-box { border: 0; border-radius: 10px; background: #f5f5f7; color: var(--wallet-muted); box-shadow: none; }
+.wallet-page .total-badge-box strong { color: var(--wallet-ink); font-variant-numeric: tabular-nums; }
+.wallet-page .export-btn-group { border-color: #e5e5e7; border-radius: 10px; box-shadow: none; }
+.wallet-page .export-btn-group .btn-export { color: #515154; border-color: #e5e5e7; }
+.wallet-page .export-btn-group .btn-export:hover { background: #f5f5f7; color: var(--wallet-ink); }
+.wallet-page [data-kt-user-table-toolbar="selected"] { background: #f5f5f7 !important; border: 1px solid #e5e5e7 !important; }
+.wallet-page [data-kt-user-table-toolbar="selected"] .badge,
+.wallet-page [data-kt-user-table-toolbar="selected"] button { background: #e8f2fc !important; color: var(--wallet-blue) !important; border-radius: 9px !important; }
+.wallet-page .table-responsive { border: 1px solid #eeeef0; border-radius: 12px; }
+.wallet-page .table-header-row th { background: #f5f5f7 !important; color: #515154 !important; font-size: .76rem !important; padding: 13px 10px !important; }
+.wallet-page .table-header-row th:first-child { border-radius: 0 11px 0 0; }
+.wallet-page .table-header-row th:last-child { border-radius: 11px 0 0 0; }
+.wallet-page #view-datatable tbody tr td { padding: 13px 10px !important; border-bottom-color: #eeeef0; }
+@media (max-width: 767.98px) {
+    .wallet-page { padding-right: 12px !important; padding-left: 12px !important; }
+    .wallet-page .main-table-wrapper { padding: 14px; }
+    .wallet-page .stat-card { padding: 14px; }
+    .wallet-page .stat-icon-box { display: none; }
+    .wallet-page .export-btn-group { display: flex; flex-wrap: wrap; }
 }
 </style>
 @endpush
