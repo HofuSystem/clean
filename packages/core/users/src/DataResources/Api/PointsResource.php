@@ -21,7 +21,6 @@ class PointsResource extends JsonResource
             "amount"        => (int)$this->amount,
             "operation"     => $this->operation,
             "add_date"      => $this->created_at->format('d-F-Y'),
-            'expire_at'     => $this->expire_at,
         ];
     }
 }

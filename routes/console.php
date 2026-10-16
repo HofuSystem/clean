@@ -10,7 +10,6 @@ Schedule::command('app:send-abandoned-cart-notification')->everyFiveMinutes();
 Schedule::command('app:send-inactive-after-order-notification')->dailyAt('11:00');
 Schedule::command('app:send-feed-back')->hourly();
 Schedule::command('app:handle-expired-wallet-transaction')->dailyAt('00:00');
-Schedule::command('app:handle-expired-points')->dailyAt('00:00');
 Schedule::command('app:handle-expired-contract')->dailyAt('23:59');
 Schedule::command('app:order-is-pending-payment-for-ten-minutes')->everyMinute();
 

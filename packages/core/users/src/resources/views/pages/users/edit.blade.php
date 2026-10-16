@@ -492,8 +492,6 @@
                                                             @lang('points.amount')</th>
                                                         <th class="orderable text-center py-2" data-name="operation">
                                                             @lang('operation')</th>
-                                                        <th class="orderable text-center py-2" data-name="expire_at">
-                                                            @lang('expire at')</th>
                                                         <th class="orderable text-center py-2" data-name="actions">
                                                             @lang('action')</th>
                                                     </tr>
@@ -647,12 +645,6 @@
 
                                         </div>
 
-                                        <div class="form-group mb-3 col-md-6">
-                                            <label  for="expire_at">{{ trans('expire at') }}</label>
-                                            <input type="date" name="expire_at" class="form-control "
-                                                placeholder="{{ trans('Enter expire at') }} " value="">
-
-                                        </div>
                                         <div class="col-lg-9 ml-lg-auto">
                                             <button type="submit"
                                                 class="btn btn-primary font-weight-bold mr-2">{{ trans('Submit') }}</button>

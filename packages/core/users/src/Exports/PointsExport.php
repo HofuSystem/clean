@@ -44,9 +44,6 @@ class PointsExport implements FromCollection, WithHeadings, WithMapping, WithCus
         if(empty($this->cols) or in_array('operation',$this->cols)){
             $headings[] = trans('operation');
         }
-        if(empty($this->cols) or in_array('expire_at',$this->cols)){
-            $headings[] = trans('expire at');
-        }
         if(empty($this->cols) or in_array('user_id',$this->cols)){
             $headings[] = trans('user');
         }             
@@ -69,9 +66,6 @@ class PointsExport implements FromCollection, WithHeadings, WithMapping, WithCus
         }
         if(empty($this->cols) or in_array('operation',$this->cols)){
             $data[] = $model->operation;
-        }
-        if(empty($this->cols) or in_array('expire_at',$this->cols)){
-            $data[] = $model->expire_at;
         }
         if(empty($this->cols) or in_array('user_id',$this->cols)){
             $data[] = $model->user_id;

@@ -15,9 +15,9 @@ use App\Observers\GlobalModelObserver;
 class Point extends CoreModel {
     
 	protected $table             = 'points';
-	protected $fillable          = ['title', 'amount', 'operation', 'expire_at', 'user_id', 'order_id', 'creator_id', 'updater_id'];
+	protected $fillable          = ['title', 'amount', 'operation', 'user_id', 'order_id', 'creator_id', 'updater_id'];
     protected $guarded           = [];
-    protected $casts             = ['amount' => 'float', 'expire_at' => 'datetime'];
+    protected $casts             = ['amount' => 'float'];
     
 
     //start Scopes

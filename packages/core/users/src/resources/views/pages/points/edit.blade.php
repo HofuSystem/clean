@@ -89,14 +89,6 @@
 
                             </div>
 
-                            <div class="form-group mb-3 col-md-6">
-                                <label class="" for="expire_at">{{ trans('expire at') }}</label>
-                                <input type="datetime-local" name="expire_at" class="form-control "
-                                    placeholder="{{ trans('Enter expire at') }} "
-                                    value="@isset($item){{ $item->expire_at }}@endisset">
-
-                            </div>
-
                             <div class="form-group mb-3 col-md-12">
                                 <label class="required" for="user_id">{{ trans('user') }}</label>
                                 <select class="custom-select  form-select advance-select" name="user_id" id="user_id">

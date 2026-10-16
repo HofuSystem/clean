@@ -7,7 +7,7 @@
     $transportType = isset($item) ? $item->getTransportType() : 'Legacy Topic Subscription';
 @endphp
 @section('content')
-<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+<div class="content d-flex flex-column flex-column-fluid notification-page" id="kt_content" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <!--begin::Toolbar-->
     <div class="toolbar my-3" id="kt_toolbar">
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">

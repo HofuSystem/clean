@@ -23,7 +23,7 @@ class PointsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['title','amount','operation','expire_at','user_id','translations']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['title','amount','operation','user_id','translations']),ARRAY_FILTER_USE_KEY);
         $record     = Point::updateOrCreate(['id' => $id],$recordData);
         
         
@@ -61,7 +61,7 @@ class PointsService
 
         $recordsTotal       = Point::count();
         $recordsFiltered    = Point::search()->count();
-        $records            = Point::select(['id','title','amount','operation','expire_at','created_at','user_id','creator_id','order_id'])
+        $records            = Point::select(['id','title','amount','operation','created_at','user_id','creator_id','order_id'])
         ->with(['user:id,fullname,phone', 'creator:id,fullname', 'order:id,reference_id'])
         ->search()->dataTable()->get();
 

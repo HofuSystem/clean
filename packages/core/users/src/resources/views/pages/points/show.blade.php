@@ -30,18 +30,6 @@
                     <strong>{{ $item->display_title }}</strong>
                 </div>
             </div>
-            <aside class="point-expiry-panel {{ $item->expire_at && $item->expire_at->isPast() ? 'is-expired' : '' }}">
-                <div class="point-expiry-icon"><i class="far fa-clock" aria-hidden="true"></i></div>
-                <div>
-                    <span class="point-card-label">{{ trans('points_ui.expiry_date') }}</span>
-                    @if ($item->expire_at)
-                        <strong>{{ $item->expire_at->format('Y/m/d · H:i') }}</strong>
-                        <small>{{ $item->expire_at->isPast() ? trans('points_ui.expired') : trans('points_ui.not_expired') }}</small>
-                    @else
-                        <strong>{{ trans('points_ui.no_expiry') }}</strong>
-                    @endif
-                </div>
-            </aside>
         </section>
 
         <div class="point-detail-grid">

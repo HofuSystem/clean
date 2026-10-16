@@ -1,354 +1,200 @@
 <style>
-/* ==========================================================================
-   Clean Station — Notification Dashboard Refined Color System
-   ========================================================================== */
-
-:root {
-    /* Base Surfaces & Typography */
-    --cs-page-bg: #F6F8FB;
-    --cs-card-bg: #FFFFFF;
-    --cs-text-primary: #1F2937;
-    --cs-text-secondary: #64748B;
-    --cs-border-subtle: #E2E8F0;
-    --cs-border-muted: #F1F5F9;
-
-    /* Clean Station Brand Tokens */
-    --cs-brand-blue: #1F5FAF;
-    --cs-brand-blue-hover: #174A8B;
-    --cs-brand-blue-light: #E8F2FB;
-    --cs-brand-blue-border: #BFDBFE;
-
-    --cs-brand-teal: #159A9C;
-    --cs-brand-teal-hover: #0F7577;
-    --cs-brand-teal-light: #E6F7F7;
-    --cs-brand-teal-border: #B2E5E7;
-
-    --cs-sidebar: #123B63;
-    --cs-sidebar-active: #E8F2FB;
-
-    /* Semantic Tokens (Strictly Scoped) */
-    --cs-success: #15803D;
-    --cs-success-bg: #DCFCE7;
-    --cs-success-border: #BBF7D0;
-
-    --cs-warning: #B45309;
-    --cs-warning-bg: #FEF3C7;
-    --cs-warning-border: #FDE68A;
-
-    --cs-danger: #B91C1C;
-    --cs-danger-bg: #FEE2E2;
-    --cs-danger-border: #FECACA;
-
-    --cs-info: #0369A1;
-    --cs-info-bg: #E0F2FE;
-    --cs-info-border: #BAE6FD;
-
-    /* Marketing (Strictly Purple) */
-    --cs-marketing: #6D28D9;
-    --cs-marketing-bg: #F5F3FF;
-    --cs-marketing-border: #DDD6FE;
-
-    /* Neutral & Legacy */
-    --cs-neutral: #475569;
-    --cs-neutral-bg: #F1F5F9;
-    --cs-neutral-border: #CBD5E1;
+.notification-page {
+    --notify-ink: #1d1d1f;
+    --notify-secondary: #6e6e73;
+    --notify-muted: #86868b;
+    --notify-line: #e5e5ea;
+    --notify-surface: #ffffff;
+    --notify-canvas: #f5f5f7;
+    --notify-blue: #0071e3;
+    --notify-blue-soft: #edf5ff;
+    min-height: 100%;
+    padding-bottom: 32px;
+    background: var(--notify-canvas) !important;
+    color: var(--notify-ink) !important;
+    font-family: inherit;
 }
-
-/* 1. Surfaces & Global Layout */
-body, .content-wrapper, .layout-page, #kt_content, .container-p-y {
-    background-color: var(--cs-page-bg) !important;
-    color: var(--cs-text-primary) !important;
+.notification-page #kt_toolbar,
+.notification-page #kt_toolbar_container { background: transparent !important; }
+.notification-page .row[class*="g-"] { --bs-gutter-x: 1rem; --bs-gutter-y: 1rem; }
+.notification-page .page-title h1,
+.notification-page h1 { color: var(--notify-ink) !important; letter-spacing: -.025em; }
+.notification-page .breadcrumb { color: var(--notify-muted); }
+.notification-page .breadcrumb a { color: var(--notify-secondary) !important; }
+.notification-page .card,
+.notification-page .card-flush {
+    overflow: hidden;
+    border: 1px solid rgba(29,29,31,.07) !important;
+    border-radius: 18px !important;
+    background: var(--notify-surface) !important;
+    box-shadow: 0 3px 16px rgba(29,29,31,.045) !important;
 }
-
-/* 2. Cards & Containers */
-.card, .card-flush {
-    background-color: var(--cs-card-bg) !important;
-    border: 1px solid var(--cs-border-subtle) !important;
-    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03) !important;
-    border-radius: 0.625rem !important;
+.notification-page .card-header,
+.notification-page .card-footer {
+    border-color: var(--notify-line) !important;
+    background: var(--notify-surface) !important;
 }
-
-.card-header {
-    background-color: var(--cs-card-bg) !important;
-    border-bottom: 1px solid var(--cs-border-muted) !important;
+.notification-page .card-header { min-height: 58px; padding: 16px 20px; }
+.notification-page .card-body { padding: 20px; }
+.notification-page .card-title,
+.notification-page .card-label { color: var(--notify-ink) !important; }
+.notification-page .text-muted,
+.notification-page .text-gray-500,
+.notification-page .text-gray-600 { color: var(--notify-secondary) !important; }
+.notification-page .text-dark,
+.notification-page .text-gray-800,
+.notification-page .text-gray-900 { color: var(--notify-ink) !important; }
+.notification-page .btn-primary,
+.notification-page button.btn-primary,
+.notification-page a.btn-primary {
+    border: 1px solid var(--notify-blue) !important;
+    border-radius: 10px !important;
+    background: var(--notify-blue) !important;
+    box-shadow: none !important;
+    color: #fff !important;
 }
-
-.card-footer {
-    background-color: var(--cs-card-bg) !important;
-    border-top: 1px solid var(--cs-border-muted) !important;
+.notification-page .btn-primary:hover { background: #0062c4 !important; }
+.notification-page .btn-secondary,
+.notification-page .btn-light,
+.notification-page .btn-light-info,
+.notification-page .btn-light-primary,
+.notification-page .btn-light-warning,
+.notification-page .btn-light-danger {
+    border: 1px solid var(--notify-line) !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    color: var(--notify-secondary) !important;
+    box-shadow: none !important;
 }
-
-/* 3. Sidebar Override (Clean Station Brand Navy) */
-.layout-menu.bg-menu-theme {
-    background-color: var(--cs-sidebar) !important;
+.notification-page .btn-secondary:hover,
+.notification-page .btn-light:hover { background: var(--notify-canvas) !important; color: var(--notify-ink) !important; }
+.notification-page .btn-operation,
+.notification-page .btn-operation-teal,
+.notification-page .btn-operation-warning {
+    border: 1px solid var(--notify-line) !important;
+    border-radius: 10px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    color: var(--notify-ink) !important;
 }
-
-.layout-menu.bg-menu-theme .menu-link {
-    color: #CBD5E1 !important;
+.notification-page .btn-operation i,
+.notification-page .btn-operation span { color: inherit !important; }
+.notification-page .stat-pill-total,
+.notification-page .stat-pill-trash {
+    border: 1px solid var(--notify-line) !important;
+    border-radius: 12px !important;
+    background: var(--notify-canvas) !important;
+    color: var(--notify-ink) !important;
 }
-
-.layout-menu.bg-menu-theme .menu-link:hover {
-    background-color: rgba(255, 255, 255, 0.07) !important;
-    color: #FFFFFF !important;
-}
-
-.layout-menu.bg-menu-theme .menu-item.active > .menu-link,
-.layout-menu.bg-menu-theme .menu-sub > .menu-item.active > .menu-link {
-    background-color: var(--cs-sidebar-active) !important;
-    color: var(--cs-brand-blue) !important;
-    font-weight: 700 !important;
-    border-radius: 0.375rem !important;
-}
-
-.layout-menu.bg-menu-theme .menu-item.active > .menu-link i,
-.layout-menu.bg-menu-theme .menu-sub > .menu-item.active > .menu-link i {
-    color: var(--cs-brand-blue) !important;
-}
-
-/* 4. Semantic Badges — Light Pastel Background with High-Contrast Dark Text */
-.badge {
+.notification-page .stat-pill-total a,
+.notification-page .stat-pill-trash a { color: inherit !important; }
+.notification-page .badge {
+    border-radius: 8px !important;
     font-weight: 600 !important;
-    padding: 0.35em 0.7em !important;
-    border-radius: 0.375rem !important;
-    letter-spacing: 0.01em !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.25rem !important;
+    letter-spacing: 0 !important;
 }
-
-/* Success (Green) */
-.badge.bg-label-success, .badge.badge-light-success, .badge.badge-success {
-    background-color: var(--cs-success-bg) !important;
-    color: var(--cs-success) !important;
-    border: 1px solid var(--cs-success-border) !important;
+.notification-page .badge.bg-label-marketing,
+.notification-page .badge.badge-light-marketing,
+.notification-page .badge.bg-label-primary,
+.notification-page .badge.badge-light-primary,
+.notification-page .badge.bg-label-info,
+.notification-page .badge.badge-light-info,
+.notification-page .badge.bg-label-warning,
+.notification-page .badge.badge-light-warning,
+.notification-page .badge.bg-label-secondary,
+.notification-page .badge.badge-light-secondary,
+.notification-page .badge.bg-label-dark,
+.notification-page .badge.badge-light-dark {
+    border: 1px solid #e5e5ea !important;
+    background: #f5f5f7 !important;
+    color: #515154 !important;
 }
-
-/* Warning (Amber / Yellow) */
-.badge.bg-label-warning, .badge.badge-light-warning, .badge.badge-warning {
-    background-color: var(--cs-warning-bg) !important;
-    color: var(--cs-warning) !important;
-    border: 1px solid var(--cs-warning-border) !important;
+.notification-page .badge.bg-label-success,
+.notification-page .badge.badge-light-success {
+    border: 1px solid #ccebd8 !important;
+    background: #eff9f2 !important;
+    color: #237a45 !important;
 }
-
-/* Danger / Failure (Red) */
-.badge.bg-label-danger, .badge.badge-light-danger, .badge.badge-danger {
-    background-color: var(--cs-danger-bg) !important;
-    color: var(--cs-danger) !important;
-    border: 1px solid var(--cs-danger-border) !important;
+.notification-page .badge.bg-label-danger,
+.notification-page .badge.badge-light-danger {
+    border: 1px solid #f2d2d0 !important;
+    background: #fff4f3 !important;
+    color: #b42318 !important;
 }
-
-/* Info (Blue) */
-.badge.bg-label-info, .badge.badge-light-info {
-    background-color: var(--cs-info-bg) !important;
-    color: var(--cs-info) !important;
-    border: 1px solid var(--cs-info-border) !important;
+.notification-page .symbol-label,
+.notification-page .stat-icon-box { border-radius: 12px !important; background: var(--notify-blue-soft) !important; color: var(--notify-blue) !important; }
+.notification-page .symbol-label i,
+.notification-page .stat-icon-box i { color: var(--notify-blue) !important; }
+.notification-page .form-control,
+.notification-page .form-select,
+.notification-page select,
+.notification-page textarea {
+    min-height: 42px;
+    border: 1px solid #d2d2d7 !important;
+    border-radius: 10px !important;
+    background-color: #fff !important;
+    color: var(--notify-ink) !important;
 }
-
-/* Primary Brand (App FCM / Navigation) */
-.badge.bg-label-primary, .badge.badge-light-primary {
-    background-color: var(--cs-brand-blue-light) !important;
-    color: var(--cs-brand-blue) !important;
-    border: 1px solid var(--cs-brand-blue-border) !important;
+.notification-page textarea { min-height: 100px; }
+.notification-page .form-control:focus,
+.notification-page .form-select:focus,
+.notification-page select:focus,
+.notification-page textarea:focus {
+    border-color: var(--notify-blue) !important;
+    box-shadow: 0 0 0 3px rgba(0,113,227,.13) !important;
 }
-
-/* Marketing Strictly (Purple) */
-.badge.bg-label-marketing, .badge.badge-light-marketing,
-.badge.bg-label-purple, .badge.badge-light-purple {
-    background-color: var(--cs-marketing-bg) !important;
-    color: var(--cs-marketing) !important;
-    border: 1px solid var(--cs-marketing-border) !important;
+.notification-page label { color: var(--notify-secondary); font-weight: 600; }
+.notification-page .accordion-item,
+.notification-page .list-group-item { border-color: var(--notify-line) !important; background: #fff !important; }
+.notification-page .table-responsive { border-radius: 12px; }
+.notification-page .table { --bs-table-bg: transparent; color: var(--notify-ink); }
+.notification-page .table thead th,
+.notification-page .table-primary th,
+.notification-page .table-light th {
+    border-top: 0 !important;
+    border-bottom: 1px solid var(--notify-line) !important;
+    background: #f5f5f7 !important;
+    color: #515154 !important;
+    font-size: .76rem !important;
+    font-weight: 650 !important;
+    white-space: nowrap;
 }
-
-/* Neutral / Secondary / System / Legacy */
-.badge.bg-label-secondary, .badge.badge-light-secondary,
-.badge.bg-label-dark, .badge.badge-light-dark {
-    background-color: var(--cs-neutral-bg) !important;
-    color: var(--cs-neutral) !important;
-    border: 1px solid var(--cs-neutral-border) !important;
+.notification-page .table tbody td {
+    border-bottom: 1px solid #eeeef0 !important;
+    color: var(--notify-ink) !important;
+    vertical-align: middle;
 }
-
-/* 5. Operation Action Buttons */
-.btn-operation {
-    color: var(--cs-brand-blue) !important;
-    border: 1.5px solid var(--cs-brand-blue-border) !important;
-    background-color: #FFFFFF !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
-    transition: all 0.2s ease-in-out !important;
-}
-
-.btn-operation:hover {
-    background-color: var(--cs-brand-blue-light) !important;
-    border-color: var(--cs-brand-blue) !important;
-    color: var(--cs-brand-blue-hover) !important;
-}
-
-.btn-operation span {
-    color: var(--cs-brand-blue) !important;
-}
-
-.btn-operation.btn-operation-teal {
-    color: var(--cs-brand-teal) !important;
-    border-color: var(--cs-brand-teal-border) !important;
-}
-
-.btn-operation.btn-operation-teal:hover {
-    background-color: var(--cs-brand-teal-light) !important;
-    border-color: var(--cs-brand-teal) !important;
-    color: var(--cs-brand-teal-hover) !important;
-}
-
-.btn-operation.btn-operation-teal i {
-    color: var(--cs-brand-teal) !important;
-}
-
-.btn-operation.btn-operation-warning {
-    color: var(--cs-warning) !important;
-    border-color: var(--cs-warning-border) !important;
-}
-
-.btn-operation.btn-operation-warning:hover {
-    background-color: var(--cs-warning-bg) !important;
-    border-color: var(--cs-warning) !important;
-    color: var(--cs-warning) !important;
-}
-
-.btn-operation.btn-operation-warning i {
-    color: var(--cs-warning) !important;
-}
-
-/* 6. Standard Action Buttons */
-.btn-primary, button.btn-primary, a.btn-primary {
-    background-color: var(--cs-brand-blue) !important;
-    border-color: var(--cs-brand-blue) !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 1px 2px rgba(31, 95, 175, 0.15) !important;
-}
-
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    background-color: var(--cs-brand-blue-hover) !important;
-    border-color: var(--cs-brand-blue-hover) !important;
-    color: #FFFFFF !important;
-}
-
-.btn-light, .btn-secondary {
-    background-color: #FFFFFF !important;
-    border: 1px solid var(--cs-border-subtle) !important;
-    color: var(--cs-text-secondary) !important;
-}
-
-.btn-light:hover, .btn-secondary:hover {
-    background-color: var(--cs-brand-blue-light) !important;
-    border-color: var(--cs-brand-blue-border) !important;
-    color: var(--cs-brand-blue) !important;
-}
-
-/* 7. Tables: Crisp Headers and Calm Rows */
-.table thead th, thead.table-primary th, .table-primary th {
-    background-color: #F8FAFC !important;
-    color: #334155 !important;
-    border-bottom: 2px solid var(--cs-border-subtle) !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
-    letter-spacing: 0.01em !important;
-}
-
-.table tbody tr:hover {
-    background-color: #F8FAFC !important;
-}
-
-.table tbody td {
-    color: var(--cs-text-primary) !important;
-    border-bottom: 1px solid var(--cs-border-muted) !important;
-    vertical-align: middle !important;
-}
-
-/* 8. Metric Stat Counters & Pills */
-.stat-pill-total {
-    background-color: var(--cs-success-bg) !important;
-    border: 1px solid var(--cs-success-border) !important;
-    color: var(--cs-success) !important;
-}
-
-.stat-pill-total:hover {
-    background-color: #CFF7D7 !important;
-}
-
-.stat-pill-trash {
-    background-color: var(--cs-danger-bg) !important;
-    border: 1px solid var(--cs-danger-border) !important;
-    color: var(--cs-danger) !important;
-}
-
-.stat-pill-trash:hover {
-    background-color: #FCD8D8 !important;
-}
-
-/* 9. Symbol Boxes & Icons */
-.symbol-label.bg-light-primary {
-    background-color: var(--cs-brand-blue-light) !important;
-    color: var(--cs-brand-blue) !important;
-}
-
-.symbol-label.bg-light-success {
-    background-color: var(--cs-success-bg) !important;
-    color: var(--cs-success) !important;
-}
-
-.symbol-label.bg-light-warning {
-    background-color: var(--cs-warning-bg) !important;
-    color: var(--cs-warning) !important;
-}
-
-.symbol-label.bg-light-danger {
-    background-color: var(--cs-danger-bg) !important;
-    color: var(--cs-danger) !important;
-}
-
-.symbol-label.bg-light-info {
-    background-color: var(--cs-info-bg) !important;
-    color: var(--cs-info) !important;
-}
-
-/* 10. Tabs */
-.nav-tabs-custom .nav-link, .nav-tabs .nav-link {
-    color: var(--cs-text-secondary) !important;
-    border: none !important;
+.notification-page .table-striped > tbody > tr:nth-of-type(odd) > *,
+.notification-page .table-hover > tbody > tr:hover > * { background: #fafafd !important; }
+.notification-page .nav-tabs .nav-link,
+.notification-page .nav-tabs-custom .nav-link {
+    border: 0 !important;
     border-bottom: 2px solid transparent !important;
-    font-weight: 600 !important;
-    padding: 0.75rem 1rem !important;
+    background: transparent !important;
+    color: var(--notify-secondary) !important;
+    font-weight: 600;
 }
-
-.nav-tabs-custom .nav-link:hover, .nav-tabs .nav-link:hover {
-    color: var(--cs-brand-blue) !important;
-    border-bottom-color: var(--cs-brand-blue-border) !important;
+.notification-page .nav-tabs .nav-link.active,
+.notification-page .nav-tabs-custom .nav-link.active {
+    border-bottom-color: var(--notify-blue) !important;
+    color: var(--notify-blue) !important;
 }
-
-.nav-tabs-custom .nav-link.active, .nav-tabs .nav-link.active {
-    color: var(--cs-brand-blue) !important;
-    border-bottom: 2px solid var(--cs-brand-blue) !important;
-    background-color: transparent !important;
+.notification-page .progress { overflow: hidden; border-radius: 999px; background: #e9e9ed !important; }
+.notification-page .progress-bar { background: var(--notify-blue) !important; }
+.notification-page .pagination .page-link { border-radius: 8px; color: var(--notify-blue); }
+.notification-page .pagination .page-item.active .page-link { border-color: var(--notify-blue); background: var(--notify-blue); color: #fff; }
+.notification-page .modal-content { overflow: hidden; border: 1px solid var(--notify-line); border-radius: 18px; box-shadow: 0 18px 60px rgba(0,0,0,.16); }
+.notification-page .modal-header,
+.notification-page .modal-footer { border-color: var(--notify-line); background: #fff; }
+.notification-page .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.notification-page .page-item.active .page-link { border-color: var(--notify-blue) !important; background: var(--notify-blue) !important; color: #fff !important; }
+@media (max-width: 767.98px) {
+    .notification-page .card-header { padding: 14px 16px; }
+    .notification-page .card-body { padding: 16px; }
+    .notification-page .page-title { align-items: flex-start !important; }
+    .notification-page .table { min-width: 720px; }
 }
-
-/* 11. Pagination & DataTables Buttons */
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
-.page-item.active .page-link {
-    background: var(--cs-brand-blue) !important;
-    background-color: var(--cs-brand-blue) !important;
-    border-color: var(--cs-brand-blue) !important;
-    color: #FFFFFF !important;
-}
-
-div.dt-buttons>.dt-button {
-    background: var(--cs-brand-blue) !important;
-    background-color: var(--cs-brand-blue) !important;
-    border-color: var(--cs-brand-blue) !important;
-    color: #FFFFFF !important;
-}
-
-/* Form focus rings */
-.form-control:focus, .form-select:focus {
-    border-color: var(--cs-brand-blue) !important;
-    box-shadow: 0 0 0 0.2rem rgba(31, 95, 175, 0.15) !important;
+@media (prefers-reduced-motion: reduce) {
+    .notification-page *, .notification-page *::before, .notification-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 </style>

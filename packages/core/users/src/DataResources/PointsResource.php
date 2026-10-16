@@ -38,10 +38,6 @@ class PointsResource extends JsonResource
         $reason = $this->display_title;
         $reasonHtml = '<div class="d-flex flex-column text-start"><span class="text-dark fw-bold">'
             . e($reason) . '</span>';
-        if ($this->expire_at) {
-            $expiry = Carbon::parse($this->expire_at)->locale(app()->getLocale())->translatedFormat('d F Y');
-            $reasonHtml .= '<span class="text-warning fs-8">' . e(trans('points_ui.expiry_date')) . ': ' . e($expiry) . '</span>';
-        }
         $reasonHtml .= '</div>';
 
         $orderHtml = '-';

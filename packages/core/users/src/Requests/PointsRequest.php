@@ -32,7 +32,6 @@ class PointsRequest extends FormRequest
 			 "title"      =>  ['required','string'], 
 			 "amount"     =>  ['required','string'], 
 			 "operation"  =>  ['required','in:withdraw,deposit'], 
-			 "expire_at"  =>  ['nullable','date'], 
 			 "user_id"    =>  ['required','exists:users,id'], 
 			]; 
 
@@ -52,8 +51,6 @@ class PointsRequest extends FormRequest
 			 "amount.required"     =>  trans('amount is required'), 
 			 "operation.in"        =>  trans('operation is not allowed'), 
 			 "operation.required"  =>  trans('operation is required'), 
-			 "expire_at.date"      =>  trans('expire at should be a date'), 
-			 "expire_at.required"  =>  trans('expire at is required'), 
 			 "user_id.exists"      =>  trans('user is not Valid'), 
 			 "user_id.required"    =>  trans('user is required'), 
 			]; 

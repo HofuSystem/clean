@@ -173,3 +173,15 @@ table img {
 table  th {
     letter-spacing:0px !important
 }
+
+/* Keep the sidebar scrollable without showing the browser's native scrollbar. */
+.layout-menu .menu-inner {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.layout-menu .menu-inner::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}

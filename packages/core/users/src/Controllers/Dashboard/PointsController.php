@@ -109,7 +109,7 @@ class PointsController extends Controller
         $url        = route('dashboard.points.import') ;
         $exportUrl  = route('dashboard.points.export',['headersOnly' => 1]) ;
         $backUrl    = route('dashboard.points.index') ;
-        $cols       = ['title'=>'title','amount'=>'amount','operation'=>'operation','expire_at'=>'expire at','user_id'=>'user'];
+        $cols       = ['title'=>'title','amount'=>'amount','operation'=>'operation','user_id'=>'user'];
         return view('settings::views.import', compact('title','screen','url','exportUrl','backUrl','cols'));
     }
     public function import(ImportPointsRequest $request){
