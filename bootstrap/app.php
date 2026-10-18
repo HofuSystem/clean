@@ -85,6 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\RedirectLegacyUrls::class);
+        $middleware->append(\App\Http\Middleware\NoIndexPrivatePages::class);
 
         // Add route-record to the API middleware group
         $middleware->group('api', [

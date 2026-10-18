@@ -15,6 +15,7 @@ use Core\Pages\Requests\PagesRequest;
 use Core\Pages\Requests\ImportPagesRequest;
 use Core\Pages\Exports\PagesExport;
 use Core\Pages\Services\PagesService;
+use Core\Pages\Models\Testimonial;
 use Core\Settings\Helpers\ToolHelper;
 
 class PagesController extends Controller
@@ -35,12 +36,15 @@ class PagesController extends Controller
     public function createOrEdit(Request $request,$id = null){
         $item       = isset($id)    ? $this->pagesService->get($id) : null;
         $screen     = isset($item)  ? 'pages-edit'          : 'pages-create';
-        $title      = isset($item)  ? trans("pages  edit")  : trans("pages  create");
+        $title      = isset($item)
+            ? (app()->getLocale() === 'ar' ? 'تعديل الصفحة' : trans('pages  edit'))
+            : (app()->getLocale() === 'ar' ? 'إضافة صفحة' : trans('pages  create'));
 		$pages = $this->pagesService->selectable(['id']);
         $sectionsData = ToolHelper::sectionsData();
+        $testimonials = Testimonial::with('translations')->orderBy('id')->get();
 
 
-        return view('pages::pages.pages.edit', compact('item','title','screen','pages','sectionsData') );
+        return view('pages::pages.pages.edit', compact('item','title','screen','pages','sectionsData','testimonials') );
     }
 
     public function storeOrUpdate(PagesRequest $request, $id = null){

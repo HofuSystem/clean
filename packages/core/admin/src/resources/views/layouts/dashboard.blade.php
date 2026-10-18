@@ -14,6 +14,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('control') }}/assets/img/favicon/favicon.png" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="robots" content="noindex, nofollow">
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.2/quill.bubble.css"

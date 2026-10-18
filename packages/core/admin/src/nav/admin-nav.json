@@ -748,16 +748,6 @@
           "en": "contact requests",
           "ar": "طلبات الاتصال"
         }
-      },
-      {
-        "url": null,
-        "route": "dashboard.testimonials.index",
-        "type": null,
-        "icon": null,
-        "title": {
-          "en": "Customers",
-          "ar": "العملاء"
-        }
       }
     ]
   },

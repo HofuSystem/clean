@@ -1,9 +1,8 @@
 User-agent: *
 Allow: /
 
-# Disallow admin and control panel areas
+# Admin pages use noindex headers and must remain crawlable so search engines can see them.
 Disallow: /control/
-Disallow: /admin/
 Disallow: /client/
 Disallow: /api/
 Disallow: /api-docs
@@ -31,7 +30,7 @@ Disallow: /*.log$
 Disallow: /*.tmp$
 
 # Sitemap location
-Sitemap: https://cleanstation.app/sitemap.xml
+Sitemap: https://cleanstation.app/ar/sitemap.xml
 
 # Crawl delay (optional - be respectful to server)
 Crawl-delay: 1

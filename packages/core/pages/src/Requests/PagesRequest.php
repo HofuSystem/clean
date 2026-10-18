@@ -41,7 +41,9 @@ class PagesRequest extends FormRequest
 			 "sections.*.translations.en.description"  =>  ['nullable','string'],
 			 "sections.*.translations.ar.description"  =>  ['nullable','string'],
 			 "sections.*.video"                        =>  ['nullable','string'],
-			 "sections.*.template"                     =>  ['nullable','in:'],
+			 "sections.*.template"                     =>  ['required','string','in:hero,order-modes,pricing,why-us,services,app-features,testimonials,faq,contact,blogs,b2b,coverage,gifts-hero,gifts-collections,gifts-benefits,gifts-occasions,gifts-steps,gifts-faq,gifts-cta'],
+			 "sections.*.images"                       =>  ['nullable','string','max:255'],
+			 "sections.*.id"                           =>  ['nullable','integer'],
 			];
 
     }

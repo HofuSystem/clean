@@ -4,7 +4,9 @@ namespace Core\Blog\Services;
 
 use Core\Comments\Services\CommentingService;
 use Core\Blog\Models\Blog;
+use Core\Blog\Models\BlogSlugRedirect;
 use Core\Blog\DataResources\BlogsResource;
+use Illuminate\Support\Facades\DB;
 
 class BlogsService
 {
@@ -23,8 +25,27 @@ class BlogsService
 
     public function storeOrUpdate(array $data = [],$id = null){
         $recordData = array_filter($data,fn($key) => in_array($key, ['slug','image','gallery','category_id','status','published_at','translations']),ARRAY_FILTER_USE_KEY);
-        $record     = Blog::updateOrCreate(['id' => $id],$recordData);
+        $record = DB::transaction(function () use ($id, $recordData) {
+            $previousSlug = $id ? Blog::whereKey($id)->value('slug') : null;
+            $record = Blog::updateOrCreate(['id' => $id], $recordData);
+            $newSlug = $record->slug;
 
+            if ($previousSlug && $previousSlug !== $newSlug) {
+                BlogSlugRedirect::where('new_slug', $previousSlug)->update([
+                    'new_slug' => $newSlug,
+                    'updated_at' => now(),
+                ]);
+                BlogSlugRedirect::updateOrCreate(
+                    ['old_slug' => $previousSlug],
+                    ['new_slug' => $newSlug]
+                );
+            }
+
+            // Reusing a historical slug makes the live article canonical again.
+            BlogSlugRedirect::where('old_slug', $newSlug)->delete();
+
+            return $record;
+        });
 
         return $record;
     }
@@ -34,12 +55,22 @@ class BlogsService
     }
 
     public function delete(int $id,$final = false){
-        $record             = Blog::findOrFail($id);
-        if($final){
-            $record->forceDelete();
-        }else{
-            $record->delete();
-        }
+        DB::transaction(function () use ($id, $final) {
+            $record = Blog::findOrFail($id);
+            if ($final) {
+                BlogSlugRedirect::where('new_slug', $record->slug)->update([
+                    'new_slug' => null,
+                    'updated_at' => now(),
+                ]);
+                BlogSlugRedirect::updateOrCreate(
+                    ['old_slug' => $record->slug],
+                    ['new_slug' => null]
+                );
+                $record->forceDelete();
+            } else {
+                $record->delete();
+            }
+        });
         return true;
     }
 

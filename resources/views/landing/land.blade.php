@@ -18,6 +18,9 @@
         $heroSec = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
         $heroImageUrl = $heroSec ? $heroSec->image_url : null;
     }
+    $homePage = $page ?? ($homePage ?? null);
+    $heroSection = $heroSection ?? ($heroSec ?? null);
+    $homeCopy = fn (string $template) => $homePage?->sections?->firstWhere('template', $template)?->translate($lang);
     $heroResponsive = !empty($heroImageUrl) ? \App\Support\WebsiteImages::attributes($heroImageUrl) : [];
 
     if (!isset($bags)) {
@@ -131,6 +134,12 @@
     $socialShareLocale = $isRtl ? 'ar' : 'en';
     $socialShareTitle = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_title_' . $socialShareLocale));
     $socialShareDescription = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_description_' . $socialShareLocale));
+    $officialSameAs = collect(['twitter', 'instagram', 'tiktok', 'snapchat', 'youtube', 'facebook'])
+        ->map(fn ($key) => trim((string) setting($key)))
+        ->filter()->values()->all();
+    $organizationLogo = config('app.logo')
+        ? (Str::startsWith(config('app.logo'), 'http') ? config('app.logo') : asset('storage/' . config('app.logo')))
+        : asset('assets/logo-main.png');
 @endphp
 <!doctype html>
 <html lang="{{ $lang }}" dir="{{ $dir }}" class="scroll-smooth">
@@ -194,11 +203,8 @@
       "name": "كلين ستيشن",
       "alternateName": "Clean Station",
       "url": "https://cleanstation.app",
-      "logo": "https://cleanstation.app/assets/images/logo.png",
-      "sameAs": [
-        "https://twitter.com/cleanstation_sa",
-        "https://www.instagram.com/cleanstation.sa"
-      ],
+      "logo": @json($organizationLogo),
+      "sameAs": @json($officialSameAs),
       "areaServed": { "@type": "City", "name": "Riyadh" },
       "contactPoint": {
         "@type": "ContactPoint",
@@ -344,11 +350,8 @@
       "name": "Clean Station",
       "alternateName": "كلين ستيشن",
       "url": "https://cleanstation.app",
-      "logo": "https://cleanstation.app/assets/images/logo.png",
-      "sameAs": [
-        "https://twitter.com/cleanstation_sa",
-        "https://www.instagram.com/cleanstation.sa"
-      ],
+      "logo": @json($organizationLogo),
+      "sameAs": @json($officialSameAs),
       "areaServed": { "@type": "City", "name": "Riyadh" },
       "contactPoint": {
         "@type": "ContactPoint",
@@ -696,7 +699,10 @@ p,q,li,.desc,.fit{text-wrap:balance}
 .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
 .r{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:#fff;display:flex;flex-direction:column;justify-content:space-between}
 .r q{font-size:14px;color:var(--ink);line-height:1.6;quotes:none}
-.r .who{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.r .who{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:flex-start;align-items:center;font-size:12px;gap:10px}
+.r .review-person{display:flex;align-items:center;gap:10px;min-width:0}
+.r .review-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;object-fit:cover;border:2px solid var(--sky-soft);background:var(--bg-2)}
+.r .review-person-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
 .r .who b{color:var(--navy)}
 .r .who .svc{font-size:12px;font-weight:600;color:#01659f;background:var(--sky-soft);padding:3px 12px;border-radius:999px;display:inline-block}
 .reviews-dots{display:none}
@@ -1111,7 +1117,13 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           </span>
         </div>
 
-        @if($isRtl)
+        @php($heroCopy = $heroSection?->translate($lang))
+        @if(filled($heroCopy?->title))
+          <h1>{{ $heroCopy->title }}</h1>
+          @if(filled($heroCopy?->description))
+            <p class="lead">{!! $heroCopy->description !!}</p>
+          @endif
+        @elseif($isRtl)
           <h1>غسيلك... أذكى وأنظف!</h1>
           <p class="lead">غسيل وكوي ودراي كلين لملابسك ومفروشاتك وسجادك وأحذيتك، نستلمها من بابك ونرجعها لك في الوقت اللي تختاره</p>
           <div class="facts">
@@ -1175,7 +1187,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <!-- Two Ways to Order (Order Widget) -->
   <section class="ow-section" id="order-modes">
     <div class="wrap">
-      <h2>{{ $isRtl ? 'طريقتين للطلب من التطبيق' : 'Two ways to order in the app' }}</h2>
+      <h2>{{ $homeCopy('order-modes')?->title ?: ($isRtl ? 'طريقتين للطلب من التطبيق' : 'Two ways to order in the app') }}</h2>
+      @if(filled($homeCopy('order-modes')?->description))<p class="sub">{!! $homeCopy('order-modes')->description !!}</p>@endif
       <div class="ow">
         <!-- 1. Quick Order -->
         <div class="card">
@@ -1215,16 +1228,17 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <section class="pricing-section" id="pricing">
     <div class="wrap">
       <span class="kicker">{{ $isRtl ? 'الأسعار' : 'Pricing' }}</span>
-      <h2>{{ $isRtl ? 'الحقائب الاقتصادية' : 'Value laundry bags' }}</h2>
-      <p class="sub">{{ $isRtl ? 'عبّ الحقيبة بملابسك وادفع سعر ثابت يوفّر عليك، والقطع الزايدة بسعر رمزي' : 'Fill the bag and pay one fixed price that saves you more, with extra items at a small fee' }}</p>
+      <h2>{{ $homeCopy('pricing')?->title ?: ($isRtl ? 'الحقائب الاقتصادية' : 'Value laundry bags') }}</h2>
+      <p class="sub">{!! $homeCopy('pricing')?->description ?: ($isRtl ? 'عبّ الحقيبة بملابسك وادفع سعر ثابت يوفّر عليك، والقطع الزايدة بسعر رمزي' : 'Fill the bag and pay one fixed price that saves you more, with extra items at a small fee') !!}</p>
 
       <!-- Dynamic Bags from Backend -->
       <div class="bags">
-        @forelse($bags as $bag)
-          @php
+        <?php if (count($bags)): ?>
+        <?php foreach ($bags as $bag): ?>
+          <?php
             $bagName = $bag->translate($lang) ? $bag->translate($lang)->name : $bag->name;
             $cleanTitle = trim(preg_replace('/[-–]\s*\d+\s*(قطعة|قطع|pieces?|items?)/iu', '', $bagName));
-            $isMostPopular = ($bag->id == $mostOrderedBagId);
+            $isMostPopular = ($bag->id == ($mostOrderedBagId ?? null));
             $extraPrice = $extraPrices[$bag->id] ?? null;
 
             // Subtitle: Piece count + service type as in Image 2
@@ -1246,7 +1260,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
                 $subText = $m[0];
               }
             }
-          @endphp
+          ?>
           <div class="bag">
             @if($isMostPopular)
               <span class="tag">{{ $isRtl ? 'الأكثر طلباً' : 'Most popular' }}</span>
@@ -1266,9 +1280,10 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
               <span class="ex">{{ $isRtl ? "القطعة الإضافية {$extraPrice} ريال" : "Extra piece SAR {$extraPrice}" }}</span>
             @endif
           </div>
-        @empty
+        <?php endforeach; ?>
+        <?php else: ?>
           <p class="desc">{{ $isRtl ? 'لا توجد حقائب متاحة حالياً' : 'No bags available at the moment' }}</p>
-        @endforelse
+        <?php endif; ?>
       </div>
 
       <!-- Dynamic Per-Piece Table from Backend (5 Sample Items) -->
@@ -1287,7 +1302,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
             </tr>
           </thead>
           <tbody>
-            @forelse($sampleProducts as $sp)
+            <?php if (count($sampleProducts)): ?>
+            <?php foreach ($sampleProducts as $sp): ?>
               <tr>
                 <td>{{ $isRtl ? $sp['name_ar'] : $sp['name_en'] }}</td>
                 <td>
@@ -1312,11 +1328,12 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
                   @endif
                 </td>
               </tr>
-            @empty
+            <?php endforeach; ?>
+            <?php else: ?>
               <tr>
                 <td colspan="4">{{ $isRtl ? 'لا توجد بيانات أسعار' : 'No pricing data available' }}</td>
               </tr>
-            @endforelse
+            <?php endif; ?>
           </tbody>
         </table>
       </div>
@@ -1333,7 +1350,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     <div class="wrap">
       <div>
         <span class="kicker">{{ $isRtl ? 'ليش كلين ستيشن؟' : 'Why Clean Station?' }}</span>
-        <h2>{{ $isRtl ? 'كلهم يغسلون... بس كلين ستيشن غير الكل' : 'Everyone washes... but Clean Station is unlike the rest' }}</h2>
+        <h2>{{ $homeCopy('why-us')?->title ?: ($isRtl ? 'كلهم يغسلون... بس كلين ستيشن غير الكل' : 'Everyone washes... but Clean Station is unlike the rest') }}</h2>
+        @if(filled($homeCopy('why-us')?->description))<p class="sub">{!! $homeCopy('why-us')->description !!}</p>@endif
       </div>
       <div class="why-grid">
         <div class="why">
@@ -1383,7 +1401,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   <section class="journey journey-section" id="services">
     <div class="wrap">
       <span class="kicker">{{ $isRtl ? 'خطوات العمل' : 'Work steps' }}</span>
-      <h2>{{ $isRtl ? 'رحلة العناية المتكاملة' : 'Complete care journey' }}</h2>
+      <h2>{{ $homeCopy('services')?->title ?: ($isRtl ? 'رحلة العناية المتكاملة' : 'Complete care journey') }}</h2>
+      @if(filled($homeCopy('services')?->description))<p class="sub">{!! $homeCopy('services')->description !!}</p>@endif
       <div class="jgrid">
         <div class="j">
           <h3>{{ $isRtl ? '1 · الطلب الذكي' : '1 · Smart order' }}</h3>
@@ -1438,7 +1457,8 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
     <div class="wrap">
       <div>
         <span class="kicker">{{ $isRtl ? 'تطبيق كلين ستيشن' : 'Clean Station App' }}</span>
-        <h2>{{ $isRtl ? 'كل شي من جوالك' : 'Everything from your phone' }}</h2>
+        <h2>{{ $homeCopy('app-features')?->title ?: ($isRtl ? 'كل شي من جوالك' : 'Everything from your phone') }}</h2>
+        @if(filled($homeCopy('app-features')?->description))<p class="sub">{!! $homeCopy('app-features')->description !!}</p>@endif
       </div>
       <div class="feat-grid">
         <div class="f">
@@ -1489,62 +1509,48 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
   </section>
 
   <!-- Customer Reviews -->
+  <?php if ($testimonials->isNotEmpty()) { ?>
   <section class="reviews-section">
     <div class="wrap">
       <span class="kicker">{{ $isRtl ? 'آراء وتجارب' : 'Customer reviews' }}</span>
-      <h2>{{ $isRtl ? 'ماذا قال عملاؤنا؟' : 'What our customers say' }}</h2>
+      <h2>{{ $homeCopy('testimonials')?->title ?: ($isRtl ? 'ماذا قال عملاؤنا؟' : 'What our customers say') }}</h2>
+      <?php $testimonialsDescription = $homeCopy('testimonials')?->description; if (filled($testimonialsDescription)) { ?><p class="sub"><?= $testimonialsDescription ?></p><?php } ?>
       <div class="rgrid" id="reviewsSlider">
-        <div class="r">
-          <q>{{ $isRtl ? 'نظافة الملابس روعة والريحة تجنن والتطبيق سهل جدا في الطلب وما ياخذ وقت صراحة انصح الكل يجربهم بدون تردد' : 'The clothes come back spotless and smell amazing, and ordering in the app is quick and easy. I recommend them to everyone' }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'سارة ابراهيم' : 'Sarah Ibrahim' }}</b>
-            <span class="svc">{{ $isRtl ? 'غسيل وكوي' : 'Wash & iron' }}</span>
-          </div>
-        </div>
-        <div class="r">
-          <q>{{ $isRtl ? 'اكثر شي جذبني دقة المواعيد في الاستلام والتسليم وهذا شي نادر بصراحة والمناديب واضح انهم مدربين ومو عشوائيين ابدا في التعامل' : 'What won me over is how punctual pickup and delivery are, which is rare. The drivers are clearly well trained' }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'د. سلطان' : 'Dr. Sultan' }}</b>
-            <span class="svc">{{ $isRtl ? 'الاستلام والتسليم' : 'Pickup & delivery' }}</span>
-          </div>
-        </div>
-        <div class="r">
-          <q>{{ $isRtl ? 'تعامل احترافي مع الاقمشة الحساسة والقطع الراقية والكوي عندهم فنان صراحة' : 'Professional with delicate fabrics and premium pieces, and their ironing is an art' }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'هند علي' : 'Hind Ali' }}</b>
-            <span class="svc">{{ $isRtl ? 'دراي كلين' : 'Dry cleaning' }}</span>
-          </div>
-        </div>
-        <div class="r">
-          <q>{{ $isRtl ? 'ريحة البطانيات تجنن وتفتح النفس' : 'The blankets smell wonderful' }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'لولوة' : 'Lulwa' }}</b>
-            <span class="svc">{{ $isRtl ? 'مفروشات' : 'Bedding' }}</span>
-          </div>
-        </div>
-        <div class="r">
-          <q>{{ $isRtl ? 'خدمة تبيض الوجه والمناديب مو عشوائيين في استلام الملابس وهذا اللي خلاني اثق فيهم' : "Excellent service, and the drivers are careful when collecting clothes. That's what made me trust them" }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'مساعد خالد' : 'Musaed Khalid' }}</b>
-            <span class="svc">{{ $isRtl ? 'غسيل وكوي' : 'Wash & iron' }}</span>
-          </div>
-        </div>
-        <div class="r">
-          <q>{{ $isRtl ? 'الشغل مرتب ونظفوا الاحذية بشكل ممتاز بس تمنيت لو كان فيه خيارات اكثر لتغليف الاحذية بدل الاكياس البلاستيك العادية لكن بشكل عام جودة التنظيف ممتازة' : "Neat work and the shoes came out great. I'd like more packaging options than plain plastic bags, but overall the cleaning quality is excellent" }}</q>
-          <div class="who">
-            <b>{{ $isRtl ? 'ماجد' : 'Majed' }}</b>
-            <span class="svc">{{ $isRtl ? 'أحذية' : 'Shoes' }}</span>
-          </div>
-        </div>
+        <?php foreach ($testimonials as $testimonial) { ?>
+          <?php
+            $testimonialName = $testimonial->translate($lang)?->name ?: $testimonial->translate('en')?->name ?: $testimonial->translate('ar')?->name;
+            $testimonialBody = $testimonial->translate($lang)?->body ?: $testimonial->translate('en')?->body ?: $testimonial->translate('ar')?->body;
+            $testimonialTranslation = $testimonial->translate($lang) ?: $testimonial->translate('en') ?: $testimonial->translate('ar');
+            $testimonialLabel = $testimonialTranslation?->title ?: $testimonialTranslation?->location;
+          ?>
+          <?php if (filled($testimonialBody)) { ?>
+            <article class="r">
+              <div>
+                <q><?= e($testimonialBody) ?></q>
+              </div>
+              <div class="who">
+                <div class="review-person">
+                  <?php if (filled($testimonial->avatar)) { ?><img class="review-avatar" src="<?= e($testimonial->image_url) ?>" alt="<?= e($testimonialName) ?>" loading="lazy" decoding="async"><?php } ?>
+                  <div class="review-person-copy">
+                    <b><?= e($testimonialName) ?></b>
+                    <?php if (filled($testimonialLabel)) { ?><span class="svc"><?= e($testimonialLabel) ?></span><?php } ?>
+                  </div>
+                </div>
+              </div>
+            </article>
+          <?php } ?>
+        <?php } ?>
       </div>
       <div class="reviews-dots" id="reviewsDots"></div>
     </div>
   </section>
+  <?php } ?>
 
   <!-- FAQ & Final Call to Action -->
   <section id="faq">
     <div class="wrap">
-      <h2 style="text-align:center">{{ $isRtl ? 'قبل ما تطلب' : 'Before you order' }}</h2>
+      <h2 style="text-align:center">{{ $homeCopy('faq')?->title ?: ($isRtl ? 'قبل ما تطلب' : 'Before you order') }}</h2>
+      @if(filled($homeCopy('faq')?->description))<p class="sub">{!! $homeCopy('faq')->description !!}</p>@endif
       <div class="faq">
         @if($isRtl)
           <details open>
@@ -1658,7 +1664,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:44px 0 32px}
           var dot = document.createElement('button');
           dot.type = 'button';
           dot.className = 'dot' + (index === 0 ? ' active' : '');
-          dot.setAttribute('aria-label', (document.documentElement.lang === 'ar' ? 'الانتقال إلى التقييم ' : 'Go to review ') + (index + 1));
+          dot.setAttribute('aria-label', (document.documentElement.lang === 'ar' ? 'الانتقال إلى الرأي ' : 'Go to review ') + (index + 1));
           dot.addEventListener('click', function() {
             card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           });

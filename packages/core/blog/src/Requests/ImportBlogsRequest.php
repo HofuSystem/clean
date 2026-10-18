@@ -31,8 +31,8 @@ class ImportBlogsRequest extends FormRequest
       return [ 
 			 "data.*.translations.en.title"    =>  ['required','string'], 
 			 "data.*.translations.ar.title"    =>  ['required','string'], 
-			 "data.*.translations.en.content"  =>  ['nullable','string'], 
-			 "data.*.translations.ar.content"  =>  ['nullable','string'], 
+			 "data.*.translations.en.content"  =>  ['required_if:data.*.status,publish','string'],
+			 "data.*.translations.ar.content"  =>  ['required_if:data.*.status,publish','string'],
 			 "data.*.category_id"              =>  ['required','exists:blog_categories,id'], 
 			 "data.*.status"                   =>  ['required','in:pending,publish'], 
 			 "data.*.published_at"             =>  ['nullable','date'], 

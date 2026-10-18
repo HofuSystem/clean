@@ -61,6 +61,32 @@
         transform: scale(0.95);
     }
 
+    .language-switcher {
+        width: auto !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 10px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 999px !important;
+        background: #fff !important;
+        color: #334155 !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        text-transform: uppercase !important;
+        transition: background-color .2s, border-color .2s, color .2s !important;
+    }
+    .language-switcher:hover {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #1f3364 !important;
+    }
+
     /* Mobile Menu Toggle Button: STRICTLY hidden on desktop (>=1280px), visible only on mobile/tablet (<1280px) */
     #mobile-menu-toggle-btn {
         display: none !important;
@@ -181,8 +207,8 @@
                     $otherLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'en' : 'ar';
                     $waText = app()->getLocale() === 'ar' ? 'أبغى أطلب استلام غسيل، الحي:' : 'I want to request laundry pickup, District:';
                 @endphp
-                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="mobile-action-btn sm:w-9 sm:h-9 sm:rounded-full bg-gray-100 hover:bg-brand-50 hover:text-brand-600 border border-gray-200/60 flex items-center justify-center transition-all text-xs font-black uppercase text-gray-700 shadow-sm shrink-0" title="{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}" aria-label="{{ $otherLocale === 'ar' ? 'التبديل إلى العربية' : 'Switch to English' }}">
-                    {{ $otherLocale }}
+                <a rel="alternate" hreflang="{{ $otherLocale }}" href="{{ LaravelLocalization::getLocalizedURL($otherLocale, null, [], true) }}" class="language-switcher shrink-0" title="{{ $otherLocale === 'ar' ? 'العربية' : 'English' }}" aria-label="{{ $otherLocale === 'ar' ? 'التبديل إلى العربية' : 'Switch to English' }}">
+                    {{ $otherLocale === 'ar' ? 'عربي' : 'EN' }}
                 </a>
 
                 {{-- WhatsApp Order Button (Task 6) --}}

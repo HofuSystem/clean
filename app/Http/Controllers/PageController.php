@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Core\Admin\Models\NewsLetter;
 use Core\Blog\Models\Blog;
+use Core\Blog\Models\BlogSlugRedirect;
 use Core\Categories\Models\Category;
 use Core\MediaCenter\Helpers\MediaCenterHelper;
 use Core\Pages\Models\Business;
@@ -51,6 +52,11 @@ class PageController extends Controller
             ->first();
         $heroSection = $homePage ? $homePage->sections->where('template', 'hero')->first() : null;
         $heroImageUrl = $heroSection ? $heroSection->image_url : null;
+        $testimonials = Testimonial::query()
+            ->where('is_active', true)
+            ->with('translations')
+            ->orderBy('id')
+            ->get();
 
         // 2. Economic Bags (الحقائب الاقتصادية)
         $bagCategory = Category::with(['products' => function ($q) {
@@ -89,6 +95,7 @@ class PageController extends Controller
         return view('landing.land', [
             'heroImageUrl'     => $heroImageUrl,
             'heroSection'      => $heroSection,
+            'testimonials'     => $testimonials,
             'bags'             => $bags,
             'extraPrices'      => $extraPrices,
             'mostOrderedBagId' => $mostOrderedBagId,
@@ -640,7 +647,19 @@ class PageController extends Controller
     {
         $blog = Blog::published()->with('translations')->where('slug',$slug)->first();
         if(!$blog){
-            return abort(404, 'Blog not found');
+            $redirect = BlogSlugRedirect::where('old_slug', $slug)->first();
+
+            if ($redirect && $redirect->new_slug === null) {
+                return response()->view('errors.404', [], 410)
+                    ->header('X-Robots-Tag', 'noindex, nofollow');
+            }
+
+            if ($redirect && Blog::published()->where('slug', $redirect->new_slug)->exists()) {
+                return redirect()->route('blogs-single', ['slug' => $redirect->new_slug], 301);
+            }
+
+            return response()->view('errors.404', [], 404)
+                ->header('X-Robots-Tag', 'noindex, follow');
         }
         return view('pages.single-blog', [
             'blog' => $blog,
@@ -669,12 +688,14 @@ class PageController extends Controller
         return abort(404, 'Service not found');
     }
 
+    $isArabic = app()->getLocale() === 'ar';
+    $legalTitle = $isArabic ? 'الشروط والأحكام | كلين ستيشن' : 'Terms and Conditions | Clean Station';
     return view('terms', [
         'page' => $pageData,
-        'title' => $pageData->title,
+        'title' => $legalTitle,
         'description' => $pageData->content,
-        'metaTitle' => $pageData->meta_title,
-        'metaDescription' => $pageData->meta_description,
+        'metaTitle' => $legalTitle,
+        'metaDescription' => filled($pageData->meta_description) ? $pageData->meta_description : ($isArabic ? 'اطّلع على الشروط والأحكام الخاصة باستخدام خدمات كلين ستيشن.' : 'Read the terms and conditions for using Clean Station services.'),
     ]);
     }
     public function privacy()
@@ -685,12 +706,14 @@ class PageController extends Controller
         if (!$pageData) {
             return abort(404, 'Service not found');
         }
+        $isArabic = app()->getLocale() === 'ar';
+        $legalTitle = $isArabic ? 'سياسة الخصوصية | كلين ستيشن' : 'Privacy Policy | Clean Station';
         return view('privacy', [
             'page' => $pageData,
-            'title' => $pageData->title,
+            'title' => $legalTitle,
             'description' => $pageData->content,
-            'metaTitle' => $pageData->meta_title,
-            'metaDescription' => $pageData->meta_description,
+            'metaTitle' => $legalTitle,
+            'metaDescription' => filled($pageData->meta_description) ? $pageData->meta_description : ($isArabic ? 'تعرّف على كيفية جمع كلين ستيشن لمعلوماتك واستخدامها وحمايتها.' : 'Learn how Clean Station collects, uses, and protects your information.'),
         ]);
     }
 
@@ -794,11 +817,20 @@ class PageController extends Controller
 
         // Settings for whatsapp, phone, etc.
         $settings = Setting::all()->keyBy('key')->map->value;
+        $page = Page::with(['translations', 'sections.translations'])
+            ->where('slug', 'gifts')
+            ->where('is_active', true)
+            ->first();
+        $heroSection = $page?->sections->firstWhere('template', 'gifts-hero');
+        $heroTranslation = $heroSection?->translate($lang);
 
         return view('landing.gifts', [
             'settings' => $settings,
             'isRtl' => $isRtl,
             'lang' => $lang,
+            'page' => $page,
+            'heroSection' => $heroSection,
+            'heroTranslation' => $heroTranslation,
         ]);
     }
 }

@@ -200,6 +200,9 @@
         }
         
         $pathSuffix = preg_replace('/^\/(ar|en)\b/', '', request()->getPathInfo());
+        if (request()->routeIs('blog') && (int) request()->query('page') > 1) {
+            $pathSuffix .= '?page=' . (int) request()->query('page');
+        }
         if ($pathSuffix === '') {
             $pathSuffix = '/';
         }
@@ -217,9 +220,16 @@
     @php
         $resolvedCanonicalUrl = $canonicalUrl ?? \App\Support\CanonicalUrl::fromRequest(request(), config('app.url'));
         $resolvedMetaTitle = trim($metaTitle ?? '') ?: (trim($title ?? '') ?: 'Clean Station');
+        $officialSameAs = collect(['twitter', 'instagram', 'tiktok', 'snapchat', 'youtube', 'facebook'])
+            ->map(fn ($key) => trim((string) setting($key)))
+            ->filter()->values()->all();
+        $organizationLogo = config('app.logo')
+            ? (\Illuminate\Support\Str::startsWith(config('app.logo'), 'http') ? config('app.logo') : asset('storage/' . config('app.logo')))
+            : asset('assets/logo-main.png');
     @endphp
     <title>{{ $resolvedMetaTitle }}</title>
     <meta name="description" content="{{ $actualDesc }}">
+    @if(preg_match('#^/(ar|en)/login/?$#', request()->getPathInfo()))<meta name="robots" content="noindex, follow">@endif
     <meta name="keywords" content="{{ $actualKeywords }}">
     <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
 
@@ -300,7 +310,8 @@
                   "name": "كلين ستيشن",
                   "alternateName": "Clean Station",
                   "url": "https://cleanstation.app",
-                  "logo": "https://cleanstation.app/assets/images/logo.png",
+                  "logo": @json($organizationLogo),
+                  "sameAs": @json($officialSameAs),
                   "areaServed": { "@type": "City", "name": "Riyadh" },
                   "makesOffer": [
                     {
@@ -443,7 +454,8 @@
                   "name": "Clean Station",
                   "alternateName": "كلين ستيشن",
                   "url": "https://cleanstation.app",
-                  "logo": "https://cleanstation.app/assets/images/logo.png",
+                  "logo": @json($organizationLogo),
+                  "sameAs": @json($officialSameAs),
                   "areaServed": { "@type": "City", "name": "Riyadh" },
                   "makesOffer": [
                     {

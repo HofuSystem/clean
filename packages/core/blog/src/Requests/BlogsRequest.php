@@ -32,8 +32,8 @@ class BlogsRequest extends FormRequest
 			 "slug"                     =>  ['required','unique:blogs,slug,'.$this->id,'string'],
 			 "translations.en.title"    =>  ['required','string'],
 			 "translations.ar.title"    =>  ['required','string'],
-			 "translations.en.content"  =>  ['nullable','string'],
-			 "translations.ar.content"  =>  ['nullable','string'],
+			 "translations.en.content"  =>  ['required_if:status,publish','string'],
+			 "translations.ar.content"  =>  ['required_if:status,publish','string'],
 			 "status"                   =>  ['required','in:pending,publish'],
 			 "published_at"             =>  ['nullable','date'],
 			];

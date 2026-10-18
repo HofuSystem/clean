@@ -169,15 +169,6 @@
                                                 placeholder="@lang("search for") @lang("location")" value="{{ request("location") }}">
                                         </div>
                                         <div class="col-6 mb-1">
-                                            <label for="rating"> @lang("rating") </label>
-                                            <select name="rating" class="form-control filter-input">
-                                                <option value="">@lang("all")</option>
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <option value="{{ $i }}" {{ request("rating") == $i ? 'selected' : '' }}>{{ $i }} @lang('stars')</option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                        <div class="col-6 mb-1">
                                             <label for="is_active"> @lang("is active") </label>
                                             <select name="is_active" class="form-control filter-input">
                                                 <option value="">@lang("all")</option>

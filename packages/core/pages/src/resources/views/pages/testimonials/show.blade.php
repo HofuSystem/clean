@@ -215,18 +215,6 @@
             </div>
 
             <div class="form-group mb-3 col-md-3">
-                <label>{{ trans("rating") }}</label>
-                <p>
-                    @for($i = 0; $i < $item->rating; $i++)
-                        <i class="fas fa-star text-warning"></i>
-                    @endfor
-                    @for($i = $item->rating; $i < 5; $i++)
-                        <i class="fas fa-star text-muted"></i>
-                    @endfor
-                </p>
-            </div>
-
-            <div class="form-group mb-3 col-md-3">
                 <label>{{ trans("is active") }}</label>
                 <p>
                     @if($item->is_active)

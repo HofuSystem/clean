@@ -10,24 +10,17 @@
 
 @push('scripts')
 @php
-    $faqsForSchema = \Core\Pages\Models\Faq::with('translations')->get();
+    $faqLocale = app()->getLocale();
+    $faqsForSchema = \Core\Pages\Models\Faq::with('translations')->get()->map(function ($faq) use ($faqLocale) {
+        $translation = $faq->translate($faqLocale);
+        return [
+            '@type' => 'Question',
+            'name' => $translation->question ?? $faq->question,
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $translation->answer ?? $faq->answer],
+        ];
+    })->values()->all();
 @endphp
 <script type="application/ld+json">
-{
-  "@@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    @foreach($faqsForSchema as $index => $faq)
-    {
-      "@type": "Question",
-      "name": {{ json_encode($faq->translate('ar')->question ?? $faq->question) }},
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": {{ json_encode($faq->translate('ar')->answer ?? $faq->answer) }}
-      }
-    }{{ !$loop->last ? ',' : '' }}
-    @endforeach
-  ]
-}
+{!! json_encode(['@context' => 'https://schema.org', '@type' => 'FAQPage', 'inLanguage' => $faqLocale === 'ar' ? 'ar-SA' : 'en-SA', 'mainEntity' => $faqsForSchema], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
 </script>
 @endpush

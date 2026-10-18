@@ -16,6 +16,13 @@ class RedirectLegacyUrls
      */
     public function handle(Request $request, Closure $next)
     {
+        if (in_array($request->getPathInfo(), ['/ar/', '/en/'], true)) {
+            $targetUrl = url(trim($request->getPathInfo(), '/'));
+            $queryString = $request->getQueryString();
+
+            return redirect()->to($targetUrl . ($queryString ? '?' . $queryString : ''), 301);
+        }
+
         $path = $request->path(); // e.g. "ar/about-us" or "public/ar/services"
         
         $newPath = $path;
@@ -35,8 +42,13 @@ class RedirectLegacyUrls
         
         // 3. Legacy map from the brief
         $legacyMap = [
+            'land' => 'ar',
+            'ar/land' => 'ar',
+            'en/land' => 'en',
             'ar/services/mens-laundry' => 'ar/services/wash-and-iron',
             'en/services/mens-laundry' => 'en/services/wash-and-iron',
+            'ar/services/womens-laundry' => 'ar/services/wash-and-iron',
+            'en/services/womens-laundry' => 'en/services/wash-and-iron',
             'ar/services/medical-military' => 'ar/b2b',
             'en/services/medical-military' => 'en/b2b',
             'ar/services/carpets-furnishings' => 'ar/services/carpet-upholstery-cleaning',

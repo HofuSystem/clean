@@ -22,13 +22,35 @@ class PagesService
         $recordData = array_filter($data,fn($key) => in_array($key, ['slug','image','is_active','translations']),ARRAY_FILTER_USE_KEY);
         $record     = Page::updateOrCreate(['id' => $id],$recordData);
         
-        if(!isset($id)){
-            //saving on create the related sectionsItems
-            $sectionsItems            = $data['sections'] ?? [];
+        if(array_key_exists('sections', $data)){
+            $sectionsItems = $data['sections'] ?? [];
+            $savedIds = [];
+
             foreach ($sectionsItems as $index => $itemValues) {
+                $sectionId = $itemValues['id'] ?? null;
+                // Only update section ids that belong to this page. New ids are
+                // created through the page relation so edits cannot move or edit
+                // another page's section by submitting a crafted id.
+                if ($sectionId) {
+                    $existing = $record->sections()->whereKey($sectionId)->first();
+                    if (!$existing) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'sections' => trans('Invalid section for this page'),
+                        ]);
+                    }
+                }
+
                 $itemValues['page_id'] = $record->id;
-                $this->sectionsService->storeOrUpdate($itemValues,$itemValues['id'] ?? null);
+                $itemValues['order'] = $index;
+                $section = $this->sectionsService->storeOrUpdate($itemValues, $sectionId);
+                $savedIds[] = $section->id;
             }
+
+            $sectionsToDelete = $record->sections();
+            if ($savedIds) {
+                $sectionsToDelete->whereNotIn('id', $savedIds);
+            }
+            $sectionsToDelete->delete();
         }
            
         return $record;

@@ -221,7 +221,6 @@ $allowedServiceSlugs = ['wash-and-iron', 'dry-cleaning', 'carpet-upholstery-clea
         <priority>0.55</priority>
     </url>
     @endforeach
-
     {{-- ===== Legal Pages ===== --}}
     <url>
         <loc>https://cleanstation.app/ar/terms</loc>

@@ -46,10 +46,11 @@
             <!--begin::Container-->
             <div id="kt_content_container" class="container-fluid">
                 <!--begin::Card-->
-                <div class="card">
+                <div class="card testimonial-editor-card">
 
 
-                    <form class="form" method="POST" id="operation-form" data-id="{{ $item->id ?? null }}"
+                    <form class="form testimonial-editor-form" method="POST" id="operation-form" data-id="{{ $item->id ?? null }}"
+                        redirect-to="{{ route('dashboard.testimonials.index') }}"
                         @if (isset($item)) action="{{ route('dashboard.testimonials.edit', $item->id) }}"
                             data-mode="edit"
                         @else
@@ -59,25 +60,32 @@
                         @csrf
                         <div class="card-body row">
 
+                            <div class="col-12 d-flex justify-content-start mb-2 testimonial-back-row">
+                                <a href="{{ route('dashboard.testimonials.index') }}" class="btn btn-light testimonial-back-button" id="testimonial-back-button">
+                                    <i class="fas fa-arrow-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }}"></i>
+                                    {{ app()->getLocale() === 'ar' ? 'رجوع' : 'Back' }}
+                                </a>
+                            </div>
+
                             <!-- Name Field -->
-                            <div class="col-12 row mt-5">
+                            <div class="col-12 row mt-3">
                                 <ul class="nav nav-tabs" id="languageTabs" role="tablist">
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="name-en-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'en' ? 'active' : '' }}" id="name-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#name-en" type="button" role="tab"
                                             aria-controls="name-en" aria-selected=" true">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="name-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'ar' ? 'active' : '' }}" id="name-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#name-ar" type="button" role="tab"
                                             aria-controls="name-ar" aria-selected=" false">{{ trans('arabic') }}</button>
                                     </li>
 
                                 </ul>
                                 <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="name-en" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'en' ? 'show active' : '' }}" id="name-en" role="tabpanel"
                                         aria-labelledby="en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
@@ -89,7 +97,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="tab-pane fade " id="name-ar" role="tabpanel" aria-labelledby="ar-tab">
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'ar' ? 'show active' : '' }}" id="name-ar" role="tabpanel" aria-labelledby="ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
                                             <label class="required" for="name">{{ trans('name') }}</label>
@@ -104,28 +112,28 @@
                             </div>
 
                             <!-- Title/Position Field -->
-                            <div class="col-12 row mt-5">
+                            <div class="col-12 row mt-3">
                                 <ul class="nav nav-tabs" id="languageTabs2" role="tablist">
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="title-en-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'en' ? 'active' : '' }}" id="title-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#title-en" type="button" role="tab"
-                                            aria-controls="title-en" aria-selected=" true">{{ trans('English') }}</button>
+                                            aria-controls="title-en" aria-selected="{{ app()->getLocale() === 'en' ? 'true' : 'false' }}">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="title-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'ar' ? 'active' : '' }}" id="title-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#title-ar" type="button" role="tab"
-                                            aria-controls="title-ar" aria-selected=" false">{{ trans('arabic') }}</button>
+                                            aria-controls="title-ar" aria-selected="{{ app()->getLocale() === 'ar' ? 'true' : 'false' }}">{{ app()->getLocale() === 'ar' ? 'العربية' : 'Arabic' }}</button>
                                     </li>
 
                                 </ul>
                                 <div class="tab-content mt-3" id="languageTabsContent2">
-                                    <div class="tab-pane fade show active" id="title-en" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'en' ? 'show active' : '' }}" id="title-en" role="tabpanel"
                                         aria-labelledby="en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="required" for="title">{{ trans('title') }} / {{ trans('position') }}</label>
+                                            <label class="required" for="title">{{ app()->getLocale() === 'ar' ? 'المسمى الوظيفي / الصفة' : 'Title / Position' }}</label>
                                             <input type="text" name="translations[en][title]" class="form-control "
                                                 placeholder="{{ trans('Enter title or position') }} "
                                                 value="@if (isset($item)) {{ $item?->translate('en')?->title }} @endif">
@@ -133,10 +141,10 @@
                                         </div>
 
                                     </div>
-                                    <div class="tab-pane fade " id="title-ar" role="tabpanel" aria-labelledby="ar-tab">
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'ar' ? 'show active' : '' }}" id="title-ar" role="tabpanel" aria-labelledby="ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="required" for="title">{{ trans('title') }} / {{ trans('position') }}</label>
+                                            <label class="required" for="title">{{ app()->getLocale() === 'ar' ? 'المسمى الوظيفي / الصفة' : 'Title / Position' }}</label>
                                             <input type="text" name="translations[ar][title]" class="form-control "
                                                 placeholder="{{ trans('Enter title or position') }} "
                                                 value="@if (isset($item)) {{ $item?->translate('ar')?->title }} @endif">
@@ -148,18 +156,18 @@
                             </div>
 
                             <!-- Body/Content Field -->
-                            <div class="col-12 row mt-5">
+                            <div class="col-12 row mt-3">
                                 <ul class="nav nav-tabs" id="languageTabs3" role="tablist">
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="body-en-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'en' ? 'active' : '' }}" id="body-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#body-en" type="button" role="tab"
                                             aria-controls="body-en"
                                             aria-selected=" true">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="body-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'ar' ? 'active' : '' }}" id="body-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#body-ar" type="button" role="tab"
                                             aria-controls="body-ar"
                                             aria-selected=" false">{{ trans('arabic') }}</button>
@@ -167,22 +175,22 @@
 
                                 </ul>
                                 <div class="tab-content mt-3" id="languageTabsContent3">
-                                    <div class="tab-pane fade show active" id="body-en" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'en' ? 'show active' : '' }}" id="body-en" role="tabpanel"
                                         aria-labelledby="en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="body">{{ trans('body') }} / {{ trans('content') }}</label>
+                                            <label class="" for="body">{{ app()->getLocale() === 'ar' ? 'نص الرأي' : 'Review' }}</label>
                                             <textarea name="translations[en][body]" class="form-control " rows="4"
                                                 placeholder="{{ trans('Enter testimonial content') }} ">@if (isset($item)){{ $item?->translate('en')?->body }}@endif</textarea>
 
                                         </div>
 
                                     </div>
-                                    <div class="tab-pane fade " id="body-ar" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'ar' ? 'show active' : '' }}" id="body-ar" role="tabpanel"
                                         aria-labelledby="ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="body">{{ trans('body') }} / {{ trans('content') }}</label>
+                                            <label class="" for="body">{{ app()->getLocale() === 'ar' ? 'نص الرأي' : 'Review' }}</label>
                                             <textarea name="translations[ar][body]" class="form-control " rows="4"
                                                 placeholder="{{ trans('Enter testimonial content') }} ">@if (isset($item)){{ $item?->translate('ar')?->body }}@endif</textarea>
 
@@ -193,18 +201,18 @@
                             </div>
 
                             <!-- Location Field -->
-                            <div class="col-12 row mt-5">
+                            <div class="col-12 row mt-3">
                                 <ul class="nav nav-tabs" id="languageTabs4" role="tablist">
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="location-en-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'en' ? 'active' : '' }}" id="location-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#location-en" type="button" role="tab"
                                             aria-controls="location-en"
                                             aria-selected=" true">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="location-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'ar' ? 'active' : '' }}" id="location-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#location-ar" type="button" role="tab"
                                             aria-controls="location-ar"
                                             aria-selected=" false">{{ trans('arabic') }}</button>
@@ -212,7 +220,7 @@
 
                                 </ul>
                                 <div class="tab-content mt-3" id="languageTabsContent4">
-                                    <div class="tab-pane fade show active" id="location-en" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'en' ? 'show active' : '' }}" id="location-en" role="tabpanel"
                                         aria-labelledby="en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
@@ -224,7 +232,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="tab-pane fade " id="location-ar" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'ar' ? 'show active' : '' }}" id="location-ar" role="tabpanel"
                                         aria-labelledby="ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
@@ -240,7 +248,7 @@
                             </div>
 
                             <!-- Avatar Field -->
-                            <div class="form-group mb-3 col-md-6 mt-5">
+                            <div class="form-group mb-3 col-md-6 mt-3">
                                 <label class="" for="avatar">{{ trans('avatar') }}</label>
                                 <div class="media-center-group form-control" data-max="1" data-type="image">
                                     <input type="text" hidden="hidden" class="form-control" name="avatar"
@@ -251,18 +259,8 @@
                                 </div>
                             </div>
 
-                            <!-- Rating Field -->
-                            <div class="form-group mb-3 col-md-3 mt-5">
-                                <label class="" for="rating">{{ trans('rating') }}</label>
-                                <select name="rating" class="form-control">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <option value="{{ $i }}" {{ (isset($item) && $item->rating == $i) ? 'selected' : ($i == 5 ? 'selected' : '') }}>{{ $i }} @lang('stars')</option>
-                                    @endfor
-                                </select>
-                            </div>
-
                             <!-- Is Active Field -->
-                            <div class="form-group mb-3 col-md-3 mt-5">
+                            <div class="form-group mb-3 col-md-3 mt-3">
                                 <label class="" for="is_active">{{ trans('is active') }}</label>
                                 <select name="is_active" class="form-control">
                                     <option value="1" {{ (isset($item) && $item->is_active) ? 'selected' : '' }}>@lang('active')</option>
@@ -297,10 +295,40 @@
 @push('css')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link href="{{ asset('control') }}/js/custom/crud/form.css" rel="stylesheet" type="text/css" />
+    <style>
+        .testimonial-editor-card { border: 0; border-radius: 16px; box-shadow: 0 8px 28px rgba(31, 51, 100, .07); }
+        .testimonial-back-row { direction: ltr; }
+        .testimonial-back-button { margin-right: auto; }
+        .testimonial-editor-form .card-body { padding: clamp(16px, 2.4vw, 30px); row-gap: 8px; }
+        .testimonial-editor-form .form-group { margin-bottom: 14px !important; }
+        .testimonial-editor-form .nav-tabs { border-bottom-color: #e7ebf2; }
+        .testimonial-editor-form .tab-content { padding-top: 4px; }
+        .testimonial-editor-form textarea { min-height: 104px; resize: vertical; }
+        .testimonial-editor-form .card-footer { position: sticky; bottom: 0; z-index: 3; background: rgba(255,255,255,.96); border-top: 1px solid #edf0f5; padding: 12px 24px; }
+        .testimonial-editor-form .card-footer .col-lg-9 { width: 100%; text-align: end; }
+        @media (max-width: 767px) { .testimonial-editor-form .card-body { padding: 14px; } .testimonial-editor-form .nav-tabs .nav-link { padding: 8px 12px; } }
+    </style>
 @endpush
 @push('js')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/1.0.5/jquery.tablednd.js"></script>
     <script src="{{ asset('control') }}/js/custom/crud/form.js"></script>
+    <script>
+        (function () {
+            var backButton = document.getElementById('testimonial-back-button');
+            var form = document.getElementById('operation-form');
+            if (!backButton || !form) return;
+
+            try {
+                var previousPage = new URL(document.referrer);
+                if (previousPage.origin === window.location.origin) {
+                    backButton.href = previousPage.href;
+                    form.setAttribute('redirect-to', previousPage.href);
+                }
+            } catch (error) {
+                // Keep the testimonials list as the safe fallback destination.
+            }
+        })();
+    </script>
 @endpush
 

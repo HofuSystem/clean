@@ -4,14 +4,33 @@
     $whatsappPhone = preg_replace('/[^0-9]/', '', $settings['whatsapp'] ?? '966559098685') ?: '966559098685';
     $appStoreLink = 'https://cleanstation.app.link/?channel=gifts';
     $gPlayLink = function_exists('setting') ? (setting('g_play_app') ?: 'https://play.google.com/store/apps/details?id=com.googansolutions.cleanstation') : 'https://play.google.com/store/apps/details?id=com.googansolutions.cleanstation';
+    $pageTranslation = $page?->translate($lang);
+    $sectionFor = fn (string $template) => $page?->sections?->firstWhere('template', $template);
+    $copyFor = fn (string $template) => $sectionFor($template)?->translate($lang);
+    $giftsHeroImage = $heroSection?->image_url;
+    $collectionImages = $sectionFor('gifts-collections')?->images_urls ?? [];
+    $collectionImages = is_array($collectionImages) ? array_values($collectionImages) : array_filter([$collectionImages]);
+    $seoTitle = $pageTranslation?->meta_title ?: ($pageTranslation?->title ?: ($isRtl ? 'توصيل ورد وهدايا في الرياض | كلين ستيشن' : 'Flower & Gift Delivery in Riyadh | Clean Station'));
+    $seoDescription = $pageTranslation?->meta_description ?: ($pageTranslation?->description ?: ($isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، مع اختيار موعد التوصيل من تطبيق كلين ستيشن في الرياض.' : 'Flower bouquets and luxury vases for yourself or someone special, with scheduled delivery from the Clean Station app in Riyadh.'));
+    $seoImage = $giftsHeroImage ?: 'https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=1000';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $isRtl ? 'توصيل ورد وهدايا في الرياض | كلين ستيشن' : 'Flower & Gift Delivery in Riyadh | Clean Station' }}</title>
-    <meta name="description" content="{{ $isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، مع اختيار موعد التوصيل من تطبيق كلين ستيشن في الرياض.' : 'Flower bouquets and luxury vases for yourself or someone special, with scheduled delivery from the Clean Station app in Riyadh.' }}">
+    <title>{{ $seoTitle }}</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoImage }}">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('control/assets/img/favicon/favicon_white.png') }}">
@@ -22,7 +41,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind & Landing Icons CSS -->
-    <link rel="stylesheet" href="{{ asset('build/assets/landing-ByN9Vf1B.css') }}">
+    @vite(['resources/css/landing.css'])
     <link rel="stylesheet" href="{{ asset('assets/landing-icons-full.css') }}">
 
     <style>
@@ -440,7 +459,7 @@
             .ghero .lead { font-size: 14.5px; }
             .ghero .pic { max-width: 320px; margin: 0 auto; border-radius: 20px; }
 
-            /* Collection: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            /* Collection: 2 cards per row on mobile */
             .cats {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
@@ -457,7 +476,7 @@
             .occ { gap: 5px !important; }
             .occ span { font-size: 11.5px !important; padding: 3px 10px !important; }
 
-            /* Gifting Features: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            /* Gifting Features: 2 cards per row on mobile */
             .gfeat {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
@@ -470,7 +489,7 @@
             .chips.slots { gap: 4px !important; margin-top: 6px !important; }
             .chips.slots span { font-size: 10px !important; padding: 2px 7px !important; }
 
-            /* How to order steps: 2 cards per row on mobile (exact to cleanstation-site-3.html) */
+            /* How to order steps: 2 cards per row on mobile */
             .gsteps {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 10px !important;
@@ -510,10 +529,10 @@
         <div class="wrap">
             <div class="hero-grid">
                 <div>
-                    <span class="kicker">{{ $isRtl ? 'جديد · الورود والهدايا' : 'New · Flowers & Gifts' }}</span>
-                    <h1>{!! $isRtl ? 'نهتم بما ترتديه<br>ونعتني بما تهديه' : 'We care for what you wear<br>and what you give' !!}</h1>
+                    <span class="kicker">{{ $heroTranslation?->small_title ?: ($isRtl ? 'جديد · الورود والهدايا' : 'New · Flowers & Gifts') }}</span>
+                    <h1>{{ $heroTranslation?->title ?: ($pageTranslation?->title ?: ($isRtl ? 'نهتم بما ترتديه ونعتني بما تهديه' : 'We care for what you wear and what you give')) }}</h1>
                     <p class="lead">
-                        {{ $isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، وتختار موعد التوصيل من تطبيق كلين ستيشن' : 'Flower bouquets and luxury vases for yourself or someone special, with the delivery time you choose in the Clean Station app' }}
+                        {!! $heroTranslation?->description ?: ($pageTranslation?->description ?: ($isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، وتختار موعد التوصيل من تطبيق كلين ستيشن' : 'Flower bouquets and luxury vases for yourself or someone special, with the delivery time you choose in the Clean Station app')) !!}
                     </p>
                     <div class="stores">
                         <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">
@@ -525,7 +544,7 @@
                     </div>
                 </div>
                 <div class="pic">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=1000" alt="{{ $isRtl ? 'باقات الورود والهدايا' : 'Flowers and Gifts' }}">
+                    <img src="{{ $giftsHeroImage ?: 'https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=1000' }}" alt="{{ $isRtl ? 'باقات الورود والهدايا' : 'Flowers and Gifts' }}">
                 </div>
             </div>
         </div>
@@ -534,10 +553,11 @@
     <!-- Collection Section (تشكيلتنا) -->
     <section>
         <div class="wrap">
-            <h2>{{ $isRtl ? 'تشكيلتنا' : 'Our collection' }}</h2>
+            <h2>{{ $copyFor('gifts-collections')?->title ?: ($isRtl ? 'تشكيلتنا' : 'Our collection') }}</h2>
+            @if(filled($copyFor('gifts-collections')?->description))<p class="lead">{!! $copyFor('gifts-collections')->description !!}</p>@endif
             <div class="cats">
                 <div class="cat">
-                    <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=800" alt="{{ $isRtl ? 'باقات الورود' : 'Flower bouquets' }}">
+                    <img src="{{ $collectionImages[0] ?? 'https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=800' }}" alt="{{ $isRtl ? 'باقات الورود' : 'Flower bouquets' }}">
                     <div class="in">
                         <span class="k">{{ $isRtl ? 'طبيعية وساحرة' : 'Natural and charming' }}</span>
                         <h3>{{ $isRtl ? 'باقات الورود' : 'Flower bouquets' }}</h3>
@@ -545,7 +565,7 @@
                     </div>
                 </div>
                 <div class="cat">
-                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=800" alt="{{ $isRtl ? 'فازات ورد فاخرة' : 'Luxury flower vases' }}">
+                    <img src="{{ $collectionImages[1] ?? 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=75&w=800' }}" alt="{{ $isRtl ? 'فازات ورد فاخرة' : 'Luxury flower vases' }}">
                     <div class="in">
                         <span class="k">{{ $isRtl ? 'أناقة تدوم' : 'Lasting elegance' }}</span>
                         <h3>{{ $isRtl ? 'فازات ورد فاخرة' : 'Luxury flower vases' }}</h3>
@@ -555,7 +575,10 @@
             </div>
             <p class="inapp">{{ $isRtl ? 'التشكيلة كاملة وأسعارها في قسم الهدايا داخل التطبيق' : 'The full collection and prices are in the Gifts section of the app' }}</p>
             <div class="occ-row">
-                <span class="occ-l">{{ $isRtl ? 'لكل مناسبة' : 'For every occasion' }}</span>
+                <span class="occ-l">{{ $copyFor('gifts-occasions')?->title ?: ($isRtl ? 'لكل مناسبة' : 'For every occasion') }}</span>
+                @if(filled($copyFor('gifts-occasions')?->description))
+                    <div class="occ-cms">{!! $copyFor('gifts-occasions')->description !!}</div>
+                @else
                 <div class="occ">
                     @if($isRtl)
                         <span>زواج</span><span>خطوبة</span><span>حب</span><span>تخرج ونجاح</span><span>ترقية</span><span>مولود جديد</span><span>يوم ميلاد</span><span>زيارة مريض</span><span>تهنئة بمنزل جديد</span><span>شكر وتقدير</span><span>اعتذار</span><span>عيد</span><span>اليوم الوطني</span><span>بدون مناسبة</span>
@@ -563,6 +586,7 @@
                         <span>Wedding</span><span>Engagement</span><span>Love</span><span>Graduation</span><span>Promotion</span><span>New baby</span><span>Birthday</span><span>Get well soon</span><span>New home</span><span>Thank you</span><span>Sorry</span><span>Eid</span><span>National Day</span><span>Just because</span>
                     @endif
                 </div>
+                @endif
             </div>
         </div>
     </section>
@@ -572,8 +596,11 @@
         <div class="wrap">
             <div style="text-align:center">
                 <span class="kicker">{{ $isRtl ? 'مميزات الإهداء' : 'Gifting features' }}</span>
-                <h2>{{ $isRtl ? 'أهدِ بالطريقة اللي تناسبك' : 'Gift it your way' }}</h2>
+                <h2>{{ $copyFor('gifts-benefits')?->title ?: ($isRtl ? 'أهدِ بالطريقة اللي تناسبك' : 'Gift it your way') }}</h2>
             </div>
+            @if(filled($copyFor('gifts-benefits')?->description))
+                    <div class="cms-rich-content">{!! $copyFor('gifts-benefits')->description !!}</div>
+            @else
             <div class="gfeat">
                 <!-- 1. For you or anyone -->
                 <div class="why">
@@ -636,6 +663,7 @@
                     <p>{{ $isRtl ? 'كل الباقات بأسمائها وأوصافها وأسعارها في التطبيق' : 'Every bouquet with its name, description and price is in the app' }}</p>
                 </div>
             </div>
+                @endif
         </div>
     </section>
 
@@ -644,8 +672,11 @@
         <div class="wrap">
             <div style="text-align:center">
                 <span class="kicker">{{ $isRtl ? 'كيف تطلب' : 'How to order' }}</span>
-                <h2>{{ $isRtl ? 'هديتك بأربع خطوات' : 'Your gift in four steps' }}</h2>
+                <h2>{{ $copyFor('gifts-steps')?->title ?: ($isRtl ? 'هديتك بأربع خطوات' : 'Your gift in four steps') }}</h2>
             </div>
+            @if(filled($copyFor('gifts-steps')?->description))
+                    <div class="cms-rich-content">{!! $copyFor('gifts-steps')->description !!}</div>
+            @else
             <div class="gsteps">
                 <div class="j">
                     <h4>{{ $isRtl ? '1 · اختر الباقة' : '1 · Pick a bouquet' }}</h4>
@@ -664,13 +695,17 @@
                     <p>{{ $isRtl ? 'تغليف أنيق في الوقت اللي اخترته' : 'Elegant wrapping at the time you chose' }}</p>
                 </div>
             </div>
+                @endif
         </div>
     </section>
 
     <!-- FAQ (قبل ما تطلب) -->
     <section style="padding-top:0">
         <div class="wrap">
-            <h2>{{ $isRtl ? 'قبل ما تطلب' : 'Before you order' }}</h2>
+            <h2>{{ $copyFor('gifts-faq')?->title ?: ($isRtl ? 'قبل ما تطلب' : 'Before you order') }}</h2>
+            @if(filled($copyFor('gifts-faq')?->description))
+                <div class="cms-rich-content">{!! $copyFor('gifts-faq')->description !!}</div>
+            @else
             <div class="faq">
                 <details open>
                     <summary>{{ $isRtl ? 'كيف أطلب هدية؟' : 'How do I order a gift?' }}</summary>
@@ -693,12 +728,13 @@
                     <p>{{ $isRtl ? 'لا، الطلب من التطبيق فقط، والواتساب للتواصل مع خدمة العملاء وللاستفسارات' : 'No, orders are placed in the app only, and WhatsApp is for customer service and enquiries' }}</p>
                 </details>
             </div>
+            @endif
 
             <!-- Final CTA Banner -->
             <div class="final">
-                <h2>{{ $isRtl ? 'فاجئ اللي تحب بهدية أنيقة' : 'Surprise someone with an elegant gift' }}</h2>
+                <h2>{{ $copyFor('gifts-cta')?->title ?: ($isRtl ? 'فاجئ اللي تحب بهدية أنيقة' : 'Surprise someone with an elegant gift') }}</h2>
                 <div class="pts">
-                    <span>{{ $isRtl ? 'اطلبها الحين من قسم الهدايا في التطبيق' : 'Order now from the Gifts section in the app' }}</span>
+                    <span>{{ $copyFor('gifts-cta')?->description ?: ($isRtl ? 'اطلبها الحين من قسم الهدايا في التطبيق' : 'Order now from the Gifts section in the app') }}</span>
                 </div>
                 <div class="stores" style="justify-content:center">
                     <a href="{{ $appStoreLink }}" target="_blank" rel="noopener" class="store-link" aria-label="App Store">

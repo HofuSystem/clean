@@ -246,6 +246,14 @@ class ToolHelper
                 'has' => ['title', 'small_title', 'description', 'image'],
                 'entity' => []
             ],
+              "order-modes" => [
+                  'has' => ['title', 'small_title', 'description'],
+                  'entity' => []
+              ],
+              "pricing" => [
+                  'has' => ['title', 'small_title', 'description'],
+                  'entity' => []
+              ],
             "services" => [
                 'has' => ['title', 'small_title', 'description'],
                 'entity' => []
@@ -275,9 +283,41 @@ class ToolHelper
                 'entity' => []
             ],
             "testimonials" => [
-                'has' => ['title', 'small_title', 'description', 'image'],
+                'has' => ['title', 'small_title', 'description'],
                 'entity' => []
             ],
+              "coverage" => [
+                  'has' => ['title', 'small_title', 'description', 'image'],
+                  'entity' => []
+              ],
+              "gifts-hero" => [
+                  'has' => ['title', 'small_title', 'description', 'image'],
+                  'entity' => []
+              ],
+              "gifts-collections" => [
+                  'has' => ['title', 'small_title', 'description', 'image'],
+                  'entity' => []
+              ],
+              "gifts-benefits" => [
+                  'has' => ['title', 'small_title', 'description', 'image'],
+                  'entity' => []
+              ],
+              "gifts-occasions" => [
+                  'has' => ['title', 'small_title', 'description', 'image'],
+                  'entity' => []
+              ],
+              "gifts-steps" => [
+                  'has' => ['title', 'small_title', 'description'],
+                  'entity' => []
+              ],
+              "gifts-faq" => [
+                  'has' => ['title', 'small_title', 'description'],
+                  'entity' => []
+              ],
+              "gifts-cta" => [
+                  'has' => ['title', 'small_title', 'description'],
+                  'entity' => []
+              ],
         ];
     }
 }

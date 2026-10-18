@@ -12,7 +12,11 @@
                 </div>
             </div>
             <div class="order-1 lg:order-2 text-center lg:text-start" data-aos="fade-left">
-                <h2 class="text-3xl md:text-5xl font-black mb-6">{{ $section->title ?? (app()->getLocale() === 'ar' ? 'تطبيق كلين ستيشن' : 'Clean Station App') }}</h2>
+                @if(Route::is('app.features'))
+                    <h1 class="text-3xl md:text-5xl font-black mb-6">{{ app()->getLocale() === 'ar' ? 'مميزات تطبيق كلين ستيشن' : 'Clean Station App Features' }}</h1>
+                @else
+                    <h2 class="text-3xl md:text-5xl font-black mb-6">{{ $section->title ?? 'Clean Station App' }}</h2>
+                @endif
                 <div class="space-y-6 mt-8" id="app-features-list">
                     @foreach($appFeatures as $index => $feature)
                     @php $featureImage = $feature->image_url ?? $section->image_url ?? ''; @endphp

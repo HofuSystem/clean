@@ -6,7 +6,11 @@
         <div class="grid lg:grid-cols-3 gap-12">
             <div class="lg:col-span-1" data-aos="fade-left">
                 <span class="text-brand-600 font-bold uppercase tracking-widest text-xs mb-2 block">{{ $section->small_title }}</span>
-                <h2 class="text-4xl font-black text-gray-900 mb-6">{{ $section->title }}</h2>
+                @if(Route::is('faq'))
+                    <h1 class="text-4xl font-black text-gray-900 mb-6">{{ app()->getLocale() === 'ar' ? 'الأسئلة الشائعة عن كلين ستيشن' : 'Clean Station FAQs' }}</h1>
+                @else
+                    <h2 class="text-4xl font-black text-gray-900 mb-6">{{ $section->title }}</h2>
+                @endif
                 <p class="text-gray-500 mb-8 leading-relaxed">{!! $section->description !!}</p>
             </div>
             <div class="lg:col-span-2 space-y-4" data-aos="fade-right">

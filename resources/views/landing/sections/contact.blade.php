@@ -1,7 +1,11 @@
 <section id="contact" class="bg-white py-24 border-t border-gray-100">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl font-black text-gray-900 mb-4">{{ $section->title }}</h2>
+            @if(Route::is('contact'))
+                <h1 class="text-4xl font-black text-gray-900 mb-4">{{ app()->getLocale() === 'ar' ? 'تواصل مع كلين ستيشن' : 'Contact Clean Station' }}</h1>
+            @else
+                <h2 class="text-4xl font-black text-gray-900 mb-4">{{ $section->title }}</h2>
+            @endif
             <p class="text-gray-500">{!! $section->description !!}</p>
         </div>
         <div class="grid lg:grid-cols-2 gap-12">
