@@ -18,7 +18,7 @@ class Page extends CoreModel implements TranslatableContract{
 	protected $table             = 'pages';
 	protected $fillable          = ['slug', 'image', 'is_active', 'creator_id', 'updater_id'];
     protected $guarded           = [];
-    public $translatedAttributes = ["title","description","meta_title","meta_description"];
+    public $translatedAttributes = ["title","description","meta_title","meta_description","seo_image","social_share_title","social_share_description","social_share_image"];
 
     //start Scopes
     function scopeSearch($query){

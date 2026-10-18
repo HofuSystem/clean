@@ -59,7 +59,7 @@
                         @csrf
                         <div class="card-body row">
 
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group mb-3 col-12 col-xl-6">
                                 <label class="required" for="slug">{{ trans('slug') }}</label>
                                 <input type="text" name="slug" class="form-control "
                                     placeholder="{{ trans('Enter slug') }} "
@@ -67,96 +67,32 @@
 
                             </div>
 
-                            <div class="col-12 row mt-3">
-                                <ul class="nav nav-tabs" id="languageTabs" role="tablist">
-
+                            <div class="col-12 mt-3">
+                                <ul class="nav nav-tabs page-main-language-tabs" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="title-en-tab" data-bs-toggle="tab"
-                                            data-bs-target="#title-en" type="button" role="tab"
-                                            aria-controls="title-en" aria-selected=" true">{{ trans('English') }}</button>
+                                        <button class="nav-link active" id="page-main-ar-tab" data-bs-toggle="tab" data-bs-target="#page-main-ar" type="button" role="tab" aria-controls="page-main-ar" aria-selected="true">العربية</button>
                                     </li>
-
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="title-ar-tab" data-bs-toggle="tab"
-                                            data-bs-target="#title-ar" type="button" role="tab"
-                                            aria-controls="title-ar" aria-selected=" false">العربية</button>
+                                        <button class="nav-link" id="page-main-en-tab" data-bs-toggle="tab" data-bs-target="#page-main-en" type="button" role="tab" aria-controls="page-main-en" aria-selected="false">English</button>
                                     </li>
-
                                 </ul>
-                                <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="title-en" role="tabpanel"
-                                        aria-labelledby="en-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="required" for="title">{{ trans('title') }}</label>
-                                            <input type="text" name="translations[en][title]" class="form-control "
-                                                placeholder="{{ trans('Enter title') }} "
-                                                value="@if (isset($item)) {{ $item?->translate('en')?->title }} @endif">
-
+                                <div class="tab-content mt-3">
+                                    @foreach (['ar', 'en'] as $locale)
+                                        <div class="tab-pane fade {{ $locale === 'ar' ? 'show active' : '' }}" id="page-main-{{ $locale }}" role="tabpanel" aria-labelledby="page-main-{{ $locale }}-tab">
+                                            <div class="row g-3">
+                                                <div class="form-group mb-3 col-12">
+                                                    <label class="required" for="title-{{ $locale }}">{{ trans('title') }}</label>
+                                                    <input id="title-{{ $locale }}" type="text" name="translations[{{ $locale }}][title]" class="form-control" placeholder="{{ trans('Enter title') }}" value="{{ old("translations.$locale.title", $item?->translate($locale)?->title) }}">
+                                                </div>
+                                                <div class="form-group mb-3 col-12">
+                                                    <label for="description-{{ $locale }}">{{ trans('description') }}</label>
+                                                    <textarea id="description-{{ $locale }}" rows="4" name="translations[{{ $locale }}][description]" class="form-control" placeholder="{{ trans('Enter description') }}">{{ old("translations.$locale.description", $item?->translate($locale)?->description) }}</textarea>
+                                                </div>
+                                            </div>
                                         </div>
-
-                                    </div>
-                                    <div class="tab-pane fade " id="title-ar" role="tabpanel" aria-labelledby="ar-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="required" for="title">{{ trans('title') }}</label>
-                                            <input type="text" name="translations[ar][title]" class="form-control "
-                                                placeholder="{{ trans('Enter title') }} "
-                                                value="@if (isset($item)) {{ $item?->translate('ar')?->title }} @endif">
-
-                                        </div>
-
-                                    </div>
+                                    @endforeach
                                 </div>
-                            </div>
-                            <div class="col-12 row mt-3">
-                                <ul class="nav nav-tabs" id="languageTabs" role="tablist">
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="description-en-tab" data-bs-toggle="tab"
-                                            data-bs-target="#description-en" type="button" role="tab"
-                                            aria-controls="description-en"
-                                            aria-selected=" true">{{ trans('English') }}</button>
-                                    </li>
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="description-ar-tab" data-bs-toggle="tab"
-                                            data-bs-target="#description-ar" type="button" role="tab"
-                                            aria-controls="description-ar"
-                                            aria-selected=" false">العربية</button>
-                                    </li>
-
-                                </ul>
-                                <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="description-en" role="tabpanel"
-                                        aria-labelledby="en-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="description">{{ trans('description') }}</label>
-                                            <textarea type="number" name="translations[en][description]" class="form-control "
-                                                placeholder="{{ trans('Enter description') }} ">
-@if (isset($item))
-{{ $item?->translate('en')?->description }}
-@endif
-</textarea>
-
-                                        </div>
-
-                                    </div>
-                                    <div class="tab-pane fade " id="description-ar" role="tabpanel"
-                                        aria-labelledby="ar-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="description">{{ trans('description') }}</label>
-                                            <textarea type="number" name="translations[ar][description]" class="form-control "
-                                                placeholder="{{ trans('Enter description') }} ">@if (isset($item)){{ $item?->translate('ar')?->description }}@endif</textarea>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group mb-3 col-md-12">
+                            </div>                            <div class="form-group mb-3 col-12 col-xl-6">
                                 <label class="required" for="image">{{ trans('image') }}</label>
                                 <div class="media-center-group form-control" data-max="1" data-type="image">
                                     <input type="text" hidden="hidden" class="form-control" name="image"
@@ -167,7 +103,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group mb-3 col-12 col-xl-6">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
                                         @checked(isset($item) and $item->is_active)>
@@ -177,95 +113,69 @@
                             </div>
 
                             <div class="col-12 mt-3">
-                                <ul class="nav nav-tabs" id="languageTabs" role="tablist">
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="meta_title-en-tab" data-bs-toggle="tab"
-                                            data-bs-target="#meta_title-en" type="button" role="tab"
-                                            aria-controls="meta_title-en"
-                                            aria-selected=" true">{{ trans('English') }}</button>
-                                    </li>
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="meta_title-ar-tab" data-bs-toggle="tab"
-                                            data-bs-target="#meta_title-ar" type="button" role="tab"
-                                            aria-controls="meta_title-ar"
-                                            aria-selected=" false">{{ trans('العربية') }}</button>
-                                    </li>
-
-                                </ul>
-                                <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="meta_title-en" role="tabpanel"
-                                        aria-labelledby="en-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="meta_title">{{ trans('meta_title') }}</label>
-                                            <input type="text" name="translations[en][meta_title]"
-                                                class="form-control " placeholder="{{ trans('Enter meta_title') }} "
-                                                value="@isset($item){{ $item?->translate('en')?->meta_title }}@endisset" />
-
+                                <div class="card page-seo-card border border-dashed border-primary-subtle">
+                                    <div class="card-header py-2">
+                                        <div>
+                                            <h3 class="card-title mb-1">إعدادات الظهور في البحث والمشاركة</h3>
+                                            <div class="text-muted">تحكم مستقل بعنوان ووصف وصورة نتائج البحث، وببيانات معاينة الرابط عند مشاركته.</div>
                                         </div>
-
                                     </div>
-                                    <div class="tab-pane fade " id="meta_title-ar" role="tabpanel"
-                                        aria-labelledby="ar-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="meta_title">{{ trans('meta_title') }}</label>
-                                            <input type="text" name="translations[ar][meta_title]"
-                                                class="form-control " placeholder="{{ trans('Enter meta_title') }} "
-                                                value="@isset($item){{ $item?->translate('ar')?->meta_title }}@endisset" />
-
+                                    <div class="card-body p-3">
+                                        <ul class="nav nav-tabs nav-line-tabs mb-3 fs-6" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="page-seo-ar-tab" data-bs-toggle="tab" data-bs-target="#page-seo-ar" type="button" role="tab" aria-selected="true">العربية</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="page-seo-en-tab" data-bs-toggle="tab" data-bs-target="#page-seo-en" type="button" role="tab" aria-selected="false">English</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            @foreach (['ar', 'en'] as $locale)
+                                                @php $pageTranslation = $item?->translate($locale); @endphp
+                                                <div class="tab-pane fade {{ $locale === 'ar' ? 'show active' : '' }}" id="page-seo-{{ $locale }}" role="tabpanel">
+                                                    <div class="row g-3">
+                                                        <div class="col-12 col-xl-6">
+                                                            <h4 class="mb-3">نتائج البحث في Google</h4>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">عنوان SEO</label>
+                                                                <input type="text" name="translations[{{ $locale }}][meta_title]" class="form-control" maxlength="500" value="{{ old("translations.$locale.meta_title", $pageTranslation?->meta_title) }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">وصف SEO</label>
+                                                                <textarea name="translations[{{ $locale }}][meta_description]" class="form-control" rows="3" maxlength="1000">{{ old("translations.$locale.meta_description", $pageTranslation?->meta_description) }}</textarea>
+                                                            </div>
+                                                            <div>
+                                                                <label class="form-label">صورة نتائج البحث</label>
+                                                                <div class="media-center-group form-control" data-max="1" data-type="image">
+                                                                    <input type="text" hidden name="translations[{{ $locale }}][seo_image]" value="{{ old("translations.$locale.seo_image", $pageTranslation?->seo_image) }}">
+                                                                    <button type="button" class="btn btn-secondary media-center-load mt-2"><i class="fa fa-file-upload"></i></button>
+                                                                    <div class="input-gallery"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-xl-6">
+                                                            <h4 class="mb-3">معاينة الرابط عند المشاركة</h4>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">عنوان المشاركة</label>
+                                                                <input type="text" name="translations[{{ $locale }}][social_share_title]" class="form-control" maxlength="500" value="{{ old("translations.$locale.social_share_title", $pageTranslation?->social_share_title) }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">وصف المشاركة</label>
+                                                                <textarea name="translations[{{ $locale }}][social_share_description]" class="form-control" rows="3" maxlength="1000">{{ old("translations.$locale.social_share_description", $pageTranslation?->social_share_description) }}</textarea>
+                                                            </div>
+                                                            <div>
+                                                                <label class="form-label">صورة المشاركة</label>
+                                                                <div class="media-center-group form-control" data-max="1" data-type="image">
+                                                                    <input type="text" hidden name="translations[{{ $locale }}][social_share_image]" value="{{ old("translations.$locale.social_share_image", $pageTranslation?->social_share_image) }}">
+                                                                    <button type="button" class="btn btn-secondary media-center-load mt-2"><i class="fa fa-file-upload"></i></button>
+                                                                    <div class="input-gallery"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12 mt-3">
-                                <ul class="nav nav-tabs" id="languageTabs" role="tablist">
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="meta_description-en-tab"
-                                            data-bs-toggle="tab" data-bs-target="#meta_description-en" type="button"
-                                            role="tab" aria-controls="meta_description-en"
-                                            aria-selected=" true">{{ trans('English') }}</button>
-                                    </li>
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="meta_description-ar-tab" data-bs-toggle="tab"
-                                            data-bs-target="#meta_description-ar" type="button" role="tab"
-                                            aria-controls="meta_description-ar"
-                                            aria-selected=" false">{{ trans('العربية') }}</button>
-                                    </li>
-
-                                </ul>
-                                <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="meta_description-en" role="tabpanel"
-                                        aria-labelledby="en-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class=""
-                                                for="meta_description">{{ trans('meta_description') }}</label>
-                                            <input type="text" name="translations[en][meta_description]"
-                                                class="form-control " placeholder="{{ trans('Enter meta_description') }} "
-                                                value="@isset($item){{ $item?->translate('en')?->meta_description }}@endisset" />
-
-                                        </div>
-
-                                    </div>
-                                    <div class="tab-pane fade " id="meta_description-ar" role="tabpanel"
-                                        aria-labelledby="ar-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class=""
-                                                for="meta_description">{{ trans('meta_description') }}</label>
-                                            <input type="text" name="translations[ar][meta_description]"
-                                                class="form-control " placeholder="{{ trans('Enter meta_description') }} "
-                                                value="@isset($item){{ $item?->translate('ar')?->meta_description }}@endisset" />
-
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -673,6 +583,10 @@
         .page-editor-form .card-body { padding: clamp(16px, 2.4vw, 30px); row-gap: 8px; }
         .page-editor-form .form-group { margin-bottom: 14px !important; }
         .page-editor-form .nav-tabs { border-bottom-color: #e7ebf2; }
+        .page-editor-form .page-seo-card { min-width: 0; }
+        .page-editor-form .page-seo-card .nav.nav-tabs { width: 100%; max-width: 100%; margin-inline: 0 !important; padding-inline: 8px; box-sizing: border-box; background: transparent; }
+        .page-editor-form .page-seo-card .nav.nav-tabs .nav-item { flex: 0 0 auto; }
+        .page-editor-form .page-seo-card .tab-content, .page-editor-form .page-seo-card .tab-pane, .page-editor-form .page-seo-card .row { min-width: 0; }
         .page-editor-form .tab-content { padding: 4px 0 0; }
         .page-editor-form textarea.form-control { height: 112px !important; min-height: 88px; resize: vertical; }
         .page-editor-form .editor-container { height: 180px; border: 1px solid #e1e6ef; border-radius: 10px; overflow-y: auto; margin-bottom: 8px; }
@@ -709,7 +623,7 @@
                 if (!arabicButton.length || !englishButton.length) return;
 
                 arabicButton.closest('li').prependTo(tabs);
-                arabicButton.text('العربية').addClass('active').attr('aria-selected', 'true');
+                arabicButton.addClass('active').attr('aria-selected', 'true');
                 englishButton.text('English').removeClass('active').attr('aria-selected', 'false');
 
                 var arabicPane = $(arabicButton.attr('data-bs-target'));

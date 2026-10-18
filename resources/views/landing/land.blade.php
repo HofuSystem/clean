@@ -96,14 +96,15 @@
     $youtube = setting('youtube');
     $email = setting('email') ?: 'support@cleanstation.app';
 
-    $actualDesc = trim((string) ($metaDescription ?? ''));
+    $homeTranslation = $homePage?->translate($lang);
+    $actualDesc = trim((string) ($homeTranslation?->meta_description ?: ($metaDescription ?? '')));
     if ($actualDesc === '') {
         $actualDesc = $isRtl
             ? 'حمل تطبيق كلين ستيشن الآن. خدمة غسيل وكوي الملابس والتنظيف الجاف وغسيل السجاد في الرياض، غسيل منفصل 100% مع استلام وتسليم عند الباب وتوصيل مجاني للطلبات فوق 100 ريال.'
             : 'Download Clean Station App. Professional laundry, dry cleaning, and carpet cleaning in Riyadh. 100% separate washing with door-to-door pickup and free delivery on orders over 100 SAR.';
     }
 
-    $seoTitle = trim((string) ($metaTitle ?? ''));
+    $seoTitle = trim((string) ($homeTranslation?->meta_title ?: ($metaTitle ?? '')));
     if ($seoTitle === '') {
         $seoTitle = trim((string) ($title ?? ''));
     }
@@ -126,14 +127,16 @@
 
     $resolvedCanonicalUrl = \App\Support\CanonicalUrl::fromRequest(request(), config('app.url'));
 
-    $socialShareImagePath = \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_image');
-    $socialShareImageUrl = $socialShareImagePath
-        ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('social_share_image')
+    $seoImagePath = $homeTranslation?->seo_image ?: ($heroImageUrl ?: $homePage?->image);
+    $seoImageUrl = $seoImagePath
+        ? (Str::startsWith($seoImagePath, ['http://', 'https://']) ? $seoImagePath : asset('storage/' . ltrim($seoImagePath, '/')))
         : asset('assets/images/social-share-cover.jpg');
-
-    $socialShareLocale = $isRtl ? 'ar' : 'en';
-    $socialShareTitle = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_title_' . $socialShareLocale));
-    $socialShareDescription = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_description_' . $socialShareLocale));
+    $socialShareTitle = trim((string) ($homeTranslation?->social_share_title ?? ''));
+    $socialShareDescription = trim((string) ($homeTranslation?->social_share_description ?? ''));
+    $socialImagePath = $homeTranslation?->social_share_image;
+    $socialShareImageUrl = $socialImagePath
+        ? (Str::startsWith($socialImagePath, ['http://', 'https://']) ? $socialImagePath : asset('storage/' . ltrim($socialImagePath, '/')))
+        : $seoImageUrl;
     $officialSameAs = collect(['twitter', 'instagram', 'tiktok', 'snapchat', 'youtube', 'facebook'])
         ->map(fn ($key) => trim((string) setting($key)))
         ->filter()->values()->all();
@@ -151,6 +154,7 @@
 
 <title>{{ $seoTitle }}</title>
 <meta name="description" content="{{ $actualDesc }}">
+<meta name="image" content="{{ $seoImageUrl }}">
 <meta name="keywords" content="{{ $actualKeywords }}">
 <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
 
@@ -190,6 +194,9 @@
 <meta name="twitter:title" content="{{ $socialShareTitle ?: $seoTitle }}">
 <meta name="twitter:description" content="{{ $socialShareDescription ?: $actualDesc }}">
 <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
+<script type="application/ld+json">
+{!! json_encode(['@context' => 'https://schema.org', '@type' => 'WebPage', 'url' => $resolvedCanonicalUrl, 'name' => $seoTitle, 'description' => $actualDesc, 'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $seoImageUrl]], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+</script>
 
 <!-- Structured Data (JSON-LD) - Complete Schema from Original Landing -->
 @if($isRtl)

@@ -192,7 +192,11 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 
     @php
-        $actualDesc = $metaDescription ?? '';
+        $seoLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar' : 'en';
+        $cmsPage = isset($page) ? $page : null;
+        $seoContentImage = isset($blog) ? $blog->image : null;
+        $pageSeoTranslation = $cmsPage?->translate($seoLocale);
+        $actualDesc = trim((string) ($pageSeoTranslation?->meta_description ?: ($metaDescription ?? '')));
         if (LaravelLocalization::getCurrentLocale() === 'ar') {
             $actualKeywords = "مغسلة ملابس قريبة مني, مغسلة ملابس بالرياض, غسيل ملابس بالرياض, مغاسل الرياض, دراي كلين الرياض, غسيل ملابس منفصل, استلام وتوصيل ملابس, غسيل سجاد بالرياض, مغسلة سجاد بالرياض, غسيل مفروشات بالرياض, غسيل كنب بالرياض, غسيل أحذية بالرياض, توصيل هدايا بالرياض, توصيل باقات ورد الرياض, محلات ورد بالرياض, تطبيق غسيل ملابس, مغسلة ملابس استلام وتوصيل, أفضل مغسلة بالرياض, غسيل بطانيات الرياض, تنظيف أحذية الرياض";
         } else {
@@ -207,19 +211,25 @@
             $pathSuffix = '/';
         }
 
-        $socialShareImagePath = \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_image');
-        $socialShareImageUrl = $socialShareImagePath
-            ? \Core\Settings\Services\SettingsService::getDataBaseSettingImage('social_share_image')
+        $seoImagePath = $pageSeoTranslation?->seo_image ?: ($cmsPage?->image ?? $seoContentImage);
+        if (!$seoImagePath && isset($heroSection)) {
+            $seoImagePath = $heroSection?->image_url;
+        }
+        $seoImageUrl = $seoImagePath
+            ? (\Illuminate\Support\Str::startsWith($seoImagePath, ['http://', 'https://']) ? $seoImagePath : asset('storage/' . ltrim($seoImagePath, '/')))
             : asset('assets/images/social-share-cover.jpg');
 
-        $socialShareLocale = LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar' : 'en';
-        $socialShareTitle = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_title_' . $socialShareLocale));
-        $socialShareDescription = trim((string) \Core\Settings\Services\SettingsService::getDataBaseSetting('social_share_description_' . $socialShareLocale));
+        $socialShareTitle = trim((string) ($pageSeoTranslation?->social_share_title ?? ''));
+        $socialShareDescription = trim((string) ($pageSeoTranslation?->social_share_description ?? ''));
+        $socialShareImagePath = $pageSeoTranslation?->social_share_image;
+        $socialShareImageUrl = $socialShareImagePath
+            ? (\Illuminate\Support\Str::startsWith($socialShareImagePath, ['http://', 'https://']) ? $socialShareImagePath : asset('storage/' . ltrim($socialShareImagePath, '/')))
+            : $seoImageUrl;
     @endphp
 
     @php
         $resolvedCanonicalUrl = $canonicalUrl ?? \App\Support\CanonicalUrl::fromRequest(request(), config('app.url'));
-        $resolvedMetaTitle = trim($metaTitle ?? '') ?: (trim($title ?? '') ?: 'Clean Station');
+        $resolvedMetaTitle = trim((string) ($pageSeoTranslation?->meta_title ?: ($metaTitle ?? ''))) ?: (trim($title ?? '') ?: 'Clean Station');
         $officialSameAs = collect(['twitter', 'instagram', 'tiktok', 'snapchat', 'youtube', 'facebook'])
             ->map(fn ($key) => trim((string) setting($key)))
             ->filter()->values()->all();
@@ -229,6 +239,7 @@
     @endphp
     <title>{{ $resolvedMetaTitle }}</title>
     <meta name="description" content="{{ $actualDesc }}">
+    <meta name="image" content="{{ $seoImageUrl }}">
     @if(preg_match('#^/(ar|en)/login/?$#', request()->getPathInfo()))<meta name="robots" content="noindex, follow">@endif
     <meta name="keywords" content="{{ $actualKeywords }}">
     <link rel="canonical" href="{{ $resolvedCanonicalUrl }}">
@@ -248,19 +259,22 @@
     <meta property="og:site_name" content="Clean Station">
     <meta property="og:locale" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
     <meta property="og:locale:alternate" content="{{ LaravelLocalization::getCurrentLocale() === 'ar' ? 'en_US' : 'ar_SA' }}">
-    <meta property="og:title" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station | أفضل تطبيق غسيل ملابس في السعودية') }}">
+    <meta property="og:title" content="{{ $socialShareTitle ?: $resolvedMetaTitle }}">
     <meta property="og:description" content="{{ $socialShareDescription ?: ($actualDesc ?: 'اطلب غسيل ملابسك وتتبع المندوب لحظياً. غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!') }}">
     <meta property="og:image" content="{{ $socialShareImageUrl }}">
     <meta property="og:image:secure_url" content="{{ $socialShareImageUrl }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station') }}">
+    <meta property="og:image:alt" content="{{ $socialShareTitle ?: $resolvedMetaTitle }}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@CleanStationSA">
-    <meta name="twitter:title" content="{{ $socialShareTitle ?: ($metaTitle ?? 'Clean Station | تطبيق غسيل الملابس رقم 1') }}">
+    <meta name="twitter:title" content="{{ $socialShareTitle ?: $resolvedMetaTitle }}">
     <meta name="twitter:description" content="{{ $socialShareDescription ?: ($actualDesc ?: 'غسيل منفصل 100%، استلام وتسليم عند الباب خلال 24 ساعة. حمل التطبيق الآن!') }}">
     <meta name="twitter:image" content="{{ $socialShareImageUrl }}">
+    <script type="application/ld+json">
+        {!! json_encode(['@context' => 'https://schema.org', '@type' => 'WebPage', 'url' => $resolvedCanonicalUrl, 'name' => $resolvedMetaTitle, 'description' => $actualDesc, 'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $seoImageUrl]], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+    </script>
 
     @vite(['resources/css/landing.css'])
     {{-- Route-specific styles follow. --}}

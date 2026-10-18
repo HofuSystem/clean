@@ -12,7 +12,16 @@
     $collectionImages = is_array($collectionImages) ? array_values($collectionImages) : array_filter([$collectionImages]);
     $seoTitle = $pageTranslation?->meta_title ?: ($pageTranslation?->title ?: ($isRtl ? 'توصيل ورد وهدايا في الرياض | كلين ستيشن' : 'Flower & Gift Delivery in Riyadh | Clean Station'));
     $seoDescription = $pageTranslation?->meta_description ?: ($pageTranslation?->description ?: ($isRtl ? 'باقات ورود وفازات فاخرة، تهديها لنفسك أو لمن تحب، مع اختيار موعد التوصيل من تطبيق كلين ستيشن في الرياض.' : 'Flower bouquets and luxury vases for yourself or someone special, with scheduled delivery from the Clean Station app in Riyadh.'));
-    $seoImage = $giftsHeroImage ?: 'https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=1000';
+    $seoImagePath = $pageTranslation?->seo_image ?: ($giftsHeroImage ?: $page?->image);
+    $seoImage = $seoImagePath
+        ? (\Illuminate\Support\Str::startsWith($seoImagePath, ['http://', 'https://']) ? $seoImagePath : asset('storage/' . ltrim($seoImagePath, '/')))
+        : 'https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&q=75&w=1000';
+    $shareTitle = $pageTranslation?->social_share_title ?: $seoTitle;
+    $shareDescription = $pageTranslation?->social_share_description ?: $seoDescription;
+    $shareImagePath = $pageTranslation?->social_share_image;
+    $shareImage = $shareImagePath
+        ? (\Illuminate\Support\Str::startsWith($shareImagePath, ['http://', 'https://']) ? $shareImagePath : asset('storage/' . ltrim($shareImagePath, '/')))
+        : $seoImage;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
@@ -21,16 +30,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $seoTitle }}</title>
     <meta name="description" content="{{ $seoDescription }}">
+    <meta name="image" content="{{ $seoImage }}">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="{{ $seoTitle }}">
-    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:title" content="{{ $shareTitle }}">
+    <meta property="og:description" content="{{ $shareDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="{{ $seoImage }}">
+    <meta property="og:image" content="{{ $shareImage }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $seoTitle }}">
-    <meta name="twitter:description" content="{{ $seoDescription }}">
-    <meta name="twitter:image" content="{{ $seoImage }}">
+    <meta name="twitter:title" content="{{ $shareTitle }}">
+    <meta name="twitter:description" content="{{ $shareDescription }}">
+    <meta name="twitter:image" content="{{ $shareImage }}">
+    <script type="application/ld+json">
+        {!! json_encode(['@context' => 'https://schema.org', '@type' => 'WebPage', 'url' => url()->current(), 'name' => $seoTitle, 'description' => $seoDescription, 'primaryImageOfPage' => ['@type' => 'ImageObject', 'url' => $seoImage]], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('control/assets/img/favicon/favicon_white.png') }}">
