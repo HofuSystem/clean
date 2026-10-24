@@ -188,8 +188,9 @@ class CreateOrderRequest extends FormRequest
       'district_id'                   => 'nullable|numeric|exists:districts,id',
 
       // Optional V2 attribution context. Older app versions do not send this object.
-      'analytics_context'                         => 'nullable|array:app_instance_id,session_id,platform,branch_first,branch_latest',
+      'analytics_context'                         => 'nullable|array:app_instance_id,app_version,session_id,platform,branch_first,branch_latest',
       'analytics_context.app_instance_id'         => 'nullable|string|max:255',
+      'analytics_context.app_version'             => 'nullable|string|max:100',
       'analytics_context.session_id'               => 'nullable|integer|min:0',
       'analytics_context.platform'                 => 'nullable|string|in:ios,android',
       'analytics_context.branch_first'             => 'nullable|array:channel,feature,campaign,click_id,clicked_branch_link,click_timestamp',

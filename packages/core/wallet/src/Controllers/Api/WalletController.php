@@ -79,7 +79,7 @@ class WalletController extends Controller
                 ->where('type', 'charge')->count();
             $transactionNumber = $previousTransaction + 1;
             $data = [
-                'payment_url' => $this->myfatoorahService->createTransaction($request->amount, null, $request->all(), auth('api')->user()->id, 'wallet_charge','charge-user-'.auth('api')->user()->id.'-number-'.$transactionNumber.'-'),
+                'payment_url' => $this->myfatoorahService->createTransaction($request->amount, null, $request->validated(), auth('api')->user()->id, 'wallet_charge','charge-user-'.auth('api')->user()->id.'-number-'.$transactionNumber.'-'),
             ];
             DB::commit();
             return $this->returnData(trans('wallet charge successfully'),['data'=>$data]);

@@ -36,15 +36,31 @@ class MyFatoorahService
     {
         $paymentData = null;
         if ($for === 'wallet_charge') {
+            $analyticsContext = $requestData['analytics_context'] ?? null;
             $quote = (new WalletChargePricing)->quote($amount, $requestData['check_id'] ?? null);
             $amount = $quote['paid_amount'];
             $paymentData = json_encode(['wallet_quote' => $quote], JSON_THROW_ON_ERROR);
             $requestData = ['amount' => $amount, 'check_id' => $quote['package_id']];
+            if (is_array($analyticsContext)) {
+                $requestData['analytics_context'] = array_intersect_key($analyticsContext, array_flip([
+                    'app_instance_id', 'app_version', 'session_id', 'platform',
+                ]));
+            }
         }
         $requestData['order_id'] = $orderId;
+        $attemptNumber = PaymentTransaction::query()
+            ->where('user_id', $userId)
+            ->where('for', $for)
+            ->when($orderId !== null, fn ($query) => $query->where('order_id', $orderId), fn ($query) => $query->whereNull('order_id'))
+            ->count() + 1;
         $paymentTransaction      = PaymentTransaction::create([
             'transaction_id' => $prefix ? $prefix . Str::random(2) : Str::random(10),
             'for'            => $for,
+            'stage'          => $for,
+            'gateway'        => 'myfatoorah',
+            'attempt_number' => $attemptNumber,
+            'wallet_bucket'  => $for === 'wallet_charge' ? 'funded' : null,
+            'order_id'       => is_numeric($orderId) ? (int) $orderId : null,
             'status'         => 'pending',
             'request_data'   => json_encode($requestData),
             'payment_data'   => $paymentData,

@@ -16,7 +16,7 @@ use Core\Orders\Models\Order;
 class WalletTransaction extends CoreModel {
     
 	protected $table             = 'wallet_transactions';
-	protected $fillable          = ['type', 'amount', 'wallet_before', 'wallet_after', 'status', 'transaction_id','transaction_type', 'bank_name', 'account_number', 'iban_number', 'user_id','order_id', 'added_by_id','expired_at', 'package_id','notes', 'creator_id', 'updater_id'];
+	protected $fillable          = ['type', 'amount', 'wallet_before', 'wallet_after', 'status', 'transaction_id','transaction_type', 'wallet_bucket', 'bank_name', 'account_number', 'iban_number', 'user_id','order_id', 'added_by_id','expired_at', 'package_id','notes', 'creator_id', 'updater_id'];
     protected $guarded           = [];
     
 

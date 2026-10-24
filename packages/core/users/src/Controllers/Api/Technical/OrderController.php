@@ -258,19 +258,9 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
-        $pointsPerSpentRiyal = SettingsService::getDataBaseSetting('points_per_spent_riyal') ?? 0;
-        $totalPoints = 0;
-        if ($pointsPerSpentRiyal > 0) {
-            $totalPoints = round(max(0, ($order->order_price  - $order->total_coupon) * $pointsPerSpentRiyal));
-        }
+        $totalPoints = app(\Core\Orders\Services\OrderLoyaltyService::class)
+            ->awardForFinishedOrder($order->id) ?? 0;
         if ($totalPoints > 0) {
-            Point::create([
-                'title'     => "for order : " . $order->reference_id,
-                'amount'    => $totalPoints,
-                'operation' => 'deposit',
-                'user_id'   => $order->client_id,
-                'order_id'  => $order->id,
-            ]);
             Notification::create([
                 'types'     => json_encode(['apps']),
                 'for'       => 'users',

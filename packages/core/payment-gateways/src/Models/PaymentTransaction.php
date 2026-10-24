@@ -14,7 +14,7 @@ use Core\Users\Models\User;
 
 class PaymentTransaction extends CoreModel {
 	protected $table             = 'payment_transactions';
-	protected $fillable          = ['transaction_id', 'for', 'status', 'amount', 'request_data', 'payment_method', 'payment_data', 'payment_response', 'creator_id', 'updater_id', 'user_id'];
+	protected $fillable          = ['transaction_id', 'for', 'stage', 'gateway', 'attempt_number', 'wallet_bucket', 'status', 'failure_reason', 'succeeded_at', 'amount', 'fee', 'order_id', 'request_data', 'payment_method', 'payment_data', 'payment_response', 'creator_id', 'updater_id', 'user_id'];
     protected $guarded           = [];
   
 
@@ -83,6 +83,10 @@ class PaymentTransaction extends CoreModel {
     //start relations
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function order(){
+        return $this->belongsTo(\Core\Orders\Models\Order::class, 'order_id');
     }
     //end relations
 

@@ -140,6 +140,17 @@
                             </div>
                         </div>
 
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold fs-7 text-gray-700 mb-1">تصنيف الرصيد</label>
+                                <select class="form-select form-select-solid" name="wallet_bucket">
+                                    <option value="unclassified" @selected(old('wallet_bucket', $item->wallet_bucket ?? 'unclassified') === 'unclassified')>غير مصنف</option>
+                                    <option value="funded" @selected(old('wallet_bucket', $item->wallet_bucket ?? '') === 'funded')>رصيد ممول</option>
+                                    <option value="promotional" @selected(old('wallet_bucket', $item->wallet_bucket ?? '') === 'promotional')>رصيد ترويجي</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Field 4: Order Reference (مرجع رقم الطلب) & Expiry Date (تاريخ الانتهاء) -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">

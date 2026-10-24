@@ -112,118 +112,128 @@ class RecipientEligibilityService
      */
     public function evaluateEligibility(Notification $notification): array
     {
-        $users = $this->getTargetedUsersQuery($notification, [
+        $targetedQuery = $this->getTargetedUsersQuery($notification, [
             'id', 'fullname', 'phone', 'email', 'is_active', 'is_allow_notify', 'is_allow_notify_confirmed_at'
-        ])->get();
-
-        $userIds = $users->pluck('id')->toArray();
-        $purpose = $notification->purpose;
+        ]);
 
         $permissionMode = config('notification.permission_mode', 'observe'); // 'observe' | 'enforce'
         $marketingMode = config('notification.marketing_preference_mode', 'observe'); // 'observe' | 'enforce'
 
-        // Fetch all non-invalid, active device rows for these users
-        $devices = Device::whereIn('user_id', $userIds)
-            ->whereNotNull('device_token')
-            ->where('device_token', '!=', '')
-            ->where('token_status', '!=', 'invalid')
-            ->get();
-
-        $devicesByUser = $devices->groupBy('user_id');
-
+        $targetedUserIds = [];
         $userEligibility = [];
-        $eligibleDevices = collect();
+        $eligibleDevices = [];
         $seenTokens = [];
-
         $eligibleUsersCount = 0;
 
-        foreach ($users as $user) {
-            $userDevices = $devicesByUser->get($user->id, collect());
+        $channel = NotificationChannelResolver::resolveChannel($notification);
+        $resolvedPurpose = NotificationChannelResolver::resolvePurpose($notification);
 
-            // 1. Check marketing opt-out
-            $channel = NotificationChannelResolver::resolveChannel($notification);
-            $resolvedPurpose = NotificationChannelResolver::resolvePurpose($notification);
-            $isMarketingBlocked = ($channel === NotificationChannelResolver::CHANNEL_APP_FCM && $resolvedPurpose === NotificationChannelResolver::PURPOSE_MARKETING && $user->is_allow_notify == 0 && !is_null($user->is_allow_notify_confirmed_at));
+        // Large campaigns must never hydrate the entire audience and all of its
+        // devices at once. Keeping the working set bounded prevents queue workers
+        // with a 128 MB memory limit from dying before dispatch begins.
+        $targetedQuery->orderBy('id')->chunkById(500, function ($users) use (
+            $notification,
+            $permissionMode,
+            $marketingMode,
+            $channel,
+            $resolvedPurpose,
+            &$targetedUserIds,
+            &$userEligibility,
+            &$eligibleDevices,
+            &$seenTokens,
+            &$eligibleUsersCount
+        ): void {
+            $userIds = $users->pluck('id')->all();
+            array_push($targetedUserIds, ...$userIds);
 
-            if ($isMarketingBlocked) {
-                if ($marketingMode === 'enforce') {
+            $devicesByUser = Device::query()
+                ->whereIn('user_id', $userIds)
+                ->whereNotNull('device_token')
+                ->where('device_token', '!=', '')
+                ->where('token_status', '!=', 'invalid')
+                ->get([
+                    'id', 'user_id', 'device_token', 'type', 'installation_id',
+                    'app_context', 'notification_permission',
+                ])
+                ->groupBy('user_id');
+
+            foreach ($users as $user) {
+                $userDevices = $devicesByUser->get($user->id, collect());
+                $isMarketingBlocked = $channel === NotificationChannelResolver::CHANNEL_APP_FCM
+                    && $resolvedPurpose === NotificationChannelResolver::PURPOSE_MARKETING
+                    && $user->is_allow_notify == 0
+                    && !is_null($user->is_allow_notify_confirmed_at);
+
+                if ($isMarketingBlocked) {
                     $userEligibility[$user->id] = [
                         'status' => 'marketing_disabled',
-                        'reason' => 'User opted out of marketing pushes',
+                        'reason' => $marketingMode === 'enforce'
+                            ? 'User opted out of marketing pushes'
+                            : 'User opted out of marketing pushes (Observed - not enforced)',
                     ];
-                    continue; // Blocked in enforce mode
-                } else {
-                    // Observe mode: record observation but do NOT block delivery
-                    $userEligibility[$user->id] = [
-                        'status' => 'marketing_disabled',
-                        'reason' => 'User opted out of marketing pushes (Observed - not enforced)',
-                    ];
+
+                    if ($marketingMode === 'enforce') {
+                        continue;
+                    }
                 }
-            }
 
-            // 2. Check device existence
-            if ($userDevices->isEmpty()) {
-                $userEligibility[$user->id] = [
-                    'status' => 'no_device',
-                    'reason' => 'No registered device token found',
-                ];
-                continue;
-            }
+                if ($userDevices->isEmpty()) {
+                    $userEligibility[$user->id] = [
+                        'status' => 'no_device',
+                        'reason' => 'No registered device token found',
+                    ];
+                    continue;
+                }
 
-            // 3. Check notification permission (iOS / Android)
-            $deniedDevices = $userDevices->filter(fn($dev) => $dev->notification_permission === 'denied');
-            $allowedDevices = $userDevices->filter(fn($dev) => $dev->notification_permission !== 'denied');
+                $allowedDevices = $userDevices->filter(
+                    fn ($device) => $device->notification_permission !== 'denied'
+                );
 
-            if ($allowedDevices->isEmpty()) {
-                if ($permissionMode === 'enforce') {
+                if ($allowedDevices->isEmpty()) {
                     $userEligibility[$user->id] = [
                         'status' => 'permission_denied',
-                        'reason' => 'Push notifications denied on all user devices',
+                        'reason' => $permissionMode === 'enforce'
+                            ? 'Push notifications denied on all user devices'
+                            : 'Push notifications denied on all user devices (Observed - not enforced)',
                     ];
-                    continue; // Blocked in enforce mode
-                } else {
-                    // Observe mode: record observation, but allow devices to receive
-                    $userEligibility[$user->id] = [
-                        'status' => 'permission_denied',
-                        'reason' => 'Push notifications denied on all user devices (Observed - not enforced)',
-                    ];
+
+                    if ($permissionMode === 'enforce') {
+                        continue;
+                    }
+
                     $targetDevices = $userDevices;
+                } else {
+                    $targetDevices = $permissionMode === 'enforce' ? $allowedDevices : $userDevices;
+                    if (!isset($userEligibility[$user->id])) {
+                        $userEligibility[$user->id] = ['status' => 'eligible', 'reason' => null];
+                    }
                 }
-            } else {
-                $targetDevices = ($permissionMode === 'enforce') ? $allowedDevices : $userDevices;
-                if (!isset($userEligibility[$user->id])) {
-                    $userEligibility[$user->id] = [
-                        'status' => 'eligible',
-                        'reason' => null,
-                    ];
+
+                $eligibleUsersCount++;
+
+                foreach ($targetDevices as $device) {
+                    if (!isset($seenTokens[$device->device_token])) {
+                        $seenTokens[$device->device_token] = true;
+                        $eligibleDevices[] = [
+                            'device_id' => $device->id,
+                            'user_id' => $user->id,
+                            'token' => $device->device_token,
+                            'platform' => $device->type,
+                            'installation_id' => $device->installation_id,
+                            'app_context' => $device->app_context,
+                        ];
+                    }
                 }
             }
-
-            $eligibleUsersCount++;
-
-            // Collect devices, deduplicating by token
-            foreach ($targetDevices as $dev) {
-                if (!isset($seenTokens[$dev->device_token])) {
-                    $seenTokens[$dev->device_token] = true;
-                    $eligibleDevices->push([
-                        'device_id' => $dev->id,
-                        'user_id' => $user->id,
-                        'token' => $dev->device_token,
-                        'platform' => $dev->type,
-                        'installation_id' => $dev->installation_id,
-                        'app_context' => $dev->app_context,
-                    ]);
-                }
-            }
-        }
+        }, 'id');
 
         return [
-            'targeted_users' => $users,
-            'targeted_users_count' => $users->count(),
+            'targeted_user_ids' => $targetedUserIds,
+            'targeted_users_count' => count($targetedUserIds),
             'eligible_users_count' => $eligibleUsersCount,
-            'eligible_devices_count' => $eligibleDevices->count(),
+            'eligible_devices_count' => count($eligibleDevices),
             'user_eligibility' => $userEligibility,
-            'eligible_devices' => $eligibleDevices->toArray(),
+            'eligible_devices' => $eligibleDevices,
         ];
     }
 

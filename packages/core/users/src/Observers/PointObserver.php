@@ -31,7 +31,26 @@ class PointObserver
      */
     public function created(Point $point)
     {
-       
+        // Order-linked point events carry order context and are emitted by the
+        // order services. Standalone admin credits/debits use this ledger event.
+        if ($point->order_id || ! $point->user_id || ! in_array($point->operation, ['deposit', 'withdraw'], true)) {
+            return;
+        }
+
+        $context = request()->input('analytics_context', []);
+        $context = is_array($context) ? $context : [];
+
+        app(\Core\Orders\Services\AnalyticsOutboxService::class)->recordUserEvent(
+            $point->operation === 'deposit' ? 'loyalty_earned' : 'loyalty_redeemed',
+            (int) $point->user_id,
+            $context,
+            [
+                ($point->operation === 'deposit' ? 'points_earned' : 'points_redeemed') => (float) $point->amount,
+                'loyalty_transaction_id' => (string) $point->id,
+                'source' => 'standalone_ledger',
+            ],
+            'loyalty-transaction:' . $point->id
+        );
     }
 
     /**

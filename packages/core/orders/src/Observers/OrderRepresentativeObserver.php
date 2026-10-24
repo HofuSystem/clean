@@ -30,6 +30,9 @@ class OrderRepresentativeObserver
     {
         $notifyTypes       = SettingsService::getDataBaseSetting('notify_representatives_using');
         $order             = $orderRepresentative->order;
+        if ($order && $orderRepresentative->representative_id) {
+            $this->recordAssignment($orderRepresentative, false);
+        }
         if(isset($order)){           
             if(isset($orderRepresentative->representative) and isset($notifyTypes) and !empty($notifyTypes)){
                 $title          = 'طلب جديد';
@@ -88,6 +91,31 @@ class OrderRepresentativeObserver
         $notifyTypes       = SettingsService::getDataBaseSetting('notify_representatives_using');
         $order              = $orderRepresentative->order;    
         if(isset($order)){
+            if ($orderRepresentative->wasChanged('representative_id') && $orderRepresentative->representative_id) {
+                $this->recordAssignment($orderRepresentative, (bool) $orderRepresentative->getOriginal('representative_id'));
+            }
+
+            $hadPreviousSchedule = $orderRepresentative->getOriginal('date')
+                || $orderRepresentative->getOriginal('time')
+                || $orderRepresentative->getOriginal('to_time');
+            if ($hadPreviousSchedule && $orderRepresentative->wasChanged(['date', 'time', 'to_time'])) {
+                app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                    'order_rescheduled',
+                    $order,
+                    [
+                        'reschedule_target' => match ($orderRepresentative->type) {
+                            'receiver' => 'pickup',
+                            'delivery' => 'delivery',
+                            default => 'other',
+                        },
+                        'scheduled_date' => $orderRepresentative->date,
+                        'scheduled_time' => $orderRepresentative->time,
+                        'scheduled_to_time' => $orderRepresentative->to_time,
+                    ],
+                    'rescheduled:' . $orderRepresentative->id . ':' . (string) \Illuminate\Support\Str::uuid()
+                );
+            }
+
              // Check for representative change
              $orderHistoryService = app(OrderHistoryService::class);
              $repType = $orderRepresentative->type ?? $orderRepresentative->getOriginal('type') ?? 'delivery';
@@ -162,6 +190,27 @@ class OrderRepresentativeObserver
             }
 
         }
+    }
+
+    /** Record assignment events without sending representative personal data. */
+    private function recordAssignment(OrderRepresentative $orderRepresentative, bool $isReassignment): void
+    {
+        $eventName = match ($orderRepresentative->type) {
+            'receiver' => 'pickup_driver_assigned',
+            'delivery' => 'delivery_driver_assigned',
+            default => null,
+        };
+        $order = $orderRepresentative->order;
+        if (! $eventName || ! $order) {
+            return;
+        }
+
+        app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+            $eventName,
+            $order,
+            ['assignment_type' => $orderRepresentative->type, 'is_reassignment' => (int) $isReassignment],
+            'assignment:' . $orderRepresentative->id . ':' . (string) \Illuminate\Support\Str::uuid()
+        );
     }
     /**
      * Handle the OrderRepresentative "saving" event.

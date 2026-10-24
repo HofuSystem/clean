@@ -227,7 +227,7 @@ class NotificationsManger
             // FCM Path: resolve devices and tokens
             $evaluation = $eligibilityService->evaluateEligibility($notification);
 
-            $targetedUsers = $evaluation['targeted_users'];
+            $targetedUserIds = $evaluation['targeted_user_ids'];
             $targetedCount = $evaluation['targeted_users_count'];
             $eligibleUsersCount = $evaluation['eligible_users_count'];
             $eligibleDevices = $evaluation['eligible_devices'];
@@ -241,10 +241,13 @@ class NotificationsManger
 
             $notification->update($metaUpdate);
 
-            $targetedIds = $targetedUsers->pluck('id')->toArray();
-            $notification->users()->sync($targetedIds);
+            $this->replaceNotificationUsers($notification, $targetedUserIds);
 
             $this->updateEligibilityStatuses($notification, $userEligibility);
+            // App campaigns do not need hydrated User models after eligibility
+            // has been evaluated. Avoid loading the full audience a second time.
+            $targetedUsers = collect();
+            unset($evaluation, $targetedUserIds, $userEligibility);
         } else {
             // Non-FCM Path (WhatsApp, SMS, Email):
             // Zero FCM device token evaluation or dependency
@@ -322,6 +325,9 @@ class NotificationsManger
             if (config('notification.direct_fcm_enabled', false)) {
                 $this->dispatchAppPushes($eligibleDevices);
             } else {
+                // The legacy sender obtains its receivers from the pivot table.
+                // Release the evaluation copy before hydrating those receivers.
+                unset($eligibleDevices);
                 $this->sendLegacyApps();
             }
         } else {
@@ -382,6 +388,32 @@ class NotificationsManger
                         'response' => $group['response'],
                     ]);
             }
+        }
+    }
+
+    /**
+     * Replace the campaign audience without making Eloquent build thousands of
+     * pivot models and attachment records in memory at the same time.
+     */
+    protected function replaceNotificationUsers(Notification $notification, array $userIds): void
+    {
+        DB::table('users_notifications')
+            ->where('notifications_type', Notification::class)
+            ->where('notifications_id', $notification->id)
+            ->delete();
+
+        foreach (array_chunk($userIds, 500) as $userIdChunk) {
+            $rows = [];
+            foreach ($userIdChunk as $userId) {
+                $rows[] = [
+                    'notifications_type' => Notification::class,
+                    'notifications_id' => $notification->id,
+                    'user_id' => (int) $userId,
+                    'status' => 'pending',
+                ];
+            }
+
+            DB::table('users_notifications')->insert($rows);
         }
     }
 
@@ -510,7 +542,25 @@ class NotificationsManger
             $payload['delivery_channel'] = 'legacy_topic';
             $this->notification->update(['payload' => json_encode($payload)]);
         }
-        $devices = $this->getNotificationUsersDevices($this->notification->users);
+        // Query only users that can actually receive the notification. Accessing
+        // $notification->users here used to hydrate the full campaign audience.
+        $devices = User::select(
+                'users.id',
+                'users.fullname',
+                'users.phone',
+                'users.email',
+                'devices.device_token',
+                'devices.id as device_id'
+            )
+            ->join('devices', 'devices.user_id', '=', 'users.id')
+            ->join('users_notifications', 'users_notifications.user_id', '=', 'users.id')
+            ->where('users_notifications.notifications_type', Notification::class)
+            ->where('users_notifications.notifications_id', $this->notification->id)
+            ->whereNull('devices.deleted_at')
+            ->whereNotNull('devices.device_token')
+            ->where('devices.token_status', '!=', 'invalid')
+            ->distinct()
+            ->get();
         $this->tokensList = collect();
         foreach ($devices as $dev) {
             $this->tokensList->push(new NotificationsReceiver(
@@ -522,22 +572,6 @@ class NotificationsManger
                 $this->notification->id,
                 $dev->device_id
             ));
-        }
-
-        $targetedIds = $this->notification->users()->pluck('users.id')->toArray();
-        $userIdsWithTokens = $this->tokensList->pluck('id')->toArray();
-        $userIdsWithoutTokens = array_diff($targetedIds, $userIdsWithTokens);
-
-        if (!empty($userIdsWithoutTokens)) {
-            DB::table('users_notifications')
-                ->where('notifications_id', $this->notification->id)
-                ->where('notifications_type', Notification::class)
-                ->where('status', 'pending')
-                ->whereIn('user_id', $userIdsWithoutTokens)
-                ->update([
-                    'status' => 'failed',
-                    'response' => 'No device token'
-                ]);
         }
 
         if ($this->tokensList->isEmpty()) {

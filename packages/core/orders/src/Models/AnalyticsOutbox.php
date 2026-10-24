@@ -10,12 +10,13 @@ class AnalyticsOutbox extends Model
 
     protected $fillable = [
         'event_key', 'event_name', 'destination', 'order_id', 'payload',
-        'status', 'attempts', 'available_at', 'sent_at', 'last_error',
+        'status', 'attempts', 'available_at', 'locked_at', 'sent_at', 'last_error',
     ];
 
     protected $casts = [
         'payload' => 'array',
         'available_at' => 'datetime',
+        'locked_at' => 'datetime',
         'sent_at' => 'datetime',
     ];
 }

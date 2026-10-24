@@ -38,7 +38,7 @@ class WalletTransactionsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','transaction_type','user_id','added_by_id','package_id','translations','expired_at','order_id','notes']),ARRAY_FILTER_USE_KEY);
+        $recordData = array_filter($data,fn($key) => in_array($key, ['type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','transaction_type','wallet_bucket','user_id','added_by_id','package_id','translations','expired_at','order_id','notes']),ARRAY_FILTER_USE_KEY);
         if(!isset($recordData['status'])){
             $recordData['status'] = 'accepted';
         }
@@ -122,7 +122,7 @@ class WalletTransactionsService
         }
         $recordsTotal       = $recordsTotalQuery->count();
         $recordsFiltered    = WalletTransaction::search()->count();
-        $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','notes'])
+        $records            = WalletTransaction::select(['id','type','amount','wallet_before','wallet_after','status','transaction_id','bank_name','account_number','iban_number','user_id','added_by_id','package_id','created_at','expired_at','order_id','transaction_type','wallet_bucket','notes'])
         ->with(['user:id,fullname,phone,email','addedBy:id,fullname,email','package:id,price,value','order:id,reference_id','orderTransaction.order:id,reference_id'])
         ->search()->dataTable()->get();
 

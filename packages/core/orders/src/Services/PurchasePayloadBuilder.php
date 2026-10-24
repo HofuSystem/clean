@@ -21,7 +21,7 @@ class PurchasePayloadBuilder
 
         $grossItemsTotal = (float) $order->order_price;
         $itemsGrossSum = (float) $items->sum(fn ($item) => (float) $item->total_price);
-        if ($grossItemsTotal <= 0 || abs($grossItemsTotal - $itemsGrossSum) > 0.02) {
+        if ($grossItemsTotal <= 0 || abs($grossItemsTotal - $itemsGrossSum) > 0.01) {
             return ['ready' => false, 'reason' => 'purchase_item_total_mismatch'];
         }
 
@@ -64,22 +64,42 @@ class PurchasePayloadBuilder
                 'item_name' => mb_substr((string) $name, 0, 100),
                 'price' => round($lineNet / $quantity, 6),
                 'quantity' => $quantity,
+                'discount' => round(($lineDiscount / (1 + self::VAT_RATE)) / $quantity, 6),
             ];
         }
 
+        $walletTransactions = \Core\Wallet\Models\WalletTransaction::query()
+            ->where('order_id', $order->id)
+            ->where('type', 'withdraw')
+            ->where('status', 'accepted')
+            ->get(['amount', 'wallet_bucket']);
+        $walletUsedByBucket = ['funded' => 0.0, 'promotional' => 0.0, 'unclassified' => 0.0];
+        foreach ($walletTransactions as $walletTransaction) {
+            $bucket = in_array($walletTransaction->wallet_bucket, ['funded', 'promotional', 'unclassified'], true)
+                ? $walletTransaction->wallet_bucket
+                : 'unclassified';
+            $walletUsedByBucket[$bucket] += abs((float) $walletTransaction->amount);
+        }
+        $fundedWalletUsed = round($walletUsedByBucket['funded'], 2);
+        $promoWalletUsed = round($walletUsedByBucket['promotional'], 2);
+        $unclassifiedWalletUsed = round($walletUsedByBucket['unclassified'], 2);
+        $loyaltyValueUsed = round((float) ($order->points_amount_used ?? 0), 2);
         $payload = [
             'value' => $netItemsValue,
             'tax' => $tax,
             'shipping' => round((float) ($order->delivery_price ?? 0), 2),
             'items' => $purchaseItems,
-            // Product owner decision: the current ledger has a single wallet
-            // amount, which is reported as funded wallet usage; promo is zero.
+            'funded_wallet_used' => $fundedWalletUsed,
+            'promo_wallet_used' => $promoWalletUsed,
+            'unclassified_wallet_used' => $unclassifiedWalletUsed,
+            'loyalty_value_used' => $loyaltyValueUsed,
+            // Keep legacy names while schema-v2 consumers migrate.
             'wallet_paid_amount' => round((float) ($order->wallet_amount_used ?? 0), 2),
-            'wallet_promo_amount' => 0,
+            'wallet_promo_amount' => $promoWalletUsed,
             'loyalty_points_used' => (bool) $order->points_used ? (float) ($order->points_amount ?? 0) : 0,
         ];
 
-        if (abs(($payload['value'] + $payload['tax'] + $payload['shipping']) - (float) $order->total_price) > 0.02) {
+        if (abs(($payload['value'] + $payload['tax'] + $payload['shipping']) - (float) $order->total_price) > 0.01) {
             return ['ready' => false, 'reason' => 'purchase_total_reconciliation_failed'];
         }
 

@@ -48,6 +48,7 @@ class WalletTransactionsRequest extends FormRequest
 			 "user_id"         =>  ['required','exists:users,id'], 
 			 "added_by_id"     =>  ['nullable','exists:users,id'], 
 			 "transaction_type" => ['nullable','string'],
+			 "wallet_bucket"    => ['nullable','in:funded,promotional,unclassified'],
 			 "notes"           =>  ['nullable','string'],
 			 "order_id"        =>  ['nullable','exists:orders,id'],
 			 "order_reference" =>  ['nullable','string'],

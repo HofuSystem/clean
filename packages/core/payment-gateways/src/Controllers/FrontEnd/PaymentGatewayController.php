@@ -310,6 +310,8 @@ class PaymentGatewayController extends Controller
 
         // Success and its financial effects commit or roll back together.
         $transaction->status = 'success';
+        $transaction->failure_reason = null;
+        $transaction->succeeded_at = now();
         $transaction->save();
 
         if (in_array($transaction->for, ['order_payment', 'fast_payment'], true)) {
@@ -352,6 +354,7 @@ class PaymentGatewayController extends Controller
     private function handleFailedPayment($transaction, $message = 'Payment Failed')
     {
         $transaction->status = 'failed';
+        $transaction->failure_reason = 'gateway_payment_failed';
         $transaction->save();
 
         if (in_array($transaction->for, ['order_payment', 'fast_payment'], true)) {
@@ -392,6 +395,7 @@ class PaymentGatewayController extends Controller
     private function handleCancelPayment($transaction, $message = 'Payment Canceled')
     {
         $transaction->status = 'canceled';
+        $transaction->failure_reason = 'customer_canceled';
         $transaction->save();
 
         if ($transaction->for == 'order_payment') {

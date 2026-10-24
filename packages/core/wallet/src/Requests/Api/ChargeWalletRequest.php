@@ -27,6 +27,11 @@ class ChargeWalletRequest extends FormRequest
         return [
             'amount'=> 'required|integer|gte:1',
             'transaction_id' => 'required|string|between:2,250',
+            'analytics_context' => 'nullable|array:app_instance_id,app_version,session_id,platform',
+            'analytics_context.app_instance_id' => 'nullable|string|max:255',
+            'analytics_context.app_version' => 'nullable|string|max:100',
+            'analytics_context.session_id' => 'nullable|integer|min:0',
+            'analytics_context.platform' => 'nullable|string|in:ios,android',
         ];
     }
 }

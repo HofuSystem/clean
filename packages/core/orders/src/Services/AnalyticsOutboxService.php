@@ -17,15 +17,33 @@ class AnalyticsOutboxService
         $context = $order->analyticsContext;
         $blockedReason = $parameters['_analytics_blocked_reason'] ?? null;
         unset($parameters['_analytics_blocked_reason']);
+        $eventId = (string) ($parameters['event_id'] ?? sprintf(
+            '%s:%s:%s',
+            $eventName,
+            $order->id,
+            $sourceKey ?? '0'
+        ));
+        if (strlen($eventId) > 180) {
+            $eventId = sprintf('%s:%s:%s', $eventName, $order->id, hash('sha256', $eventId));
+        }
+        $parameters['event_id'] = $eventId;
         $payload = array_filter([
             'schema_version' => 2,
+            'event_source' => 'backend',
+            // Keep the real order service line. The platform supports multiple
+            // order types, so analytics must not label every order as laundry.
+            'main_section' => (string) $order->type,
             'event_name' => $eventName,
             'order_id' => (string) $order->id,
-            'order_type' => $order->type,
+            'order_type' => (string) $order->type,
+            'order_mode' => $this->orderMode($order),
+            'city_id' => $order->city_id !== null ? (string) $order->city_id : null,
+            'user_id' => $order->client_id !== null ? (string) $order->client_id : null,
             'transaction_id' => (string) $order->id,
             'currency' => 'SAR',
             'developer_identity' => $order->client_id !== null ? (string) $order->client_id : null,
             'app_instance_id' => $context?->app_instance_id,
+            'app_version' => $context?->app_version,
             'session_id' => $eventName === 'order_created' ? $context?->session_id : null,
             'platform' => $context?->platform,
             'branch_first' => $context?->branch_first,
@@ -34,7 +52,11 @@ class AnalyticsOutboxService
         ], static fn ($value) => $value !== null);
 
         foreach (['ga4', 'branch'] as $destination) {
-            $key = hash('sha256', implode(':', [$destination, $sourceKey ?? 'order', $order->id, $eventName]));
+            if ($destination === 'branch' && ! in_array($eventName, ['order_created', 'purchase'], true)) {
+                continue;
+            }
+
+            $key = $destination . ':' . $eventId;
             $status = 'pending';
             $lastError = $blockedReason;
             if ($blockedReason) {
@@ -79,5 +101,76 @@ class AnalyticsOutboxService
                 report($exception);
             }
         }
+    }
+
+    /**
+     * Record a successful customer-level event that is not tied to an order.
+     * Events without app attribution remain visible as blocked outbox rows.
+     */
+    public function recordUserEvent(
+        string $eventName,
+        int $userId,
+        array $context,
+        array $parameters = [],
+        ?string $sourceKey = null
+    ): void {
+        $eventId = $eventName . ':' . $userId . ':' . ($sourceKey ?? '0');
+        if (strlen($eventId) > 170) {
+            $eventId = $eventName . ':' . $userId . ':' . hash('sha256', $eventId);
+        }
+
+        $platform = $context['platform'] ?? null;
+        $payload = array_filter([
+            'schema_version' => 2,
+            'event_source' => 'backend',
+            'event_name' => $eventName,
+            'event_id' => $eventId,
+            'user_id' => (string) $userId,
+            'platform' => $platform,
+            'app_instance_id' => $context['app_instance_id'] ?? null,
+            'app_version' => $context['app_version'] ?? null,
+            'currency' => 'SAR',
+            ...$parameters,
+        ], static fn ($value) => $value !== null);
+
+        $status = 'pending';
+        $lastError = null;
+        if (! in_array($platform, ['ios', 'android'], true)) {
+            $status = 'blocked_unsupported_platform';
+            $lastError = 'A supported app platform was not provided.';
+        } elseif (empty($payload['app_instance_id'])) {
+            $status = 'missing_app_instance_id';
+            $lastError = 'The event has no app_instance_id.';
+        }
+
+        try {
+            AnalyticsOutbox::query()->firstOrCreate(
+                ['event_key' => 'ga4:' . $eventId],
+                [
+                    'event_name' => $eventName,
+                    'destination' => 'ga4',
+                    'payload' => $payload,
+                    'status' => $status,
+                    'last_error' => $lastError,
+                    'available_at' => now(),
+                ]
+            );
+        } catch (Throwable $exception) {
+            // Analytics persistence must not roll back a wallet operation.
+            report($exception);
+        }
+    }
+
+    private function orderMode(Order $order): string
+    {
+        if ($order->type === 'fastorder') {
+            return 'quick';
+        }
+
+        $hasEconomicBag = $order->items()
+            ->whereHas('product.category', static fn ($query) => $query->where('slug', 'economic-bags'))
+            ->exists();
+
+        return $hasEconomicBag ? 'economic_bag' : 'normal';
     }
 }

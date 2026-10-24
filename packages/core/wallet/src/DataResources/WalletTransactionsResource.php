@@ -86,7 +86,16 @@ class WalletTransactionsResource extends JsonResource
             $badgeColor = '#fd7e14';
         }
 
-        $typeBadgeHtml = '<span class="badge" style="background-color:' . $badgeBg . '; color:' . $badgeColor . '; font-weight:600; padding:6px 12px; border-radius:6px; font-size:11px;">' . $typeLabel . '</span>';
+        $bucket = in_array($this->wallet_bucket, ['funded', 'promotional', 'unclassified'], true)
+            ? $this->wallet_bucket
+            : 'unclassified';
+        $bucketLabel = match ($bucket) {
+            'funded' => 'ممول',
+            'promotional' => 'ترويجي',
+            default => 'غير مصنف',
+        };
+        $typeBadgeHtml = '<span class="badge" style="background-color:' . $badgeBg . '; color:' . $badgeColor . '; font-weight:600; padding:6px 12px; border-radius:6px; font-size:11px;">' . $typeLabel . '</span>'
+            . '<span class="badge ms-1" style="background:#eef3f8;color:#40536b;font-weight:600;padding:5px 9px;border-radius:6px;font-size:10px;">' . $bucketLabel . '</span>';
 
         // Lookup linked order
         $order = $this->order ?: $this->orderTransaction?->order;

@@ -48,36 +48,77 @@ class OrderObserver
      */
     public function updated(Order $order)
     {
-        if (! $order->wasChanged('status')) {
-            return;
+        if ($order->wasChanged('status')) {
+            if ($order->status === 'finished') {
+                app(\Core\Orders\Services\OrderLoyaltyService::class)->awardForFinishedOrder((int) $order->id);
+            }
+
+            $eventName = match ($order->status) {
+                'order_has_been_delivered_to_admin' => 'order_picked_up',
+                'service_started', 'started' => 'order_processing',
+                'ready_to_delivered' => 'order_ready',
+                'in_the_way' => 'delivery_started',
+                'delivered' => 'delivery_arrived',
+                'finished' => 'order_delivered',
+                'canceled' => 'order_cancelled',
+                default => null,
+            };
+
+            if ($eventName) {
+                $parameters = [];
+                if ($eventName === 'order_cancelled') {
+                    $rawReason = trim((string) $order->admin_cancel_reason);
+                    $knownReasons = array_unique(array_merge(
+                        array_keys(\Core\Orders\Services\OrdersService::issues()),
+                        array_values(\Core\Orders\Services\OrdersService::issues())
+                    ));
+                    // Cancellation text is free-form in the admin API and may contain
+                    // personal details. Send only a known reason category.
+                    $parameters['cancel_reason'] = in_array($rawReason, $knownReasons, true) ? $rawReason : 'other';
+                }
+                app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                    $eventName,
+                    $order,
+                    $parameters,
+                    'status:' . $order->status . ':' . (string) \Illuminate\Support\Str::uuid()
+                );
+            }
         }
 
-        $eventName = match ($order->status) {
-            'order_has_been_delivered_to_admin' => 'order_collected',
-            'service_started', 'started' => 'order_processing',
-            'delivered' => 'order_delivered',
-            'canceled' => 'order_cancelled',
-            default => null,
-        };
-
-        if ($eventName) {
-            $parameters = [];
-            if ($eventName === 'order_cancelled') {
-                $rawReason = trim((string) $order->admin_cancel_reason);
-                $knownReasons = array_unique(array_merge(
-                    array_keys(\Core\Orders\Services\OrdersService::issues()),
-                    array_values(\Core\Orders\Services\OrdersService::issues())
-                ));
-                // Cancellation text is free-form in the admin API and may contain
-                // personal details. Send only a known reason category.
-                $parameters['cancel_reason'] = in_array($rawReason, $knownReasons, true) ? $rawReason : 'other';
+        $priceFields = ['order_price', 'total_coupon', 'delivery_price', 'total_price'];
+        if ($order->wasChanged($priceFields) && (float) $order->getOriginal('total_price') > 0) {
+            $previousTotal = round((float) $order->getOriginal('total_price'), 2);
+            $currentTotal = round((float) $order->total_price, 2);
+            $snapshotFields = ['order_price', 'total_coupon', 'delivery_price', 'total_price'];
+            $beforeSnapshot = [];
+            $afterSnapshot = [];
+            foreach ($snapshotFields as $field) {
+                $beforeSnapshot[$field] = round((float) ($order->getOriginal($field) ?? 0), 2);
+                $afterSnapshot[$field] = round((float) ($order->{$field} ?? 0), 2);
             }
-            app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
-                $eventName,
-                $order,
-                $parameters,
-                'status:' . $order->status
-            );
+            $adjustment = \Core\Orders\Models\OrderAdjustment::query()->create([
+                'order_id' => $order->id,
+                'actor_id' => auth('api')->id() ?? auth('web')->id(),
+                'adjustment_type' => 'price_change',
+                'reason' => 'backend_order_update',
+                'previous_total' => $previousTotal,
+                'final_total' => $currentTotal,
+                'value_delta' => round($currentTotal - $previousTotal, 2),
+                'before_snapshot' => $beforeSnapshot,
+                'after_snapshot' => $afterSnapshot,
+            ]);
+            app(\Core\Orders\Services\AnalyticsOutboxService::class)->record('order_adjusted', $order, [
+                'adjustment_id' => (string) $adjustment->id,
+                'adjustment_type' => 'price_change',
+                'adjustment_reason' => 'backend_order_update',
+                'previous_total' => $previousTotal,
+                'final_total' => $currentTotal,
+                'value_delta' => round($currentTotal - $previousTotal, 2),
+                'order_price_changed' => (int) $order->wasChanged('order_price'),
+                'coupon_discount_changed' => (int) $order->wasChanged('total_coupon'),
+                'delivery_price_changed' => (int) $order->wasChanged('delivery_price'),
+                'final_total_changed' => (int) $order->wasChanged('total_price'),
+            ], 'adjustment:' . $adjustment->id);
         }
     }
     /**

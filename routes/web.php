@@ -1,20 +1,10 @@
 <?php
 
-use App\Http\Controllers\Client\AddressController;
-use App\Http\Controllers\Client\AuthController;
-use App\Http\Controllers\Client\DashboardController;
-use App\Http\Controllers\MapController;
 use App\Http\Controllers\PageController;
-use Core\Orders\Services\OrderTransactionsService;
-use Core\Users\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Http\Controllers\Client\ScheduleController;
-use Carbon\Carbon;
-use Core\Orders\Models\Order;
-use Core\Orders\Models\OrderTransaction;
-use Core\Settings\Helpers\ToolHelper;
+
 
 // Localized public routes: language prefixes and middleware are defined here.
 Route::group(
@@ -57,7 +47,6 @@ Route::group(
         })->name('newsletter');
         Route::get('/newsletter', fn () => redirect()->route('home'));
 
-        // Flowers & Gifts Page (الورود والهدايا)
         Route::get('/gifts', [PageController::class, 'gifts'])->name('gifts');
     }
 );

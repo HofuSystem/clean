@@ -44,6 +44,11 @@ class HandleExpiredWalletTransaction extends Command
                     'user_id'           => $transaction->user_id,
                     'status'            => 'accepted',
                     'transaction_type'  => 'expiry_deduction',
+                    // Keep the expiry debit in the same funding bucket as its
+                    // source credit so future spends cannot reuse expired funds.
+                    'wallet_bucket'     => in_array($transaction->wallet_bucket, ['funded', 'promotional', 'unclassified'], true)
+                        ? $transaction->wallet_bucket
+                        : 'unclassified',
                 ]);
             }
         }

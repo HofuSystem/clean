@@ -148,6 +148,13 @@ class OrdersService
         if ($couponId) {
             $coupon = Coupon::findMatching(applying: "manual", userId: $clientId, orderType: $type, productsIds: $productIds, orderValue: $subTotal)->where('id', $couponId)->exists();
             if (!$coupon) {
+                app(AnalyticsOutboxService::class)->recordUserEvent(
+                    'coupon_rejected',
+                    (int) $clientId,
+                    is_array($orderData['analytics_context'] ?? null) ? $orderData['analytics_context'] : [],
+                    ['reason_category' => 'not_matching'],
+                    'coupon-rejected:' . (string) \Illuminate\Support\Str::uuid()
+                );
                 throw new RuntimeException(trans('the selected Coupon is not matching'));
             }
         } else {
@@ -171,23 +178,17 @@ class OrdersService
                     } else {
                         $usedAmount = $client->wallet;
                     }
-                    WalletTransaction::create([
-                        'type'            => 'withdraw',
-                        'amount'          => $usedAmount,
-                        'wallet_before'   => $client->wallet,
-                        'wallet_after'    => $client->wallet - $usedAmount,
-                        'status'          => 'accepted',
-                        'user_id'         => $client->id,
-                        'added_by_id'     => request()->user()->id,
-                        'transaction_type' => 'order_payment',
-                        'order_id'        => $order->id
-
+                    $order->update([
+                        'paid' => $usedAmount,
+                        'wallet_amount_used' => $usedAmount,
                     ]);
+                    $this->createWalletOrderPaymentTransactions(
+                        $client,
+                        $order,
+                        (float) $usedAmount,
+                        'pay order wallet payment for order : ' . $order->reference_id
+                    );
                 }
-                $order->update([
-                    'paid'               => $usedAmount,
-                    'wallet_amount_used' => $usedAmount
-                ]);
             }
             $order = $this->reCalcOrder($order->id);
         }
@@ -196,6 +197,18 @@ class OrdersService
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
         }
         app(AnalyticsOutboxService::class)->record('order_created', $order);
+        app(AnalyticsOutboxService::class)->record('order_priced', $order, [
+            'order_price' => round((float) $order->order_price, 2),
+            'coupon_discount' => round((float) ($order->total_coupon ?? 0), 2),
+            'delivery_price' => round((float) ($order->delivery_price ?? 0), 2),
+            'final_total' => round((float) $order->total_price, 2),
+        ], 'initial-price');
+        if ($order->coupon_id) {
+            app(AnalyticsOutboxService::class)->record('coupon_accepted', $order, [
+                'coupon_type' => (string) ($order->coupon?->type ?? 'unknown'),
+                'discount_amount' => round((float) ($order->total_coupon ?? 0), 2),
+            ], 'coupon-accepted');
+        }
         if ($order->pay_type === 'wallet' && (float) $order->paid >= (float) $order->total_price) {
             $purchase = app(PurchasePayloadBuilder::class)->build($order);
             app(AnalyticsOutboxService::class)->record(
@@ -623,14 +636,21 @@ class OrdersService
     public function assignRepresentatives(string $type, int $repId, array $orderIds)
     {
         foreach ($orderIds as $orderId) {
-            OrderRepresentative::updateOrCreate([
+            $assignment = OrderRepresentative::query()->where([
                 'type'      => $type,
                 'order_id'  => $orderId,
-            ], [
-                'representative_id' => $repId
-            ]);
+            ])->first();
+            if ($assignment) {
+                $assignment->update(['representative_id' => $repId]);
+            } else {
+                $assignment = OrderRepresentative::create([
+                    'type' => $type,
+                    'order_id' => $orderId,
+                    'representative_id' => $repId,
+                ]);
+            }
             $order  = Order::where('id', $orderId)->first();
-            if($order->status == "pending" and $order->type == 'sales' and $type == 'delivery'){
+            if($order?->status == "pending" and $order->type == 'sales' and $type == 'delivery'){
                 $order->update([
                     'status'    => 'order_has_been_delivered_to_admin',
                 ]);
@@ -671,6 +691,10 @@ class OrdersService
                 'total_coupon' => $newCouponValue,
                 'total_price'  => $orderTotalPrice,
             ]);
+            app(AnalyticsOutboxService::class)->record('coupon_accepted', $order->fresh(), [
+                'coupon_type' => (string) ($coupon->type ?? 'unknown'),
+                'discount_amount' => round((float) $newCouponValue, 2),
+            ], 'coupon-applied:' . (string) \Illuminate\Support\Str::uuid());
             
             // Log coupon change
             $this->orderHistoryService->logCouponChange($orderId, $oldCoupon, $coupon);
@@ -951,6 +975,7 @@ class OrdersService
                 'order_id' => $order->id,
                 'schema_version' => 2,
                 'app_instance_id' => $analyticsContext['app_instance_id'] ?? null,
+                'app_version' => $analyticsContext['app_version'] ?? null,
                 'session_id' => isset($analyticsContext['session_id']) ? (int) $analyticsContext['session_id'] : null,
                 'platform' => in_array($analyticsContext['platform'] ?? null, ['ios', 'android'], true)
                     ? $analyticsContext['platform']
@@ -979,16 +1004,12 @@ class OrdersService
             $order->wallet_amount_used    = ($data['wallet_amount_used']);
             $order->update();
             if ($data['status'] != 'pending_payment') {
-                $beforeWalletCharge           = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
-                $walletModel                  = $user->walletTransactions()->create($beforeWalletCharge);
-
-                //add order transaction for wallet payment
-                $order->transactions()->create([
-                    'type'                  => 'wallet',
-                    'amount'                => $data['wallet_amount_used'],
-                    'wallet_transaction_id' => $walletModel->id,
-                    'notes'                 => 'pay normal order wallet payment for order : ' . $order->reference_id,
-                ]);
+                $this->createWalletOrderPaymentTransactions(
+                    $user,
+                    $order,
+                    (float) $data['wallet_amount_used'],
+                    'pay normal order wallet payment for order : ' . $order->reference_id
+                );
             }
         }
         $minAllowedPoints = SettingsService::getDataBaseSetting('minium_points_to_use');
@@ -1003,11 +1024,12 @@ class OrdersService
             $order->update();
             if ($data['status'] != 'pending_payment') {
                 $pointsData                = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
-                $user->points()->create($pointsData);
+                $pointModel = $user->points()->create($pointsData);
                 //add to the order transactions
                 $order->transactions()->create([
                     'type'                  => 'points',
                     'amount'                => $data['points_amount_used'],
+                    'point_id'              => $pointModel->id,
                     'notes'                 => 'pay normal order points payment for order : ' . $order->reference_id,
                 ]);
             }
@@ -1094,6 +1116,18 @@ class OrdersService
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
         }
         app(AnalyticsOutboxService::class)->record('order_created', $order);
+        app(AnalyticsOutboxService::class)->record('order_priced', $order, [
+            'order_price' => round((float) $order->order_price, 2),
+            'coupon_discount' => round((float) ($order->total_coupon ?? 0), 2),
+            'delivery_price' => round((float) ($order->delivery_price ?? 0), 2),
+            'final_total' => round((float) $order->total_price, 2),
+        ], 'initial-price');
+        if ($order->coupon_id) {
+            app(AnalyticsOutboxService::class)->record('coupon_accepted', $order, [
+                'coupon_type' => (string) ($order->coupon?->type ?? 'unknown'),
+                'discount_amount' => round((float) ($order->total_coupon ?? 0), 2),
+            ], 'coupon-accepted');
+        }
         return $order;
     }
     public function storeOrderItems($orderId, $products)
@@ -1177,15 +1211,12 @@ class OrdersService
         $walletUsed        = ToolHelper::getBooleanValue($data['wallet_used'] ?? false);
         if (($walletUsed == true and  $data['wallet_amount_used'] > 0) and $user->wallet >= $data['wallet_amount_used']) {
             $alreadyWalletPaid  += $data['wallet_amount_used'];
-            $beforeWalletCharge = ['amount' => $data['wallet_amount_used'], 'type' => 'withdraw', 'added_by_id' => $user->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
-            $walletModel        = $user->walletTransactions()->create($beforeWalletCharge);
-            //add to the order transactions
-            $order->transactions()->create([
-                'type'                  => 'wallet',
-                'amount'                => $data['wallet_amount_used'],
-                'wallet_transaction_id' => $walletModel->id,
-                'notes'                 => 'pay fast order wallet payment for order : ' . $order->reference_id,
-            ]);
+            $this->createWalletOrderPaymentTransactions(
+                $user,
+                $order,
+                (float) $data['wallet_amount_used'],
+                'pay fast order wallet payment for order : ' . $order->reference_id
+            );
         }
 
         $pointsUsed        = ToolHelper::getBooleanValue($data['points_used'] ?? false);
@@ -1272,16 +1303,12 @@ class OrdersService
             }
             if ($walletUsedAmount > 0) {
                 //add to the wallet records
-                $beforeWalletCharge = ['amount' => $walletUsedAmount, 'type' => 'withdraw', 'added_by_id' => $order->client->id, 'status' => 'accepted', "transaction_type" => "order_payment", "order_id" => $order->id];
-                $walletModel        = $order->client?->walletTransactions()->create($beforeWalletCharge);
-
-                //add to the order transactions
-                $order->transactions()->create([
-                    'type'                  => 'wallet',
-                    'amount'                => $walletUsedAmount,
-                    'wallet_transaction_id' => $walletModel->id,
-                    'notes'                 => 'pay normal order wallet payment for order : ' . $order->reference_id,
-                ]);
+                $this->createWalletOrderPaymentTransactions(
+                    $order->client,
+                    $order,
+                    (float) $walletUsedAmount,
+                    'pay normal order wallet payment for order : ' . $order->reference_id
+                );
             }
         }
         if(isset($data['status']) and $data['status'] != $ogStatus){
@@ -1329,6 +1356,40 @@ class OrdersService
             (float) $order->paid + $walletAmount + $pointsAmount
         );
     }
+
+    private function createWalletOrderPaymentTransactions($user, Order $order, float $amount, string $notes): void
+    {
+        if ($amount <= 0 || ! $user) {
+            return;
+        }
+
+        $allocations = app(\Core\Wallet\Services\WalletBucketAllocationService::class)
+            ->allocate((int) $user->id, $amount);
+        $walletTransactions = [];
+
+        foreach ($allocations as $bucket => $bucketAmount) {
+            $walletTransactions[] = $user->walletTransactions()->create([
+                'amount' => $bucketAmount,
+                'type' => 'withdraw',
+                'status' => 'accepted',
+                'transaction_type' => 'order_payment',
+                'wallet_bucket' => $bucket,
+                'order_id' => $order->id,
+            ]);
+        }
+
+        // Persist every wallet ledger row before creating order transactions:
+        // the latter trigger paid-total recalculation and may emit purchase.
+        foreach ($walletTransactions as $walletTransaction) {
+            $order->transactions()->create([
+                'type' => 'wallet',
+                'amount' => $walletTransaction->amount,
+                'wallet_transaction_id' => $walletTransaction->id,
+                'notes' => $notes,
+            ]);
+        }
+    }
+
     public function createPaymentUrl(int $orderId,$amount,$data,$type = 'order_payment'): ?string
     {
         $order = Order::whereId($orderId)->firstOrFail();

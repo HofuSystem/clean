@@ -12,6 +12,7 @@ class OrderAnalyticsContext extends Model
         'order_id',
         'schema_version',
         'app_instance_id',
+        'app_version',
         'session_id',
         'platform',
         'branch_first',
