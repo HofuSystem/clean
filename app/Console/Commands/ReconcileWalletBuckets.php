@@ -16,13 +16,16 @@ class ReconcileWalletBuckets extends Command
         $mismatches = 0;
         $splits = 0;
 
-        DB::table('users')->whereExists(function ($query): void {
-            $query->selectRaw('1')->from('wallet_transactions')->whereColumn('wallet_transactions.user_id', 'users.id');
+        DB::table('users')->whereNull('users.deleted_at')->whereExists(function ($query): void {
+            $query->selectRaw('1')->from('wallet_transactions')
+                ->whereColumn('wallet_transactions.user_id', 'users.id')
+                ->whereNull('wallet_transactions.deleted_at');
         })->orderBy('id')->select(['id', 'wallet'])->chunkById(200, function ($users) use ($apply, &$mismatches, &$splits): void {
             foreach ($users as $user) {
                 DB::transaction(function () use ($user, $apply, &$mismatches, &$splits): void {
                     DB::table('users')->where('id', $user->id)->lockForUpdate()->first();
                     $rows = DB::table('wallet_transactions')->where('user_id', $user->id)
+                        ->whereNull('deleted_at')
                         ->where(function ($query): void {
                             $query->where('status', 'accepted')
                                 ->orWhere(function ($pending): void {
