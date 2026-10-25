@@ -47,7 +47,7 @@ class OrderPointsTest extends TestCase
         auth('api')->setUser($driver);
 
         // 2. Create order: order_price = 200, delivery_price = 15, total_coupon (discount) = 25
-        // Expected points: (200 - 15 - 25) * 1.5 = 160 * 1.5 = 240
+        // Approved formula includes VAT/delivery in total_price: 190 * 1.5 = 285.
         $order = Order::create([
             'reference_id' => 'ORD-' . rand(1000, 9999),
             'client_id' => $client->id,
@@ -86,12 +86,12 @@ class OrderPointsTest extends TestCase
             ->first();
 
         $this->assertNotNull($pointRecord);
-        $this->assertEquals(240, $pointRecord->amount);
+        $this->assertEquals(285, $pointRecord->amount);
         $this->assertEquals('deposit', $pointRecord->operation);
 
-        // Verify client's points_balance was updated to 240
+        // Verify client's points_balance was updated.
         $client->refresh();
-        $this->assertEquals(240, $client->points_balance);
+        $this->assertEquals(285, $client->points_balance);
     }
 
     public function test_technical_finishes_order_and_points_are_awarded_based_on_price_formula()
@@ -128,7 +128,7 @@ class OrderPointsTest extends TestCase
         auth('api')->setUser($technical);
 
         // 2. Create order: order_price = 150, delivery_price = 10, total_coupon = 40
-        // Expected points: (150 - 10 - 40) * 2.0 = 100 * 2.0 = 200
+        // Approved formula uses the customer total: 120 * 2.0 = 240.
         $order = Order::create([
             'reference_id' => 'ORD-' . rand(1000, 9999),
             'client_id' => $client->id,
@@ -165,11 +165,11 @@ class OrderPointsTest extends TestCase
             ->first();
 
         $this->assertNotNull($pointRecord);
-        $this->assertEquals(200, $pointRecord->amount);
+        $this->assertEquals(240, $pointRecord->amount);
 
         // Verify client's points_balance
         $client->refresh();
-        $this->assertEquals(200, $client->points_balance);
+        $this->assertEquals(240, $client->points_balance);
     }
 
     public function test_points_are_not_awarded_when_setting_is_zero_or_null()

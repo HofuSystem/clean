@@ -18,10 +18,19 @@ class WalletTransactionObserver
      */
     public function creating(WalletTransaction $walletTransaction) {
         if (! $walletTransaction->wallet_bucket) {
-            $walletTransaction->wallet_bucket = match ([$walletTransaction->type, $walletTransaction->transaction_type]) {
-                ['deposit', 'charge'], ['deposit', 'deposit'], ['deposit', 'remaining_amount'] => 'funded',
-                ['deposit', 'promotional_add'], ['deposit', 'cashback'], ['deposit', 'reward'],
-                ['withdraw', 'expiry_deduction'] => 'promotional',
+            $successfulCharge = $walletTransaction->type === 'deposit'
+                && $walletTransaction->transaction_type === 'charge'
+                && $walletTransaction->transaction_id
+                && PaymentTransaction::query()
+                    ->where('transaction_id', $walletTransaction->transaction_id)
+                    ->where('for', 'wallet_charge')
+                    ->where('status', 'success')
+                    ->exists();
+            $walletTransaction->wallet_bucket = match (true) {
+                $successfulCharge,
+                $walletTransaction->type === 'deposit' && $walletTransaction->transaction_type === 'remaining_amount' => 'funded',
+                $walletTransaction->type === 'deposit' && in_array($walletTransaction->transaction_type, ['compensation_add', 'promotional_add', 'cashback', 'reward'], true),
+                $walletTransaction->type === 'withdraw' && $walletTransaction->transaction_type === 'expiry_deduction' => 'promotional',
                 default => 'unclassified',
             };
         }
@@ -84,8 +93,8 @@ class WalletTransactionObserver
         } elseif ($walletTransaction->type === 'withdraw' && $walletTransaction->transaction_type === 'expiry_deduction') {
             $eventName = 'wallet_credit_expired';
         } elseif ($walletTransaction->type === 'deposit' && $walletTransaction->transaction_type === 'remaining_amount') {
-            $eventName = 'refund';
-            $parameters['refund_type'] = 'wallet';
+            $eventName = 'wallet_credit_issued';
+            $parameters['credit_type'] = 'order_adjustment_refund';
             $parameters['wallet_bucket'] = 'funded';
         }
 

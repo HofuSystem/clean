@@ -32,6 +32,7 @@ class Order extends CoreModel
         'reference_id', 
         'type', 
         'status',
+        'status_before_issue',
         'b2b_profit', 
         'client_id', 
         'company_id', 

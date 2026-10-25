@@ -277,6 +277,9 @@ class WalletTransactionsService
             'wallet_before' => $wallet,
             'wallet_after' => $wallet + $amount,
             'transaction_type' => 'charge',
+            // This service is reached only from the verified successful gateway
+            // callback; the payment row is committed as success in the same DB transaction.
+            'wallet_bucket' => 'funded',
             'added_by_id' => $user->id,
             'status' => 'accepted',
         ]);
@@ -296,8 +299,25 @@ class WalletTransactionsService
         return DB::transaction(function () use ($validated, $user) {
             // Re-read under a lock: a second withdrawal must see the first one's balance.
             $user = User::whereKey($user->getKey())->lockForUpdate()->firstOrFail();
-            $amount = $validated['amount'];
-            if ($amount > $user->wallet) {
+            $amount = (float) $validated['amount'];
+
+            // Bank withdrawals may use funded money only. Pending withdrawals are
+            // included so two concurrent requests cannot reserve the same balance.
+            $fundedDeposits = (float) WalletTransaction::query()
+                ->where('user_id', $user->id)
+                ->where('type', 'deposit')
+                ->where('status', 'accepted')
+                ->where('wallet_bucket', 'funded')
+                ->sum('amount');
+            $reservedFundedWithdrawals = (float) WalletTransaction::query()
+                ->where('user_id', $user->id)
+                ->where('type', 'withdraw')
+                ->whereIn('status', ['pending', 'accepted'])
+                ->where('wallet_bucket', 'funded')
+                ->sum('amount');
+            $fundedAvailable = round(max(0, $fundedDeposits - $reservedFundedWithdrawals), 2);
+
+            if ($amount > $fundedAvailable) {
                 throw ValidationException::withMessages(['amount' => trans('There is not enough balance')]);
             }
             $transaction = $user->walletTransactions()->create([
@@ -307,6 +327,7 @@ class WalletTransactionsService
                 'iban_number' => $validated['iban_number'],
                 'type' => 'withdraw',
                 'transaction_type' => 'withdraw',
+                'wallet_bucket' => 'funded',
                 'status' => 'pending',
                 'added_by_id' => $user->id,
                 'wallet_before' => $user->wallet,
@@ -317,8 +338,11 @@ class WalletTransactionsService
         });
     }
     public static function updateUserWallet($userId){
-        $depositWallet = WalletTransaction::where('user_id', $userId)->where('type', 'deposit')->sum('amount');
-        $withdrawWallet = WalletTransaction::where('user_id', $userId)->where('type', 'withdraw')->sum('amount');
+        $depositWallet = WalletTransaction::where('user_id', $userId)
+            ->where('type', 'deposit')->where('status', 'accepted')->sum('amount');
+        // A pending bank withdrawal reserves funds; rejected/failed requests do not.
+        $withdrawWallet = WalletTransaction::where('user_id', $userId)
+            ->where('type', 'withdraw')->whereIn('status', ['pending', 'accepted'])->sum('amount');
         $user = User::find($userId);
         $currentWallet = $depositWallet - $withdrawWallet;
         if ($user) {

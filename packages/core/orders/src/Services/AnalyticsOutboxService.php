@@ -32,7 +32,7 @@ class AnalyticsOutboxService
             'event_source' => 'backend',
             // Keep the real order service line. The platform supports multiple
             // order types, so analytics must not label every order as laundry.
-            'main_section' => (string) $order->type,
+            'main_section' => $this->mainSection($order),
             'event_name' => $eventName,
             'order_id' => (string) $order->id,
             'order_type' => (string) $order->type,
@@ -107,6 +107,16 @@ class AnalyticsOutboxService
      * Record a successful customer-level event that is not tied to an order.
      * Events without app attribution remain visible as blocked outbox rows.
      */
+    private function mainSection(Order $order): string
+    {
+        return match ((string) $order->type) {
+            'clothes', 'fastorder' => 'laundry_station',
+            'sales' => 'store',
+            'services', 'maid', 'host' => 'home_services',
+            default => (string) $order->type,
+        };
+    }
+
     public function recordUserEvent(
         string $eventName,
         int $userId,
@@ -123,6 +133,7 @@ class AnalyticsOutboxService
         $payload = array_filter([
             'schema_version' => 2,
             'event_source' => 'backend',
+            'main_section' => (string) ($parameters['main_section'] ?? 'wallet'),
             'event_name' => $eventName,
             'event_id' => $eventId,
             'user_id' => (string) $userId,

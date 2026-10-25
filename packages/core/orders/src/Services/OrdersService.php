@@ -38,6 +38,7 @@ use Core\B2B\Models\Contract;
 use Core\PaymentGateways\Services\MyFatoorahService;
 use Illuminate\Validation\ValidationException;
 use Core\Financials\Services\InvoiceService;
+use Illuminate\Support\Facades\DB;
 
 class OrdersService
 {
@@ -196,29 +197,14 @@ class OrdersService
         if (!in_array($clientId, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
         }
-        app(AnalyticsOutboxService::class)->record('order_created', $order);
-        app(AnalyticsOutboxService::class)->record('order_priced', $order, [
-            'order_price' => round((float) $order->order_price, 2),
-            'coupon_discount' => round((float) ($order->total_coupon ?? 0), 2),
-            'delivery_price' => round((float) ($order->delivery_price ?? 0), 2),
-            'final_total' => round((float) $order->total_price, 2),
-        ], 'initial-price');
+        if ($order->status !== 'pending_payment') {
+            app(AnalyticsOutboxService::class)->record('order_created', $order);
+        }
         if ($order->coupon_id) {
             app(AnalyticsOutboxService::class)->record('coupon_accepted', $order, [
                 'coupon_type' => (string) ($order->coupon?->type ?? 'unknown'),
                 'discount_amount' => round((float) ($order->total_coupon ?? 0), 2),
             ], 'coupon-accepted');
-        }
-        if ($order->pay_type === 'wallet' && (float) $order->paid >= (float) $order->total_price) {
-            $purchase = app(PurchasePayloadBuilder::class)->build($order);
-            app(AnalyticsOutboxService::class)->record(
-                'purchase',
-                $order,
-                $purchase['ready']
-                    ? $purchase['payload']
-                    : ['_analytics_blocked_reason' => $purchase['reason']],
-                'purchase'
-            );
         }
         return $order;
     }
@@ -263,6 +249,10 @@ class OrdersService
             return;
         }
         $ogStatus = $order->status;
+        if ($status === 'finished') {
+            $this->completeOrderFinancials($order->id);
+            $order->refresh();
+        }
         $order->update([
             'status' => $status,
             'order_status_times' => [
@@ -314,6 +304,88 @@ class OrdersService
         }
     }
 
+    /**
+     * Apply completion money movements exactly once for every completion path.
+     * Locking the order serializes simultaneous admin/driver/technician requests.
+     */
+    public function completeOrderFinancials(int $orderId): void
+    {
+        DB::transaction(function () use ($orderId) {
+            $order = Order::query()->lockForUpdate()->findOrFail($orderId);
+            $this->applyCompletionEffects($order);
+
+            $overpayment = OrderPaymentMath::remainingForCustomer($order->total_price, $order->paid);
+            if (OrderPaymentMath::isCollectable($overpayment)
+                && ! WalletTransaction::query()->where('order_id', $order->id)
+                    ->where('transaction_type', 'remaining_amount')->exists()) {
+                $wallet = WalletTransaction::create([
+                    'title' => 'remaining amount for order : ' . $order->reference_id,
+                    'amount' => $overpayment, 'type' => 'deposit', 'status' => 'accepted',
+                    'transaction_type' => 'remaining_amount', 'wallet_bucket' => 'funded',
+                    'user_id' => $order->client_id, 'order_id' => $order->id,
+                ]);
+                $order->transactions()->create([
+                    'type' => 'wallet', 'amount' => -$overpayment,
+                    'wallet_transaction_id' => $wallet->id,
+                    'notes' => 'remaining amount for order : ' . $order->reference_id,
+                ]);
+            }
+        });
+    }
+
+    /** Apply the same financial effects for every actor that finishes an order. */
+    private function applyCompletionEffects(Order $order): void
+    {
+        $order->items()->update(['is_delivered' => true]);
+
+        $cash = OrderPaymentMath::remainingToCollect($order->total_price, $order->paid);
+        if (OrderPaymentMath::isCollectable($cash)
+            && ! $order->transactions()->where('type', 'cash')->exists()) {
+            $order->transactions()->create([
+                'type' => 'cash', 'amount' => $cash,
+                'notes' => 'cash amount for order : ' . $order->reference_id,
+            ]);
+        }
+
+        if ((float) $order->cashback > 0
+            && ! WalletTransaction::query()->where('order_id', $order->id)->where('transaction_type', 'cashback')->exists()) {
+            WalletTransaction::create([
+                'title' => 'cashback : ' . $order->client?->fullname,
+                'amount' => round((float) $order->total_price * (float) $order->cashback / 100, 2),
+                'type' => 'deposit', 'status' => 'accepted', 'transaction_type' => 'cashback',
+                'wallet_bucket' => 'promotional', 'user_id' => $order->client_id,
+                'expired_at' => now()->addDays(3), 'order_id' => $order->id,
+            ]);
+        }
+
+        $firstOrderId = Order::query()->where('client_id', $order->client_id)
+            ->orderBy('created_at')->orderBy('id')->value('id');
+        $referrer = $order->client?->registerBy;
+        if ($firstOrderId === $order->id && $referrer) {
+            $referralPoints = (int) (SettingsService::getDataBaseSetting('referral_points') ?? 0);
+            if ($referralPoints > 0 && ! Point::query()->where('order_id', $order->id)->where('user_id', $referrer->id)->exists()) {
+                Point::create([
+                    'title' => 'referral gift points for user : ' . $order->client->fullname,
+                    'amount' => $referralPoints, 'operation' => 'deposit',
+                    'user_id' => $referrer->id, 'order_id' => $order->id,
+                ]);
+                $referrer->increment('earned_referral_points', $referralPoints);
+            }
+
+            $referralRiyals = round((float) (SettingsService::getDataBaseSetting('referral_riyals') ?? 0), 2);
+            if ($referralRiyals > 0 && ! WalletTransaction::query()->where('order_id', $order->id)
+                ->where('user_id', $referrer->id)->where('transaction_type', 'promotional_add')->exists()) {
+                WalletTransaction::create([
+                    'title' => 'referral gift riyals for user : ' . $order->client->fullname,
+                    'amount' => $referralRiyals, 'type' => 'deposit', 'status' => 'accepted',
+                    'user_id' => $referrer->id, 'wallet_bucket' => 'promotional',
+                    'transaction_type' => 'promotional_add', 'order_id' => $order->id,
+                ]);
+                $referrer->increment('earned_referral_riyals', $referralRiyals);
+            }
+        }
+    }
+
     private function refundToWallet($user, float $amount, string $notes, string $transaction_type,$order)
     {
         $transaction = WalletTransaction::create([
@@ -338,6 +410,17 @@ class OrdersService
     public function returnOrderContinue(int $orderId)
     {
         $order = Order::findOrFail($orderId);
+        if ($order->status === 'issue' && $order->status_before_issue) {
+            $previousStatus = $order->status_before_issue;
+            $order->update([
+                'status' => $previousStatus,
+                'status_before_issue' => null,
+                'driver_has_problem' => false,
+                'order_status_times' => [
+                    $previousStatus => [now()->format('Y-m-d H:i'), auth()->user()?->email],
+                ],
+            ]);
+        }
         OrderReport::where('order_id', $order->id)->forceDelete();
     }
     public function getDateTimes(array $productIds)
@@ -1012,23 +1095,20 @@ class OrdersService
                 );
             }
         }
-        $minAllowedPoints = SettingsService::getDataBaseSetting('minium_points_to_use');
-        if (
-            ($data['points_used'] == true  and  $data['points_amount_used'] > 0)
-            and ($user->points_balance >= $data['points_amount'] and $user->points_balance >= $minAllowedPoints)
-        ) {
+        if (ToolHelper::getBooleanValue($data['points_used'] ?? false)) {
+            $redemption = app(PointsRedemptionService::class)->calculate($user, $order, $data['points_amount'] ?? 0);
             $user                      = $user ?? auth('api')->user();
-            $order->paid               = ($order->paid + $data['points_amount_used']);
-            $order->points_amount_used = $data['points_amount_used'];
-            $order->points_amount      = $data['points_amount'];
+            $order->paid               = round($order->paid + $redemption['value'], 2);
+            $order->points_amount_used = $redemption['value'];
+            $order->points_amount      = $redemption['points'];
             $order->update();
             if ($data['status'] != 'pending_payment') {
-                $pointsData                = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
+                $pointsData                = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $redemption['points'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
                 $pointModel = $user->points()->create($pointsData);
                 //add to the order transactions
                 $order->transactions()->create([
                     'type'                  => 'points',
-                    'amount'                => $data['points_amount_used'],
+                    'amount'                => $redemption['value'],
                     'point_id'              => $pointModel->id,
                     'notes'                 => 'pay normal order points payment for order : ' . $order->reference_id,
                 ]);
@@ -1115,13 +1195,9 @@ class OrdersService
         if (!in_array($order->client_id, $testAccounts)) {
             $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
         }
-        app(AnalyticsOutboxService::class)->record('order_created', $order);
-        app(AnalyticsOutboxService::class)->record('order_priced', $order, [
-            'order_price' => round((float) $order->order_price, 2),
-            'coupon_discount' => round((float) ($order->total_coupon ?? 0), 2),
-            'delivery_price' => round((float) ($order->delivery_price ?? 0), 2),
-            'final_total' => round((float) $order->total_price, 2),
-        ], 'initial-price');
+        if ($order->status !== 'pending_payment') {
+            app(AnalyticsOutboxService::class)->record('order_created', $order);
+        }
         if ($order->coupon_id) {
             app(AnalyticsOutboxService::class)->record('coupon_accepted', $order, [
                 'coupon_type' => (string) ($order->coupon?->type ?? 'unknown'),
@@ -1220,21 +1296,18 @@ class OrdersService
         }
 
         $pointsUsed        = ToolHelper::getBooleanValue($data['points_used'] ?? false);
-        $minAllowedPoints  = SettingsService::getDataBaseSetting('minium_points_to_use');
-        if (
-            ($pointsUsed == true  and  $data['points_amount_used'] > 0 and $data['points_amount'] > 0)
-            and ($user->points_balance >= $data['points_amount'] and $user->points_balance >= $minAllowedPoints)
-        ) {
-            $order->paid         = ($order->paid + $data['points_amount_used']);
-            $alreadyPointsPaid   += $data['points_amount_used'];
-            $alreadyPointsAmount += $data['points_amount'];
+        if ($pointsUsed) {
+            $redemption = app(PointsRedemptionService::class)->calculate($user, $order, $data['points_amount'] ?? 0);
+            $order->paid         = round($order->paid + $redemption['value'], 2);
+            $alreadyPointsPaid   += $redemption['value'];
+            $alreadyPointsAmount += $redemption['points'];
 
-            $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $data['points_amount'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
+            $pointsData = ['title' => 'used in order : ' . $order->reference_id, 'amount' => $redemption['points'], 'operation' => 'withdraw', 'order_id' => $order->id, 'creator_id' => $user->id];
             $pointModel = $user->points()->create($pointsData);
             //add to the order transactions
             $order->transactions()->create([
                 'type'      => 'points',
-                'amount'    => $data['points_amount_used'],
+                'amount'    => $redemption['value'],
                 'point_id'  => $pointModel->id,
                 'notes'     => 'pay fast order points payment for order : ' . $order->reference_id,
             ]);
@@ -1271,6 +1344,10 @@ class OrdersService
         }
         $ogStatus = $order->status;
         $order->update($data);
+
+        if ($ogStatus === 'pending_payment' && $order->status === 'pending') {
+            app(AnalyticsOutboxService::class)->record('order_created', $order);
+        }
         
 
         
@@ -1342,12 +1419,19 @@ class OrdersService
         }
 
         if (ToolHelper::getBooleanValue($data['points_used'] ?? false)) {
-            $requested        = (float) ($data['points_amount_used'] ?? 0);
-            $points           = (float) ($data['points_amount'] ?? 0);
+            $points           = (int) ($data['points_amount'] ?? 0);
             $balance          = (float) ($user?->points_balance ?? 0);
             $minAllowedPoints = (float) (SettingsService::getDataBaseSetting('minium_points_to_use') ?? 0);
-            if ($requested > 0 && $points > 0 && $balance >= $points && $balance >= $minAllowedPoints) {
-                $pointsAmount = $requested;
+            $rate = max(0, (float) (SettingsService::getDataBaseSetting('riyal_per_point_redeem') ?? 0));
+            if ($points > 0 && $points >= $minAllowedPoints && $balance >= $points) {
+                $serverValue = round($points * $rate, 2);
+                $dueAfterWallet = OrderPaymentMath::remainingToCollect(
+                    $order->total_price,
+                    (float) $order->paid + $walletAmount
+                );
+                if ($serverValue <= $dueAfterWallet) {
+                    $pointsAmount = $serverValue;
+                }
             }
         }
 

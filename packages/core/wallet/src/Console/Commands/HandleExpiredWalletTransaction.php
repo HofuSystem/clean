@@ -26,31 +26,55 @@ class HandleExpiredWalletTransaction extends Command
      */
     public function handle()
     {
-        $walletTransactions = WalletTransaction::whereDate('expired_at', '<=', now())
-            ->where('type', 'deposit')
-            ->has('user')
-            ->get();
-        foreach ($walletTransactions as $transaction) {
-            $usedAmountSinceCreation = WalletTransaction::where('user_id', $transaction->user_id)
-                ->where('id', '!=', $transaction->id)
-                ->where('created_at', '>=', $transaction->created_at)
-                ->where('type', 'withdraw')
-                ->sum('amount');
-            if($usedAmountSinceCreation < $transaction->amount){
-                $notUsedAmount = $transaction->amount - $usedAmountSinceCreation;
-                WalletTransaction::create([
-                    'type'              => 'withdraw',
-                    'amount'            => $notUsedAmount,
-                    'user_id'           => $transaction->user_id,
-                    'status'            => 'accepted',
-                    'transaction_type'  => 'expiry_deduction',
-                    // Keep the expiry debit in the same funding bucket as its
-                    // source credit so future spends cannot reuse expired funds.
-                    'wallet_bucket'     => in_array($transaction->wallet_bucket, ['funded', 'promotional', 'unclassified'], true)
-                        ? $transaction->wallet_bucket
-                        : 'unclassified',
-                ]);
-            }
+        $userIds = WalletTransaction::query()->where('type', 'deposit')
+            ->where('wallet_bucket', 'promotional')->whereNotNull('expired_at')
+            ->where('expired_at', '<=', now())->distinct()->pluck('user_id');
+
+        foreach ($userIds as $userId) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($userId): void {
+                \Core\Users\Models\User::query()->whereKey($userId)->lockForUpdate()->firstOrFail();
+                $rows = WalletTransaction::query()->where('user_id', $userId)
+                    ->where('status', 'accepted')->where('wallet_bucket', 'promotional')
+                    ->orderBy('created_at')->orderBy('id')->get();
+                $credits = [];
+                foreach ($rows as $row) {
+                    if ($row->type === 'deposit') {
+                        $credits[] = ['transaction' => $row, 'remaining' => round(abs((float) $row->amount), 2)];
+                        continue;
+                    }
+                    $debit = round(abs((float) $row->amount), 2);
+                    usort($credits, static function (array $left, array $right): int {
+                        $leftExpiry = $left['transaction']->expired_at
+                            ? \Carbon\Carbon::parse($left['transaction']->expired_at)->getTimestamp()
+                            : PHP_INT_MAX;
+                        $rightExpiry = $right['transaction']->expired_at
+                            ? \Carbon\Carbon::parse($right['transaction']->expired_at)->getTimestamp()
+                            : PHP_INT_MAX;
+                        return $leftExpiry <=> $rightExpiry;
+                    });
+                    foreach ($credits as &$credit) {
+                        if ($debit <= 0) break;
+                        $used = min($debit, $credit['remaining']);
+                        $credit['remaining'] = round($credit['remaining'] - $used, 2);
+                        $debit = round($debit - $used, 2);
+                    }
+                    unset($credit);
+                }
+
+                foreach ($credits as $credit) {
+                    $source = $credit['transaction'];
+                    if ($credit['remaining'] < 0.01 || ! $source->expired_at
+                        || \Carbon\Carbon::parse($source->expired_at)->isFuture()) {
+                        continue;
+                    }
+                    WalletTransaction::create([
+                        'title' => 'Expired promotional wallet credit #' . $source->id,
+                        'type' => 'withdraw', 'amount' => $credit['remaining'], 'user_id' => $userId,
+                        'status' => 'accepted', 'transaction_type' => 'expiry_deduction',
+                        'wallet_bucket' => 'promotional',
+                    ]);
+                }
+            });
         }
     }
 }

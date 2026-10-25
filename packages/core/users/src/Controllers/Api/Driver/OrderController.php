@@ -12,9 +12,7 @@ use Core\Settings\Services\SettingsService;
 use Core\Settings\Traits\ApiResponse;
 use Core\Users\DataResources\Driver\OrderDetailsResource;
 use Core\Users\DataResources\Driver\OrderResource;
-use Core\Users\Models\Point;
 use Core\Users\Requests\Api\OrderReportRequest;
-use Core\Wallet\Models\WalletTransaction;
 use Illuminate\Http\Request;
 
 
@@ -101,7 +99,7 @@ class OrderController extends Controller
     {
         $order = Order::where('status', 'pending')->hasRepresentatives('receiver', auth('api')->id())->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('pending')]), [], [], 422);
         }
         $order->update(['status' => 'receiving_driver_accepted', 'order_status_times' => ['receiving_driver_accepted' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
@@ -112,8 +110,8 @@ class OrderController extends Controller
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_first_driver_accepte_order', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_first_driver_accepte_order', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_first_driver_accepte_order', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_first_driver_accepte_order', ['order_id' => $order->reference_id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -142,7 +140,7 @@ class OrderController extends Controller
     {
         $order = Order::where('status', 'receiving_driver_accepted')->hasRepresentatives('receiver', auth('api')->id())->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('receiving_driver_accepted')]), [], [], 422);
         }
         $order->update(['status' => 'order_has_been_delivered_to_admin', 'order_status_times' => ['order_has_been_delivered_to_admin' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $order->items()->update(['is_picked' => true]);
@@ -152,8 +150,8 @@ class OrderController extends Controller
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_order_has_been_delivered_to_admin', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_order_has_been_delivered_to_admin', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_order_has_been_delivered_to_admin', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_order_has_been_delivered_to_admin', ['order_id' => $order->reference_id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -179,9 +177,10 @@ class OrderController extends Controller
     //  استلام مندوب التوصبل للطلب
     public function ready_to_delivered($order_id)
     {
-        $order = Order::hasRepresentatives('delivery', auth('api')->id())->find($order_id);
+        $order = Order::hasRepresentatives('delivery', auth('api')->id())
+            ->where('status', 'order_has_been_delivered_to_admin')->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('order_has_been_delivered_to_admin')]), [], [], 422);
         }
         $order->update(['status' => 'ready_to_delivered', 'order_status_times' => ['ready_to_delivered' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
@@ -192,8 +191,12 @@ class OrderController extends Controller
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_ready_to_delivered', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_ready_to_delivered', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_ready_to_delivered', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_ready_to_delivered', [
+                'order_id' => $order->reference_id,
+                'driver_name' => auth('api')->user()->fullname,
+                'amount' => number_format(OrderPaymentMath::remainingToCollect($order->total_price, $order->paid), 2, '.', ''),
+            ], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -217,9 +220,10 @@ class OrderController extends Controller
 
     public function in_the_way($order_id)
     {
-        $order = Order::hasRepresentatives('delivery', auth('api')->id())->find($order_id);
+        $order = Order::hasRepresentatives('delivery', auth('api')->id())
+            ->where('status', 'ready_to_delivered')->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('ready_to_delivered')]), [], [], 422);
         }
         $order->update(['status' => 'in_the_way', 'order_status_times' => ['in_the_way' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
@@ -229,8 +233,8 @@ class OrderController extends Controller
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_in_the_way', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_in_the_way', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_in_the_way', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_in_the_way', ['order_id' => $order->reference_id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -254,9 +258,10 @@ class OrderController extends Controller
 
     public function delivered($order_id)
     {
-        $order = Order::hasRepresentatives('delivery', auth('api')->id())->find($order_id);
+        $order = Order::hasRepresentatives('delivery', auth('api')->id())
+            ->where('status', 'in_the_way')->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('in_the_way')]), [], [], 422);
         }
         $order->update(['status' => 'delivered', 'order_status_times' => ['delivered' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
@@ -265,8 +270,8 @@ class OrderController extends Controller
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_delivered', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_delivered', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_delivered', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_delivered', ['order_id' => $order->reference_id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -283,46 +288,6 @@ class OrderController extends Controller
                 'sender_id' => auth('api')->user()->id,
                 'order_id'  => $order->id,
             ]);
-        }
-        if($order->paid > $order->total_price){
-            $remainingAmount = $order->paid - $order->total_price;
-            $walletModel = WalletTransaction::create([
-                'title'             => "remaining amount for order : " . $order->reference_id,
-                'amount'            => round($remainingAmount),
-                'type'              => 'deposit',
-                'status'            => 'accepted',
-                'transaction_type'  => 'remaining_amount',
-                'user_id'           => $order->client_id,
-                'order_id'          => $order->id,
-            ]);
-            $order->transactions()->create([
-                'type'                  => 'wallet',
-                'amount'                => -$remainingAmount,
-                'wallet_transaction_id' => $walletModel->id,
-                'notes'                 => 'remaining amount for order : ' . $order->reference_id,
-            ]);
-            $data = [
-                'key'               => "order",
-                'key_id'            => $order->id,
-                'status'            => $order->status,
-                'title'             => trans('title_remaining_amount', ['order_id' => $order->id,'amount' => $order->paid - $order->total_price], $clientLang),
-                'body'              => trans('body_remaining_amount', ['order_id' => $order->id, 'amount' => $order->paid - $order->total_price], $clientLang),
-                'order_id'          => $order->id,
-                'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
-                'sender_data'       => $senderData,
-            ];
-            if (isset($notifyTypes) and !empty($notifyTypes)) {
-                Notification::create([
-                    'types'     => json_encode($notifyTypes),
-                    'for'       => 'users',
-                    'for_data'  => json_encode([$order->client_id]),
-                    'payload'   => json_encode($data),
-                    'title'     => $data['title'],
-                    'body'      => $data['body'],
-                    'sender_id' => auth('api')->user()->id,
-                    'order_id'  => $order->id,
-                ]);
-            }
         }
         $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_delivered'), ['data' =>  new OrderDetailsResource($order)]);
@@ -332,64 +297,19 @@ class OrderController extends Controller
     {
         $order = Order::hasRepresentatives('delivery', auth('api')->id())->where('status', 'delivered')->find($order_id);
         if (! $order) {
-            return $this->returnErrorMessage(' يجب ان يكون الطلب جديد وتم الموافقه عليه من الاداره', [], [], 422);
+            return $this->returnErrorMessage(trans('order_stage_required', ['status' => trans('delivered')]), [], [], 422);
         }
+        app(\Core\Orders\Services\OrdersService::class)->completeOrderFinancials($order->id);
         $order->update(['status' => 'finished', 'order_status_times' => ['finished' => [date("Y-m-d H:i"), auth('api')->user()->phone]]]);
 
-        $order->items()->update(['is_delivered' => true]);
-        $firstOrder = Order::where('client_id', $order->client_id)
-            ->orderBy('created_at', 'asc')
-            ->first();
-        if ($firstOrder->id == $order->id and $order->client->registerBy) {
-            $referralUser     = $order->client->registerBy;
-            $pointReferral    = SettingsService::getDataBaseSetting('referral_points');
-            $referralUser->update(['earned_referral_points' => ($referralUser->earned_referral_points + $pointReferral)]);
-            if ($pointReferral > 0) {
-                Point::create([
-                    'title'     => "referral gift points for user : " . $order->client->fullname,
-                    'amount'    => round($pointReferral),
-                    'operation' => 'deposit',
-                    'user_id'   => $referralUser->id,
-                    'order_id'  => $order->id,
-                ]);
-            }
-            $pointRiyals    = SettingsService::getDataBaseSetting('referral_riyals');
-            $referralUser->update(['earned_referral_riyals' => ($referralUser->earned_referral_riyals + $pointRiyals)]);
-            if ($pointRiyals > 0) {
-                WalletTransaction::create([
-                    'title'     => "referral gift riyals for user : " . $order->client->fullname,
-                    'amount'    => round($pointRiyals),
-                    'type'      => 'deposit',
-                    'status'    => 'accepted',
-                    'user_id'   => $referralUser->id,
-                    'transaction_type' => 'promotional_add',
-                    'order_id'        => $order->id
-                ]);
-            }
-        }
-
-        if ($order->cashback > 0) {
-            $cashbackPercentage = $order->cashback;
-            $cashbackAmount = $order->total_price * $cashbackPercentage / 100;
-            WalletTransaction::create([
-                'title'             => "cashback : " . $order->client->fullname,
-                'amount'            => round($cashbackAmount),
-                'type'              => 'deposit',
-                'status'            => 'accepted',
-                'transaction_type'  => 'cashback',
-                'user_id'           => $order->client_id,
-                'expired_at'        => now()->addDays(3),
-                'order_id'          => $order->id
-            ]);
-        }
         $senderData = ['id' => auth('api')->user()->id, 'fullname' => auth('api')->user()->fullname, 'phone' => (string)auth('api')->user()->phone, 'image' => (string)auth('api')->user()->avatarUrl];
         $clientLang = $order->client?->default_language ?: 'ar';
         $data = [
             'key'               => "order",
             'key_id'            => $order->id,
             'status'            => $order->status,
-            'title'             => trans('title_finished', ['order_id' => $order->id], $clientLang),
-            'body'              => trans('body_finished', ['order_id' => $order->id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
+            'title'             => trans('title_finished', ['order_id' => $order->reference_id], $clientLang),
+            'body'              => trans('body_finished', ['order_id' => $order->reference_id, 'driver_name' => auth('api')->user()->fullname], $clientLang),
             'order_id'          => $order->id,
             'order_driver_type' => $order->status == 'pending' || $order->status == 'receiving_driver_accepted' ? 'receipt' : 'delivery',
             'sender_data'       => $senderData,
@@ -407,47 +327,25 @@ class OrderController extends Controller
                 'order_id'  => $order->id,
             ]);
         }
-        $totalPoints = app(\Core\Orders\Services\OrderLoyaltyService::class)
-            ->awardForFinishedOrder($order->id) ?? 0;
-        if ($totalPoints > 0) {
-            Notification::create([
-                'types'    => json_encode(['apps']),
-                'for'      => 'users',
-                'for_data' => json_encode([$order->client_id]),
-                'payload'  => json_encode([
-                    'key'       => "order",
-                    'key_id'    => $order->id,
-                    'status'    => $order->status,
-                    'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], $clientLang),
-                    'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints, 'technical_name' => auth('api')->user()->fullname], $clientLang),
-                ]),
-                'title'     => trans('title_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints], $clientLang),
-                'body'      => trans('body_point_per_spent_riyal', ['order_id' => $order->id, 'points' => $totalPoints, 'technical_name' => auth('api')->user()->fullname], $clientLang),
-                'sender_id' => auth('api')->user()->id,
-                'order_id'  => $order->id,
-            ]);
-        }
-        // Rounded to halalas: floating-point residue from percentage coupons must not
-        // be booked as cash the driver never actually collected.
-        $cashAmount = OrderPaymentMath::remainingToCollect($order->total_price, $order->paid);
-        if (OrderPaymentMath::isCollectable($cashAmount)) {
-            $order->transactions()->create([
-                'type'                  => 'cash',
-                'amount'                => $cashAmount,
-                'notes'                 => 'cash amount for order : ' . $order->reference_id,
-            ]);
-        }
-
         $order->load(self::EAGER_LOADS);
         return $this->returnData(trans('order_has_been_successfully_finished'), ['data' =>  new OrderDetailsResource($order)]);
     }
 
     public function order_report($order_id, OrderReportRequest $request)
     {
+        $assigned = Order::hasRepresentatives(['receiver', 'delivery'], auth('api')->id())->whereKey($order_id)->exists();
+        if (! $assigned) { return $this->returnErrorMessage(trans('You are not assigned to this order'), [], [], 403); }
         if ($request->type == 'report') {
             $order = Order::FindOrFail($order_id);
-            $order->update(['status' => 'issue', 'driver_has_problem' => true, 'order_status_times' => ['issue' => [date("Y-m-d H:i"), auth('api')->user()->phone,$request->report_reason_id]]]);
-            OrderReport::create($request->validated() + ['user_id' => auth('api')->id(), 'order_id' => $order->id]);
+            $previousStatus = $order->status;
+            $order->update(['status_before_issue' => $previousStatus, 'status' => 'issue', 'driver_has_problem' => true, 'order_status_times' => ['issue' => [date("Y-m-d H:i"), auth('api')->user()->phone,$request->report_reason_id]]]);
+            $report = OrderReport::create($request->validated() + ['user_id' => auth('api')->id(), 'order_id' => $order->id]);
+            $failureEvent = in_array($previousStatus, ['pending', 'receiving_driver_accepted'], true)
+                ? 'pickup_failed'
+                : 'delivery_failed';
+            app(\Core\Orders\Services\AnalyticsOutboxService::class)->record($failureEvent, $order, [
+                'fail_reason' => (string) ($report->reportReason?->name ?? $report->report_reason_id),
+            ], 'report:' . $report->id);
         } else {
             $orderRep = OrderRepresentative::has('address')->where('order_id', $order_id)
                 ->where('representative_id', auth('api')->id())->first();
@@ -461,7 +359,7 @@ class OrderController extends Controller
 
     public function get_money_method($order_id, Request $request)
     {
-        $order = Order::FindOrFail($order_id);
+        $order = Order::hasRepresentatives(['receiver', 'delivery'], auth('api')->id())->findOrFail($order_id);
         $order->update(['get_money_method' => $request->pay_type_method]);
         return $this->returnSuccessMessage(trans('send successfully'));
     }

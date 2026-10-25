@@ -50,7 +50,31 @@ class OrderObserver
     {
         if ($order->wasChanged('status')) {
             if ($order->status === 'finished') {
-                app(\Core\Orders\Services\OrderLoyaltyService::class)->awardForFinishedOrder((int) $order->id);
+                $points = app(\Core\Orders\Services\OrderLoyaltyService::class)->awardForFinishedOrder((int) $order->id);
+                if ($points !== null && $points > 0 && $order->client_id) {
+                    $locale = $order->client?->default_language ?: 'ar';
+                    $title = trans('title_point_per_spent_riyal', ['order_id' => $order->reference_id, 'points' => $points], $locale);
+                    $body = trans('body_point_per_spent_riyal', ['order_id' => $order->reference_id, 'points' => $points, 'technical_name' => ''], $locale);
+                    \Core\Notification\Models\Notification::create([
+                        'types' => json_encode(['apps']), 'for' => 'users',
+                        'for_data' => json_encode([$order->client_id]),
+                        'payload' => json_encode([
+                            'key' => 'order', 'key_id' => $order->id, 'status' => $order->status,
+                            'title' => $title, 'body' => $body,
+                        ]),
+                        'title' => $title,
+                        'body' => $body,
+                        'order_id' => $order->id,
+                    ]);
+                }
+
+                if (\Core\Orders\Support\OrderPaymentMath::remainingToCollect($order->total_price, $order->paid) === 0.0
+                    && \Core\Orders\Support\OrderPaymentMath::remainingForCustomer($order->total_price, $order->paid) === 0.0) {
+                    $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order->fresh());
+                    app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                        'purchase', $order, $purchase['ready'] ? $purchase['payload'] : ['_analytics_blocked_reason' => $purchase['reason']], 'purchase'
+                    );
+                }
             }
 
             $eventName = match ($order->status) {
@@ -82,6 +106,15 @@ class OrderObserver
                     $parameters,
                     'status:' . $order->status . ':' . (string) \Illuminate\Support\Str::uuid()
                 );
+            }
+
+            if ($order->status === 'ready_to_delivered') {
+                app(\Core\Orders\Services\AnalyticsOutboxService::class)->record('order_priced', $order, [
+                    'order_price' => round((float) $order->order_price, 2),
+                    'coupon_discount' => round((float) ($order->total_coupon ?? 0), 2),
+                    'delivery_price' => round((float) ($order->delivery_price ?? 0), 2),
+                    'final_total' => round((float) $order->total_price, 2),
+                ], 'final-price');
             }
         }
 

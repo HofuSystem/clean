@@ -319,20 +319,9 @@ class PaymentGatewayController extends Controller
             if ($order) {
                 $outbox = app(\Core\Orders\Services\AnalyticsOutboxService::class);
                 $outbox->record('payment_succeeded', $order, [
-                    'payment_type' => $this->analyticsPaymentType($transaction->payment_method),
-                    'value' => (float) $transaction->amount,
+                    'payment_method' => $this->analyticsPaymentType($transaction->payment_method),
+                    'amount' => round((float) $transaction->amount, 2),
                 ], 'payment:' . $transaction->id);
-                if ((float) $order->paid >= (float) $order->total_price) {
-                    $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order);
-                    $outbox->record(
-                        'purchase',
-                        $order,
-                        $purchase['ready']
-                            ? $purchase['payload']
-                            : ['_analytics_blocked_reason' => $purchase['reason']],
-                        'purchase'
-                    );
-                }
             }
         }
 

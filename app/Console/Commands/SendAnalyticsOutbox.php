@@ -100,7 +100,7 @@ class SendAnalyticsOutbox extends Command
                     }
                     $branchPayload = [
                         'branch_key' => $branchKey,
-                        'name' => $standardPurchase ? 'PURCHASE' : 'order_created',
+                        'name' => $standardPurchase ? 'PURCHASE' : 'ORDER_CREATED',
                         'user_data' => ['developer_identity' => $payload['developer_identity'], 'os' => $platform === 'ios' ? 'iOS' : 'Android'],
                         'custom_data' => ['schema_version' => 2, 'event_source' => 'backend', 'event_id' => $payload['event_id'] ?? $row->event_key, ...$customData],
                     ];
@@ -129,7 +129,7 @@ class SendAnalyticsOutbox extends Command
                 $row->update(['status' => 'sent', 'sent_at' => now(), 'locked_at' => null, 'attempts' => $row->attempts + 1, 'last_error' => null]);
             } catch (Throwable $exception) {
                 $attempts = $row->attempts + 1;
-                $deadLetter = $attempts >= 10;
+                $deadLetter = ($row->created_at ?? now())->lte(now()->subHours(72));
                 $row->update([
                     'status' => $deadLetter ? 'dead_letter' : 'pending', 'locked_at' => null, 'attempts' => $attempts,
                     'available_at' => $deadLetter ? null : now()->addMinutes(min(60, 2 ** min($attempts, 6))),

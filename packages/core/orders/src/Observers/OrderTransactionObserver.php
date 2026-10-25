@@ -84,8 +84,8 @@ class OrderTransactionObserver
                         'points' => 'loyalty_points',
                     };
                     $outbox->record('payment_succeeded', $order, [
-                        'payment_type' => $paymentType,
-                        'value' => round((float) $orderTransaction->amount, 2),
+                        'payment_method' => $paymentType,
+                        'amount' => round((float) $orderTransaction->amount, 2),
                         'payment_id' => (string) $orderTransaction->id,
                         'wallet_bucket' => $orderTransaction->walletTransaction?->wallet_bucket,
                     ], 'order-transaction:' . $orderTransaction->id);
@@ -98,17 +98,22 @@ class OrderTransactionObserver
                         ], 'loyalty-redemption:' . $orderTransaction->id);
                     }
 
-                    if ((float) $order->paid >= (float) $order->total_price) {
-                        $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($order);
-                        $outbox->record(
-                            'purchase',
-                            $order,
-                            $purchase['ready']
-                                ? $purchase['payload']
-                                : ['_analytics_blocked_reason' => $purchase['reason']],
-                            'purchase'
-                        );
-                    }
+                }
+            }
+
+            // Settlement refunds are negative ledger rows, so purchase readiness
+            // must also be checked outside the positive-payment branch.
+            if ($orderTransaction->wasRecentlyCreated) {
+                $settledOrder = $orderTransaction->order->fresh();
+                if ($settledOrder?->status === 'finished'
+                    && \Core\Orders\Support\OrderPaymentMath::remainingToCollect($settledOrder->total_price, $settledOrder->paid) === 0.0
+                    && \Core\Orders\Support\OrderPaymentMath::remainingForCustomer($settledOrder->total_price, $settledOrder->paid) === 0.0) {
+                    $purchase = app(\Core\Orders\Services\PurchasePayloadBuilder::class)->build($settledOrder);
+                    app(\Core\Orders\Services\AnalyticsOutboxService::class)->record(
+                        'purchase', $settledOrder,
+                        $purchase['ready'] ? $purchase['payload'] : ['_analytics_blocked_reason' => $purchase['reason']],
+                        'purchase'
+                    );
                 }
             }
 

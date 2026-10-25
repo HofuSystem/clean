@@ -32,6 +32,7 @@ class WalletWithdrawalTest extends IsolatedAuditTestCase
             $t->id(); $t->unsignedBigInteger('user_id'); $t->unsignedBigInteger('added_by_id')->nullable();
             $t->decimal('amount', 10, 2); $t->decimal('wallet_before', 10, 2); $t->decimal('wallet_after', 10, 2);
             $t->string('type'); $t->string('transaction_type'); $t->string('status');
+            $t->string('wallet_bucket')->nullable();
             $t->string('bank_name')->nullable(); $t->string('account_number')->nullable(); $t->string('iban_number')->nullable();
             $t->unsignedBigInteger('order_id')->nullable(); $t->text('notes')->nullable();
             $t->timestamps(); $t->softDeletes();
@@ -39,7 +40,8 @@ class WalletWithdrawalTest extends IsolatedAuditTestCase
         foreach ([1 => 100, 379 => 1000] as $id => $amount) {
             DB::table('users')->insert(['id' => $id, 'wallet' => $amount]);
             DB::table('wallet_transactions')->insert(['user_id' => $id, 'amount' => $amount,
-                'wallet_before' => 0, 'wallet_after' => $amount, 'type' => 'deposit', 'transaction_type' => 'charge', 'status' => 'accepted']);
+                'wallet_before' => 0, 'wallet_after' => $amount, 'type' => 'deposit', 'transaction_type' => 'charge',
+                'wallet_bucket' => 'funded', 'status' => 'accepted']);
         }
     }
 
@@ -78,6 +80,7 @@ class WalletWithdrawalTest extends IsolatedAuditTestCase
         $this->assertEquals(60, User::find(1)->wallet);
         $this->assertEquals(0, User::find(379)->wallet);
         $this->assertSame('pending', WalletTransaction::where('type', 'withdraw')->first()->status);
+        $this->assertSame('funded', WalletTransaction::where('type', 'withdraw')->first()->wallet_bucket);
     }
 
     public function test_api_rejects_more_than_client_balance_even_if_other_user_is_rich(): void
@@ -102,6 +105,19 @@ class WalletWithdrawalTest extends IsolatedAuditTestCase
         }
         $this->assertEquals(30, User::find(1)->wallet);
         $this->assertSame(1, WalletTransaction::where('type', 'withdraw')->count());
+    }
+
+    public function test_bank_withdrawal_cannot_use_promotional_balance(): void
+    {
+        DB::table('wallet_transactions')->where('user_id', 1)->update(['amount' => 30]);
+        DB::table('wallet_transactions')->insert([
+            'user_id' => 1, 'amount' => 70, 'wallet_before' => 30, 'wallet_after' => 100,
+            'type' => 'deposit', 'transaction_type' => 'promotional_add',
+            'wallet_bucket' => 'promotional', 'status' => 'accepted',
+        ]);
+
+        $this->expectException(ValidationException::class);
+        $this->service()->withdraw($this->data(31), User::find(1));
     }
 
     public function test_full_balance_is_allowed_and_system_fields_cannot_be_overridden(): void
