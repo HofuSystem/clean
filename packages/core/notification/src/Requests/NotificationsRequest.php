@@ -35,6 +35,7 @@ class NotificationsRequest extends FormRequest
 			  "title"         =>  ['required','string'], 
 			  "body"          =>  ['required','string'], 
 			  "sender_id"     =>  ['nullable','exists:users,id'], 
+              "idempotency_key" => ['nullable','uuid'],
         "register_from" => ['nullable','date'],
         "register_to"   => ['nullable','date'],
         "orders_from"   => ['nullable','date'],

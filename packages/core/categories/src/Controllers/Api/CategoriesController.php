@@ -178,7 +178,6 @@ class CategoriesController extends Controller
                                     $query->active()
                                         ->with([
                                             'translations',
-                                            'variants',
                                             'prices',
                                             'category.translations',
                                             'subCategory.translations',
@@ -216,8 +215,8 @@ class CategoriesController extends Controller
     {
         try {
             $locale = app()->getLocale();
-            $category = $this->rememberCache("api_package_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
-                return Category::with(['translations', 'products.translations'])
+            $category = $this->rememberCache("api_package_details_v2_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
+                return Category::with(['translations', 'products.translations', 'products.variants'])
                     ->active()
                     ->with([
                         'products' => function ($query) {

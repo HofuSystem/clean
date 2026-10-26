@@ -60,6 +60,7 @@
                         @endisset>
 
                         @csrf
+                        <input type="hidden" name="idempotency_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
                         <div class="card-body row">
 
                             <div class="form-group mb-3 col-md-4">

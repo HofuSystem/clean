@@ -47,6 +47,7 @@ class Notification extends CoreModel {
         'orders_to',
         'orders_min',
         'orders_max',
+        'idempotency_key',
         'creator_id',
         'updater_id'
     ];

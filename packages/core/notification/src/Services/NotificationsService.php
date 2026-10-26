@@ -6,6 +6,7 @@ use Core\Comments\Services\CommentingService;
 use Core\Notification\Models\Notification;
 use Core\Notification\DataResources\NotificationsResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class NotificationsService
 {
@@ -26,7 +27,7 @@ class NotificationsService
         $recordData = array_filter($data,fn($key) => in_array($key, [
             'types', 'for', 'for_data', 'purpose', 'processing_status', 'title', 'body', 'media',
             'sender_id', 'translations', 'register_from', 'register_to', 'orders_from', 'orders_to',
-            'orders_min', 'orders_max'
+            'orders_min', 'orders_max', 'idempotency_key'
         ]),ARRAY_FILTER_USE_KEY);
 
         if(isset($recordData['for_data']) and !is_string($recordData['for_data'])){
@@ -38,7 +39,51 @@ class NotificationsService
         if(!isset($recordData['for_data'])){
             $recordData['for_data'] = json_encode([]);
         }
-        $record = Notification::updateOrCreate(['id' => $id],$recordData);
+
+        if (!$id && !empty($recordData['idempotency_key']) && Notification::hasTableColumn('idempotency_key')) {
+            $existing = Notification::query()
+                ->where('idempotency_key', $recordData['idempotency_key'])
+                ->first();
+            if ($existing) {
+                return $existing;
+            }
+        } else {
+            unset($recordData['idempotency_key']);
+        }
+
+        if (!$id) {
+            $recentDuplicateQuery = Notification::query()
+                ->where('created_at', '>=', now()->subMinutes(10))
+                ->where('sender_id', auth()->id())
+                ->where('title', $recordData['title'] ?? '')
+                ->where('body', $recordData['body'] ?? '')
+                ->where('types', $recordData['types'] ?? '[]')
+                ->where('for', $recordData['for'] ?? '')
+                ->where('for_data', $recordData['for_data']);
+
+            foreach (['purpose', 'media', 'register_from', 'register_to', 'orders_from', 'orders_to', 'orders_min', 'orders_max'] as $field) {
+                $recentDuplicateQuery->where($field, $recordData[$field] ?? null);
+            }
+
+            $recentDuplicate = $recentDuplicateQuery->latest('id')->first();
+            if ($recentDuplicate) {
+                return $recentDuplicate;
+            }
+        }
+
+        try {
+            $record = Notification::updateOrCreate(['id' => $id],$recordData);
+        } catch (QueryException $e) {
+            if (!$id && !empty($recordData['idempotency_key'])) {
+                $existing = Notification::query()
+                    ->where('idempotency_key', $recordData['idempotency_key'])
+                    ->first();
+                if ($existing) {
+                    return $existing;
+                }
+            }
+            throw $e;
+        }
 
         return $record;
     }
