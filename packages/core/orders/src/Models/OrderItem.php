@@ -3,6 +3,7 @@
 namespace Core\Orders\Models;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Core\Products\Models\Product;
+use Core\Products\Models\ProductVariant;
 use Core\Orders\Observers\OrderItemObserver;
 
 use Core\Settings\Models\CoreModel;
@@ -16,7 +17,7 @@ use App\Observers\GlobalModelObserver;
 class OrderItem extends CoreModel {
     
 	protected $table             = 'order_items';
-	protected $fillable          = ['order_id', 'product_id', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete', 'customizations', 'card_note'];
+	protected $fillable          = ['order_id', 'product_id', 'product_variant_id', 'extra_pieces_count', 'wash_type', 'product_data', 'product_price','product_cost', 'quantity', 'width','height', 'add_by_admin', 'update_by_admin', 'is_picked', 'is_delivered', 'creator_id', 'updater_id','deleted_at', 'final_delete', 'customizations', 'card_note'];
     protected $guarded           = [];
     protected $casts = [
         'customizations' => 'array',
@@ -98,6 +99,10 @@ class OrderItem extends CoreModel {
 
     public function product(){
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function variant(){
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
     public function qtyUpdates(){

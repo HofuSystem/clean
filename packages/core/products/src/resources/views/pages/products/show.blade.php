@@ -215,10 +215,12 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-3 col-md-12">
-                                <label>{{ trans('quantity') }}</label>
-                                <p>{{ $item->quantity ?? 'N/A' }}</p>
-                            </div>
+                            @if($item->type === 'sales')
+                                <div class="form-group mb-3 col-md-12">
+                                    <label>{{ trans('quantity') }}</label>
+                                    <p>{{ $item->quantity ?? 'N/A' }}</p>
+                                </div>
+                            @endif
 
                             <div class="form-group mb-3 col-md-12">
                                 <label>{{ trans('status') }}</label>

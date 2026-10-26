@@ -56,8 +56,8 @@
                             data-mode="new" @endif>
 
                         @csrf
-                        <div class="card-body row">
-                            <div class="form-group mb-3 col-md-12">
+                        <div class="card-body row g-4 product-form-grid">
+                            <div class="form-group col-lg-4 col-md-6" id="type-div">
                                 <label class="required" for="type">{{ trans('type') }}</label>
                                 <select class="custom-select  form-select advance-select" name="type" id="type">
 
@@ -69,7 +69,7 @@
                                 </select>
 
                             </div>
-                            <div class="form-group mb-3 col-md-12" id="wash-type-div">
+                            <div class="form-group col-lg-4 col-md-6" id="wash-type-div">
                                 <label class="required" for="wash_type">{{ trans('wash type') }}</label>
                                 <select class="custom-select  form-select advance-select" name="wash_type" id="wash_type">
                                     <option value="">{{ trans('select wash type') }}</option>
@@ -77,7 +77,7 @@
                                     <option value="washer" @selected(isset($item) and $item->wash_type == 'washer')>{{ trans('washer') }}</option>
                                 </select>
                             </div>
-                            <div class="form-group mb-3 col-md-12">
+                            <div class="form-group col-lg-4 col-md-6" id="display-as-div">
                                 <label class="required" for="display_as">{{ trans('display as') }}</label>
                                 <select class="custom-select  form-select advance-select" name="display_as" id="display_as">
                                     <option value="">{{ trans('select display as') }}</option>
@@ -89,20 +89,20 @@
                                 <ul class="nav nav-tabs" id="languageTabs" role="tablist">
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="name-en-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'en' ? 'active' : '' }}" id="name-en-tab" data-bs-toggle="tab"
                                             data-bs-target="#name-en" type="button" role="tab" aria-controls="name-en"
-                                            aria-selected=" true">{{ trans('English') }}</button>
+                                            aria-selected="{{ app()->getLocale() === 'en' ? 'true' : 'false' }}">{{ trans('English') }}</button>
                                     </li>
 
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link  " id="name-ar-tab" data-bs-toggle="tab"
+                                        <button class="nav-link {{ app()->getLocale() === 'ar' ? 'active' : '' }}" id="name-ar-tab" data-bs-toggle="tab"
                                             data-bs-target="#name-ar" type="button" role="tab" aria-controls="name-ar"
-                                            aria-selected=" false">{{ trans('العربية') }}</button>
+                                            aria-selected="{{ app()->getLocale() === 'ar' ? 'true' : 'false' }}">{{ trans('Arabic') }}</button>
                                     </li>
 
                                 </ul>
                                 <div class="tab-content mt-3" id="languageTabsContent">
-                                    <div class="tab-pane fade show active" id="name-en" role="tabpanel"
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'en' ? 'show active' : '' }}" id="name-en" role="tabpanel"
                                         aria-labelledby="en-tab">
 
                                         <div class="form-group mb-3 col-md-12">
@@ -113,8 +113,14 @@
 
                                         </div>
 
+                                        <div class="form-group mb-3 col-md-12">
+                                            <label for="desc_en">{{ trans('desc') }}</label>
+                                            <textarea name="translations[en][desc]" id="desc_en" class="form-control" rows="4"
+                                                placeholder="{{ trans('Enter desc') }}">{{ old('translations.en.desc', $item?->translate('en')?->desc) }}</textarea>
+                                        </div>
+
                                     </div>
-                                    <div class="tab-pane fade " id="name-ar" role="tabpanel" aria-labelledby="ar-tab">
+                                    <div class="tab-pane fade {{ app()->getLocale() === 'ar' ? 'show active' : '' }}" id="name-ar" role="tabpanel" aria-labelledby="ar-tab">
 
                                         <div class="form-group mb-3 col-md-12">
                                             <label class="required" for="name">{{ trans('name') }}</label>
@@ -124,47 +130,16 @@
 
                                         </div>
 
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mt-5" id="desc-div">
-                                <ul class="nav nav-tabs" id="descLanguageTabs" role="tablist">
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link active " id="desc-en-tab" data-bs-toggle="tab"
-                                            data-bs-target="#desc-en" type="button" role="tab" aria-controls="desc-en"
-                                            aria-selected="true">{{ trans('English') }}</button>
-                                    </li>
-
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="desc-ar-tab" data-bs-toggle="tab"
-                                            data-bs-target="#desc-ar" type="button" role="tab"
-                                            aria-controls="desc-ar"
-                                            aria-selected="false">{{ trans('العربية') }}</button>
-                                    </li>
-
-                                </ul>
-                                <div class="tab-content mt-3" id="descLanguageTabsContent">
-                                    <div class="tab-pane fade show active" id="desc-en" role="tabpanel"
-                                        aria-labelledby="desc-en-tab">
-
                                         <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="desc_en">{{ trans('desc') }} ({{ trans('English') }})</label>
-                                            <textarea name="translations[en][desc]" id="desc_en" class="form-control" rows="4" placeholder="{{ trans('Enter desc') }}">{{ old('translations.en.desc', isset($item) ? $item?->translate('en')?->desc : '') }}</textarea>
-                                        </div>
-
-                                    </div>
-                                    <div class="tab-pane fade" id="desc-ar" role="tabpanel" aria-labelledby="desc-ar-tab">
-
-                                        <div class="form-group mb-3 col-md-12">
-                                            <label class="" for="desc_ar">{{ trans('desc') }} ({{ trans('العربية') }})</label>
-                                            <textarea name="translations[ar][desc]" id="desc_ar" class="form-control" rows="4" placeholder="{{ trans('Enter desc') }}">{{ old('translations.ar.desc', isset($item) ? $item?->translate('ar')?->desc : '') }}</textarea>
+                                            <label for="desc_ar">{{ trans('desc') }}</label>
+                                            <textarea name="translations[ar][desc]" id="desc_ar" class="form-control" rows="4"
+                                                placeholder="{{ trans('Enter desc') }}">{{ old('translations.ar.desc', $item?->translate('ar')?->desc) }}</textarea>
                                         </div>
 
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group mb-3 col-md-12" id="images-div">
+                            <div class="form-group col-lg-8 col-md-12 product-media-panel" id="images-div">
                                 <label class="" for="image">{{ trans('image') }}</label>
                                 <div class="media-center-group form-control" data-max="10" data-type="gallery">
                                     <input type="text" hidden="hidden" class="form-control" name="image"
@@ -174,36 +149,28 @@
                                     <div class="input-gallery"></div>
                                 </div>
                             </div>
-                            <div class="form-group mb-3 col-md-12" id="sku-div">
+                            <div class="form-group col-lg-4 col-md-12" id="sku-div">
                                 <label class="required" for="sku">{{ trans('sku') }}</label>
                                 <input type="text" name="sku" class="form-control "
                                     placeholder="{{ trans('Enter sku') }} "
                                     value="@isset($item){{ $item->sku }}@endisset">
 
                             </div>
-                            <div class="form-group mb-3 col-md-12">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="is_package" name="is_package"
-                                        @checked(isset($item) and $item->is_package)>
-                                    <label class="form-check-label" for="is_package">{{ trans('is package') }}</label>
-                                </div>
-
-                            </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group col-lg-4 col-md-6 product-compact-field" id="category-field">
                                 <label class="required" for="category_id">{{ trans('category') }}</label>
                                 <select class="custom-select  form-select advance-select" name="category_id"
                                     id="category_id">
 
                                     <option value="">{{ trans('select category') }}</option>
                                     @foreach ($categories ?? [] as $sItem)
-                                        <option data-type="{{ $sItem->type }}" data-id="{{ $sItem->id }}" @selected(isset($item) and $item->category_id == $sItem->id)
+                                        <option data-type="{{ $sItem->type }}" data-is-package="{{ $sItem->is_package ? 1 : 0 }}" data-id="{{ $sItem->id }}" @selected(isset($item) and $item->category_id == $sItem->id)
                                             value="{{ $sItem->id }}">{{ $sItem->name }}</option>
                                     @endforeach
 
                                 </select>
 
                             </div>
-                            <div class="form-group mb-3 col-md-6" id="sub-div">
+                            <div class="form-group col-lg-4 col-md-6 product-compact-field" id="sub-div">
                                 <label class="" for="sub_category_id">{{ trans('sub category') }}</label>
                                 <select class="custom-select  form-select advance-select" name="sub_category_id"
                                     id="sub_category_id">
@@ -217,86 +184,43 @@
                                 </select>
 
                             </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group col-lg-4 col-md-6 product-compact-field" id="product-status-field">
+                                <label class="required" for="status">{{ trans('status') }}</label>
+                                <select class="custom-select form-select advance-select" name="status" id="status">
+                                    <option value="">{{ trans('select status') }}</option>
+                                    <option value="active" @selected(isset($item) and $item->status == 'active')>{{ trans('active') }}</option>
+                                    <option value="not-active" @selected(isset($item) and $item->status == 'not-active')>{{ trans('not-active') }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3 col-md-6" id="price-div">
                                 <label class="required" for="price">{{ trans('price') }}</label>
                                 <input type="number" name="price" class="form-control "
                                     placeholder="{{ trans('Enter price') }} "
                                     value="{{ old('price', $item->price ?? null) }}" step="any">
 
                             </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6" id="points-div">
                                 <label class="required" for="points">{{ trans('points') }}</label>
                                 <input type="number" name="points" class="form-control "
                                     placeholder="{{ trans('Enter points') }} "
                                     value="{{ old('points', $item->points ?? null) }}" step="any">
 
                             </div>
-                            <div class="form-group mb-3 col-md-6">
+                            <div class="form-group col-lg-3 col-md-6" id="cost-div">
                                   <label class="required" for="cost">{{ trans('cost') }}</label>
                                 <input type="number" name="cost" class="form-control "
                                     placeholder="{{ trans('Enter cost') }} "
                                     value="{{ old('cost', $item->cost ?? null) }}" step="any">
                             </div>
-                            <div class="form-group mb-3 col-md-12">
-                                <div class="mt-3 items-container" data-items-on       =   "priceable_id"
-                                    data-items-name     =   "prices" data-items-from     =   "prices">
-
-                                    <h3 class="text-dark">{{ trans('prices') }}</h3>
-                                    <button class="btn-operation create-new-items"><i class="fas fa-plus"></i></button>
-                                    <hr>
-                                    <div class="table-responsive ">
-                                        <table class="table table-striped table-hover text-center">
-                                            <thead class="table-primary text-white text-capitalize h6">
-                                                <tr>
-
-                                                    <th scope="col" data-name="city_id" data-type="select">
-                                                        {{ trans('city') }}</th>
-                                                    <th scope="col" data-name="price" data-type="number">
-                                                        {{ trans('price') }}</th>
-                                                    <th scope="col" data-name="cost" data-type="number">
-                                                        {{ trans('cost') }}</th>
-                                                    <th scope="col" data-name="actions" data-type="actions">
-                                                        {{ trans('actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-
-                                                @foreach ($item->prices ?? [] as $sItem)
-                                                    <tr data-id="{{ $sItem->id }}"
-                                                        data-data="{{ json_encode($sItem->itemData) }}">
-
-                                                        <td>{{ $sItem?->city?->name }}</td>
-                                                        <td>{{ $sItem->price }}</td>
-                                                        <td>{{ $sItem->cost }}</td>
-                                                        <td class="options">{!! $sItem->itemsActions !!}</td>
-                                                    </tr>
-                                                @endforeach
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="form-group mb-3 col-md-12" id="quantity-div">
+                            @include('products::pages.products._city_prices')
+                            <div class="form-group col-lg-3 col-md-6" id="quantity-div">
                                 <label class="required" for="quantity">{{ trans('quantity') }}</label>
                                 <input type="number" name="quantity" class="form-control "
                                     placeholder="{{ trans('Enter quantity') }} "
                                     value="{{ old('quantity', $item->quantity ?? null) }}">
 
                             </div>
-                            <div class="form-group mb-3 col-md-12">
-                                <label class="required" for="status">{{ trans('status') }}</label>
-                                <select class="custom-select  form-select advance-select" name="status" id="status">
-
-                                    <option value="">{{ trans('select status') }}</option>
-                                    <option value="active" @selected(isset($item) and $item->status == 'active')>{{ trans('active') }}</option>
-                                    <option value="not-active" @selected(isset($item) and $item->status == 'not-active')>{{ trans('not-active') }}
-                                    </option>
-
-                                </select>
-
-                            </div>
+                            @include('products::pages.products._variants')
 
                             <div class="form-group mb-3 col-md-12" id="product-settings-management-div" style="{{ (isset($item) && $item->type == 'sales') ? '' : 'display: none;' }}">
                                 <div class="mt-4 p-4 border rounded bg-light">
@@ -409,90 +333,6 @@
                             </div>
                         </div>
                     </form>
-
-                    <div class="modal fade" id="pricesModal" aria-hidden="true" aria-labelledby="pricesModalLabel"
-                        data-store="{{ route('dashboard.prices.create') }}">
-                        <div class="modal-dialog modal-fullscreen">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="pricesModalLabel">{{ trans('prices') }}</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="modal-form items-modal-form">
-                                        <div class="row">
-
-                                            <div class="form-group mb-3 col-md-6 hidden" style="display: none;">
-                                                <label class="required"
-                                                    for="priceable_type">{{ trans('priceable') }}</label>
-                                                <input type="text" name="priceable_type" class="form-control "
-                                                    placeholder="{{ trans('Enter priceable') }} " value="Core\Products\Models\Product">
-
-                                            </div>
-
-                                            <div class="form-group mb-3 col-md-12">
-                                                <label class="required" for="city_id">{{ trans('city') }}</label>
-                                                <select class="custom-select  form-select advance-select" name="city_id"
-                                                    id="priceable_id-city_id">
-
-                                                    <option value="">{{ trans('select city') }}</option>
-                                                    @foreach ($cities ?? [] as $sItem)
-                                                        <option data-id="{{ $sItem->id }}"
-                                                            value="{{ $sItem->id }}">{{ $sItem->name }}</option>
-                                                    @endforeach
-
-                                                </select>
-
-                                            </div>
-
-                                            <div class="form-group mb-3 col-md-6">
-                                                <label class="required" for="price">{{ trans('price') }}</label>
-                                                <input type="number" name="price" class="form-control "
-                                                    placeholder="{{ trans('Enter price') }} " value="">
-
-                                            </div>
-                                            <div class="form-group mb-3 col-md-6">
-                                                <label class="required" for="cost">{{ trans('cost') }}</label>
-                                                <input type="number" name="cost" class="form-control "
-                                                    placeholder="{{ trans('Enter cost') }} " value="">
-
-                                            </div>
-
-                                            <div class="col-lg-9 ml-lg-auto">
-                                                <button type="submit"
-                                                    class="btn btn-primary font-weight-bold mr-2">{{ trans('save') }}</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal fade" id="pricesDeleteModel" tabindex="-1"
-                        aria-labelledby="pricesDeleteModelLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="pricesDeleteModelLabel">{{ trans('Delete prices') }}
-                                        <span></span>
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    {{ trans('Are you sure you want to delete the prices') }} <span></span>?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">{{ trans('Close') }}</button>
-                                    <button type="button"
-                                        class="btn btn-danger items-final-delete">{{ trans('Delete') }}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="modal fade" id="product-settingsModal" aria-hidden="true"
                         aria-labelledby="product-settingsModalLabel"
@@ -657,6 +497,47 @@
 @push('css')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link href="{{ asset('control') }}/js/custom/crud/form.css" rel="stylesheet" type="text/css" />
+    <style>
+        .product-form-grid > [class*="col-"] { min-width: 0; }
+        .product-form-grid { --bs-gutter-x: 1.25rem; --bs-gutter-y: 1.25rem; }
+        .product-form-grid .form-control,
+        .product-form-grid .form-select,
+        .product-form-grid .select2-selection { border-radius: 12px !important; min-height: 44px; border-color: #dfe3e8; }
+        .product-form-grid .form-select { padding-top: .65rem; padding-bottom: .65rem; line-height: 1.5; }
+        .product-form-grid .select2-container .select2-selection--single { height: 44px !important; }
+        .product-form-grid .select2-container .select2-selection--single .select2-selection__rendered { line-height: 42px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+        .product-form-grid .select2-container .select2-selection--single .select2-selection__arrow { height: 42px !important; top: 1px !important; }
+        .product-media-panel,
+        .product-compact-field { background: transparent; border: 0; border-radius: 0; padding: 6px; margin: 6px; }
+        @media (min-width: 992px) {
+            .product-media-panel.col-lg-8 { flex: 0 0 calc(66.666667% - 12px); width: calc(66.666667% - 12px); }
+            .product-media-panel.col-lg-6 { flex: 0 0 calc(50% - 12px); width: calc(50% - 12px); }
+            .product-compact-field.col-lg-4 { flex: 0 0 calc(33.333333% - 12px); width: calc(33.333333% - 12px); }
+            .product-compact-field.col-lg-3 { flex: 0 0 calc(25% - 12px); width: calc(25% - 12px); }
+            .product-compact-field.col-lg-6 { flex: 0 0 calc(50% - 12px); width: calc(50% - 12px); }
+            .product-compact-field.col-lg-12 { flex: 0 0 calc(100% - 12px); width: calc(100% - 12px); }
+        }
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .product-media-panel.col-md-12 { flex: 0 0 calc(100% - 12px); width: calc(100% - 12px); }
+            .product-compact-field.col-md-6 { flex: 0 0 calc(50% - 12px); width: calc(50% - 12px); }
+        }
+        .product-media-panel .media-center-group { min-height: 108px; background: #fff; }
+        .product-switch-card { min-height: 76px; display: flex; align-items: center; gap: 12px; margin: 0; }
+        .product-switch-card .form-check-input { width: 2.75rem; height: 1.5rem; margin: 0; flex: 0 0 auto; }
+        .product-switch-card .form-check-label { font-weight: 600; line-height: 1.6; }
+        .product-form-section { box-shadow: none; border-color: #e4e6ef !important; }
+        .product-table-wrap { border: 1px solid #e4e6ef; border-radius: 16px; overflow: hidden; padding: 0; box-shadow: 0 6px 24px rgba(30, 41, 59, .04); }
+        .product-inner-table thead th { background: #4f7fba !important; color: #fff !important; font-weight: 600; white-space: nowrap; vertical-align: middle; }
+        .product-inner-table td { min-width: 135px; vertical-align: middle; }
+        .product-inner-table th:last-child, .product-inner-table td:last-child { min-width: 90px; }
+        .product-form-grid .nav-tabs { margin-bottom: 1rem; }
+        @media (max-width: 767.98px) {
+            .card-body.product-form-grid { padding: 1rem; }
+            .product-inner-table { min-width: 760px; }
+            .product-media-panel, .product-compact-field { border-radius: 14px; padding: 14px; }
+            .product-media-panel, .product-compact-field { flex: 0 0 calc(100% - 12px); width: calc(100% - 12px); }
+        }
+    </style>
 @endpush
 @push('js')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -667,9 +548,13 @@
             // Store all subcategory options when the document is ready
             var allSubCategories    = $('#sub_category_id option').clone();
             var allCategories       = $('#category_id option').clone();
+            var categoryPlaceholder = allCategories.filter('[value=""]').first().clone();
+            var subCategoryPlaceholder = allSubCategories.filter('[value=""]').first().clone();
             // When the category changes
             $('#type').change(function() {
-                $('#sub-div,#quantity-div,#sku-div,#wash-type-div,#product-settings-management-div').hide();
+                $('#sub-div,#quantity-div,#wash-type-div,#display-as-div,#product-settings-management-div').hide();
+                $('#sub-div label').removeClass('required');
+                $('#sku-div').show();
 
                 var type            = $(this).val();
                 var $Category       = $('#category_id');
@@ -677,15 +562,13 @@
                 if(type =="clothes"){
                     $('#images-div,#sub-div,#sku-div,#wash-type-div').show();
                 }else  if(type =="sales"){
-                    $('#sub-div,#product-settings-management-div').show();
-
-                }else  if(type =="services"){
-                    $('#wash-type-div').show();
+                    $('#quantity-div,#display-as-div,#product-settings-management-div').show();
 
                 }
                 $('#desc-div').show();
                 // Clear the current options
                 $Category.empty();
+                $Category.append(categoryPlaceholder.clone());
 
                 // Add only the options that belong to the selected category
                 allCategories.each(function() {
@@ -698,13 +581,46 @@
                 // Trigger Select2 to update the dropdown
                 $Category.val($CategoryValue).trigger('change');
 
+                syncProductHeaderLayout();
+                syncVisibleFieldWidths();
+
             });
+
+            function syncProductHeaderLayout() {
+                $('#images-div').removeClass('col-lg-6').addClass('col-lg-8');
+                $('#sku-div').removeClass('col-lg-3').addClass('col-lg-4');
+            }
+
+            function syncVisibleFieldWidths() {
+                var type = $('#type').val();
+                var $topFields = $('#type-div,#wash-type-div,#display-as-div');
+                $topFields.removeClass('col-lg-4 col-lg-6 col-lg-12');
+                if (type === 'clothes') {
+                    $('#type-div,#wash-type-div').addClass('col-lg-6');
+                } else if (type === 'sales') {
+                    $('#type-div,#display-as-div').addClass('col-lg-6');
+                } else {
+                    $('#type-div').addClass('col-lg-12');
+                }
+
+                var $classification = $('#category-field,#sub-div,#product-status-field');
+                $classification.removeClass('col-lg-4 col-lg-6 col-lg-12');
+                var $visibleClassification = $classification.filter(':visible');
+                $visibleClassification.addClass($visibleClassification.length === 3 ? 'col-lg-4' : ($visibleClassification.length === 2 ? 'col-lg-6' : 'col-lg-12'));
+
+                var $financialFields = $('#quantity-div,#price-div,#points-div,#cost-div');
+                $financialFields.removeClass('col-lg-3 col-lg-4 col-lg-6 col-lg-12');
+                var $visibleFinancialFields = $financialFields.filter(':visible');
+                $visibleFinancialFields.addClass($visibleFinancialFields.length === 4 ? 'col-lg-3' : 'col-lg-4');
+            }
+
             $('#category_id').change(function() {
                 var category_id         = $(this).val();
                 var $subCategory        = $('#sub_category_id');
                 var $subCategoryValue   = $('#sub_category_id').val();
                 // Clear the current options
                 $subCategory.empty();
+                $subCategory.append(subCategoryPlaceholder.clone());
 
                 // Add only the options that belong to the selected category
                 allSubCategories.each(function() {
@@ -716,6 +632,21 @@
 
                 // Trigger Select2 to update the dropdown
                 $subCategory.val($subCategoryValue).trigger('change');
+
+                var isPackage = Number($('#category_id option:selected').data('is-package')) === 1;
+                var hasSubCategories = $subCategory.find('option[value!=""]').length > 0;
+                var showSubCategory = hasSubCategories && !isPackage;
+                $('#sub-div').toggle(showSubCategory);
+                $('#sub-div label').toggleClass('required', showSubCategory);
+                if (!showSubCategory) {
+                    $subCategory.val(null).trigger('change.select2');
+                }
+
+                var hasExistingVariants = $('#product-variants-table tbody tr').length > 0;
+                $('#product-variants-section').toggle(isPackage || hasExistingVariants);
+                $('#city-prices-section').toggle(!isPackage);
+                $('#price-div,#points-div,#cost-div').toggle(!isPackage);
+                syncVisibleFieldWidths();
 
             });
             // Auto copy price to points

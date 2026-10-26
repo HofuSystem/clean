@@ -26,6 +26,13 @@ class OrderItemResource extends JsonResource
             'quantity'              => (int)$this->quantity,
             'total_price'           => $this->total_price,
             'products'              => $this->product ? new SimpleProductResource($this->product) : new TestProductResource($this),
+            'variant_id'            => $this->product_variant_id,
+            'extra_pieces_count'    => (int) ($this->extra_pieces_count ?? 0),
+            'variant'               => $this->when($this->product_variant_id, fn () => [
+                'id' => $this->variant?->id,
+                'pieces_count' => $this->variant?->pieces_count,
+                'extra_piece_price' => $this->variant?->extra_piece_price,
+            ]),
             'original_quantity'     => $originalQuantity,
             'wash_type'             => $this->wash_type,
             

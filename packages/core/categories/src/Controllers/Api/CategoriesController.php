@@ -97,7 +97,7 @@ class CategoriesController extends Controller
             });
 
             $economyBags = $this->rememberCache("home_economy_bags_{$locale}", 600, function () {
-                return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations'])
+                return Category::with(['translations', 'cities', 'products.translations', 'products.variants', 'products.prices', 'products.category.translations', 'products.subCategory.translations'])
                     ->active()
                     ->with([
                         'products' => function ($query) {
@@ -178,6 +178,7 @@ class CategoriesController extends Controller
                                     $query->active()
                                         ->with([
                                             'translations',
+                                            'variants',
                                             'prices',
                                             'category.translations',
                                             'subCategory.translations',
@@ -293,7 +294,7 @@ class CategoriesController extends Controller
         try {
             $locale = app()->getLocale();
             $category = $this->rememberCache("api_services_details_{$categoryId}_{$locale}", 1800, function () use ($categoryId) {
-                return Category::with(['translations', 'cities', 'products.translations', 'products.prices', 'products.category.translations', 'products.subCategory.translations', 'appFeatures.translations'])
+                return Category::with(['translations', 'cities', 'products.translations', 'products.variants', 'products.prices', 'products.category.translations', 'products.subCategory.translations', 'appFeatures.translations'])
                     ->active()
                     ->with([
                         'products' => function ($query) {
@@ -635,7 +636,7 @@ class CategoriesController extends Controller
                 return $this->returnErrorMessage(trans('Category not found'), [], ['status' => 'fail'], 404);
             }
 
-            $products = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
+            $products = Product::with(['translations', 'variants', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
                 ->active()
                 ->when($request->sub_category_id, function ($q) use ($request) {
                     $q->where('sub_category_id', $request->sub_category_id);
@@ -661,7 +662,7 @@ class CategoriesController extends Controller
     public function flowersAndGiftsProductDetails(Request $request, $id)
     {
         try {
-            $product = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
+            $product = Product::with(['translations', 'variants', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
                 ->active()
                 ->findOrFail($id);
 
@@ -689,7 +690,7 @@ class CategoriesController extends Controller
                 ])
                 ->get();
 
-            $addons = Product::with(['translations', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
+            $addons = Product::with(['translations', 'variants', 'prices', 'category.translations', 'subCategory.translations', 'productSettings.translations', 'productSettings.productSettings.translations'])
                 ->active()
                 ->where('display_as', 'addon')
                 ->where('category_id', $product->category_id)

@@ -3,7 +3,6 @@
 namespace Core\Products\DataResources\Api;
 
 use Core\MediaCenter\Helpers\MediaCenterHelper;
-use Core\Products\Models\Product;
 use Core\Products\Services\ProductsService;
 use Core\Settings\Helpers\ToolHelper;
 use Core\Users\Models\Fav;
@@ -51,6 +50,10 @@ class SimpleProductResource extends JsonResource
                 : $this->favers()->where('user_id', $userId)->exists();
         }
 
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants->where('status', 'active')
+            : collect();
+
         return [
             'id'                => $this->id,
             'name'              => $this->name,
@@ -71,6 +74,15 @@ class SimpleProductResource extends JsonResource
             'sub_category_ar'   => $this->subCategory?->translate('ar')->name,
             'sub_category_en'   => $this->subCategory?->translate('en')->name,
             'customizations'    => ProductServiceSettingResource::collection($productSettings),
+            // Additive field: old app versions keep using the product's existing price and id.
+            'variants'          => $this->when($this->relationLoaded('variants'), fn () => $variants->map(fn ($variant) => [
+                    'id' => $variant->id,
+                    'pieces_count' => $variant->pieces_count,
+                    'price' => (double) $variant->price,
+                    'points' => (double) $variant->points,
+                    'extra_piece_price' => $variant->extra_piece_price === null ? null : (double) $variant->extra_piece_price,
+                    'available_quantity' => $variant->quantity === null ? null : (int) $variant->quantity,
+                ])->values()),
         ];
     }
 }

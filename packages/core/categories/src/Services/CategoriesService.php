@@ -19,7 +19,7 @@ class CategoriesService
     public function __construct(protected CommentingService $commentingService,protected CategoryTypesService $categoryTypesService,protected CategorySettingsService $categorySettingsService,protected CategoryDateTimesService $categoryDateTimesService){}
 
     public function selectable(string $key,string $value,$where = [],$hasProducts = false,$types = []){
-        $selected = ['id','type','parent_id'];
+        $selected = ['id','type','parent_id','is_package'];
         if(!in_array($key,["name","intro","desc"])){
             $selected[] = $key;
         }

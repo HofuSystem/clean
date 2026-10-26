@@ -21,6 +21,7 @@ use Core\Orders\Models\OrderItem;
 use Core\Orders\Models\OrderReport;
 use Core\Orders\Models\OrderRepresentative;
 use Core\Products\Models\Product;
+use Core\Products\Models\ProductVariant;
 use Core\Products\Models\ProductSetting;
 use Core\Settings\Helpers\ToolHelper;
 use Core\Settings\Models\Setting;
@@ -1210,11 +1211,33 @@ class OrdersService
     {
         $order = Order::findOrFail($orderId);
         foreach ($products as $item) {
-            $product = Product::where('id', $item['id'])->first();
+            $product = Product::where('id', $item['id'])->firstOrFail();
+            $variant = null;
+            if (! empty($item['variant_id'])) {
+                $variant = ProductVariant::whereKey($item['variant_id'])
+                    ->where('product_id', $product->id)
+                    ->where('status', 'active')
+                    ->first();
+
+                if (! $variant) {
+                    throw ValidationException::withMessages([
+                        'products' => trans('The selected product option is invalid.'),
+                    ]);
+                }
+            }
             ProductsService::setCurrentContract($order->company);
             $productData = ProductsService::getProductData($order->company,$order->b2b_type,$order->client?->profile?->city_id,$product);
-            $price = $productData['price'];
-            $cost = $productData['cost'];
+            $price = $variant ? (float) $variant->price : $productData['price'];
+            $cost = $variant ? (float) ($variant->cost ?? $productData['cost']) : $productData['cost'];
+            $extraPiecesCount = $variant ? (int) ($item['extra_pieces_count'] ?? 0) : 0;
+            if ($extraPiecesCount > 0) {
+                if ($variant->extra_piece_price === null) {
+                    throw ValidationException::withMessages([
+                        'products' => trans('This product option does not allow extra pieces.'),
+                    ]);
+                }
+                $price += $extraPiecesCount * (float) $variant->extra_piece_price;
+            }
             $processedCustomizations = null;
             $customizationsPriceSum = 0;
             if (!empty($item['customizations']) && is_array($item['customizations'])) {
@@ -1237,22 +1260,33 @@ class OrdersService
                 }
             }
             $price += $customizationsPriceSum;
+            $snapshot = $product->toArray();
+            if ($variant) {
+                $snapshot['selected_variant'] = $variant->toArray();
+            }
+
             $order->items()->create([
                 'order_id'             =>  $order->id,
                 'product_id'           =>  $product->id,
+                'product_variant_id'   =>  $variant?->id,
+                'extra_pieces_count'   =>  $extraPiecesCount,
                 'product_price'        =>  $price,
                 'product_cost'         =>  $cost,
                 'quantity'             =>  $item['quantity'] ?? 0,
                 'width'                =>  $item['width']    ?? 0,
                 'height'               =>  $item['height']   ?? 0,
-                'product_data'         =>  $product->toJson(),
+                'product_data'         =>  json_encode($snapshot, JSON_UNESCAPED_UNICODE),
                 'is_picked'            =>  false,
                 'is_delivered'         =>  false,
                 'customizations'       =>  $processedCustomizations,
                 'card_note'            =>  $item['card_note'] ?? null,
             ]);
             if ($product->type == 'sales') {
-                $product->update(['quantity' => $product->quantity - $item['quantity']]);
+                if ($variant && $variant->quantity !== null) {
+                    $variant->decrement('quantity', $item['quantity']);
+                } else {
+                    $product->update(['quantity' => $product->quantity - $item['quantity']]);
+                }
             }
         }
     }

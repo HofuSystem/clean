@@ -6,10 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Core\Settings\Traits\ApiResponse;
+use Core\Categories\Models\Category;
+use Illuminate\Validation\Rule;
 
 class ProductsRequest extends FormRequest
 {
     use ApiResponse;
+
+    private bool $categoryHasSubcategories = false;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +27,33 @@ class ProductsRequest extends FormRequest
 
     protected function prepareForValidation()
     {
-        $isPackage = $this->boolean('is_package') || $this->category_id == 13;
-        $this->merge([
+        // Package products are determined by their parent category. Keep the
+        // product flag synchronized because older app versions still consume it.
+        $category = $this->category_id
+            ? Category::query()->select(['id', 'is_package'])->find($this->category_id)
+            : null;
+        $isPackage = (bool) $category?->is_package;
+        $this->categoryHasSubcategories = (bool) $category?->subCategories()->exists();
+        $normalized = [
             'is_package' => $isPackage ? 1 : 0,
-        ]);
+        ];
+
+        if ($isPackage && is_array($this->input('variants')) && !empty($this->input('variants'))) {
+            $defaultVariant = array_values($this->input('variants'))[0];
+            $normalized['price'] = $defaultVariant['price'] ?? null;
+            $normalized['points'] = $defaultVariant['points'] ?? ($defaultVariant['price'] ?? null);
+            $normalized['cost'] = $defaultVariant['cost'] ?? 0;
+            $normalized['quantity'] = null;
+        }
+
+        if ($this->type !== 'sales') {
+            $normalized['quantity'] = null;
+            $normalized['display_as'] = null;
+        } elseif (!$this->categoryHasSubcategories) {
+            $normalized['sub_category_id'] = null;
+        }
+
+        $this->merge($normalized);
     }
 
     /**
@@ -36,6 +63,8 @@ class ProductsRequest extends FormRequest
      */
     public function rules()
     {
+      $isPackage = !empty($this->is_package);
+
       return [ 
 			 "translations.en.name"     =>  ['required','string'], 
 			 "translations.ar.name"     =>  ['required','string'], 
@@ -45,16 +74,28 @@ class ProductsRequest extends FormRequest
 			 "sku"                      =>  ['nullable','unique:products,sku,'.$this->id,'string'], 
 			 "is_package"               =>  ['nullable','boolean'], 
 			 "category_id"              =>  ['required','exists:categories,id'], 
-			 "sub_category_id"          =>  ['nullable','exists:categories,id'], 
-			 "price"                    =>  ['required','numeric'], 
-			 "points"                   =>  ['required','numeric'], 
-			 "prices"                   =>  ['nullable','array'], 
-			 "prices.*.priceable_type"  =>  ['required','string'], 
-			 "prices.*.city_id"         =>  ['required','exists:cities,id'], 
-			 "prices.*.price"           =>  ['required','numeric'], 
-			 "quantity"                 =>  ['nullable','numeric'], 
+			 "sub_category_id"          =>  ['nullable', Rule::requiredIf(fn() => $this->categoryHasSubcategories && empty($this->is_package)), Rule::exists('categories', 'id')->where(fn($query) => $query->where('parent_id', $this->category_id))],
+			 "price"                    =>  ['nullable', Rule::requiredIf(fn() => !$isPackage), 'numeric'],
+			 "points"                   =>  ['nullable', Rule::requiredIf(fn() => !$isPackage), 'numeric'],
+			 "cost"                     =>  ['nullable', Rule::requiredIf(fn() => !$isPackage), 'numeric'],
+			 "prices"                   =>  ['nullable','array'],
+			 "prices_present"           =>  ['nullable','boolean'],
+			 "prices.*.id"              =>  ['nullable','integer','exists:prices,id'],
+			 "prices.*.city_id"         =>  ['required_with:prices','integer','exists:cities,id','distinct'],
+			 "prices.*.price"           =>  ['required_with:prices','numeric','min:0'],
+			 "prices.*.cost"            =>  ['required_with:prices','numeric','min:0'],
+			 "quantity"                 =>  ['nullable', Rule::requiredIf(fn() => $this->type === 'sales'), 'integer', 'min:0'],
 			 "status"                   =>  ['required','in:active,not-active'], 
-			 "display_as"               =>  ['required','in:main,addon'], 
+			 "display_as"               =>  ['nullable',\Illuminate\Validation\Rule::requiredIf(fn() => $this->type === 'sales'),'in:main,addon'],
+			 "variants"                 =>  ['nullable', Rule::requiredIf(fn() => !empty($this->is_package)), 'array', 'min:1'],
+			 "variants_present"         =>  ['nullable','boolean'],
+			 "variants.*.id"            =>  ['nullable','integer','exists:product_variants,id'],
+			 "variants.*.pieces_count"  =>  ['required_with:variants','integer','min:1','distinct'],
+			 "variants.*.price"         =>  ['required_with:variants','numeric','min:0'],
+			 "variants.*.cost"          =>  ['required_with:variants','numeric','min:0'],
+			 "variants.*.points"        =>  ['required_with:variants','numeric','min:0'],
+			 "variants.*.extra_piece_price" => ['nullable','numeric','min:0'],
+			 "variants.*.status"        =>  ['required_with:variants','in:active,not-active'],
 			]; 
 
     }

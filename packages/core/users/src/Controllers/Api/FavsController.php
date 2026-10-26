@@ -30,7 +30,7 @@ class FavsController extends Controller
     public function index()
     {
         try {
-            $products   = Product::with('translations')->whereHas('favers',function($faversQuery){
+            $products   = Product::with(['translations', 'variants'])->whereHas('favers',function($faversQuery){
                 $faversQuery->where('user_id',auth()->id());
             })->get();
             $categories   = Category::with('translations')->whereIn('type',['clothes','sales','services'])->whereHas('favers',function($faversQuery){

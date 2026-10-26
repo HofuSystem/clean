@@ -314,13 +314,17 @@
                                 <th class="text-center p-0" data-name="name">@lang('name')</th>
                                 <th class="text-center p-0" data-name="image">@lang('image')</th>
                                 <th class="text-center p-0" data-name="type">@lang('type')</th>
-                                <th class="text-center p-0" data-name="display_as">@lang('display as')</th>
+                                @if($isSales)
+                                    <th class="text-center p-0" data-name="display_as">@lang('display as')</th>
+                                @endif
                                 <th class="text-center p-0" data-name="sku">@lang('sku')</th>
                                 <th class="text-center p-0" data-name="category_id">@lang('category')</th>
                                 <th class="text-center p-0" data-name="sub_category_id">@lang('sub category')</th>
                                 <th class="text-center p-0" data-name="price">@lang('price')</th>
                                 <th class="text-center p-0" data-name="cost">@lang('cost')</th>
-                                <th class="text-center p-0" data-name="quantity">@lang('quantity')</th>
+                                @if($isSales)
+                                    <th class="text-center p-0" data-name="quantity">@lang('quantity')</th>
+                                @endif
                                 <th class="text-center p-0" data-name="status">@lang('status')</th>
                                 <th class="text-center p-0" data-name="actions">@lang('Actions')</th>
 

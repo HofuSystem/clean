@@ -4,6 +4,7 @@ namespace Core\Products\Observers;
 
 use Core\Categories\Services\CategoryCacheService;
 use Core\Products\Models\Product;
+use Core\Categories\Models\Category;
 use Illuminate\Support\Facades\Log;
 
 class ProductObserver
@@ -61,7 +62,11 @@ class ProductObserver
      */
     public function saving(Product $product)
     {
-
+        if ($product->category_id) {
+            $product->is_package = (bool) Category::query()
+                ->whereKey($product->category_id)
+                ->value('is_package');
+        }
     }
     /**
      * Handle the Product "saved" event.

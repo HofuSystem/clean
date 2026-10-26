@@ -154,6 +154,8 @@ class CreateOrderRequest extends FormRequest
 
       'products'                      => 'nullable|required_if:type,clothes,sales,services',
       'products.*.id'                 => 'nullable|required_if:type,clothes,sales,services|exists:products,id',
+      'products.*.variant_id'         => 'nullable|integer|exists:product_variants,id',
+      'products.*.extra_pieces_count' => 'nullable|integer|min:0|max:1000',
       'products.*.quantity'           => 'nullable|required_if:type,clothes,sales,services',
       'products.*.width'              => 'nullable|required_if:products.product_type,carpet',
       'products.*.height'             => 'nullable|required_if:products.product_type,carpet',

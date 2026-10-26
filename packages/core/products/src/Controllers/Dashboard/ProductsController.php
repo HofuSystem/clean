@@ -49,23 +49,26 @@ class ProductsController extends Controller
 		$categories     = $this->categoriesService->selectable('id','name',[['parent_id',null]]);
 		$subCategories  = $this->categoriesService->selectable('id','name',[['parent_id','!=',null]]);
 		$cities = $this->citiesService->selectable('id','name');
-
         return view('products::pages.products.create', compact('item','title','screen','cities','categories','subCategories') );
     }
     public function store(CreateProductsRequest $request){
         try {
             DB::beginTransaction();
-            $data = $request->except('version');
-            if ($request->boolean('is_package') || $request->category_id == 13) {
-                $data['is_package'] = 1;
-            }
-            if ($request->type == 'clothes' && empty($data['is_package']) && !empty($request->version)) {
-                foreach ($request->version ?? [] as $versionData) {
-                    $versionData = array_merge($data,$versionData);
-                    $record      = $this->productsService->storeOrUpdate($versionData);
+            $data = $request->except('additional_products');
+            $isWashingBatch = $request->type === 'clothes' && !$request->boolean('is_package');
+
+            if ($isWashingBatch) {
+                foreach ($request->input('additional_products', []) as $washingProduct) {
+                    $productData = array_merge($data, $washingProduct, [
+                        'prices' => [],
+                        'prices_present' => 0,
+                        'variants' => [],
+                        'variants_present' => 0,
+                    ]);
+                    $record = $this->productsService->storeOrUpdate($productData);
                 }
-            }else{
-                $record      = $this->productsService->storeOrUpdate($data);
+            } else {
+                $record = $this->productsService->storeOrUpdate($data);
             }
             $record->deleteUrl  = route('dashboard.products.delete',$record->id);
             $record->updateUrl  = route('dashboard.products.edit',$record->id);
@@ -86,8 +89,8 @@ class ProductsController extends Controller
         $item       = isset($id)    ? $this->productsService->get($id) : null;
         $screen     = isset($item)  ? 'Product-edit'          : 'Product-create';
         $title      = isset($item)  ? trans("Product  edit")  : trans("Product  create");
-		$categories = $this->categoriesService->selectable('id','name');
-		$subCategories = $this->categoriesService->selectable('id','name');
+		$categories = $this->categoriesService->selectable('id','name',[['parent_id',null]]);
+		$subCategories = $this->categoriesService->selectable('id','name',[['parent_id','!=',null]]);
 		$cities = $this->citiesService->selectable('id','name');
 
         $globalSettings = \Core\Products\Models\ProductSetting::whereNull('parent_id')
@@ -101,7 +104,8 @@ class ProductsController extends Controller
             $item->load([
                 'productSettings' => function ($q) {
                     $q->active()->with(['translations', 'parent']);
-                }
+                },
+                'variants',
             ]);
         }
 

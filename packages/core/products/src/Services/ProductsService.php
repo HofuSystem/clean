@@ -5,7 +5,6 @@ namespace Core\Products\Services;
 use Core\Comments\Services\CommentingService;
 use Core\Products\Models\Product;
 use Core\Products\DataResources\ProductsResource;
-use Core\Categories\Services\PricesService;
 use Core\Products\DataResources\ProductCardResource;
 use Core\Settings\Helpers\ToolHelper;
 use Core\B2B\Models\Contract;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ProductsService
 {
     protected static $currentContract;
-    public function __construct(protected CommentingService $commentingService,protected PricesService $pricesService){}
+    public function __construct(protected CommentingService $commentingService){}
     function getProductsCard($type = null,$user = null,$company = null,$b2b_type = null)
     {
         $cityId = $user?->profile?->city_id ?? null;
@@ -89,26 +88,87 @@ class ProductsService
     }
 
     public function storeOrUpdate(array $data = [],$id = null){
-        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations', 'wash_type', 'display_as', 'points']),ARRAY_FILTER_USE_KEY);
-        $record     = Product::updateOrCreate(['id' => $id],$recordData);
-
-        if(!isset($id)){
-            //saving on create the related pricesItems
-            $pricesItems            = $data['prices'] ?? [];
-            foreach ($pricesItems as $index => $itemValues) {
-                $itemValues['priceable_id']     = $record->id;
-                $itemValues['priceable_type']   = Product::class;
-                $this->pricesService->storeOrUpdate($itemValues,$itemValues['id'] ?? null);
-            }
+        if (!empty($data['is_package']) && !empty($data['variants']) && is_array($data['variants'])) {
+            $defaultVariant = array_values($data['variants'])[0];
+            $data['price'] = $defaultVariant['price'] ?? 0;
+            $data['points'] = $defaultVariant['points'] ?? ($defaultVariant['price'] ?? 0);
+            $data['cost'] = $defaultVariant['cost'] ?? 0;
+            $data['quantity'] = null;
         }
+        $recordData = array_filter($data,fn($key) => in_array($key, ['image','type','sku','is_package','category_id','sub_category_id','price','cost','quantity','status','translations', 'wash_type', 'display_as', 'points']),ARRAY_FILTER_USE_KEY);
+        $record = DB::transaction(function () use ($recordData, $data, $id) {
+            $record = Product::updateOrCreate(['id' => $id], $recordData);
+
+            if (! empty($data['variants_present'])) {
+                $this->syncVariants($record, $data['variants'] ?? []);
+            }
+
+            if (! empty($data['prices_present'])) {
+                $this->syncCityPrices($record, $data['prices'] ?? []);
+            }
+
+            return $record;
+        });
 
         \Core\Categories\Services\CategoryCacheService::flush();
         return $record;
     }
 
+    private function syncVariants(Product $product, array $variants): void
+    {
+        $keptIds = [];
+
+        foreach (array_values($variants) as $index => $variantData) {
+            $variantId = isset($variantData['id']) ? (int) $variantData['id'] : null;
+            $variant = $variantId ? $product->variants()->whereKey($variantId)->firstOrFail() : $product->variants()->make();
+
+            $variant->fill([
+                'pieces_count' => $variantData['pieces_count'] ?? null,
+                'price' => $variantData['price'],
+                'points' => $variantData['points'] ?? $variantData['price'],
+                'cost' => $variantData['cost'] ?? $product->cost,
+                'extra_piece_price' => $variantData['extra_piece_price'] ?? null,
+                'quantity' => $product->type === 'sales' ? ($variantData['quantity'] ?? null) : null,
+                'status' => $variantData['status'],
+                'sort_order' => $index + 1,
+            ]);
+            $variant->save();
+            $keptIds[] = $variant->id;
+        }
+
+        $product->variants()->whereNotIn('id', $keptIds)->update(['status' => 'not-active']);
+    }
+
+    private function syncCityPrices(Product $product, array $prices): void
+    {
+        $keptIds = [];
+
+        foreach (array_values($prices) as $priceData) {
+            $priceId = isset($priceData['id']) ? (int) $priceData['id'] : null;
+            $price = $priceId
+                ? $product->prices()->whereKey($priceId)->firstOrFail()
+                : $product->prices()->make();
+
+            $price->fill([
+                'city_id' => $priceData['city_id'],
+                'price' => $priceData['price'],
+                'cost' => $priceData['cost'],
+            ]);
+            $price->save();
+            $keptIds[] = $price->id;
+        }
+
+        $query = $product->prices();
+        if ($keptIds) {
+            $query->whereNotIn('id', $keptIds);
+        }
+        $query->delete();
+    }
+
     public function get(int|string $id){
         return  Product::findOrFail($id);
     }
+
 
     public function delete(int|string $id,$final = false){
         $record             = Product::findOrFail($id);

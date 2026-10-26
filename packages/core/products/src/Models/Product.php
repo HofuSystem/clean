@@ -166,6 +166,11 @@ class Product extends CoreModel implements TranslatableContract{
         return $this->belongsToMany(ProductSetting::class, 'product_product_setting', 'product_id', 'product_setting_id');
     }
 
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
+    }
+
     //end relations
 
     //start Attributes

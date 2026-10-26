@@ -51,7 +51,11 @@ class CategoryObserver
      */
     public function updated(Category $category)
     {
-
+        if ($category->wasChanged('is_package')) {
+            $category->products()->update([
+                'is_package' => (bool) $category->is_package,
+            ]);
+        }
     }
     /**
      * Handle the Category "saving" event.
