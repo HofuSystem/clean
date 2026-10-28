@@ -316,8 +316,9 @@ class WalletTransactionsService
                 ->where('wallet_bucket', 'funded')
                 ->sum('amount');
             $fundedAvailable = round(max(0, $fundedDeposits - $reservedFundedWithdrawals), 2);
+            $withdrawableAmount = round(min($fundedAvailable, max(0, (float) $user->wallet)), 2);
 
-            if ($amount > $fundedAvailable) {
+            if ($amount > $withdrawableAmount) {
                 throw ValidationException::withMessages(['amount' => trans('There is not enough balance')]);
             }
             $transaction = $user->walletTransactions()->create([

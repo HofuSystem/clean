@@ -337,8 +337,18 @@ class OrderController extends Controller
         if (! $assigned) { return $this->returnErrorMessage(trans('You are not assigned to this order'), [], [], 403); }
         if ($request->type == 'report') {
             $order = Order::FindOrFail($order_id);
-            $previousStatus = $order->status;
-            $order->update(['status_before_issue' => $previousStatus, 'status' => 'issue', 'driver_has_problem' => true, 'order_status_times' => ['issue' => [date("Y-m-d H:i"), auth('api')->user()->phone,$request->report_reason_id]]]);
+            $previousStatus = $order->status === 'issue'
+                ? $order->status_before_issue
+                : $order->status;
+            $issueData = [
+                'status' => 'issue',
+                'driver_has_problem' => true,
+                'order_status_times' => ['issue' => [date("Y-m-d H:i"), auth('api')->user()->phone,$request->report_reason_id]],
+            ];
+            if ($order->status !== 'issue') {
+                $issueData['status_before_issue'] = $order->status;
+            }
+            $order->update($issueData);
             $report = OrderReport::create($request->validated() + ['user_id' => auth('api')->id(), 'order_id' => $order->id]);
             $failureEvent = in_array($previousStatus, ['pending', 'receiving_driver_accepted'], true)
                 ? 'pickup_failed'

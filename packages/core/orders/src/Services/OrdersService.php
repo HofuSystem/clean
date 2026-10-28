@@ -1481,20 +1481,8 @@ class OrdersService
             return;
         }
 
-        $allocations = app(\Core\Wallet\Services\WalletBucketAllocationService::class)
-            ->allocate((int) $user->id, $amount);
-        $walletTransactions = [];
-
-        foreach ($allocations as $bucket => $bucketAmount) {
-            $walletTransactions[] = $user->walletTransactions()->create([
-                'amount' => $bucketAmount,
-                'type' => 'withdraw',
-                'status' => 'accepted',
-                'transaction_type' => 'order_payment',
-                'wallet_bucket' => $bucket,
-                'order_id' => $order->id,
-            ]);
-        }
+        $walletTransactions = app(\Core\Wallet\Services\WalletBucketAllocationService::class)
+            ->createOrderPaymentWithdrawals((int) $user->id, (int) $order->id, $amount);
 
         // Persist every wallet ledger row before creating order transactions:
         // the latter trigger paid-total recalculation and may emit purchase.

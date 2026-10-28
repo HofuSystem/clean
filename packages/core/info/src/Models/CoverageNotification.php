@@ -4,6 +4,7 @@ namespace Core\Info\Models;
 
 use Core\Info\Models\City;
 use Core\Info\Models\District;
+use Core\Users\Models\Address;
 use Core\Users\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,7 @@ class CoverageNotification extends Model
 
     protected $fillable = [
         'user_id',
+        'address_id',
         'city_id',
         'district_id',
         'type',
@@ -22,6 +24,11 @@ class CoverageNotification extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id', 'id');
     }
 
     public function city()

@@ -30,7 +30,7 @@ class CoverageNotificationsController extends Controller
             $start = $request->input('start', 0);
             $length = $request->input('length', 10);
 
-            $query = CoverageNotification::with(['user', 'city.translations', 'district.translations']);
+            $query = CoverageNotification::with(['user', 'address', 'city.translations', 'district.translations']);
 
             // Apply Filters
             if ($request->has('filters')) {
@@ -59,14 +59,17 @@ class CoverageNotificationsController extends Controller
 
             $data = [];
             foreach ($records as $record) {
-                // Find matching address for user & district/city
-                $addressQuery = \Core\Users\Models\Address::where('user_id', $record->user_id);
-                if ($record->district_id) {
-                    $addressQuery->where('district_id', $record->district_id);
-                } elseif ($record->city_id) {
-                    $addressQuery->where('city_id', $record->city_id);
+                // New apps send the exact address. Fall back for older versions.
+                $address = $record->address;
+                if (!$address) {
+                    $addressQuery = \Core\Users\Models\Address::where('user_id', $record->user_id);
+                    if ($record->district_id) {
+                        $addressQuery->where('district_id', $record->district_id);
+                    } elseif ($record->city_id) {
+                        $addressQuery->where('city_id', $record->city_id);
+                    }
+                    $address = $addressQuery->first();
                 }
-                $address = $addressQuery->first();
 
                 $actions = '<div class="d-flex justify-content-center">';
                 if (auth('web')->user()->can('dashboard.coverage-notifications.delete')) {
