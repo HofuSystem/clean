@@ -32,8 +32,8 @@ class CoverageNotificationController extends Controller
         }
 
         $request->validate([
-            'city_id'     => ['nullable', 'required_without_all:district_id,address_id', 'exists:cities,id'],
-            'district_id' => ['nullable', 'required_without_all:city_id,address_id', 'exists:districts,id'],
+            'city_id'     => ['nullable', 'exists:cities,id'],
+            'district_id' => ['nullable', 'exists:districts,id'],
             'address_id'  => [
                 'nullable',
                 Rule::exists('addresses', 'id')->where(fn ($query) => $query->where('user_id', $userId)),
@@ -48,6 +48,21 @@ class CoverageNotificationController extends Controller
 
         if ($addressId) {
             $address = Address::where('user_id', $userId)->findOrFail($addressId);
+            $cityId = $address->city_id;
+            $districtId = $address->district_id;
+        } elseif (!$cityId && !$districtId) {
+            // Older app versions do not send location identifiers with this
+            // request. Resolve the user's default address transparently.
+            $address = Address::where('user_id', $userId)
+                ->orderByDesc('is_default')
+                ->latest('id')
+                ->first();
+
+            if (!$address) {
+                return $this->returnErrorMessage(trans('Please add an address first'), [], [], 422);
+            }
+
+            $addressId = $address->id;
             $cityId = $address->city_id;
             $districtId = $address->district_id;
         }
