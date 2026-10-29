@@ -22,6 +22,12 @@ class OrderItemResource extends JsonResource
             'products'              => $this->product ? new SimpleProductResource($this->product) : '',
             'quantity'              => (int)$this->quantity,
             'original_quantity'     => $originalQuantity,
+            'variant_id'            => $this->product_variant_id,
+            'base_pieces_count'     => $this->package_base_pieces_count,
+            'extra_pieces_count'    => (int) ($this->extra_pieces_count ?? 0),
+            'pieces_per_unit'       => $this->package_pieces_per_unit,
+            'total_pieces_count'    => $this->package_total_pieces,
+            'extra_piece_price'     => $this->package_extra_piece_price,
 
             'is_deleted'            => $this->deleted_at != null,
             'is_added'              => $this->add_by_admin != null,

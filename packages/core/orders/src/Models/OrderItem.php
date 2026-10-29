@@ -145,6 +145,49 @@ class OrderItem extends CoreModel {
         ? ($this->width * $this->height * $this->quantity * $this->product_cost) 
         : ($this->quantity * $this->product_cost);
     }
+
+    /**
+     * Resolve package details from the immutable order snapshot first. This
+     * keeps historical orders accurate if the product variant is edited later.
+     */
+    public function getPackageVariantSnapshotAttribute(): ?array
+    {
+        $productData = is_array($this->product_data)
+            ? $this->product_data
+            : json_decode((string) $this->product_data, true);
+
+        if (is_array($productData['selected_variant'] ?? null)) {
+            return $productData['selected_variant'];
+        }
+
+        if ($this->variant) {
+            return $this->variant->toArray();
+        }
+
+        return null;
+    }
+
+    public function getPackageBasePiecesCountAttribute(): int
+    {
+        return (int) ($this->package_variant_snapshot['pieces_count'] ?? 0);
+    }
+
+    public function getPackageExtraPiecePriceAttribute(): ?float
+    {
+        $price = $this->package_variant_snapshot['extra_piece_price'] ?? null;
+
+        return $price === null ? null : (float) $price;
+    }
+
+    public function getPackagePiecesPerUnitAttribute(): int
+    {
+        return $this->package_base_pieces_count + (int) ($this->extra_pieces_count ?? 0);
+    }
+
+    public function getPackageTotalPiecesAttribute(): int
+    {
+        return $this->package_pieces_per_unit * max(1, (int) $this->quantity);
+    }
     //end Attributes
 
 }

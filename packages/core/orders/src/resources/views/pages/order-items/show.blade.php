@@ -79,6 +79,21 @@
             <div class="form-group mb-3 col-md-6">
                 <label>{{ trans("quantity") }}</label><p>{{ $item->quantity ?? 'N/A' }}</p>
             </div>
+
+            @if($item->package_base_pieces_count > 0)
+                <div class="form-group mb-3 col-md-4">
+                    <label>{{ app()->getLocale() === 'ar' ? 'عدد القطع الأساسية' : 'Base pieces' }}</label>
+                    <p>{{ $item->package_base_pieces_count }}</p>
+                </div>
+                <div class="form-group mb-3 col-md-4">
+                    <label>{{ app()->getLocale() === 'ar' ? 'عدد القطع الإضافية' : 'Extra pieces' }}</label>
+                    <p>{{ (int) $item->extra_pieces_count }}</p>
+                </div>
+                <div class="form-group mb-3 col-md-4">
+                    <label>{{ app()->getLocale() === 'ar' ? 'إجمالي القطع' : 'Total pieces' }}</label>
+                    <p class="fw-bold text-success">{{ $item->package_total_pieces }}</p>
+                </div>
+            @endif
         
             <div class="form-group mb-3 col-md-6">
                 <label>{{ trans("carpet size") }}</label><p>{{ $item->width ?? 'N/A' }}</p>

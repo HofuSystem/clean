@@ -446,6 +446,14 @@
                                     {{ trans('card note') }}: {{ $item->card_note }}
                                 </span>
                             @endif
+                            @if($item->package_base_pieces_count > 0)
+                                <br>
+                                <span class="suben" style="display:block; color:#0f4da8;">
+                                    {{ 'قطع الحقيبة | Bag pieces: ' . $item->package_base_pieces_count }}
+                                    + {{ 'إضافية | Extra: ' . (int) $item->extra_pieces_count }}
+                                    = {{ 'الإجمالي | Total: ' . $item->package_total_pieces }}
+                                </span>
+                            @endif
                         </td>
                         <td>{{ $item->product?->subCategory?->translate('en')?->name . ' | ' . $item->product?->subCategory?->translate('ar')?->name ?? '' }}
                         </td>

@@ -103,6 +103,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             <th>{{ trans('sub category') }}</th>
                             <th>{{ trans('price') }}</th>
                             <th>{{ trans('quantity') }}</th>
+                            <th>{{ app()->getLocale() === 'ar' ? 'تفاصيل قطع الحقيبة' : 'Bag pieces' }}</th>
                             <th>{{ trans('size') }}</th>
                             <th>{{ trans('picked up') }}</th>
                             <th>{{ trans('arrived') }}</th>
@@ -272,6 +273,17 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                     <i class="fas fa-edit"></i>
                                     @endisset
                                 </span>
+                            </td>
+                            <td>
+                                @if($item->package_base_pieces_count > 0)
+                                    <div class="text-nowrap">
+                                        <span class="d-block">{{ app()->getLocale() === 'ar' ? 'الأساسية' : 'Base' }}: <strong>{{ $item->package_base_pieces_count }}</strong></span>
+                                        <span class="d-block text-primary">{{ app()->getLocale() === 'ar' ? 'الإضافية' : 'Extra' }}: <strong>{{ (int) $item->extra_pieces_count }}</strong></span>
+                                        <span class="d-block text-success">{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}: <strong>{{ $item->package_total_pieces }}</strong></span>
+                                    </div>
+                                @else
+                                    —
+                                @endif
                             </td>
                             <td>
                                 @if (isset($hasSize) and
