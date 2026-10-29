@@ -31,7 +31,9 @@ class OrderItemResource extends JsonResource
             'base_pieces_count'     => $this->package_base_pieces_count,
             'pieces_per_unit'       => $this->package_pieces_per_unit,
             'total_pieces_count'    => $this->package_total_pieces,
+            'base_package_price'    => $this->package_base_price,
             'extra_piece_price'     => $this->package_extra_piece_price,
+            'extra_pieces_total'    => $this->package_extra_pieces_total,
             'variant'               => $this->when($this->product_variant_id, fn () => [
                 'id' => $this->product_variant_id,
                 'pieces_count' => $this->package_base_pieces_count,

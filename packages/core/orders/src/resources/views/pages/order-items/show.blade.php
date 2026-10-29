@@ -93,6 +93,14 @@
                     <label>{{ app()->getLocale() === 'ar' ? 'إجمالي القطع' : 'Total pieces' }}</label>
                     <p class="fw-bold text-success">{{ $item->package_total_pieces }}</p>
                 </div>
+                <div class="form-group mb-3 col-md-6">
+                    <label>{{ app()->getLocale() === 'ar' ? 'سعر القطعة الإضافية' : 'Extra piece price' }}</label>
+                    <p>{{ $item->package_extra_piece_price === null ? '—' : number_format($item->package_extra_piece_price, 2) . ' ' . trans('SAR') }}</p>
+                </div>
+                <div class="form-group mb-3 col-md-6">
+                    <label>{{ app()->getLocale() === 'ar' ? 'إجمالي تكلفة القطع الإضافية' : 'Extra pieces total' }}</label>
+                    <p class="fw-bold">{{ number_format($item->package_extra_pieces_total, 2) }} {{ trans('SAR') }}</p>
+                </div>
             @endif
         
             <div class="form-group mb-3 col-md-6">

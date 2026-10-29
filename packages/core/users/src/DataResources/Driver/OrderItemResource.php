@@ -27,7 +27,9 @@ class OrderItemResource extends JsonResource
             'extra_pieces_count'    => (int) ($this->extra_pieces_count ?? 0),
             'pieces_per_unit'       => $this->package_pieces_per_unit,
             'total_pieces_count'    => $this->package_total_pieces,
+            'base_package_price'    => $this->package_base_price,
             'extra_piece_price'     => $this->package_extra_piece_price,
+            'extra_pieces_total'    => $this->package_extra_pieces_total,
 
             'is_deleted'            => $this->deleted_at != null,
             'is_added'              => $this->add_by_admin != null,

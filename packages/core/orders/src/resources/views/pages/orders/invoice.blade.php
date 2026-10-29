@@ -452,6 +452,17 @@
                                     {{ 'قطع الحقيبة | Bag pieces: ' . $item->package_base_pieces_count }}
                                     + {{ 'إضافية | Extra: ' . (int) $item->extra_pieces_count }}
                                     = {{ 'الإجمالي | Total: ' . $item->package_total_pieces }}
+                                    @if($item->package_base_price !== null)
+                                        <br>{{ 'سعر الحقيبة الأساسي | Base package price: ' . number_format($item->package_base_price, 2) . ' SAR' }}
+                                    @endif
+                                    @if($item->package_extra_piece_price !== null)
+                                        <br>
+                                        {{ 'سعر القطعة الإضافية | Extra piece price: ' . number_format($item->package_extra_piece_price, 2) . ' SAR' }}
+                                        @if((int) $item->extra_pieces_count > 0)
+                                            — {{ (int) $item->extra_pieces_count }} × {{ number_format($item->package_extra_piece_price, 2) }}
+                                            = {{ number_format($item->package_extra_pieces_total, 2) }} SAR
+                                        @endif
+                                    @endif
                                 </span>
                             @endif
                         </td>

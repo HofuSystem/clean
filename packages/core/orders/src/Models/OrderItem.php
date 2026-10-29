@@ -179,6 +179,21 @@ class OrderItem extends CoreModel {
         return $price === null ? null : (float) $price;
     }
 
+    public function getPackageBasePriceAttribute(): ?float
+    {
+        $price = $this->package_variant_snapshot['price'] ?? null;
+
+        return $price === null ? null : (float) $price;
+    }
+
+    public function getPackageExtraPiecesTotalAttribute(): float
+    {
+        return round(
+            (int) ($this->extra_pieces_count ?? 0) * (float) ($this->package_extra_piece_price ?? 0),
+            2
+        );
+    }
+
     public function getPackagePiecesPerUnitAttribute(): int
     {
         return $this->package_base_pieces_count + (int) ($this->extra_pieces_count ?? 0);

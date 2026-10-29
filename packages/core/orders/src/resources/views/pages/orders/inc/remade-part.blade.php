@@ -280,6 +280,31 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                         <span class="d-block">{{ app()->getLocale() === 'ar' ? 'الأساسية' : 'Base' }}: <strong>{{ $item->package_base_pieces_count }}</strong></span>
                                         <span class="d-block text-primary">{{ app()->getLocale() === 'ar' ? 'الإضافية' : 'Extra' }}: <strong>{{ (int) $item->extra_pieces_count }}</strong></span>
                                         <span class="d-block text-success">{{ app()->getLocale() === 'ar' ? 'الإجمالي' : 'Total' }}: <strong>{{ $item->package_total_pieces }}</strong></span>
+                                        @if($item->package_base_price !== null)
+                                            <span class="d-block mt-1">
+                                                {{ app()->getLocale() === 'ar' ? 'سعر الحقيبة الأساسي' : 'Base package price' }}:
+                                                <strong>{{ number_format($item->package_base_price, 2) }} {{ trans('SAR') }}</strong>
+                                            </span>
+                                        @endif
+                                        @if($item->package_extra_piece_price !== null)
+                                            <span class="d-block mt-1 text-danger">
+                                                {{ app()->getLocale() === 'ar' ? 'سعر القطعة الإضافية' : 'Extra piece price' }}:
+                                                <strong>{{ number_format($item->package_extra_piece_price, 2) }} {{ trans('SAR') }}</strong>
+                                            </span>
+                                            @if((int) $item->extra_pieces_count > 0)
+                                                <span class="d-block text-muted">
+                                                    {{ app()->getLocale() === 'ar' ? 'تكلفة الإضافات' : 'Extras total' }}:
+                                                    {{ (int) $item->extra_pieces_count }} × {{ number_format($item->package_extra_piece_price, 2) }}
+                                                    = <strong>{{ number_format($item->package_extra_pieces_total, 2) }} {{ trans('SAR') }}</strong>
+                                                </span>
+                                                @if($item->package_base_price !== null)
+                                                    <span class="d-block fw-bold">
+                                                        {{ number_format($item->package_base_price, 2) }} + {{ number_format($item->package_extra_pieces_total, 2) }}
+                                                        = {{ number_format($item->product_price, 2) }} {{ trans('SAR') }}
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        @endif
                                     </div>
                                 @else
                                     —
