@@ -40,7 +40,8 @@ return [
     ],
 
     'myfatoorah' => [
-        'api_key' => env('MYFATOORAH_API_TOKEN', 'SK_SAU_9EQIZJvQKmRlK5tDA8mWZLysvJ3upO6CoKh2HDE7Jo4347srddUCPZAMy4lvApSn'),
+        // Never keep a production payment credential in source control.
+        'api_key' => env('MYFATOORAH_API_TOKEN'),
         'base_url' => env('MYFATOORAH_BASE_URL', 'https://api-sa.myfatoorah.com'),
         'success_url' => env('MYFATOORAH_SUCCESS_URL'),
         'error_url' => env('MYFATOORAH_ERROR_URL'),

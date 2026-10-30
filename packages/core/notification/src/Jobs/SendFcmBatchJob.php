@@ -18,7 +18,9 @@ class SendFcmBatchJob implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 2;
-    public $timeout = 60;
+    // A batch may execute in several bounded HTTP waves. Keep this below the
+    // queue connection retry_after value in production to avoid duplicate jobs.
+    public $timeout = 80;
     public ?string $executionStatus = null;
 
     /**

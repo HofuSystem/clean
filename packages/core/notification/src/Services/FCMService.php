@@ -338,42 +338,52 @@ class FCMService
 
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
-        // 3. Concurrent pool requests (NO DB transactions held during HTTP pool)
-        $responses = Http::pool(function ($pool) use ($filteredBatch, $url, $accessToken, $notification, $payload) {
-            foreach ($filteredBatch as $idx => $dev) {
-                $body = [
-                    'message' => [
-                        'token' => $dev['token'],
-                        'notification' => [
-                            'title' => (string)$notification->title,
-                            'body' => (string)$notification->body,
-                        ],
-                        // Keep every delivery attempt for the same campaign under one
-                        // stable system notification. This protects against duplicate
-                        // queue execution and safe retries without breaking legacy apps.
-                        'android' => [
-                            'collapse_key' => 'notification-' . $notification->id,
-                            'notification' => [
-                                'tag' => 'notification-' . $notification->id,
-                            ],
-                        ],
-                        'apns' => [
-                            'headers' => [
-                                'apns-collapse-id' => 'notification-' . $notification->id,
-                            ],
-                        ],
-                    ]
-                ];
-                if (!empty($payload)) {
-                    $body['message']['data'] = $payload;
-                }
+        // 3. Concurrent requests with a strict per-worker socket limit. A large
+        // campaign can run many queue jobs together; pooling every device in every
+        // job at once previously exhausted the server's open-file limit.
+        $responses = [];
+        $httpConcurrency = max(1, (int) config('notification.fcm_http_concurrency', 10));
 
-                $pool->as($idx)->withHeaders([
-                    'Authorization' => "Bearer {$accessToken}",
-                    'Content-Type' => 'application/json',
-                ])->timeout(12)->connectTimeout(5)->post($url, $body);
+        foreach (array_chunk($filteredBatch, $httpConcurrency, true) as $httpChunk) {
+            $chunkResponses = Http::pool(function ($pool) use ($httpChunk, $url, $accessToken, $notification, $payload) {
+                foreach ($httpChunk as $idx => $dev) {
+                    $body = [
+                        'message' => [
+                            'token' => $dev['token'],
+                            'notification' => [
+                                'title' => (string)$notification->title,
+                                'body' => (string)$notification->body,
+                            ],
+                            // Keep every delivery attempt for the same campaign under one
+                            // stable system notification without breaking legacy apps.
+                            'android' => [
+                                'collapse_key' => 'notification-' . $notification->id,
+                                'notification' => [
+                                    'tag' => 'notification-' . $notification->id,
+                                ],
+                            ],
+                            'apns' => [
+                                'headers' => [
+                                    'apns-collapse-id' => 'notification-' . $notification->id,
+                                ],
+                            ],
+                        ]
+                    ];
+                    if (!empty($payload)) {
+                        $body['message']['data'] = $payload;
+                    }
+
+                    $pool->as((string) $idx)->withHeaders([
+                        'Authorization' => "Bearer {$accessToken}",
+                        'Content-Type' => 'application/json',
+                    ])->timeout(10)->connectTimeout(4)->post($url, $body);
+                }
+            });
+
+            foreach ($chunkResponses as $idx => $response) {
+                $responses[(int) $idx] = $response;
             }
-        });
+        }
 
         $now = now();
         $acceptedItems = [];
