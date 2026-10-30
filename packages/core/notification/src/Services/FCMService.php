@@ -330,6 +330,10 @@ class FCMService
         if (!empty($notification->payload)) {
             $rawPayload = is_string($notification->payload) ? json_decode($notification->payload, true) : (array)$notification->payload;
         }
+        // Defensive fallback for direct calls and retries that bypass the
+        // manager payload preparation.
+        $rawPayload['notification_id'] = (string) $notification->id;
+        $rawPayload['delivery_channel'] = 'direct_fcm';
         $payload = $this->convertIntegersToStrings($rawPayload);
 
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";

@@ -424,8 +424,21 @@ class NotificationsManger
     {
         $notification = $this->notification;
         $payload = is_array($notification->payload) ? $notification->payload : json_decode($notification->payload ?? '{}', true);
-        if (empty($payload['delivery_channel'])) {
+        $payloadChanged = false;
+
+        if (($payload['delivery_channel'] ?? null) !== 'direct_fcm') {
             $payload['delivery_channel'] = 'direct_fcm';
+            $payloadChanged = true;
+        }
+
+        // The mobile app needs this stable campaign identifier to report
+        // received/opened events back to the correct notification record.
+        if ((string) ($payload['notification_id'] ?? '') !== (string) $notification->id) {
+            $payload['notification_id'] = (string) $notification->id;
+            $payloadChanged = true;
+        }
+
+        if ($payloadChanged) {
             $notification->update(['payload' => json_encode($payload)]);
         }
         $totalDevices = count($eligibleDevices);
