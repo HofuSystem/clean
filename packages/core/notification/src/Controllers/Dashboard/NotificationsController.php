@@ -108,7 +108,18 @@ class NotificationsController extends Controller
         $eligibleDevices = $item->eligible_devices_count ?: 0;
 
         // Channel-specific delivery metrics
-        $acceptedByFcm = $isDirect ? ($item->accepted_by_fcm_count ?? 0) : '—';
+        // Device rows are the source of truth. Snapshot counters may be stale after
+        // retrying transient failures because a device can move to another status.
+        $deliveryCounts = null;
+        if ($isDirect) {
+            $deliveryCounts = NotificationToken::where('notification_id', $item->id)
+                ->selectRaw("SUM(CASE WHEN status IN ('accepted', 'received', 'opened') THEN 1 ELSE 0 END) as accepted_count")
+                ->selectRaw("SUM(CASE WHEN status = 'permanent_failed' THEN 1 ELSE 0 END) as permanent_failed_count")
+                ->selectRaw("SUM(CASE WHEN status = 'transient_failed' THEN 1 ELSE 0 END) as transient_failed_count")
+                ->first();
+        }
+
+        $acceptedByFcm = $isDirect ? (int) ($deliveryCounts?->accepted_count ?? 0) : '—';
         
         $hasSavedLegacyCount = false;
         $legacyTopicCount = null;
@@ -121,8 +132,12 @@ class NotificationsController extends Controller
             }
         }
 
-        $permFailed = $item->permanent_failed_count ?? 0;
-        $transFailed = $item->transient_failed_count ?? 0;
+        $permFailed = $isDirect
+            ? (int) ($deliveryCounts?->permanent_failed_count ?? 0)
+            : (int) ($item->permanent_failed_count ?? 0);
+        $transFailed = $isDirect
+            ? (int) ($deliveryCounts?->transient_failed_count ?? 0)
+            : (int) ($item->transient_failed_count ?? 0);
 
         // Engagement metrics: display "غير متاح" when not measurable
         if (!$isDirect || !$deliveryEventsEnabled) {

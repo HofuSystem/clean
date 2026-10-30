@@ -650,14 +650,26 @@ class FCMService
                     ]);
             }
 
-            // 5. Update Campaign Snapshot Counters Atomically
-            if ($acceptedCount > 0 || $permFailedCount > 0 || $transFailedCount > 0) {
-                DB::table('notifications')->where('id', $notification->id)->update([
-                    'accepted_by_fcm_count' => DB::raw("accepted_by_fcm_count + {$acceptedCount}"),
-                    'permanent_failed_count' => DB::raw("permanent_failed_count + {$permFailedCount}"),
-                    'transient_failed_count' => DB::raw("transient_failed_count + {$transFailedCount}"),
-                ]);
-            }
+            // 5. Rebuild snapshots from the per-device source of truth. Incrementing
+            // these columns is incorrect during retries because the previous transient
+            // failure must be removed when a device moves to another status.
+            DB::table('notifications')
+                ->where('id', $notification->id)
+                ->lockForUpdate()
+                ->first();
+
+            $deliveryCounts = DB::table('notification_tokens')
+                ->where('notification_id', $notification->id)
+                ->selectRaw("SUM(CASE WHEN status IN ('accepted', 'received', 'opened') THEN 1 ELSE 0 END) as accepted_count")
+                ->selectRaw("SUM(CASE WHEN status = 'permanent_failed' THEN 1 ELSE 0 END) as permanent_failed_count")
+                ->selectRaw("SUM(CASE WHEN status = 'transient_failed' THEN 1 ELSE 0 END) as transient_failed_count")
+                ->first();
+
+            DB::table('notifications')->where('id', $notification->id)->update([
+                'accepted_by_fcm_count' => (int) ($deliveryCounts->accepted_count ?? 0),
+                'permanent_failed_count' => (int) ($deliveryCounts->permanent_failed_count ?? 0),
+                'transient_failed_count' => (int) ($deliveryCounts->transient_failed_count ?? 0),
+            ]);
 
             // 6. Aggregate and Bulk Update users_notifications
             if (!empty($affectedUserIds)) {
