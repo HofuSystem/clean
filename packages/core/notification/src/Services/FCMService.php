@@ -348,6 +348,20 @@ class FCMService
                             'title' => (string)$notification->title,
                             'body' => (string)$notification->body,
                         ],
+                        // Keep every delivery attempt for the same campaign under one
+                        // stable system notification. This protects against duplicate
+                        // queue execution and safe retries without breaking legacy apps.
+                        'android' => [
+                            'collapse_key' => 'notification-' . $notification->id,
+                            'notification' => [
+                                'tag' => 'notification-' . $notification->id,
+                            ],
+                        ],
+                        'apns' => [
+                            'headers' => [
+                                'apns-collapse-id' => 'notification-' . $notification->id,
+                            ],
+                        ],
                     ]
                 ];
                 if (!empty($payload)) {
