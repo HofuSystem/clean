@@ -32,6 +32,7 @@ Schedule::command('telescope:prune --hours=48')->daily();
 Schedule::command('queue:work database --queue=default --stop-when-empty --sleep=1 --tries=2 --timeout=80 --memory=256')
     ->everyMinute()
     ->withoutOverlapping(10);
+Schedule::command('queue:prune-failed --hours=168')->dailyAt('02:30');
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
