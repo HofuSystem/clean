@@ -428,9 +428,40 @@
             '{{ route('payment-gateway.web.callback', ['transaction_id' => $transaction->transaction_id]) }}';
         var executePaymentUrl =
             '{{ route('payment-gateway.web.execute-embedded', ['transaction_id' => $transaction->transaction_id]) }}';
+        var clientEventUrl =
+            '{{ route('payment-gateway.web.client-event', ['transaction_id' => $transaction->transaction_id]) }}';
         var csrfToken = '{{ csrf_token() }}';
         var currentLanguage = '{{ app()->getLocale() }}';
         var paymentLanguage = (currentLanguage === 'ar') ? 'ar' : 'en';
+
+        function paymentErrorText(error) {
+            if (!error) return '';
+            if (typeof error === 'string') return error;
+            if (error.message) return String(error.message);
+            try {
+                return JSON.stringify(error);
+            } catch (e) {
+                return String(error);
+            }
+        }
+
+        function reportPaymentClientEvent(eventName, details) {
+            details = details || {};
+            $.ajax({
+                url: clientEventUrl,
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                data: {
+                    event: eventName,
+                    payment_type: details.paymentType || null,
+                    code: details.code || null,
+                    message: paymentErrorText(details.message || details.error).substring(0, 500)
+                }
+            });
+        }
 
 
         // =====================================================
@@ -511,6 +542,11 @@
             } else {
                 console.error('Payment failed:', response);
                 hideLoading();
+                reportPaymentClientEvent('sdk_payment_failed', {
+                    paymentType: response.paymentType,
+                    code: response.errorCode || response.code,
+                    error: response.error || response
+                });
                 var errorMessage = '{{ __('Payment failed.Please try again.') }}';
                 if (response.error) {
                     errorMessage = response.error;
@@ -589,6 +625,11 @@
             console.error('AJAX error:', {
                 status: status,
                 error: error
+            });
+            reportPaymentClientEvent('execute_payment_http_error', {
+                paymentType: paymentType,
+                code: String(xhr.status || status || ''),
+                message: (xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.error)) || error
             });
 
             if (xhr.responseText && isDebugOutput(xhr.responseText)) {
@@ -743,10 +784,14 @@
                     console.log('✓ MyFatoorah SDK initialized successfully');
                 } catch (e) {
                     console.error('✗ MyFatoorah init error:', e);
+                    reportPaymentClientEvent('sdk_init_error', { error: e });
                     alert('{{ __('Payment form could not be initialized.Please refresh the page.') }}');
                 }
             } else {
                 console.error('✗ MyFatoorah SDK not loaded');
+                reportPaymentClientEvent('sdk_not_loaded', {
+                    message: 'MyFatoorah SDK script was not available'
+                });
                 alert('{{ __('Payment system could not be loaded.Please refresh the page.') }}');
             }
         }

@@ -11,6 +11,7 @@ use Core\Wallet\Services\WalletTransactionsService;
 use Core\Wallet\Services\WalletChargePricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Core\Users\Models\User;
 use Core\PaymentGateways\Services\PaymentResultVerifier;
 
@@ -202,6 +203,44 @@ class PaymentGatewayController extends Controller
                 'message' => __('An error occurred while processing your payment')
             ], 500);
         }
+    }
+
+    /**
+     * Capture failures that occur in the browser/SDK before ExecutePayment
+     * reaches the backend. The transaction stays pending because the customer
+     * may retry the same page successfully.
+     */
+    public function clientEvent(Request $request, $transaction_id)
+    {
+        $data = $request->validate([
+            'event' => ['required', 'string', 'max:80'],
+            'payment_type' => ['nullable', 'string', 'max:50'],
+            'code' => ['nullable', 'string', 'max:120'],
+            'message' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $transaction = PaymentTransaction::where('transaction_id', $transaction_id)->first();
+        if (!$transaction) {
+            return response()->noContent();
+        }
+
+        Log::warning('Payment client event', [
+            'transaction_id' => $transaction->transaction_id,
+            'order_id' => $transaction->order_id,
+            'user_id' => $transaction->user_id,
+            'event' => $data['event'],
+            'payment_type' => $data['payment_type'] ?? null,
+            'code' => $data['code'] ?? null,
+            'message' => $data['message'] ?? null,
+            'user_agent' => substr((string) $request->userAgent(), 0, 500),
+        ]);
+
+        if ($transaction->status === 'pending' && !empty($data['message'])) {
+            $transaction->failure_reason = substr($data['event'] . ': ' . $data['message'], 0, 1000);
+            $transaction->save();
+        }
+
+        return response()->noContent();
     }
 
     /**

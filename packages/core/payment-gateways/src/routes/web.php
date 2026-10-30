@@ -26,6 +26,10 @@ Route::group(
         
         Route::post('/payment-gateway/{transaction_id}/execute-embedded', [PaymentGatewayController::class, 'executeEmbeddedPayment'])
         ->name('payment-gateway.web.execute-embedded');
+
+        Route::post('/payment-gateway/{transaction_id}/client-event', [PaymentGatewayController::class, 'clientEvent'])
+        ->middleware('throttle:30,1')
+        ->name('payment-gateway.web.client-event');
         
         Route::get('/payment-gateway/{transaction_id}/callback', [PaymentGatewayController::class, 'paymentCallback'])
         ->name('payment-gateway.web.callback');
