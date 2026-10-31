@@ -14,6 +14,10 @@ return new class extends Migration
      */
     public function up()
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         // Drop the existing enum constraint
         DB::statement("ALTER TABLE orders MODIFY COLUMN pay_type ENUM('card', 'cash', 'wallet', 'contract') NULL");
     }
@@ -25,6 +29,10 @@ return new class extends Migration
      */
     public function down()
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         // Revert back to the original enum values
         DB::statement("ALTER TABLE orders MODIFY COLUMN pay_type ENUM('card', 'cash', 'wallet') NULL");
     }

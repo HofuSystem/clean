@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (\DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         \DB::statement("ALTER TABLE `coupons` MODIFY COLUMN `type` ENUM('value','percentage', 'cashback') NOT NULL");
 
     }
@@ -20,6 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (\DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         \DB::statement("ALTER TABLE `coupons` MODIFY COLUMN `type` ENUM('value','percentage') NOT NULL");
 
     }

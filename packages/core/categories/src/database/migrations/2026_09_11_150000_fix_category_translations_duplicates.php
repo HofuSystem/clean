@@ -22,6 +22,16 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            // A fresh SQLite test database has no duplicate legacy data. Keep
+            // the schema invariant without executing MySQL-only DELETE JOIN and
+            // SHOW INDEX statements.
+            Schema::table('category_translations', function (Blueprint $table) {
+                $table->unique(['category_id', 'locale']);
+            });
+            return;
+        }
+
         // ── 1. اكتشاف وتسجيل التكرارات قبل الحذف ──────────────────────────
         $duplicates = DB::select("
             SELECT
@@ -78,6 +88,13 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            Schema::table('category_translations', function (Blueprint $table) {
+                $table->dropUnique(['category_id', 'locale']);
+            });
+            return;
+        }
+
         // لا يمكن استعادة الصفوف المحذوفة — الـ down يزيل الـ unique index فقط
         $indexName = 'category_translations_category_id_locale_unique';
 

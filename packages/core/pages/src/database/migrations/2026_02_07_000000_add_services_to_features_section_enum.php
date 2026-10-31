@@ -10,6 +10,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE features MODIFY COLUMN section ENUM('b2b', 'b2c', 'services') NOT NULL DEFAULT 'b2c'");
     }
 
@@ -18,6 +22,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE features MODIFY COLUMN section ENUM('b2b', 'b2c') NOT NULL DEFAULT 'b2c'");
     }
 };

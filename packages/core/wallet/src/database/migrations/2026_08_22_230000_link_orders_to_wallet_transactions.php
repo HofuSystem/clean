@@ -12,6 +12,13 @@ return new class extends Migration
      */
     public function up()
     {
+        // This is a MySQL data-reconciliation migration. Fresh SQLite test
+        // databases contain no legacy rows to reconcile and do not support the
+        // UPDATE ... JOIN / TIMESTAMPDIFF syntax used below.
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
         // 1. Link from order_transactions where wallet_transaction_id is stored
         DB::statement("
             UPDATE wallet_transactions wt
