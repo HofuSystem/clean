@@ -116,6 +116,7 @@ class NotificationsController extends Controller
                 ->selectRaw("SUM(CASE WHEN status IN ('accepted', 'received', 'opened') THEN 1 ELSE 0 END) as accepted_count")
                 ->selectRaw("SUM(CASE WHEN status = 'permanent_failed' THEN 1 ELSE 0 END) as permanent_failed_count")
                 ->selectRaw("SUM(CASE WHEN status = 'transient_failed' THEN 1 ELSE 0 END) as transient_failed_count")
+                ->selectRaw("SUM(CASE WHEN status = 'queued' AND attempts = 0 THEN 1 ELSE 0 END) as untouched_queued_count")
                 ->first();
         }
 
@@ -138,6 +139,9 @@ class NotificationsController extends Controller
         $transFailed = $isDirect
             ? (int) ($deliveryCounts?->transient_failed_count ?? 0)
             : (int) ($item->transient_failed_count ?? 0);
+        $untouchedQueued = $isDirect
+            ? (int) ($deliveryCounts?->untouched_queued_count ?? 0)
+            : 0;
 
         // Engagement metrics: display "غير متاح" when not measurable
         if (!$isDirect || !$deliveryEventsEnabled) {
@@ -171,7 +175,7 @@ class NotificationsController extends Controller
             'title', 'screen', 'item', 'comments', 'isDirect', 'deliveryChannel',
             'isFcmChannel', 'resolvedChannel',
             'totalTargeted', 'eligibleUsers', 'eligibleDevices', 'acceptedByFcm',
-            'hasSavedLegacyCount', 'legacyTopicCount', 'permFailed', 'transFailed', 'receivedDisplay',
+            'hasSavedLegacyCount', 'legacyTopicCount', 'permFailed', 'transFailed', 'untouchedQueued', 'receivedDisplay',
             'openedDisplay', 'deliveryRateDisplay', 'openRateDisplay',
             'usersCount', 'devicesCount', 'skippedTokensCount'
         ));
@@ -398,12 +402,20 @@ class NotificationsController extends Controller
 
         $notification = Notification::findOrFail($id);
 
-        $transientTokens = NotificationToken::where('notification_id', $notification->id)
-            ->where('status', 'transient_failed')
+        $retryTokens = NotificationToken::where('notification_id', $notification->id)
+            ->where(function ($query) {
+                $query->where('status', 'transient_failed')
+                    // These rows were assigned to a queue job that died before
+                    // the FCM service started. attempts=0 proves no send was
+                    // attempted, so retrying cannot duplicate the notification.
+                    ->orWhere(function ($queued) {
+                        $queued->where('status', 'queued')->where('attempts', 0);
+                    });
+            })
             ->with('device')
             ->get();
 
-        $count = $transientTokens->count();
+        $count = $retryTokens->count();
         if ($count === 0) {
             return $this->returnErrorMessage(
                 trans('No transient failed devices found to retry for this campaign.'),
@@ -413,7 +425,7 @@ class NotificationsController extends Controller
             );
         }
 
-        $chunks = $transientTokens->chunk(50);
+        $chunks = $retryTokens->chunk(50);
         foreach ($chunks as $chunk) {
             $batchArray = [];
             $tokenIds = [];

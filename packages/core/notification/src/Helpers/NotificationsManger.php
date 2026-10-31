@@ -16,6 +16,7 @@ use Core\Notification\Services\TelegramNotificationService;
 use Core\Settings\Helpers\ToolHelper;
 use Core\Users\Models\Device;
 use Core\Users\Models\User;
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -516,9 +517,14 @@ class NotificationsManger
         Bus::batch($batchJobs)
             ->name('Notification-' . $notification->id)
             ->allowFailures()
-            ->finally(function () use ($notification) {
+            ->finally(function (Batch $batch) use ($notification) {
+                $queuedCount = NotificationToken::where('notification_id', $notification->id)
+                    ->whereIn('status', ['queued', 'processing'])
+                    ->count();
+                $completedCleanly = $queuedCount === 0;
+
                 $notification->update([
-                    'processing_status' => 'completed',
+                    'processing_status' => $completedCleanly ? 'completed' : 'failed',
                     'completed_at' => now(),
                 ]);
 
@@ -534,7 +540,9 @@ class NotificationsManger
                          . "Eligible Devices: {$refreshed->eligible_devices_count}\n"
                          . "Accepted by FCM: {$refreshed->accepted_by_fcm_count}\n"
                          . "Permanent Failed: {$refreshed->permanent_failed_count}\n"
-                         . "Transient Failed: {$refreshed->transient_failed_count}";
+                         . "Transient Failed: {$refreshed->transient_failed_count}\n"
+                         . "Unprocessed: {$queuedCount}\n"
+                         . "Failed Queue Jobs: {$batch->failedJobs}";
                     $teleService->sendMessage('@itcleanstation', $msg);
                 } catch (\Throwable $e) {
                     report($e);

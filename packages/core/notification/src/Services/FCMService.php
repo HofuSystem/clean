@@ -381,8 +381,31 @@ class FCMService
             });
 
             foreach ($chunkResponses as $idx => $response) {
-                $responses[(int) $idx] = $response;
+                if ($response instanceof \Illuminate\Http\Client\Response) {
+                    // Never retain Laravel/Guzzle response objects for the whole
+                    // 50-device job. Their PSR streams may keep sockets/file
+                    // descriptors open until garbage collection, which is fatal
+                    // on shared hosts with a low open-files limit.
+                    $json = $response->json();
+                    $responses[(int) $idx] = [
+                        'successful' => $response->successful(),
+                        'status' => $response->status(),
+                        'json' => is_array($json) ? $json : [],
+                        'body' => substr($response->body(), 0, 1000),
+                    ];
+
+                    try {
+                        $response->toPsrResponse()->getBody()->close();
+                    } catch (\Throwable $e) {
+                        // The response data is already snapshotted. Some stream
+                        // implementations may already be closed by the handler.
+                    }
+                } else {
+                    $responses[(int) $idx] = null;
+                }
             }
+
+            unset($chunkResponses);
         }
 
         $now = now();
@@ -461,8 +484,8 @@ class FCMService
             $errorCode = null;
             $errorMessage = null;
 
-            if ($response instanceof \Illuminate\Http\Client\Response && $response->successful()) {
-                $fcmMsgId = $response->json()['name'] ?? null;
+            if (is_array($response) && ($response['successful'] ?? false)) {
+                $fcmMsgId = $response['json']['name'] ?? null;
                 $acceptedItems[] = [
                     'id' => $tokenId,
                     'token' => $token,
@@ -472,10 +495,10 @@ class FCMService
                     'platform' => $dev['platform'] ?? null,
                     'fcm_message_id' => $fcmMsgId,
                 ];
-            } elseif ($response instanceof \Illuminate\Http\Client\Response) {
-                $json = $response->json();
-                $errorCode = $json['error']['details'][0]['errorCode'] ?? $json['error']['status'] ?? 'HTTP_' . $response->status();
-                $errorMessage = substr($json['error']['message'] ?? $response->body(), 0, 500);
+            } elseif (is_array($response)) {
+                $json = $response['json'] ?? [];
+                $errorCode = $json['error']['details'][0]['errorCode'] ?? $json['error']['status'] ?? 'HTTP_' . ($response['status'] ?? 0);
+                $errorMessage = substr($json['error']['message'] ?? ($response['body'] ?? ''), 0, 500);
 
                 $permanentCodes = ['UNREGISTERED', 'NOT_FOUND', 'INVALID_ARGUMENT'];
                 if (in_array($errorCode, $permanentCodes) || str_contains($errorMessage, 'Requested entity was not found')) {

@@ -286,13 +286,15 @@
                         @php
                             $isCompleted = ($item->processing_status === 'completed');
                             $hasTransientErrors = ($transFailed > 0);
+                            $hasUntouchedQueued = (($untouchedQueued ?? 0) > 0);
+                            $retryableCount = $transFailed + ($untouchedQueued ?? 0);
                             $isQueued = ($item->processing_status === 'queued');
-                            $canShowRetry = ($hasTransientErrors || $isQueued) && !($isCompleted && !$hasTransientErrors);
+                            $canShowRetry = $hasTransientErrors || $hasUntouchedQueued || $isQueued;
                         @endphp
 
                         @if($canShowRetry)
                             <button type="button" class="btn btn-sm btn-light-warning" data-bs-toggle="modal" data-bs-target="#modal-retry-transient" id="btn-retry-transient">
-                                <i class="fas fa-redo me-1"></i> @lang('إعادة محاولة الأخطاء المؤقتة') ({{ number_format($transFailed) }})
+                                <i class="fas fa-redo me-1"></i> @lang('إعادة محاولة الأجهزة غير المعالجة') ({{ number_format($retryableCount) }})
                             </button>
                         @endif
                     </div>
@@ -603,7 +605,7 @@
             </div>
             <div class="modal-body">
                 <p class="fs-6 text-gray-800">
-                    أنت على وشك جدولة إعادة إرسال الإشعار لـ <strong>{{ number_format($transFailed) }}</strong> جهازاً واجهت أخطاء مؤقتة.
+                    أنت على وشك جدولة إعادة إرسال الإشعار لـ <strong>{{ number_format($retryableCount) }}</strong> جهازاً لم تكتمل معالجته.
                 </p>
                 <div class="alert alert-light-info p-3 mb-0 fs-7">
                     <i class="fas fa-shield-alt text-info me-1"></i>
