@@ -446,7 +446,6 @@ class NotificationsController extends Controller
             NotificationToken::whereIn('id', $tokenIds)->update([
                 'status' => 'queued',
                 'queued_at' => now(),
-                'attempts' => DB::raw('attempts + 1'),
             ]);
 
             SendFcmBatchJob::dispatch($notification, $batchArray);

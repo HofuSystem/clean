@@ -120,6 +120,20 @@ class NotificationEventsController extends Controller
                     }
                     $device->update(['last_notification_received_at' => $now, 'last_seen_at' => $now]);
                 } elseif ($eventType === 'opened') {
+                    // Opening a notification is also conclusive proof that it was
+                    // received. Mobile operating systems may not give a terminated
+                    // app enough background time to report the earlier `received`
+                    // event, so backfill it idempotently before recording `opened`.
+                    $receivedUpdated = NotificationToken::whereKey($tokenRecord->id)
+                        ->whereNull('received_at')
+                        ->update([
+                            'received_at' => $now,
+                            'updated_at' => $now,
+                        ]);
+                    if ($receivedUpdated === 1) {
+                        $notification->increment('received_count');
+                    }
+
                     $updated = NotificationToken::whereKey($tokenRecord->id)
                         ->whereNull('opened_at')
                         ->update([

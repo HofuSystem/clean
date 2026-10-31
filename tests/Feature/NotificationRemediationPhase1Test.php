@@ -360,23 +360,39 @@ class NotificationRemediationPhase1Test extends TestCase
         $tokenRecord = NotificationToken::create([
             'topic' => 'direct',
             'token' => $deviceToken,
-            'status' => 'opened',
+            'status' => 'accepted',
             'title' => 'Event order',
             'notification_id' => $notification->id,
             'user_id' => $this->clientUser->id,
             'device_id' => $device->id,
             'installation_id' => $installationId,
             'platform' => 'ios',
-            'opened_at' => now(),
         ]);
 
+        // iOS can open a notification without first waking the terminated app
+        // to report `received`. Opening must backfill both delivery events.
         $response = $this->actingAs($this->clientUser, 'sanctum')->postJson('/api/client/notifications/events', [
+            'notification_id' => $notification->id,
+            'event_type' => 'opened',
+            'installation_id' => $installationId,
+        ]);
+
+        $response->assertStatus(200);
+        $tokenRecord->refresh();
+        $notification->refresh();
+        $this->assertSame('opened', $tokenRecord->status);
+        $this->assertNotNull($tokenRecord->received_at);
+        $this->assertNotNull($tokenRecord->opened_at);
+        $this->assertSame(1, (int) $notification->received_count);
+        $this->assertSame(1, (int) $notification->opened_count);
+
+        $lateReceived = $this->actingAs($this->clientUser, 'sanctum')->postJson('/api/client/notifications/events', [
             'notification_id' => $notification->id,
             'event_type' => 'received',
             'installation_id' => $installationId,
         ]);
 
-        $response->assertStatus(200);
+        $lateReceived->assertStatus(200);
         $this->assertSame('opened', $tokenRecord->fresh()->status);
         $this->assertSame(1, (int) $notification->fresh()->received_count);
     }

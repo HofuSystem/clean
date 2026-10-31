@@ -233,19 +233,19 @@
                         </div>
                         <div class="card-body pt-2">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">@lang('تم الاستلام'):</span>
+                                <span class="text-muted">@lang('استلام مبلّغ من التطبيق'):</span>
                                 <span class="fw-bolder text-dark">{{ $receivedDisplay }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">@lang('تم الفتح'):</span>
+                                <span class="text-muted">@lang('فتح مبلّغ من التطبيق'):</span>
                                 <span class="fw-bolder text-dark">{{ $openedDisplay }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">@lang('معدل الاستلام'):</span>
+                                <span class="text-muted">@lang('معدل الاستلام المبلّغ'):</span>
                                 <span class="fw-bolder text-primary">{{ $deliveryRateDisplay }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span class="text-muted">@lang('معدل الفتح'):</span>
+                                <span class="text-muted">@lang('معدل الفتح المبلّغ'):</span>
                                 <span class="fw-bolder text-success">{{ $openRateDisplay }}</span>
                             </div>
                         </div>
