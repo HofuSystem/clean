@@ -23,12 +23,9 @@ return new class extends Migration
     public function up(): void
     {
         if (DB::getDriverName() !== 'mysql') {
-            // A fresh SQLite test database has no duplicate legacy data. Keep
-            // the schema invariant without executing MySQL-only DELETE JOIN and
-            // SHOW INDEX statements.
-            Schema::table('category_translations', function (Blueprint $table) {
-                $table->unique(['category_id', 'locale']);
-            });
+            // The original create_categories migration already adds this unique
+            // index in a fresh SQLite database. Legacy duplicate cleanup below
+            // uses MySQL-specific SQL and is not needed here.
             return;
         }
 
@@ -89,9 +86,7 @@ return new class extends Migration
     public function down(): void
     {
         if (DB::getDriverName() !== 'mysql') {
-            Schema::table('category_translations', function (Blueprint $table) {
-                $table->dropUnique(['category_id', 'locale']);
-            });
+            // Preserve the index owned by the original create migration.
             return;
         }
 
