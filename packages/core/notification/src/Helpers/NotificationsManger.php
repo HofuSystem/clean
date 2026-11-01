@@ -513,7 +513,7 @@ class NotificationsManger
         }
 
         // Keep each job bounded on shared hosts with a low open-file limit.
-        $deviceChunks = array_chunk($eligibleDevices, 25);
+        $deviceChunks = array_chunk($eligibleDevices, 5);
         $batchJobs = [];
         foreach ($deviceChunks as $chunk) {
             $batchJobs[] = new SendFcmBatchJob($notification, $chunk);

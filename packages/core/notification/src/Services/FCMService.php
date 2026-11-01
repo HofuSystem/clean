@@ -276,7 +276,7 @@ class FCMService
     }
 
     /**
-     * Send direct HTTP v1 push notifications to a batch of devices concurrently via Http::pool.
+     * Send direct HTTP v1 push notifications with one live socket at a time.
      *
      * @param Notification $notification
      * @param array $devicesBatch Array of [device_id, user_id, token, platform, installation_id, app_context]
@@ -350,84 +350,67 @@ class FCMService
 
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
-        // 3. Concurrent requests with a strict per-worker socket limit. A large
-        // campaign can run many queue jobs together; pooling every device in every
-        // job at once previously exhausted the server's open-file limit.
+        // 3. A pool can retain multiple curl sockets across waves in a long-lived
+        // queue worker. Production has a low open-file limit, so release each
+        // response before opening the next connection.
         $responses = [];
-        $httpConcurrency = max(1, (int) config('notification.fcm_http_concurrency', 5));
-
-        foreach (array_chunk($filteredBatch, $httpConcurrency, true) as $httpChunk) {
+        foreach ($filteredBatch as $idx => $dev) {
             // Persist the boundary BEFORE making HTTP calls. If PHP is killed
-            // during this wave, these deliveries are uncertain, not untouched.
+            // during this request, this delivery is uncertain, not untouched.
             // Only genuinely untouched queued rows may be retried automatically.
-            $httpTokenIds = array_filter(array_column($httpChunk, 'notification_token_id'));
-            if ($httpTokenIds) {
+            if (!empty($dev['notification_token_id'])) {
                 NotificationToken::where('notification_id', $notification->id)
-                    ->whereIn('id', $httpTokenIds)
+                    ->where('id', $dev['notification_token_id'])
                     ->where('status', 'queued')
                     ->update(['status' => 'processing', 'updated_at' => now()]);
             }
-            $chunkResponses = Http::pool(function ($pool) use ($httpChunk, $url, $accessToken, $notification, $payload) {
-                foreach ($httpChunk as $idx => $dev) {
-                    $body = [
-                        'message' => [
-                            'token' => $dev['token'],
-                            'notification' => [
-                                'title' => (string)$notification->title,
-                                'body' => (string)$notification->body,
-                            ],
-                            // Keep every delivery attempt for the same campaign under one
-                            // stable system notification without breaking legacy apps.
-                            'android' => [
-                                'collapse_key' => 'notification-' . $notification->id,
-                                'notification' => [
-                                    'tag' => 'notification-' . $notification->id,
-                                ],
-                            ],
-                            'apns' => [
-                                'headers' => [
-                                    'apns-collapse-id' => 'notification-' . $notification->id,
-                                ],
-                            ],
-                        ]
-                    ];
-                    if (!empty($payload)) {
-                        $body['message']['data'] = $payload;
-                    }
+            $body = [
+                'message' => [
+                    'token' => $dev['token'],
+                    'notification' => [
+                        'title' => (string)$notification->title,
+                        'body' => (string)$notification->body,
+                    ],
+                    'android' => [
+                        'collapse_key' => 'notification-' . $notification->id,
+                        'notification' => ['tag' => 'notification-' . $notification->id],
+                    ],
+                    'apns' => [
+                        'headers' => ['apns-collapse-id' => 'notification-' . $notification->id],
+                    ],
+                ],
+            ];
+            if (!empty($payload)) {
+                $body['message']['data'] = $payload;
+            }
 
-                    $pool->as((string) $idx)->withHeaders([
-                        'Authorization' => "Bearer {$accessToken}",
-                        'Content-Type' => 'application/json',
-                    ])->timeout(10)->connectTimeout(4)->post($url, $body);
-                }
-            });
+            $response = null;
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => "Bearer {$accessToken}",
+                    'Content-Type' => 'application/json',
+                    'Connection' => 'close',
+                ])->timeout(10)->connectTimeout(4)->post($url, $body);
 
-            foreach ($chunkResponses as $idx => $response) {
+                $json = $response->json();
+                $responses[$idx] = [
+                    'successful' => $response->successful(),
+                    'status' => $response->status(),
+                    'json' => is_array($json) ? $json : [],
+                    'body' => substr($response->body(), 0, 1000),
+                ];
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                $responses[$idx] = null;
+            } finally {
                 if ($response instanceof \Illuminate\Http\Client\Response) {
-                    // Never retain Laravel/Guzzle response objects for the whole
-                    // 50-device job. Their PSR streams may keep sockets/file
-                    // descriptors open until garbage collection, which is fatal
-                    // on shared hosts with a low open-files limit.
-                    $json = $response->json();
-                    $responses[(int) $idx] = [
-                        'successful' => $response->successful(),
-                        'status' => $response->status(),
-                        'json' => is_array($json) ? $json : [],
-                        'body' => substr($response->body(), 0, 1000),
-                    ];
-
                     try {
                         $response->toPsrResponse()->getBody()->close();
                     } catch (\Throwable $e) {
-                        // The response data is already snapshotted. Some stream
-                        // implementations may already be closed by the handler.
+                        // Some handlers already close the stream after reading.
                     }
-                } else {
-                    $responses[(int) $idx] = null;
                 }
             }
-
-            unset($response, $chunkResponses);
+            unset($response, $body);
             gc_collect_cycles();
         }
 

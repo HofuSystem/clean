@@ -427,6 +427,30 @@ class NotificationPerformanceRemediationTest extends TestCase
         $this->assertEquals(0, $token->attempts);
     }
 
+    public function test_sender_marks_only_current_device_in_flight_before_http()
+    {
+        $campaign = $this->createCampaign();
+        [, $firstId, $firstItem] = $this->createDeviceAndToken($campaign, $this->testUser);
+        [, $secondId, $secondItem] = $this->createDeviceAndToken($campaign, $this->testUser);
+
+        $statusesAtSend = [];
+        Http::fake(function () use (&$statusesAtSend, $firstId, $secondId) {
+            $statusesAtSend[] = DB::table('notification_tokens')
+                ->whereIn('id', [$firstId, $secondId])
+                ->pluck('status', 'id')->toArray();
+            return Http::response(['name' => 'projects/test/messages/sent'], 200);
+        });
+
+        FCMService::getInstance()->sendBatchDirect($campaign, [$firstItem, $secondItem]);
+
+        $this->assertCount(2, $statusesAtSend);
+        $this->assertEquals('processing', $statusesAtSend[0][$firstId]);
+        $this->assertEquals('queued', $statusesAtSend[0][$secondId]);
+        $this->assertEquals('processing', $statusesAtSend[1][$secondId]);
+        $this->assertEquals(2, DB::table('notification_tokens')
+            ->whereIn('id', [$firstId, $secondId])->where('status', 'accepted')->count());
+    }
+
     /**
      * 9. Atomic attempts under two workers / parallel execution
      */

@@ -440,7 +440,7 @@ class NotificationsController extends Controller
             );
         }
 
-        $chunks = $retryTokens->chunk(25);
+        $chunks = $retryTokens->chunk(5);
         $retryJobs = [];
         foreach ($chunks as $chunk) {
             $batchArray = [];
