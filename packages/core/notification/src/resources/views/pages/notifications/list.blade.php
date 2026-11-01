@@ -205,6 +205,7 @@
                                             id="processing_status">
                                             <option value=""> @lang("select processing_status")</option>
                                             <option value="completed" @selected("completed" == request("processing_status"))>مكتمل</option>
+                                            <option value="partial" @selected("partial" == request("processing_status"))>{{ app()->getLocale() === 'ar' ? 'مكتمل جزئيًا — يحتاج استكمال' : 'Partially delivered — needs follow-up' }}</option>
                                             <option value="processing" @selected("processing" == request("processing_status"))>جاري الإرسال</option>
                                             <option value="queued" @selected("queued" == request("processing_status"))>في الطابور</option>
                                             <option value="failed" @selected("failed" == request("processing_status"))>فشل</option>

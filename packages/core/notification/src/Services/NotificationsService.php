@@ -129,7 +129,10 @@ class NotificationsService
             'users as pending_count' => function ($query) {
                 $query->where('users_notifications.notifications_type', Notification::class)
                       ->where('users_notifications.status', 'pending');
-            }
+            },
+            'notificationTokens as retryable_queued_count' => function ($query) {
+                $query->where('status', 'queued')->where('attempts', 0);
+            },
         ])
         ->search()->dataTable()->get();
         

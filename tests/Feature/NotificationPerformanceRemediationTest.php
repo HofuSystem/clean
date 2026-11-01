@@ -408,6 +408,25 @@ class NotificationPerformanceRemediationTest extends TestCase
         $this->assertEquals(1, $tok->attempts);
     }
 
+    public function test_in_flight_wave_is_not_sent_again_after_job_restarts()
+    {
+        $campaign = $this->createCampaign();
+        [, $tokenId, $item] = $this->createDeviceAndToken($campaign, $this->testUser, 'processing');
+
+        $httpCalls = 0;
+        Http::fake(function () use (&$httpCalls) {
+            $httpCalls++;
+            return Http::response(['name' => 'unexpected'], 200);
+        });
+
+        FCMService::getInstance()->sendBatchDirect($campaign, [$item], true);
+
+        $this->assertEquals(0, $httpCalls);
+        $token = DB::table('notification_tokens')->find($tokenId);
+        $this->assertEquals('processing', $token->status);
+        $this->assertEquals(0, $token->attempts);
+    }
+
     /**
      * 9. Atomic attempts under two workers / parallel execution
      */

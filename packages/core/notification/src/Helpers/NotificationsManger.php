@@ -439,6 +439,11 @@ class NotificationsManger
             $payloadChanged = true;
         }
 
+        // Version 2 marks an HTTP wave before sending. Older campaigns cannot
+        // prove that queued/attempts=0 means no request reached FCM.
+        $payload['delivery_attempt_tracking_version'] = 2;
+        $payloadChanged = true;
+
         if ($payloadChanged) {
             $notification->update(['payload' => json_encode($payload)]);
         }
@@ -507,8 +512,8 @@ class NotificationsManger
             return;
         }
 
-        // Larger campaigns: dispatch batches of 50 devices to the queue via Bus::batch
-        $deviceChunks = array_chunk($eligibleDevices, 50);
+        // Keep each job bounded on shared hosts with a low open-file limit.
+        $deviceChunks = array_chunk($eligibleDevices, 25);
         $batchJobs = [];
         foreach ($deviceChunks as $chunk) {
             $batchJobs[] = new SendFcmBatchJob($notification, $chunk);
@@ -521,10 +526,15 @@ class NotificationsManger
                 $queuedCount = NotificationToken::where('notification_id', $notification->id)
                     ->whereIn('status', ['queued', 'processing'])
                     ->count();
-                $completedCleanly = $queuedCount === 0;
+                $acceptedCount = NotificationToken::where('notification_id', $notification->id)
+                    ->whereIn('status', ['accepted', 'received', 'opened'])
+                    ->count();
+                $campaignStatus = $queuedCount === 0
+                    ? 'completed'
+                    : ($acceptedCount > 0 ? 'partial' : 'failed');
 
                 $notification->update([
-                    'processing_status' => $completedCleanly ? 'completed' : 'failed',
+                    'processing_status' => $campaignStatus,
                     'completed_at' => now(),
                 ]);
 
@@ -541,6 +551,7 @@ class NotificationsManger
                          . "Accepted by FCM: {$refreshed->accepted_by_fcm_count}\n"
                          . "Permanent Failed: {$refreshed->permanent_failed_count}\n"
                          . "Transient Failed: {$refreshed->transient_failed_count}\n"
+                         . "Status: {$campaignStatus}\n"
                          . "Unprocessed: {$queuedCount}\n"
                          . "Failed Queue Jobs: {$batch->failedJobs}";
                     $teleService->sendMessage('@itcleanstation', $msg);

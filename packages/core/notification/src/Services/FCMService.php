@@ -282,7 +282,7 @@ class FCMService
      * @param array $devicesBatch Array of [device_id, user_id, token, platform, installation_id, app_context]
      * @return array Batch execution summary
      */
-    public function sendBatchDirect(Notification $notification, array $devicesBatch): array
+    public function sendBatchDirect(Notification $notification, array $devicesBatch, bool $skipInFlight = false): array
     {
         if (empty($devicesBatch)) {
             return ['accepted' => 0, 'permanent_failed' => 0, 'transient_failed' => 0];
@@ -313,10 +313,22 @@ class FCMService
                 ->toArray();
         }
 
+        $inFlightIds = [];
+        if ($skipInFlight) {
+            $tokenIds = array_filter(array_column($devicesBatch, 'notification_token_id'));
+            if ($tokenIds) {
+                $inFlightIds = NotificationToken::where('notification_id', $notification->id)
+                    ->whereIn('id', $tokenIds)
+                    ->where('status', 'processing')
+                    ->pluck('id')->flip()->toArray();
+            }
+        }
+
         $filteredBatch = [];
         foreach ($devicesBatch as $dev) {
             $tok = $dev['token'] ?? null;
-            if (!empty($tok) && !isset($alreadyAcceptedTokens[$tok])) {
+            $tokenId = $dev['notification_token_id'] ?? null;
+            if (!empty($tok) && !isset($alreadyAcceptedTokens[$tok]) && !isset($inFlightIds[$tokenId])) {
                 $filteredBatch[] = $dev;
             }
         }
@@ -342,9 +354,19 @@ class FCMService
         // campaign can run many queue jobs together; pooling every device in every
         // job at once previously exhausted the server's open-file limit.
         $responses = [];
-        $httpConcurrency = max(1, (int) config('notification.fcm_http_concurrency', 10));
+        $httpConcurrency = max(1, (int) config('notification.fcm_http_concurrency', 5));
 
         foreach (array_chunk($filteredBatch, $httpConcurrency, true) as $httpChunk) {
+            // Persist the boundary BEFORE making HTTP calls. If PHP is killed
+            // during this wave, these deliveries are uncertain, not untouched.
+            // Only genuinely untouched queued rows may be retried automatically.
+            $httpTokenIds = array_filter(array_column($httpChunk, 'notification_token_id'));
+            if ($httpTokenIds) {
+                NotificationToken::where('notification_id', $notification->id)
+                    ->whereIn('id', $httpTokenIds)
+                    ->where('status', 'queued')
+                    ->update(['status' => 'processing', 'updated_at' => now()]);
+            }
             $chunkResponses = Http::pool(function ($pool) use ($httpChunk, $url, $accessToken, $notification, $payload) {
                 foreach ($httpChunk as $idx => $dev) {
                     $body = [
@@ -405,7 +427,8 @@ class FCMService
                 }
             }
 
-            unset($chunkResponses);
+            unset($response, $chunkResponses);
+            gc_collect_cycles();
         }
 
         $now = now();

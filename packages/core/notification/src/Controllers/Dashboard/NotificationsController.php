@@ -401,16 +401,31 @@ class NotificationsController extends Controller
         }
 
         $notification = Notification::findOrFail($id);
+        if (in_array($notification->processing_status, ['queued', 'processing'], true)) {
+            return $this->returnErrorMessage(
+                trans('Wait until the current campaign send has finished before retrying.'),
+                [],
+                [],
+                422
+            );
+        }
+
+        $retryPayload = is_array($notification->payload)
+            ? $notification->payload
+            : (json_decode($notification->payload ?? '{}', true) ?: []);
+        $safeQueuedRetry = (int) ($retryPayload['delivery_attempt_tracking_version'] ?? 0) >= 2;
 
         $retryTokens = NotificationToken::where('notification_id', $notification->id)
-            ->where(function ($query) {
-                $query->where('status', 'transient_failed')
-                    // These rows were assigned to a queue job that died before
-                    // the FCM service started. attempts=0 proves no send was
-                    // attempted, so retrying cannot duplicate the notification.
-                    ->orWhere(function ($queued) {
+            ->where(function ($query) use ($safeQueuedRetry) {
+                $query->where('status', 'transient_failed');
+                // New batches move rows to processing before the first HTTP
+                // request. A queued row is therefore safe to retry only
+                // when it has never entered an HTTP wave.
+                if ($safeQueuedRetry) {
+                    $query->orWhere(function ($queued) {
                         $queued->where('status', 'queued')->where('attempts', 0);
                     });
+                }
             })
             ->with('device')
             ->get();
@@ -425,13 +440,12 @@ class NotificationsController extends Controller
             );
         }
 
-        $chunks = $retryTokens->chunk(50);
+        $chunks = $retryTokens->chunk(25);
+        $retryJobs = [];
         foreach ($chunks as $chunk) {
             $batchArray = [];
-            $tokenIds = [];
 
             foreach ($chunk as $tokenModel) {
-                $tokenIds[] = $tokenModel->id;
                 $batchArray[] = [
                     'notification_token_id' => $tokenModel->id,
                     'device_id' => $tokenModel->device_id,
@@ -443,13 +457,30 @@ class NotificationsController extends Controller
                 ];
             }
 
-            NotificationToken::whereIn('id', $tokenIds)->update([
-                'status' => 'queued',
-                'queued_at' => now(),
-            ]);
-
-            SendFcmBatchJob::dispatch($notification, $batchArray);
+            $retryJobs[] = new SendFcmBatchJob($notification, $batchArray);
         }
+
+        DB::transaction(function () use ($notification, $retryTokens, $retryJobs) {
+            NotificationToken::where('notification_id', $notification->id)
+                ->whereIn('id', $retryTokens->pluck('id'))
+                ->update(['status' => 'processing', 'updated_at' => now()]);
+            $notification->update(['processing_status' => 'processing', 'completed_at' => null]);
+
+            \Illuminate\Support\Facades\Bus::batch($retryJobs)
+                ->name('Notification-Retry-' . $notification->id)
+                ->allowFailures()
+                ->finally(function () use ($notification) {
+                    $remaining = NotificationToken::where('notification_id', $notification->id)
+                        ->whereIn('status', ['queued', 'processing'])->count();
+                    $accepted = NotificationToken::where('notification_id', $notification->id)
+                        ->whereIn('status', ['accepted', 'received', 'opened'])->count();
+                    $notification->update([
+                        'processing_status' => $remaining === 0 ? 'completed' : ($accepted > 0 ? 'partial' : 'failed'),
+                        'completed_at' => now(),
+                    ]);
+                })
+                ->dispatch();
+        });
 
         Log::info("Admin retried transient notification failures", [
             'admin_id' => auth()->id(),

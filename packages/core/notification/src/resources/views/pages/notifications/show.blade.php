@@ -105,6 +105,8 @@
                                         @else
                                             <span class="badge bg-label-success badge-light-success">مكتمل</span>
                                         @endif
+                                    @elseif($pStatus === 'partial')
+                                        <span class="badge bg-label-warning badge-light-warning">{{ app()->getLocale() === 'ar' ? 'مكتمل جزئيًا — يحتاج استكمال' : 'Partially delivered — needs follow-up' }}</span>
                                     @elseif($pStatus === 'processing')
                                         <span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
                                     @elseif($pStatus === 'queued')
@@ -287,15 +289,22 @@
                             $isCompleted = ($item->processing_status === 'completed');
                             $hasTransientErrors = ($transFailed > 0);
                             $hasUntouchedQueued = (($untouchedQueued ?? 0) > 0);
-                            $retryableCount = $transFailed + ($untouchedQueued ?? 0);
-                            $isQueued = ($item->processing_status === 'queued');
-                            $canShowRetry = $hasTransientErrors || $hasUntouchedQueued || $isQueued;
+                            $retryPayload = is_array($item->payload) ? $item->payload : (json_decode($item->payload ?? '{}', true) ?: []);
+                            $safeQueuedRetry = (int) ($retryPayload['delivery_attempt_tracking_version'] ?? 0) >= 2;
+                            $retryableCount = $transFailed + ($safeQueuedRetry ? ($untouchedQueued ?? 0) : 0);
+                            $canShowRetry = !in_array($item->processing_status, ['queued', 'processing'], true)
+                                && ($hasTransientErrors || ($safeQueuedRetry && $hasUntouchedQueued));
                         @endphp
 
                         @if($canShowRetry)
                             <button type="button" class="btn btn-sm btn-light-warning" data-bs-toggle="modal" data-bs-target="#modal-retry-transient" id="btn-retry-transient">
                                 <i class="fas fa-redo me-1"></i> @lang('إعادة محاولة الأجهزة غير المعالجة') ({{ number_format($retryableCount) }})
                             </button>
+                        @endif
+                        @if($hasUntouchedQueued && !$safeQueuedRetry)
+                            <span class="badge bg-label-warning badge-light-warning">
+                                {{ app()->getLocale() === 'ar' ? 'حالة الأجهزة المعلقة غير مؤكدة؛ راجع سجل الإرسال قبل إعادة المحاولة' : 'Queued deliveries are uncertain; inspect send logs before retrying' }}
+                            </span>
                         @endif
                     </div>
 

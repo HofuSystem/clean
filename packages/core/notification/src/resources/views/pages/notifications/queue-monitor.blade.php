@@ -177,6 +177,8 @@
                                                 @else
                                                     <span class="badge bg-label-success badge-light-success">مكتمل</span>
                                                 @endif
+                                            @elseif($st === 'partial')
+                                                <span class="badge bg-label-warning badge-light-warning">{{ app()->getLocale() === 'ar' ? 'مكتمل جزئيًا — يحتاج استكمال' : 'Partially delivered — needs follow-up' }}</span>
                                             @elseif($st === 'processing')
                                                 <span class="badge bg-label-primary badge-light-primary"><i class="fas fa-spinner fa-spin me-1"></i>جاري</span>
                                             @elseif($st === 'queued')

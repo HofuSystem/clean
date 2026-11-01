@@ -784,6 +784,28 @@ class NotificationRemediationPhase1Test extends TestCase
         $this->assertStringNotContainsString('قُبل من FCM', $legacyResource['sent_count']);
     }
 
+    public function test_partially_delivered_campaign_is_not_reported_as_total_failure()
+    {
+        app()->setLocale('en');
+        $notification = Notification::create([
+            'title' => 'Partial Campaign',
+            'body' => 'Partial Body',
+            'for' => 'all',
+            'purpose' => 'marketing',
+            'types' => json_encode(['apps']),
+            'processing_status' => 'partial',
+            'accepted_by_fcm_count' => 2308,
+            'eligible_devices_count' => 2409,
+            'payload' => json_encode(['delivery_channel' => 'direct_fcm']),
+        ]);
+
+        $resource = (new NotificationsResource($notification))
+            ->toArray(Request::create('/admin/notifications'));
+
+        $this->assertStringContainsString('Partially delivered', $resource['processing_status']);
+        $this->assertEquals(2308, $resource['accepted_by_fcm']);
+    }
+
     public function test_test_database_isolation_and_events_ownership_preserved()
     {
         // 1. Verify test database is isolated sqlite

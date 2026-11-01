@@ -24,7 +24,7 @@ return [
     // Bound concurrent HTTP sockets per queue worker. Large campaigns are
     // already split into jobs; an unbounded pool inside every job can exhaust
     // the server file-descriptor limit when several workers run together.
-    'fcm_http_concurrency' => max(1, (int) env('NOTIFICATION_FCM_HTTP_CONCURRENCY', 10)),
+    'fcm_http_concurrency' => max(1, (int) env('NOTIFICATION_FCM_HTTP_CONCURRENCY', 5)),
 
     'permission_mode' => env('NOTIFICATION_PERMISSION_MODE', 'observe'), // 'observe' | 'enforce'
 

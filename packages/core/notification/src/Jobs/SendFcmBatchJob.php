@@ -54,7 +54,7 @@ class SendFcmBatchJob implements ShouldQueue
 
             if (!empty($tokenRecordIds)) {
                 NotificationToken::where('notification_id', $this->notification->id)
-                    ->where('status', 'queued')
+                    ->whereIn('status', ['queued', 'processing'])
                     ->whereIn('id', $tokenRecordIds)
                     ->update([
                         'status' => 'skipped_by_feature_flag',
@@ -82,7 +82,7 @@ class SendFcmBatchJob implements ShouldQueue
 
             if (!empty($validPairs) || !empty($tokensOnly)) {
                 NotificationToken::where('notification_id', $this->notification->id)
-                    ->where('status', 'queued')
+                    ->whereIn('status', ['queued', 'processing'])
                     ->where(function ($query) use ($validPairs, $tokensOnly) {
                         foreach ($validPairs as $pair) {
                             $query->orWhere(function ($sub) use ($pair) {
@@ -114,6 +114,14 @@ class SendFcmBatchJob implements ShouldQueue
         }
 
         $this->executionStatus = 'executed';
-        FCMService::getInstance()->sendBatchDirect($this->notification, $this->devicesBatch);
+        $payload = is_array($this->notification->payload)
+            ? $this->notification->payload
+            : (json_decode($this->notification->payload ?? '{}', true) ?: []);
+        $hasAttemptTracking = (int) ($payload['delivery_attempt_tracking_version'] ?? 0) >= 2;
+        FCMService::getInstance()->sendBatchDirect(
+            $this->notification,
+            $this->devicesBatch,
+            $hasAttemptTracking && $this->attempts() > 1
+        );
     }
 }

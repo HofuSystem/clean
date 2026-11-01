@@ -19,11 +19,14 @@ class NotificationsResource extends JsonResource
         $actions = $this->actions;
         $isCompleted = ($this->processing_status === 'completed');
         $transFailed = (int) ($this->transient_failed_count ?? 0);
-        $isQueued = ($this->processing_status === 'queued');
-        $canRetry = ($transFailed > 0) || ($isQueued) || (!$isCompleted && ($this->pending_count ?? 0) > 0);
+        $payload = is_array($this->payload) ? $this->payload : (json_decode($this->payload ?? '{}', true) ?: []);
+        $safeQueuedRetry = (int) ($payload['delivery_attempt_tracking_version'] ?? 0) >= 2;
+        $retryableQueued = $safeQueuedRetry ? (int) ($this->retryable_queued_count ?? 0) : 0;
+        $canRetry = !in_array($this->processing_status, ['queued', 'processing'], true)
+            && ($transFailed > 0 || (!$isCompleted && $retryableQueued > 0));
 
-        if ($canRetry && (($this->pending_count ?? 0) > 0 || $transFailed > 0)) {
-            $countLabel = $transFailed > 0 ? $transFailed : ($this->pending_count ?? 0);
+        if ($canRetry) {
+            $countLabel = $transFailed + $retryableQueued;
             $btn = '<a href="javascript:void(0)" class="btn-operation d-flex justify-content-center align-items-center mx-1 resend-pending-btn" data-id="'.$this->id.'" title="إعادة إرسال للمُعلقين ('.$countLabel.')"><i class="fas fa-sync"></i> <span>إعادة إرسال</span></a>';
             $actions = str_replace('</div>', $btn . '</div>', $actions);
         }
@@ -31,6 +34,7 @@ class NotificationsResource extends JsonResource
         // Status badge
         $status = $this->processing_status ?: 'completed';
         $statusBadges = [
+            'partial' => '<span class="badge bg-label-warning badge-light-warning"><i class="fas fa-exclamation-circle me-1"></i>' . (app()->getLocale() === 'ar' ? 'مكتمل جزئيًا — يحتاج استكمال' : 'Partially delivered — needs follow-up') . '</span>',
             'completed' => '<span class="badge bg-label-success badge-light-success"><i class="fas fa-check-circle me-1"></i>مكتمل</span>',
             'processing' => '<span class="badge bg-label-info badge-light-info"><i class="fas fa-spinner fa-spin me-1"></i>جاري الإرسال</span>',
             'queued' => '<span class="badge bg-label-warning badge-light-warning"><i class="fas fa-clock me-1"></i>في الطابور</span>',
