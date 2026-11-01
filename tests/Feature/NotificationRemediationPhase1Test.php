@@ -7,6 +7,8 @@ use Core\Notification\Helpers\NotificationsManger;
 use Core\Notification\Jobs\SendFcmBatchJob;
 use Core\Notification\DataResources\NotificationsResource;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Http\Request;
 use Core\Notification\Models\BannerNotification;
 use Core\Notification\Models\Notification;
@@ -28,6 +30,13 @@ class NotificationRemediationPhase1Test extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Never let a feature test authenticate with production FCM or send
+        // a push to a shared legacy topic when run on a deployed server.
+        Cache::forever('fcm_config_file', []);
+        Http::fake();
+        Http::preventStrayRequests();
+        Queue::fake();
 
         // Ensure roles exist
         Role::firstOrCreate(['name' => 'client', 'guard_name' => 'web']);
