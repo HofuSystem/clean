@@ -45,10 +45,6 @@ return new class extends Migration
 
     private function indexExists(string $table, string $indexName): bool
     {
-        $indexes = \Illuminate\Support\Facades\DB::select(
-            "SHOW INDEX FROM `{$table}` WHERE Key_name = ?",
-            [$indexName]
-        );
-        return count($indexes) > 0;
+        return Schema::hasIndex($table, $indexName);
     }
 };
