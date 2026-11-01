@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('wallet_transactions', function (Blueprint $table) {
             //
-            $table->longText('notes');
+            $table->longText('notes')->nullable();
         });
     }
 
