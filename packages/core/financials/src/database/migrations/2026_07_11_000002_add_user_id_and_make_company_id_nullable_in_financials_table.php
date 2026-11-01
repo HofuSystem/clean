@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('financials', function (Blueprint $table) {
-            $table->dropForeign('b2b_financials_company_id_foreign');
+            // SQLite identifies foreign keys by their columns after a table rename.
+            $table->dropForeign(
+                Schema::getConnection()->getDriverName() === 'sqlite'
+                    ? ['company_id']
+                    : 'b2b_financials_company_id_foreign'
+            );
         });
 
         Schema::table('financials', function (Blueprint $table) {
