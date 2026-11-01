@@ -127,9 +127,7 @@ class NotificationPerformanceRemediationTest extends TestCase
      */
     public function test_01_fifty_accepted_devices()
     {
-        Http::fake([
-            'https://fcm.googleapis.com/*' => Http::response(['name' => 'projects/test/messages/msg_accepted'], 200),
-        ]);
+        Http::fake(fn () => Http::response(['name' => 'projects/test/messages/msg_accepted'], 200));
 
         $campaign = $this->createCampaign();
         $devicesBatch = [];
@@ -275,9 +273,7 @@ class NotificationPerformanceRemediationTest extends TestCase
      */
     public function test_04_same_campaign_two_batches()
     {
-        Http::fake([
-            'https://fcm.googleapis.com/*' => Http::response(['name' => 'projects/test/messages/msg_ok'], 200),
-        ]);
+        Http::fake(fn () => Http::response(['name' => 'projects/test/messages/msg_ok'], 200));
 
         $campaign = $this->createCampaign();
 
@@ -472,9 +468,7 @@ class NotificationPerformanceRemediationTest extends TestCase
      */
     public function test_10_campaign_counters_equal_token_result_counts()
     {
-        Http::fake([
-            'https://fcm.googleapis.com/*' => Http::response(['name' => 'projects/test/messages/reconcile'], 200),
-        ]);
+        Http::fake(fn () => Http::response(['name' => 'projects/test/messages/reconcile'], 200));
 
         $campaign = $this->createCampaign();
         $batch = [];
