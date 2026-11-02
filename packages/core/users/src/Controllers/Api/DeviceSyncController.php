@@ -147,7 +147,7 @@ class DeviceSyncController extends Controller
                     'os_version' => $request->os_version,
                     'device_model' => $request->device_model,
                 ]);
-            });
+            }, 3);
 
             if ($device === false) {
                 return $this->returnErrorMessage(
