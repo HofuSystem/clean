@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Profile\EditProfileRequest;
+use Core\Users\Services\LegacyDeviceRegistrationService;
 
 
 /**
@@ -43,7 +44,7 @@ class UserController extends Controller
 
 
             if ($request->device_token) {
-                $user->devices()->firstOrCreate($request->only(['device_token']) + ['type' => 'ios']);
+                app(LegacyDeviceRegistrationService::class)->register($user, 'ios', $request->device_token, 'client');
             }
             DB::commit();
             return (new UserProfileResource($user))->additional(['status' => 'success', 'message' => $msg]);
@@ -94,7 +95,8 @@ class UserController extends Controller
             return $this->returnErrorMessage(trans('Unauthenticated'), [], [], 401);
         }
         if($request->device_token && $request->type){
-            $user->devices()->updateOrCreate(['type' => $request->type],['device_token' => $request->device_token] );  
+            $context = $user->hasRole('driver') ? 'driver' : ($user->hasRole('technical') ? 'technical' : 'client');
+            app(LegacyDeviceRegistrationService::class)->register($user, $request->type, $request->device_token, $context);
         };        
         return $this->returnData(trans('update was completed'),['status' => 'success', 'data' => null], 200);
     }

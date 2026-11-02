@@ -24,6 +24,7 @@ use Core\Users\Requests\Api\ReferralUpdateRequest;
 use Core\Users\Requests\Api\ResendCodeRequest;
 use Core\Users\Requests\Api\UpdateLocationRequest;
 use Core\Users\Requests\Api\UpdateQrCodeRequest;
+use Core\Users\Services\LegacyDeviceRegistrationService;
 use Google\Service\CloudBuild\EmptyDirVolumeSource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -116,12 +117,7 @@ class AuthenticationController extends Controller
                 return $this->returnErrorMessage(trans('password is incorrect'));
             }
             if ($request->device_token) {
-                Device::updateOrCreate([
-                    'user_id' => $user->id,
-                    'type' => $request->type,
-                ], [
-                    'device_token' => $request->device_token
-                ]);
+                app(LegacyDeviceRegistrationService::class)->register($user, $request->type, $request->device_token, 'client');
             }
             $user->token = $user->createToken('login')->plainTextToken;
             return $this->returnData(trans('user verified'), ['data' => new UserProfileResource($user)]);
@@ -151,12 +147,7 @@ class AuthenticationController extends Controller
             ]);
         }
         if ($request->device_token) {
-            Device::updateOrCreate([
-                'user_id' => $user->id,
-                'type' => $request->type,
-            ], [
-                'device_token' => $request->device_token
-            ]);
+            app(LegacyDeviceRegistrationService::class)->register($user, $request->type, $request->device_token, 'client');
         }
 
         $langHeader = $request->header('Accept-Language') ?: $request->input('default_language');
@@ -318,12 +309,7 @@ class AuthenticationController extends Controller
             $user->profile()->updateOrCreate(['user_id' => $user->id], Arr::only($request->validated(), $profileData));
 
             if ($request->device_token) {
-                Device::updateOrCreate([
-                    'user_id' => $user->id,
-                    'type' => 'ios',
-                ], [
-                    'device_token' => $request->device_token
-                ]);
+                app(LegacyDeviceRegistrationService::class)->register($user, 'ios', $request->device_token, 'client');
             }
             if ($userHasNotProfile) {
                 $welcomeNotificationTitle = SettingsService::getDataBaseSetting('welcome_notification_title');

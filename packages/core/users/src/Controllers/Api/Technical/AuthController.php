@@ -7,6 +7,7 @@ use Core\Settings\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Core\Users\DataResources\ProviderResource;
 use Core\Users\Models\Device;
+use Core\Users\Services\LegacyDeviceRegistrationService;
 use Core\Users\Requests\Api\EditProfileRequest;
 use Core\Users\Requests\Api\ProviderLoginRequest;
 use Illuminate\Support\Arr;
@@ -55,13 +56,7 @@ class AuthController extends Controller
         if ($user->is_ban == true)
         return $this->returnErrorMessage(trans('banned message'),[],[],422);
         if ($request->type && $request->device_token) {
-            Device::updateOrCreate([
-                'user_id' => $user->id,
-                'type' => $request->type,
-            ],[
-                'device_token' => $request->device_token
-            ]);
-
+            app(LegacyDeviceRegistrationService::class)->register($user, $request->type, $request->device_token, 'technical');
         }
         // Generate token
         $user->token = $user->createToken('technical-login')->plainTextToken;
@@ -91,12 +86,7 @@ class AuthController extends Controller
                 //send notification with msg
             }
             if ($request->device_token) {
-                Device::updateOrCreate([
-                    'user_id' => $user->id,
-                    'type' => 'ios',
-                ],[
-                    'device_token' => $request->device_token
-                ]);
+                app(LegacyDeviceRegistrationService::class)->register($user, 'ios', $request->device_token, 'technical');
             }
             \DB::commit();
             return $this->returnData(trans('profile updated'), ['data' => new ProviderResource($user)]);

@@ -132,6 +132,7 @@ class FCMService
             }
 
             $notWorkingTokens = [];
+            $invalidTokens = [];
             $workingTokens = [];
             $chunks = array_chunk($tokens, 1000);
             foreach ($chunks as $chunk) {
@@ -139,6 +140,12 @@ class FCMService
                 foreach ($registerTokensResult as $index => $result) {
                     if (!empty($result)) {
                         $notWorkingTokens[] = $chunk[$index];
+                        // Topic or service errors do not establish that an FCM
+                        // registration token is invalid for direct delivery.
+                        $error = strtoupper((string) (is_array($result) ? ($result['error'] ?? '') : ''));
+                        if (in_array($error, ['NOT_FOUND', 'UNREGISTERED', 'INVALID_REGISTRATION'], true)) {
+                            $invalidTokens[] = $chunk[$index];
+                        }
                     } else {
                         $workingTokens[] = ['token' => $chunk[$index], 'topic' => $customTopic, 'created_at' => now(), 'updated_at' => now()];
                     }
@@ -153,8 +160,8 @@ class FCMService
             $this->manageTopicSubscription('remove', $notWorkingTokens, $customTopic, $accessToken);
 
             // Mark invalid tokens instead of destructive forceDelete
-            if (!empty($notWorkingTokens)) {
-                Device::whereIn('device_token', $notWorkingTokens)->update([
+            if (!empty($invalidTokens)) {
+                Device::whereIn('device_token', $invalidTokens)->update([
                     'token_status' => 'invalid',
                     'invalidated_at' => now(),
                     'invalid_reason' => 'Legacy topic subscription failure'
