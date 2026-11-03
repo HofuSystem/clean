@@ -471,12 +471,15 @@
                                 <div class="tab-pane fade" id="pills-points" role="tabpanel"
                                     aria-labelledby="pills-points-tab" tabindex="0">
                                     <div class="mt-3">
-                                        <div class="items-container mb-3" data-items-on = "user_id"
-                                            data-items-name = "points" data-items-from ="points">
-                                            <button class="btn-operation create-new-items"><i
-                                                    class="fas fa-plus"></i></button>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h3 class="text-dark mb-0">{{ trans('points') }}</h3>
+                                            <div class="items-container" data-items-on="user_id"
+                                                data-items-name="points" data-items-from="points">
+                                                <button type="button" class="btn text-white fw-bold px-3 py-2 create-new-items" style="background-color: #244b7d; border-radius: 8px; font-size: 13px;">
+                                                    <i class="fas fa-plus me-1 text-white"></i> {{ trans('points_ui.points_added') }}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <h3 class="text-dark">{{ trans('points') }}</h3>
                                         <div class="table-responsive">
                                             <!--begin::Table-->
                                             <table

@@ -25,19 +25,25 @@ class PointsResource extends JsonResource
                 . '</a><span class="text-muted fs-8">' . e($this->user->phone ?? '') . '</span></div>';
         }
 
-        $operationLabel = $this->operation === 'deposit' ? trans('points_ui.points_added') : trans('points_ui.points_deducted');
-        $operationColor = $this->operation === 'deposit' ? 'success' : 'danger';
-        $operationHtml = '<span class="badge badge-light-' . $operationColor . '">'
+        $isDeposit = ($this->operation === 'deposit');
+        $operationLabel = $isDeposit ? trans('points_ui.points_added') : trans('points_ui.points_deducted');
+        $badgeBg = $isDeposit ? '#e8f8f0' : '#fbeaf0';
+        $badgeColor = $isDeposit ? '#0bb783' : '#f1416c';
+        $badgeBorder = $isDeposit ? '#bbf0d6' : '#fbcbd9';
+        $operationHtml = '<span class="badge" style="background-color:' . $badgeBg . ' !important; color:' . $badgeColor . ' !important; border:1px solid ' . $badgeBorder . '; font-weight:700; padding:6px 12px; border-radius:6px; font-size:12px; display:inline-block;">'
             . e($operationLabel) . '</span>';
 
-        $amountPrefix = $this->operation === 'deposit' ? '+' : '−';
-        $amountColor = $this->operation === 'deposit' ? '#0bb783' : '#f1416c';
+        $amountPrefix = $isDeposit ? '+' : '−';
+        $amountColor = $isDeposit ? '#0bb783' : '#f1416c';
         $amountHtml = '<span class="fw-bolder" style="color:' . $amountColor . '; direction:ltr; display:inline-block">'
             . $amountPrefix . ' ' . e(number_format((float) $this->amount, 2)) . '</span>';
 
-        $reason = $this->display_title;
-        $reasonHtml = '<div class="d-flex flex-column text-start"><span class="text-dark fw-bold">'
+        $reason = $this->display_title ?: ($this->title ?: ($this->order ? ('طلب رقم ' . ($this->order->reference_id ?: $this->order->id)) : trans('points_ui.point_movement')));
+        $reasonHtml = '<div class="d-flex flex-column text-start"><span class="text-dark fw-bold fs-7">'
             . e($reason) . '</span>';
+        if ($this->order && !str_contains($reason, (string) ($this->order->reference_id ?: $this->order->id))) {
+            $reasonHtml .= '<span class="text-muted fs-8">' . e($this->order->reference_id ?: ('#' . $this->order->id)) . '</span>';
+        }
         $reasonHtml .= '</div>';
 
         $orderHtml = '-';
@@ -53,9 +59,10 @@ class PointsResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'title' => $reasonHtml,
+            'details' => $reasonHtml,
             'created_at' => $dateHtml,
             'user' => $userHtml,
-            'details' => $reasonHtml,
             'operation' => $operationHtml,
             'amount' => $amountHtml,
             'current_balance' => $this->user ? number_format((float) $this->user->points_balance, 2) : '-',

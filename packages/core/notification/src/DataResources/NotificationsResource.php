@@ -110,6 +110,7 @@ class NotificationsResource extends JsonResource
             "fcm_users_count"           => $isFcm ? $targetedCountFormatted : trans('Not applicable'),
             "title"                     => DashboardDataTableFormatter::text($this->title),
             "body"                      => DashboardDataTableFormatter::text($this->body),
+            "data"                      => DashboardDataTableFormatter::text($this->title ? ($this->title . ' - ' . $this->body) : ($this->body ?: '-')),
             "media"                     => DashboardDataTableFormatter::mediaCenter($this->media),
             "sender_id"                 => DashboardDataTableFormatter::relations($this->sender, "fullname", "dashboard.users.show"),
             "sent_count"                => $acceptedDisplay,
