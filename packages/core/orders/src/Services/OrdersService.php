@@ -1313,7 +1313,7 @@ class OrdersService
                 'type'                  => 'card',
                 'amount'                => $newCardPaid,
                 'transaction_id'        => $data['transaction_id'] ?? null,
-                'online_payment_method' => $data['pay_type'] ?? 'card',
+                'online_payment_method' => $data['online_payment_method'] ?? $data['pay_type'] ?? 'card',
                 'notes'                 => 'pay fast order card payment for order : ' . $order->reference_id,
             ]);
         }

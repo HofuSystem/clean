@@ -3,6 +3,7 @@
 namespace Tests\Feature\Audit;
 
 use Core\Orders\Services\OrdersService;
+use Core\Orders\Services\AnalyticsOutboxService;
 use Core\PaymentGateways\Controllers\FrontEnd\PaymentGatewayController;
 use Core\PaymentGateways\Models\PaymentTransaction;
 use Core\PaymentGateways\Services\MyFatoorahService;
@@ -40,6 +41,8 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             $table->string('gateway_transaction_id')->nullable();
             $table->string('for');
             $table->string('status');
+            $table->string('failure_reason')->nullable();
+            $table->timestamp('succeeded_at')->nullable();
             $table->decimal('amount', 10, 2);
             $table->text('request_data');
             $table->text('payment_response')->nullable();
@@ -61,6 +64,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             'for' => 'wallet_charge', 'status' => 'pending', 'amount' => 100,
             'user_id' => 1, 'request_data' => json_encode(['amount' => 100, 'type' => 'deposit', 'order_id' => 10]),
         ]);
+        $this->app->instance(AnalyticsOutboxService::class, Mockery::mock(AnalyticsOutboxService::class)->shouldIgnoreMissing());
     }
 
     private function gatewayResult(array $overrides = []): array

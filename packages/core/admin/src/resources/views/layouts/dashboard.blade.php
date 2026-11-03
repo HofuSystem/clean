@@ -87,6 +87,7 @@
             font-size: 12px !important
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=1">
 
 </head>
 
@@ -171,6 +172,7 @@
     <script src="{{ asset('control') }}/assets/js/main.js"></script>
     <script src="{{ asset('custom') }}/dist/js/custom.js"></script>
     <script src="{{ asset('control') }}/js/custom/datatable/table.js?v={{ time() }}"></script>
+    <script src="{{ asset('control') }}/js/custom/datatable/mobile.js?v=1"></script>
 
     <script>
         var translations = {!! json_encode(\Core\Admin\Helpers\TransHelper::getDataOfKey(config('app.locale'))) !!}
