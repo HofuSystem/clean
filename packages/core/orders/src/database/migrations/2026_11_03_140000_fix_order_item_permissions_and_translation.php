@@ -43,22 +43,43 @@ return new class extends Migration
         }
 
         // 3. Ensure any role that has order edit or order-items delete permission also receives item destroy/edit
+        // Use raw DB queries to avoid PermissionDoesNotExist exceptions from Spatie when permissions may not exist
+        $permissionsByName = Permission::all()->keyBy('name');
+
+        $orderEditNames    = ['dashboard.orders.edit', 'orders.edit', 'orders edit'];
+        $orderDeleteNames  = ['dashboard.order-items.delete', 'order-items.delete', 'order-items delete'];
+
+        $orderEditIds   = $permissionsByName->whereIn('name', $orderEditNames)->pluck('id')->toArray();
+        $orderDeleteIds = $permissionsByName->whereIn('name', $orderDeleteNames)->pluck('id')->toArray();
+
+        $destroyPermWeb = $permissionsByName->firstWhere('name', 'dashboard.orders.item.destroy') 
+                       ?? Permission::firstOrCreate(['name' => 'dashboard.orders.item.destroy', 'guard_name' => 'web']);
+        $editPermWeb    = $permissionsByName->firstWhere('name', 'dashboard.orders.item.edit')
+                       ?? Permission::firstOrCreate(['name' => 'dashboard.orders.item.edit', 'guard_name' => 'web']);
+
         $roles = Role::all();
         foreach ($roles as $role) {
-            $hasOrderEdit = $role->hasPermissionTo('dashboard.orders.edit', $role->guard_name)
-                || $role->hasPermissionTo('orders.edit', $role->guard_name)
-                || $role->hasPermissionTo('orders edit', $role->guard_name);
+            // Get IDs of permissions already assigned to this role
+            $rolePermIds = DB::table('role_has_permissions')
+                ->where('role_id', $role->id)
+                ->pluck('permission_id')
+                ->toArray();
 
-            $hasOrderItemDelete = $role->hasPermissionTo('dashboard.order-items.delete', $role->guard_name)
-                || $role->hasPermissionTo('order-items.delete', $role->guard_name)
-                || $role->hasPermissionTo('order-items delete', $role->guard_name);
+            $hasOrderEdit       = count(array_intersect($rolePermIds, $orderEditIds)) > 0;
+            $hasOrderItemDelete = count(array_intersect($rolePermIds, $orderDeleteIds)) > 0;
 
-            if ($hasOrderEdit || $hasOrderItemDelete) {
-                $role->givePermissionTo('dashboard.orders.item.destroy');
+            if (($hasOrderEdit || $hasOrderItemDelete) && !in_array($destroyPermWeb->id, $rolePermIds)) {
+                DB::table('role_has_permissions')->insertOrIgnore([
+                    'permission_id' => $destroyPermWeb->id,
+                    'role_id'       => $role->id,
+                ]);
             }
 
-            if ($hasOrderEdit) {
-                $role->givePermissionTo('dashboard.orders.item.edit');
+            if ($hasOrderEdit && !in_array($editPermWeb->id, $rolePermIds)) {
+                DB::table('role_has_permissions')->insertOrIgnore([
+                    'permission_id' => $editPermWeb->id,
+                    'role_id'       => $role->id,
+                ]);
             }
         }
 
