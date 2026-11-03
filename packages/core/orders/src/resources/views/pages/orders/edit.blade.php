@@ -1815,6 +1815,9 @@
                 $.ajax({
                     type: "POST",
                     url: url,
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     data: {
                         _token: "{{ csrf_token() }}",
                         size: $('#new_size').val(),
@@ -1844,17 +1847,30 @@
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         // Code to run if the request fails
-                        response = JSON.parse(jqXHR.responseText);
+                        let errorMessage = "{{ trans('system Error please try again later') }}";
+                        let errors = {};
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                            errorMessage = jqXHR.responseJSON.message;
+                            errors = jqXHR.responseJSON.errors || {};
+                        } else if (jqXHR.status === 403) {
+                            errorMessage = "{{ trans('access denied...  you Are frodiiden from this action') }}";
+                        } else {
+                            try {
+                                let parsed = JSON.parse(jqXHR.responseText);
+                                errorMessage = parsed.message || errorMessage;
+                                errors = parsed.errors || {};
+                            } catch (e) {}
+                        }
                         Swal.fire({
-                            text: response.message,
+                            text: errorMessage,
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok",
                             customClass: {
-                                confirmButton: "btn fw-bold btn-success",
+                                confirmButton: "btn fw-bold btn-danger",
                             }
-                        })
-                        $.each(response.errors, function(key, array) {
+                        });
+                        $.each(errors, function(key, array) {
                             $.each(array, function(index, error) {
                                 toastr.error(error, key);
                             });
@@ -1883,6 +1899,9 @@
                 $.ajax({
                     type: "POST",
                     url: url,
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     data: {
                         _token: "{{ csrf_token() }}",
                         quantity: quantity,
@@ -1906,17 +1925,30 @@
                         })
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        response = JSON.parse(jqXHR.responseText);
+                        let errorMessage = "{{ trans('system Error please try again later') }}";
+                        let errors = {};
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                            errorMessage = jqXHR.responseJSON.message;
+                            errors = jqXHR.responseJSON.errors || {};
+                        } else if (jqXHR.status === 403) {
+                            errorMessage = "{{ trans('access denied...  you Are frodiiden from this action') }}";
+                        } else {
+                            try {
+                                let parsed = JSON.parse(jqXHR.responseText);
+                                errorMessage = parsed.message || errorMessage;
+                                errors = parsed.errors || {};
+                            } catch (e) {}
+                        }
                         Swal.fire({
-                            text: response.message,
+                            text: errorMessage,
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok",
                             customClass: {
-                                confirmButton: "btn fw-bold btn-success",
+                                confirmButton: "btn fw-bold btn-danger",
                             }
-                        })
-                        $.each(response.errors, function(key, array) {
+                        });
+                        $.each(errors, function(key, array) {
                             $.each(array, function(index, error) {
                                 toastr.error(error, key);
                             });
@@ -1931,6 +1963,9 @@
                 $.ajax({
                     type: "Delete",
                     url: url,
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     data: {
                         _token: "{{ csrf_token() }}",
                     },
@@ -1955,17 +1990,30 @@
                     error: function(jqXHR, textStatus, errorThrown) {
                         // Code to run if the request fails
                         $("#order-itemsDeleteModel").modal('hide');
-                        response = JSON.parse(jqXHR.responseText);
+                        let errorMessage = "{{ trans('system Error please try again later') }}";
+                        let errors = {};
+                        if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                            errorMessage = jqXHR.responseJSON.message;
+                            errors = jqXHR.responseJSON.errors || {};
+                        } else if (jqXHR.status === 403) {
+                            errorMessage = "{{ trans('access denied...  you Are frodiiden from this action') }}";
+                        } else {
+                            try {
+                                let parsed = JSON.parse(jqXHR.responseText);
+                                errorMessage = parsed.message || errorMessage;
+                                errors = parsed.errors || {};
+                            } catch (e) {}
+                        }
                         Swal.fire({
-                            text: response.message,
+                            text: errorMessage,
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok",
                             customClass: {
-                                confirmButton: "btn fw-bold btn-success",
+                                confirmButton: "btn fw-bold btn-danger",
                             }
-                        })
-                        $.each(response.errors, function(key, array) {
+                        });
+                        $.each(errors, function(key, array) {
                             $.each(array, function(index, error) {
                                 toastr.error(error, key);
                             });

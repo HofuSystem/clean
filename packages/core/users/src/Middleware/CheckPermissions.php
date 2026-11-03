@@ -90,6 +90,28 @@ class CheckPermissions
             $possiblePermissions[] = 'notifications show';
         }
 
+        // Nested order item actions mapped to order edit/delete and order-items permissions
+        if (in_array($routeName, ['dashboard.orders.item.destroy', 'orders.item.destroy'], true)) {
+            $possiblePermissions[] = 'dashboard.orders.edit';
+            $possiblePermissions[] = 'orders.edit';
+            $possiblePermissions[] = 'orders edit';
+            $possiblePermissions[] = 'dashboard.orders.delete';
+            $possiblePermissions[] = 'orders.delete';
+            $possiblePermissions[] = 'orders delete';
+            $possiblePermissions[] = 'dashboard.order-items.delete';
+            $possiblePermissions[] = 'order-items.delete';
+            $possiblePermissions[] = 'order-items delete';
+        }
+
+        if (in_array($routeName, ['dashboard.orders.item.edit', 'orders.item.edit'], true)) {
+            $possiblePermissions[] = 'dashboard.orders.edit';
+            $possiblePermissions[] = 'orders.edit';
+            $possiblePermissions[] = 'orders edit';
+            $possiblePermissions[] = 'dashboard.order-items.edit';
+            $possiblePermissions[] = 'order-items.edit';
+            $possiblePermissions[] = 'order-items edit';
+        }
+
         foreach ($possiblePermissions as $permission) {
             if ($user->can($permission)) {
                 return $next($request);

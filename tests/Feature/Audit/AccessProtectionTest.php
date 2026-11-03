@@ -118,6 +118,35 @@ class AccessProtectionTest extends IsolatedAuditTestCase
         (new CheckPermissions)->handle($request, fn () => $this->fail('Unpermitted staff was allowed'));
     }
 
+    public function test_order_item_destroy_and_edit_permissions_allow_order_editor(): void
+    {
+        foreach (['dashboard.orders.edit', 'orders.edit', 'orders edit', 'dashboard.order-items.delete', 'order-items delete'] as $permission) {
+            $user = Mockery::mock(User::class)->makePartial();
+            $user->shouldReceive('hasRole')->andReturn(false);
+            $user->shouldReceive('can')->andReturnUsing(fn ($value) => $value === $permission);
+
+            $request = Request::create('/admin/orders/1/item/2/delete', 'DELETE');
+            $route = (new Route('DELETE', 'admin/orders/{id}/item/{itemId}/delete', fn () => null))->name('dashboard.orders.item.destroy');
+            $request->setRouteResolver(fn () => $route);
+            $request->setUserResolver(fn () => $user);
+
+            $this->assertSame('allowed', (new CheckPermissions)->handle($request, fn () => 'allowed'));
+        }
+
+        foreach (['dashboard.orders.edit', 'orders.edit', 'orders edit', 'dashboard.order-items.edit', 'order-items edit'] as $permission) {
+            $user = Mockery::mock(User::class)->makePartial();
+            $user->shouldReceive('hasRole')->andReturn(false);
+            $user->shouldReceive('can')->andReturnUsing(fn ($value) => $value === $permission);
+
+            $request = Request::create('/admin/orders/1/item/2/update-item', 'POST');
+            $route = (new Route('POST', 'admin/orders/{id}/item/{itemId}/update-item', fn () => null))->name('dashboard.orders.item.edit');
+            $request->setRouteResolver(fn () => $route);
+            $request->setUserResolver(fn () => $user);
+
+            $this->assertSame('allowed', (new CheckPermissions)->handle($request, fn () => 'allowed'));
+        }
+    }
+
     public function test_all_sensitive_routes_have_required_middleware(): void
     {
         $found = [];
