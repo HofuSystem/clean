@@ -309,7 +309,7 @@ class PaymentGatewayController extends Controller
             report($th);
             return redirect()->route('payment-gateway.web', [
                 'transaction_id' => $transaction_id,
-                'status' => 'failed',
+                'status' => 'pending',
                 'message' => __('Unable to verify payment status'),
             ]);
         }
@@ -339,6 +339,17 @@ class PaymentGatewayController extends Controller
         } elseif ($transaction->for === 'fast_payment') {
             $requestData['online_payment_method'] = $transaction->payment_method;
             $requestData['paid'] = $transaction->amount;
+            // The card may cover the entire outstanding balance when requested points
+            // were ineligible at checkout. Do not redeem those stale requested points
+            // on top of a full card charge.
+            $remaining = \Core\Orders\Support\OrderPaymentMath::remainingToCollect($order->total_price, $order->paid);
+            if ((int) round((float) $transaction->amount * 100) === (int) round($remaining * 100)) {
+                $requestData['wallet_used'] = false;
+                $requestData['wallet_amount_used'] = 0;
+                $requestData['points_used'] = false;
+                $requestData['points_amount'] = 0;
+                $requestData['points_amount_used'] = 0;
+            }
             $this->ordersService->payFastOrder($requestData['order_id'], $requestData, $user);
         } elseif ($transaction->for === 'wallet_charge') {
             $chargeData = (new WalletChargePricing)->ledgerData($transaction);

@@ -29,6 +29,8 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             $table->id();
             $table->unsignedBigInteger('client_id');
             $table->string('status');
+            $table->decimal('total_price', 10, 2)->default(0);
+            $table->decimal('paid', 10, 2)->default(0);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -135,7 +137,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             ['InvoiceDisplayValue' => '100.00 USD'], ['InvoiceDisplayValue' => '99.00 SAR'],
             ['InvoiceDisplayValue' => null],
         ] as $invalid) {
-            $this->assertRedirectStatus($this->invoke($this->controller($this->gatewayResult($invalid))), 'failed');
+            $this->assertRedirectStatus($this->invoke($this->controller($this->gatewayResult($invalid))), 'pending');
             $this->assertSame('pending', PaymentTransaction::find(1)->status);
             $this->assertNull(PaymentTransaction::find(1)->payment_response);
         }
@@ -148,7 +150,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
             $this->credit($data, $user);
             throw new \RuntimeException('Simulated financial persistence failure');
         });
-        $this->assertRedirectStatus($this->invoke($failing), 'failed');
+        $this->assertRedirectStatus($this->invoke($failing), 'pending');
         $this->assertSame(0, DB::table('test_ledger')->count());
         $this->assertEquals(0, DB::table('users')->value('wallet'));
         $this->assertSame('pending', PaymentTransaction::find(1)->status);
@@ -195,7 +197,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
     public function test_gateway_failure_leaves_financial_state_unchanged(): void
     {
         $controller = $this->controller(['success' => false]);
-        $this->assertRedirectStatus($this->invoke($controller), 'failed');
+        $this->assertRedirectStatus($this->invoke($controller), 'pending');
         $this->assertSame('pending', PaymentTransaction::find(1)->status);
         $this->assertEquals(0, DB::table('users')->value('wallet'));
     }
@@ -227,6 +229,31 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
         $this->assertSame(1, DB::table('test_ledger')->count());
     }
 
+    public function test_full_card_charge_does_not_also_redeem_requested_points(): void
+    {
+        DB::table('orders')->where('id', 10)->update(['total_price' => 100, 'paid' => 0]);
+        DB::table('payment_transactions')->update([
+            'for' => 'fast_payment',
+            'request_data' => json_encode([
+                'order_id' => 10, 'pay_type' => 'card', 'points_used' => 'true',
+                'points_amount' => '1000', 'points_amount_used' => '10',
+                'wallet_used' => 'false', 'paid' => 100,
+            ]),
+        ]);
+        $gateway = Mockery::mock(MyFatoorahService::class);
+        $gateway->shouldReceive('getPaymentStatus')->once()->andReturn($this->gatewayResult());
+        $orders = Mockery::mock(OrdersService::class);
+        $orders->shouldReceive('payFastOrder')->once()->andReturnUsing(function ($id, $data) {
+            $this->assertSame(10, $id);
+            $this->assertEquals(100, $data['paid']);
+            $this->assertFalse($data['points_used']);
+            $this->assertSame(0, $data['points_amount']);
+            $this->assertFalse($data['wallet_used']);
+        });
+        $controller = new PaymentGatewayController($orders, Mockery::mock(WalletTransactionsService::class), $gateway);
+        $this->assertRedirectStatus($this->invoke($controller), 'success');
+    }
+
     public function test_later_verified_success_recovers_failed_order_without_repeating_it(): void
     {
         DB::table('payment_transactions')->update(['for' => 'order_payment', 'status' => 'failed']);
@@ -250,7 +277,7 @@ class PaymentCallbackTest extends IsolatedAuditTestCase
     {
         DB::table('payment_transactions')->update(['for' => 'order_payment']);
         DB::table('orders')->update(['client_id' => 2]);
-        $this->assertRedirectStatus($this->invoke($this->controller($this->gatewayResult())), 'failed');
+        $this->assertRedirectStatus($this->invoke($this->controller($this->gatewayResult())), 'pending');
         $this->assertSame('pending', PaymentTransaction::find(1)->status);
         $this->assertSame('pending_payment', DB::table('orders')->value('status'));
     }

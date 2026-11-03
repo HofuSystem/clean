@@ -366,6 +366,16 @@ class OrdersController extends Controller
             if (! OrderPaymentMath::isCollectable($cardAmount)) {
                 throw ValidationException::withMessages(['paid' => trans('Order is already fully paid')]);
             }
+            $outstanding = OrderPaymentMath::remainingToCollect($order->total_price, $order->paid);
+            if ((int) round($cardAmount * 100) === (int) round($outstanding * 100)) {
+                // The card covers the full balance. Requested wallet/points were not
+                // eligible for this quote and must not be applied at confirmation.
+                $requestData['wallet_used'] = false;
+                $requestData['wallet_amount_used'] = 0;
+                $requestData['points_used'] = false;
+                $requestData['points_amount'] = 0;
+                $requestData['points_amount_used'] = 0;
+            }
             $requestData['paid'] = $cardAmount;
             $data = [
                 'payment_url' => $this->ordersService->createPaymentUrl($orderId, $cardAmount, $requestData, 'fast_payment'),
