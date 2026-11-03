@@ -2424,6 +2424,7 @@
     "wash type": "Wash Type",
     "Customizations": "Customizations",
     "final delete": "Final Delete",
+    "Delete the item first": "Delete the item before final deletion",
     "contract duration": "Contract Duration",
     "duration count": "Duration Count",
     "days per week": "Days Per Week",

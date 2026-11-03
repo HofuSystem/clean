@@ -151,7 +151,7 @@ class OrdersController extends Controller
                     ->where('roles.name', 'operator');
             })
             ->get();
-        $orderItems             = $order->items;
+        $orderItems             = $order->items()->visibleInOrder()->get();
         $comments               = $order->comments->whereNull('parent_id');
         $contract               = $order->company_id ? Contract::forCompany($order->company_id)->currentActive()->first() : null;
         $products               = $this->productsService->getProductsCard($order->type,$order->client,$order->company,$order->b2b_type);
@@ -421,7 +421,7 @@ class OrdersController extends Controller
             DB::beginTransaction();
             $this->ordersService->update($id,$request->items);
             $order         =   Order::findOrFail($id);
-            $orderItems    =   $order->items()->withTrashed()->get();
+            $orderItems    =   $order->items()->visibleInOrder()->get();
             $products      =   Product::where('status', 'active')->get();
             $categories    =   Category::where('status', 'active')->doesntHave('parent')->get();
             $editMode      = true;
@@ -445,7 +445,7 @@ class OrdersController extends Controller
             DB::beginTransaction();
             $this->ordersService->updateItem($orderId,$itemId,$request->quantity,$request->height,$request->width,$request->wash_type);
             $order         =   Order::findOrFail($orderId);
-            $orderItems    =   $order->items()->withTrashed()->get();
+            $orderItems    =   $order->items()->visibleInOrder()->get();
             $products      =   Product::where('status', 'active')->get();
             $categories    =   Category::where('status', 'active')->doesntHave('parent')->get();
             $editMode      =   true;
@@ -469,9 +469,9 @@ class OrdersController extends Controller
     {
         try {
             DB::beginTransaction();
-            $this->ordersService->destroyItem($itemId);
+            $this->ordersService->destroyItem($orderId, $itemId, $request->boolean('final'));
             $order         =   Order::findOrFail($orderId);
-            $orderItems    =   $order->items()->withTrashed()->get();
+            $orderItems    =   $order->items()->visibleInOrder()->get();
             $products      =   Product::where('status', 'active')->get();
             $categories    =   Category::where('status', 'active')->doesntHave('parent')->get();
             $editMode      = true;
@@ -515,7 +515,7 @@ class OrdersController extends Controller
         $screen                     = 'orders-show';
         $order                      = $this->ordersService->get($id);
         $comments                   = $order->comments()->where('parent_id',null)->get();
-        $orderItems                 = $order->items;
+        $orderItems                 = $order->items()->visibleInOrder()->get();
         $items                      = $order->items;
         $customerOrdersCount        = $order->client?->orders()?->count();
         $customerTire               = OrderHelper::getCustomerTier($customerOrdersCount);

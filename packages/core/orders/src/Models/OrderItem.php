@@ -26,6 +26,11 @@ class OrderItem extends CoreModel {
     
 
     //start Scopes
+    public function scopeVisibleInOrder($query)
+    {
+        return $query->withTrashed()->where('final_delete', false);
+    }
+
     function scopeSearch($query){
         
         //filter select on  order

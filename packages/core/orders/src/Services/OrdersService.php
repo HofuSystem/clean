@@ -542,7 +542,7 @@ class OrdersService
             return;
         }
         if ($quantity < 1) {
-            return $this->destroyItem($orderItem->id);
+            return $this->destroyItem($orderId, $orderItem->id);
         }
         $quantityDiff =  ($orderItem->quantity - $quantity);
         if ($quantity != $orderItem->quantity) {
@@ -573,14 +573,29 @@ class OrdersService
         $this->reCalcOrder($orderId);
     }
 
-    public function destroyItem($itemId)
+    public function destroyItem($orderId, $itemId, bool $final = false)
     {
-        $item    = OrderItem::withTrashed()->where('id', $itemId)->firstOrFail();
-        $product = Product::where('id', json_decode($item->product_data)->id)->first();
-        if (json_decode($item->product_data)->type == 'sales') {
-            $product->update(['quantity' => $product->quantity + $item['quantity']]);
+        $item    = OrderItem::withTrashed()->where('order_id', $orderId)->where('id', $itemId)->firstOrFail();
+        if ($final) {
+            if (! $item->trashed()) {
+                throw ValidationException::withMessages(['item' => trans('Delete the item first')]);
+            }
+            if (! $item->final_delete) {
+                // Keep the audit record, but remove the item from order and API views.
+                $item->update(['final_delete' => true]);
+            }
+            return;
         }
-        $isFinal = request()->final ?? false;
+        if ($item->trashed()) {
+            return;
+        }
+        $productData = json_decode($item->product_data);
+        if (($productData->type ?? null) === 'sales') {
+            $product = Product::find($productData->id ?? null);
+            if ($product) {
+                $product->update(['quantity' => $product->quantity + $item->quantity]);
+            }
+        }
         if ($item->quantity > 0) {
             $item->qtyUpdates()->create([
                 'from'            => $item->quantity,
@@ -593,14 +608,7 @@ class OrdersService
                 'update_by_admin'       =>  auth()->user()->email,
             ]);
         }
-        if ($isFinal) {
-            $item->update([
-                'final_delete' => true,
-            ]);
-            $item->delete();
-        } else {
-            $item->delete();
-        }
+        $item->delete();
         $this->reCalcOrder($item->order_id);
     }
     public function reCalcOrder($id)
