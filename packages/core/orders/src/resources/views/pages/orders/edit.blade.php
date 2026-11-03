@@ -1961,13 +1961,14 @@
                 let url = $('#order-items-final-delete').data('action');
 
                 $.ajax({
-                    type: "Delete",
+                    type: "POST",
                     url: url,
                     headers: {
                         'Accept': 'application/json'
                     },
                     data: {
                         _token: "{{ csrf_token() }}",
+                        _method: "DELETE",
                     },
                     dataType: "json",
                     success: function(response) {
