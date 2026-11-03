@@ -37,8 +37,9 @@ class HomeController extends Controller
         $operators = $this->usersService->selectable('id', 'fullname', ['wallet'], 'operator');
         $representatives = $this->usersService->selectable('id', 'fullname', ['wallet'], ['driver', 'technical']);
         $cities = $this->citiesService->selectable('id', 'name');
+        $deliveryDate = today()->toDateString();
 
-        return view('admin::pages.index', compact('title', 'screen', 'pendingTypes', 'types', 'operators', 'representatives', 'statuses', 'cities', 'total', 'trash'));
+        return view('admin::pages.index', compact('title', 'screen', 'pendingTypes', 'types', 'operators', 'representatives', 'statuses', 'cities', 'total', 'trash', 'deliveryDate'));
     }
 
     /**

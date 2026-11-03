@@ -10,6 +10,11 @@
                             data-bs-target="#pills-all" type="button" role="tab" aria-controls="pills-all"
                             aria-selected="true">{{ trans('all') }}</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-today-deliveries-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-today-deliveries" type="button" role="tab"
+                            aria-controls="pills-today-deliveries" aria-selected="false">{{ trans("Today's Deliveries") }}</button>
+                    </li>
                     @foreach ($pendingTypes as $type)
                     <li class="nav-item" role="presentation">
                         <button class="nav-link " id="pills-{{ $type }}-tab" data-bs-toggle="pill"
@@ -24,6 +29,55 @@
                     </li>
                 </ul>
                 <div class="tab-content p-0" id="pills-tabContent">
+
+                    <div class="tab-pane fade" id="pills-today-deliveries" role="tabpanel"
+                        aria-labelledby="pills-today-deliveries-tab" tabindex="0">
+                        <div class="mt-1">
+                            <div class="table-responsive">
+                                <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 px-3 pb-3">
+                                    <h3 class="text-dark mb-0">{{ trans("Today's Deliveries") }}</h3>
+                                    <div class="d-flex flex-wrap align-items-end gap-2">
+                                        <button type="button" class="btn btn-outline-primary dashboard-delivery-day-shift"
+                                            data-days="-1" title="{{ trans('Previous') }}" aria-label="{{ trans('Previous') }}: {{ trans('delivery date') }}">
+                                            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                                        </button>
+                                        <div>
+                                            <label class="form-label mb-1" for="dashboard-delivery-date">{{ trans('delivery date') }}</label>
+                                            <input class="form-control filter-input" id="dashboard-delivery-date"
+                                                name="delivery_on" type="date" value="{{ $deliveryDate }}">
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary" id="dashboard-delivery-today">
+                                            {{ trans('today') }}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary dashboard-delivery-day-shift"
+                                            data-days="1" title="{{ trans('Next') }}" aria-label="{{ trans('Next') }}: {{ trans('delivery date') }}">
+                                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <table class="view-dataTable table align-middle text-center table-row-dashed fs-6 gy-5"
+                                    data-load="{{ route('dashboard.orders.index') }}">
+                                    <thead class="table-primary">
+                                        <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                            <th class="orderable text-center" data-name="created_at">@lang('added at')</th>
+                                            <th class="orderable text-center" data-name="reference_id">@lang('order id')</th>
+                                            <th class="orderable text-center" data-name="status">@lang('status')</th>
+                                            <th class="orderable text-center" data-name="type">@lang('type')</th>
+                                            <th class="orderable text-center" data-name="client_id">@lang('client')</th>
+                                            <th class="orderable text-center" data-name="phone">@lang('phone')</th>
+                                            <th class="text-center py-2" data-name="delivery_date">@lang('delivery date')</th>
+                                            <th class="text-center py-2" data-name="delivery_time">@lang('delivery time')</th>
+                                            <th class="orderable text-center" data-name="total_price">@lang('total price')</th>
+                                            <th class="orderable text-center" data-name="city_id">@lang('city')</th>
+                                            <th class="orderable text-center" data-name="district_id">@lang('district')</th>
+                                            <th class="text-center py-2" data-name="actions">@lang('actions')</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 fw-bold"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="tab-pane fade " id="pills-testing" role="tabpanel" aria-labelledby="pills-testing-tab"
                         tabindex="0">
@@ -818,6 +872,32 @@
 </div>
 @endsection
 @push('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('dashboard-delivery-date');
+        if (!dateInput) return;
+
+        function selectDate(value) {
+            if (dateInput.value === value) return;
+            dateInput.value = value;
+            dateInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        document.querySelectorAll('.dashboard-delivery-day-shift').forEach(function (button) {
+            button.addEventListener('click', function () {
+                if (!dateInput.value) return;
+                const [year, month, day] = dateInput.value.split('-').map(Number);
+                const date = new Date(Date.UTC(year, month - 1, day));
+                date.setUTCDate(date.getUTCDate() + Number(button.dataset.days));
+                selectDate(date.toISOString().slice(0, 10));
+            });
+        });
+
+        document.getElementById('dashboard-delivery-today').addEventListener('click', function () {
+            selectDate(@json($deliveryDate));
+        });
+    });
+</script>
 @endpush
 <!-- Content -->
 

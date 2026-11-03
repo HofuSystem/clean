@@ -153,6 +153,21 @@ class Order extends CoreModel
         })
         ->select('orders.*', 'or_receiver.date as receiver_date', 'or_delivery.date as delivery_date', 'or_delivery.time as delivery_time');
 
+        // Dashboard deliveries are filtered by the scheduled delivery task, not the order creation date.
+        if (request()->exists('filters.delivery_on')) {
+            $deliveryOn = request('filters.delivery_on');
+            $date = is_string($deliveryOn) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $deliveryOn)
+                ? \DateTimeImmutable::createFromFormat('!Y-m-d', $deliveryOn)
+                : false;
+            if (!$date || $date->format('Y-m-d') !== $deliveryOn) {
+                $query->whereNull('orders.id');
+            } else {
+                $query->where('or_delivery.date', $deliveryOn)
+                    ->whereNull('or_delivery.deleted_at')
+                    ->whereNotIn('orders.status', ['canceled', 'cancel_payment', 'failed_payment', 'pending_payment']);
+            }
+        }
+
         //filter text on  reference_id
         if ((request()->has("filters.reference_id")) and !empty(request("filters.reference_id"))) {
             $query->where("orders.reference_id", "LIKE", "%" . request("filters.reference_id") . "%");
