@@ -332,21 +332,33 @@ class NotificationsManger
                 $this->sendLegacyApps();
             }
         } else {
-            // If apps was not selected, complete immediately and update sent_count in payload
-            $sentCount = $this->phonesList->count() ?: ($this->emailsList->count() ?: $targetedCount);
+            // Keep the synchronous OTP channel result instead of assuming delivery.
+            $isSingleAuthentication = $resolvedPurpose === NotificationChannelResolver::PURPOSE_AUTHENTICATION
+                && $targetedCount === 1;
+            $deliveryStatus = $isSingleAuthentication
+                ? DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->value('status')
+                : null;
+            $sentCount = $isSingleAuthentication
+                ? (int) ($deliveryStatus === 'sent')
+                : ($this->phonesList->count() ?: ($this->emailsList->count() ?: $targetedCount));
             $payload = is_array($notification->payload) ? $notification->payload : (json_decode($notification->payload ?? '{}', true) ?: []);
             $payload['sent_count'] = $sentCount;
 
             $notification->update([
-                'processing_status' => 'completed',
+                'processing_status' => $isSingleAuthentication && $deliveryStatus !== 'sent' ? 'failed' : 'completed',
                 'completed_at' => now(),
                 'payload' => json_encode($payload),
             ]);
 
-            DB::table('users_notifications')
-                ->where('notifications_type', Notification::class)
-                ->where('notifications_id', $notification->id)
-                ->update(['status' => 'sent']);
+            if (! $isSingleAuthentication) {
+                DB::table('users_notifications')
+                    ->where('notifications_type', Notification::class)
+                    ->where('notifications_id', $notification->id)
+                    ->update(['status' => 'sent']);
+            }
         }
     }
 
