@@ -40,6 +40,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('settings') }}/settings.css">
     <!-- END: Custom CSS-->
     @stack('css')
+    <link rel="stylesheet" href="{{ asset('control') }}/assets/css/admin-modals.css?v=1">
     @yield("styles")
 </head>
 <!-- END: Head-->

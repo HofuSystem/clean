@@ -627,26 +627,26 @@
                         </div>
                     </div>
                     <!-- Basic modal -->
-                    <div class="modal fade text-left" id="addItem" role="dialog" aria-labelledby="myModalLabel120"
+                    <div class="modal fade text-left" id="addItem" role="dialog" aria-labelledby="addItemTitle"
                         aria-hidden="true">
-                        <div class="modal-dialog modal-fullscreen modal-dialog-centered modal-dialog-scrollable"
+                        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
                             role="document">
                             <div class="modal-content">
-                                <div class="modal-header bg-primary">
-                                    <h5 class="modal-title text-white" id="myModalLabel120">{{ trans('add') }}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addItemTitle">{{ trans('add product to order') }}
                                     </h5>
                                     <button type="button" class="close btn btn-danger" data-bs-dismiss="modal"
-                                        aria-label="Close">
+                                        aria-label="{{ trans('Close') }}">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="card">
+                                <div class="modal-body"><div class="card">
                                     <div class="card-body row" id="filter-products">
                                         <div class="col-xl-3 col-lg-4 col-md-6">
                                             <div class="row">
                                                 <div class="col-12">
                                                     <h4 class="card-title">{{ trans('cart') }}</h4>
-                                                    <div id="cart-items"></div>
+                                                    <div id="cart-items" aria-live="polite"></div>
                                                     <button type="submit" id="saveCart"
                                                         class="btn btn-primary mx-auto">{{ trans('save cart') }}</button>
                                                 </div>
@@ -662,7 +662,7 @@
                                                 <div class="col-12 ">
                                                     <label for="search">{{ trans('search for the product') }}</label>
                                                     <input type="text" class="form-control" name="search"
-                                                        id="search">
+                                                        id="search" autocomplete="off" placeholder="{{ trans('search for the product') }}">
                                                 </div>
                                                 <div class="form-group mt-2 col-6 select-parent">
                                                     <label for="">{{ trans('choose a category') }}</label>
@@ -687,11 +687,12 @@
                                                 </div>
 
                                             </div>
+                                            <div id="picker-results-count" class="picker-results-count" aria-live="polite"></div>
                                             <div id="search-results" class="row">
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div></div>
                             </div>
                         </div>
                     </div>
@@ -1257,7 +1258,7 @@
                 let $input = $(this).closest(".input-group").find("input[name='quantity']");
                 let currentValue = parseInt($input.val(), 10) || 0;
                 let step = parseInt($input.attr("step"), 10) || 1;
-                let min = parseInt($input.attr("min"), 10) || 0;
+                let min = parseInt($input.attr("min"), 10) || 1;
                 $input.val(Math.max(currentValue - step, min)).trigger('change');
             });
 
@@ -1279,8 +1280,8 @@
                 $("#search-results").html("");
 
                 products = allProducts.filter(function(product) {
-                    let title = $('#filter-products [name=search]').val()
-                    title = (title.length && product.name.includes(title))
+                    let search = $('#filter-products [name=search]').val().trim().toLocaleLowerCase();
+                    let title = search.length && String(product.name || '').toLocaleLowerCase().includes(search);
 
 
                     let category_id = $('#filter-products [name=category_id]').val()
@@ -1292,16 +1293,20 @@
                         sub_category = (product.sub_category_id == sub_category_id) ? true : false
                     }
 
-                    return (title || (category && sub_category))
+                    return search.length ? title : (category && sub_category)
                 }).sort(function(a, b) {
                     // Sort descending: in_contract=1 first, then 0
                     return (b.in_contract || 0) - (a.in_contract || 0);
                 });
 
-                products.forEach(product => {
-                    product = drawProduct(product);
-                    $("#search-results").append(product);
-                });
+                $('#search-results').html(products.map(drawProduct).join(''));
+
+                const hasFilter = Boolean($('#filter-products [name=search]').val().trim() ||
+                    $('#filter-products [name=category_id]').val());
+                $('#picker-results-count').text(hasFilter ? `${products.length} {{ trans('products') }}` : '');
+                if (!products.length) {
+                    $('#search-results').html(`<div class="picker-empty">${hasFilter ? @json(trans('no_products_found')) : @json(trans('modal_results_help'))}</div>`);
+                }
 
             }
 
@@ -1321,7 +1326,7 @@
                             value: item.id,
                             text: item.name
                         });
-                        $('#filter-products [name=sub_category_id]').append(newOption).trigger('change');
+                        $('#filter-products [name=sub_category_id]').append(newOption);
                     });
                 }
 
@@ -1335,11 +1340,11 @@
                     <div class="row calculator my-3">
                         <div class="col-md-6">
                             <label class="form-label">{{ trans('Height') }}</label>
-                            <input name="height" type="number" class="form-control height" placeholder="Enter height">
+                            <input name="height" type="number" min="0.01" step="any" class="form-control height" placeholder="{{ trans('Height') }}" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Width</label>
-                            <input name="width" type="number" class="form-control width" placeholder="Enter width">
+                            <label class="form-label">{{ trans('width') }}</label>
+                            <input name="width" type="number" min="0.01" step="any" class="form-control width" placeholder="{{ trans('width') }}" required>
                         </div>
 
                     </div>
@@ -1375,8 +1380,8 @@
                                         </div>
                                         <input type="number" id="quantity" class="text-center form-control"
                                             aria-live="polite" data-bs-step="counter" name="quantity"
-                                            title="quantity" value="1" min="0" step="1"
-                                            data-bs-round="0" aria-label="Quantity selector">
+                                            title="{{ trans('quantity') }}" value="1" min="1" step="1" required
+                                            data-bs-round="0" aria-label="{{ trans('quantity') }}">
                                         <div class="input-group-append" id="button-addon4">
                                             <button class="btn btn-secondary text-white" type="button" id="decrease"
                                                 >
@@ -1406,6 +1411,10 @@
                     $('#cart-items').append(cartItem);
 
                 }
+                if (!Object.keys(cartItems || {}).length) {
+                    $('#cart-items').html('<div class="picker-empty">{{ trans('cart_empty') }}</div>');
+                }
+                $('#saveCart').prop('disabled', !Object.keys(cartItems || {}).length);
             }
 
             function drawCartItem(cartItem) {
@@ -1440,8 +1449,8 @@
                             <div class="card-body row ">
                                 <div class="col-12">
                                     <h5 class="card-title">${name}</h5>
-                                    <p>unit price ${price} {{ trans('SAR') }} </p>
-                                    <p>size : ${size}</p>
+                                    <p>{{ trans('price') }}: ${price} {{ trans('SAR') }}</p>
+                                    ${size ? `<p>{{ trans('size') }}: ${size}</p>` : ''}
                                     ${category}
                                     ${subCategory}
                                 </div>
@@ -1459,8 +1468,8 @@
 
                                                 <input value="${qty}" type="number" id="quantity" class="text-center form-control"
                                                     aria-live="polite" data-bs-step="counter" name="quantity"
-                                                    title="quantity" value="1" min="0" step="1"
-                                                    data-bs-round="0" aria-label="Quantity selector"
+                                                    title="{{ trans('quantity') }}" min="1" step="1"
+                                                    data-bs-round="0" aria-label="{{ trans('quantity') }}"
                                                     data-id="${cartItemId}"
                                                     >
 
@@ -1512,12 +1521,6 @@
 
             $(document).on('input', '#filter-products [name=search]', function() {
                 let value = $(this).val();
-                if (value.length) {
-                    $('.select-parent').hide(500);
-                    $('.select-parent select').val("").trigger('change');
-                } else {
-                    $('.select-parent').show(500);
-                }
                 loadProducts();
             });
             $(document).on('change', '#filter-products [name=sub_category_id]', function() {
@@ -1530,6 +1533,7 @@
 
             $(document).on('submit', '.add-to-cart-form', function(e) {
                 e.preventDefault();
+                if (!this.reportValidity()) return;
                 let cartItemId = null;
                 let data = convertFormToJsObject($(this)[0]);
                 let url = $(this).attr('action');
@@ -1681,6 +1685,11 @@
                 var orderId = $(this).data('id');
                 $(".modal-body #order_id").val(orderId);
                 $('#addItem').modal('show');
+            });
+            $('#addItem').on('shown.bs.modal', function() {
+                drawCartItems();
+                loadProducts();
+                $(this).find('[name=search]').trigger('focus');
             });
 
             function convertFormToJsObject(form) {

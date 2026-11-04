@@ -391,6 +391,7 @@
     "save cart": "save cart",
     "add product to order": "add product to order",
     "search for the product": "search for the product",
+    "cart_empty": "No items added yet",
     "choose a category": "choose a category",
     "choose sub category": "choose sub category",
     "Notify Modal": "Notify Modal",

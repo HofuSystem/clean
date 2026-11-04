@@ -88,6 +88,7 @@
         }
     </style>
     <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=1">
+    <link rel="stylesheet" href="{{ asset('control') }}/assets/css/admin-modals.css?v=1">
 
 </head>
 
