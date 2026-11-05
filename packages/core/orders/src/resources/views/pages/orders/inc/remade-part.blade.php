@@ -418,24 +418,17 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                         @endforeach
                     </tbody>
                     <tfoot>
-
-                        <tr>
-                            <th colspan="5"></th>
-                            <th>{{ trans('total quantity') }}</th>
-                            <th>{{ $order->items->sum('quantity') }}</th>
-                            <th colspan="2"></th>
-                            <th>{{ trans('total price') }}</th>
-                            <th>{{ trans('SAR') }} {{ $order->order_price }}</th>
-                            <th>
-                                {!! trans('add') !!}
+                        <tr class="products-summary-row">
+                            <td class="products-summary-add">
                                 @isset($editMode)
                                 <a data-toggle="modal" data-id="{{ $order->id }}" class="open-modal-add btn-operation"
-                                    title="{!! trans('add') !!}" href="#addItem">
-                                    <i class="fas fa-plus-circle "></i>
+                                    title="{{ trans('add') }}" aria-label="{{ trans('add') }}" href="#addItem">
+                                    <i class="fas fa-plus"></i>
                                 </a>
                                 @endisset
-                            </th>
-
+                            </td>
+                            <td colspan="6">{{ trans('total quantity') }}: <strong>{{ $order->items->sum('quantity') }}</strong></td>
+                            <td colspan="{{ isset($editMode) ? 7 : 6 }}">{{ trans('total price') }}: <strong>{{ trans('SAR') }} {{ $order->order_price }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>

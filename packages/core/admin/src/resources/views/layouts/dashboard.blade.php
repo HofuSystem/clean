@@ -87,7 +87,7 @@
             font-size: 12px !important
         }
     </style>
-    <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=5">
+    <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=6">
     <link rel="stylesheet" href="{{ asset('control') }}/assets/css/admin-modals.css?v=3">
 
 </head>
