@@ -66,6 +66,42 @@
         width: 100%;
         max-width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .content-wrapper table.admin-mobile-order-table {
+        width: max-content !important;
+        min-width: 100% !important;
+        table-layout: auto !important;
+        margin-bottom: 0;
+    }
+    .content-wrapper table.admin-mobile-order-table thead { display: table-header-group; }
+    .content-wrapper table.admin-mobile-order-table tbody tr { display: table-row; }
+    .content-wrapper table.admin-mobile-order-table th,
+    .content-wrapper table.admin-mobile-order-table td {
+        display: table-cell;
+        width: auto !important;
+        min-width: 94px;
+        padding: 6px 8px !important;
+        white-space: nowrap !important;
+        vertical-align: middle;
+        font-size: 11px !important;
+        line-height: 1.4;
+    }
+    .content-wrapper table.admin-mobile-order-table th[data-name="actions"],
+    .content-wrapper table.admin-mobile-order-table th[data-name="select_switch"] { min-width: 48px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-sticky-reference {
+        position: sticky;
+        inset-inline-start: 0;
+        z-index: 2;
+        min-width: 112px;
+        background: #fff;
+        box-shadow: -3px 0 8px -6px #66728a;
+    }
+    .content-wrapper table.admin-mobile-order-table thead .admin-mobile-sticky-reference {
+        z-index: 3;
+        background: #4b79b6;
+        color: #fff;
     }
 
     .content-wrapper .dataTables_wrapper,
@@ -184,24 +220,82 @@
         min-width: 44px;
     }
 
+    .content-wrapper .dataTables_wrapper .dt-button {
+        min-height: 36px;
+        min-width: 36px;
+        padding: 5px 8px !important;
+        font-size: 11px !important;
+    }
+
     .content-wrapper table.admin-mobile-cards tbody td .d-flex { flex-wrap: wrap; }
     .content-wrapper table.admin-mobile-cards tbody td > * { max-width: 100%; }
     .content-wrapper table.admin-mobile-cards tbody td img { max-width: 58px; height: auto; }
 
-    #pills-summary .table-responsive { overflow-x: hidden; }
-    #pills-summary .table-responsive > table { width: 100%; min-width: 0; table-layout: fixed; }
-    #pills-summary .table-responsive > table tbody tr { border-bottom: 1px solid #e9edf4; }
-    #pills-summary .table-responsive > table tbody th,
-    #pills-summary .table-responsive > table tbody td {
-        width: 50%;
-        padding: 10px 8px !important;
-        border-inline: 0 !important;
-        overflow-wrap: anywhere;
-        vertical-align: top;
-        font-size: 13px !important;
+    #pills-summary table.order-facts-table,
+    #pills-summary table.order-facts-table thead,
+    #pills-summary table.order-facts-table thead tr,
+    #pills-summary table.order-facts-table tbody { display: block; width: 100%; }
+    #pills-summary table.order-facts-table thead th {
+        display: block;
+        width: 100%;
+        padding: 7px 8px !important;
+        font-size: 12px !important;
     }
-    #pills-summary .table-responsive > table tbody th { color: #66728a; font-weight: 600; }
-    #pills-summary .table-responsive > table tbody td { color: #1b2b48; }
+    #pills-summary table.order-facts-table tbody {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #pills-summary table.order-facts-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        padding: 7px 8px;
+        border: 1px solid #e9edf4;
+    }
+    #pills-summary table.order-facts-table tbody th,
+    #pills-summary table.order-facts-table tbody td {
+        display: block;
+        width: 100%;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent;
+        overflow-wrap: anywhere;
+        text-align: start;
+        white-space: normal;
+    }
+    #pills-summary table.order-facts-table tbody th { color: #66728a; font-size: 11px !important; font-weight: 600; }
+    #pills-summary table.order-facts-table tbody td { color: #1b2b48; font-size: 12px !important; }
+    #pills-summary #products-table {
+        width: max-content !important;
+        min-width: 1250px !important;
+        table-layout: auto !important;
+    }
+    #pills-summary #products-table th,
+    #pills-summary #products-table td {
+        width: auto !important;
+        min-width: 76px;
+        padding: 8px 10px !important;
+        white-space: nowrap;
+        vertical-align: middle;
+        overflow-wrap: normal;
+        font-size: 12px !important;
+    }
+    #pills-summary #products-table th:nth-child(2),
+    #pills-summary #products-table td:nth-child(2) { min-width: 190px; }
+    #pills-summary #products-table th:nth-child(9),
+    #pills-summary #products-table td:nth-child(9) { min-width: 135px; }
+    #pills-summary #products-table td:nth-child(2),
+    #pills-summary #products-table td:nth-child(9) { white-space: normal; }
+
+    .content-wrapper .order-head {
+        align-items: center;
+        gap: 8px;
+    }
+    .content-wrapper .order-page-title { margin: 0 !important; }
+    .content-wrapper .order-page-title h1 { margin: 0 !important; font-size: 17px !important; }
+    .content-wrapper .order-page-title > .border-start { display: none; }
+    .content-wrapper .order-page-title .breadcrumb-item:not(:last-child) { display: none; }
+    .content-wrapper .order-page-title .breadcrumb-item:last-child::before { content: '·'; padding-inline: 5px; }
 
     .content-wrapper .order-action-btns {
         display: flex !important;

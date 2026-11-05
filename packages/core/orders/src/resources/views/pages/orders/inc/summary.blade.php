@@ -3,7 +3,7 @@
 
       @if($order->company)
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start">
+            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -44,7 +44,7 @@
     </div>
     <div class="col-md-6">
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start">
+            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -200,7 +200,7 @@
 
         @if($order->client)
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start">
+            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -276,7 +276,7 @@
     @if($order->followUp)
     <div class="col-md-12 mt-3">
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start">
+            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                 <thead class="text-center text-white" style="background-color: #28a745;">
                     <tr>
                         <th class="p-3 text-white" colspan="2" scope="col" style="background-color: #28a745;">

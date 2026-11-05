@@ -1,7 +1,8 @@
 (function () {
     'use strict';
 
-    var tables = 'table.view-dataTable, table#view-datatable, table#transactions-table, .items-container[data-items-name="representatives"] table';
+    var tables = 'table#transactions-table, .items-container[data-items-name="representatives"] table';
+    var orderTables = 'table.view-dataTable, table#view-datatable';
     var arabic = document.documentElement.lang === 'ar';
 
     function labelRows(table) {
@@ -52,6 +53,20 @@
     }
 
     function labelAllRows() { document.querySelectorAll(tables).forEach(labelRows); }
+
+    function prepareOrderTable(table) {
+        if (!table || !table.tHead) return;
+        table.classList.remove('admin-mobile-cards');
+        table.classList.add('admin-mobile-order-table');
+        var header = table.tHead.querySelector('th[data-name="reference_id"]');
+        if (!header) return;
+        var index = Array.from(header.parentElement.children).indexOf(header) + 1;
+        table.querySelectorAll('tr > :nth-child(' + index + ')').forEach(function (cell) {
+            cell.classList.add('admin-mobile-sticky-reference');
+        });
+    }
+
+    function prepareOrderTables() { document.querySelectorAll(orderTables).forEach(prepareOrderTable); }
 
     function setupProductPicker() {
         var modal = document.getElementById('addItem');
@@ -111,8 +126,9 @@
 
     if (window.jQuery) {
         window.jQuery(document).on('draw.dt', tables, function () { labelRows(this); });
-        window.jQuery(document).on('shown.bs.tab', labelAllRows);
+        window.jQuery(document).on('draw.dt', orderTables, function () { prepareOrderTable(this); });
+        window.jQuery(document).on('shown.bs.tab', function () { labelAllRows(); prepareOrderTables(); });
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { labelAllRows(); setupProductPicker(); });
-    else { labelAllRows(); setupProductPicker(); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { labelAllRows(); prepareOrderTables(); setupProductPicker(); });
+    else { labelAllRows(); prepareOrderTables(); setupProductPicker(); }
 })();

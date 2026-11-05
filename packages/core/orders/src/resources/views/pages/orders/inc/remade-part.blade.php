@@ -619,7 +619,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             @endif
 
                             <div class="table-responsive p-2">
-                                <table class="table table-bordered table-striped table-hover text-start">
+                                <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                                     <thead class="table-primary text-center">
                                         <tr>
                                             <th class="p-3" colspan="2" scope="col">
@@ -655,7 +655,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                     </tbody>
                                 </table>
                                 <hr class="my-4">
-                                <table class="table table-bordered table-striped table-hover text-start ">
+                                <table class="table table-bordered table-striped table-hover text-start order-facts-table">
                                     <thead class="table-primary text-center">
                                         <tr>
                                             <th class="p-3" colspan="2" scope="col">
