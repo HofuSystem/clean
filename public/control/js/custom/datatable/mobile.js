@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var tables = 'table#transactions-table, .items-container[data-items-name="representatives"] table';
+    var tables = 'table#transactions-table';
     var orderTables = '.admin-dashboard-orders table.view-dataTable, .admin-orders-list table#view-datatable';
     var arabic = document.documentElement.lang === 'ar';
 
@@ -164,6 +164,15 @@
     }
 
     document.addEventListener('click', function (event) {
+        var factsButton = event.target.closest('.mobile-order-facts-more');
+        if (factsButton) {
+            var factsTable = factsButton.previousElementSibling;
+            if (!factsTable || !factsTable.classList.contains('order-details-facts')) return;
+            var expandedFacts = factsTable.classList.toggle('mobile-order-facts-expanded');
+            factsButton.setAttribute('aria-expanded', String(expandedFacts));
+            factsButton.textContent = expandedFacts ? factsButton.dataset.hideLabel : factsButton.dataset.showLabel;
+            return;
+        }
         var button = event.target.closest('.admin-mobile-details-toggle');
         if (!button) return;
         var row = button.closest('tr');

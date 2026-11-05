@@ -6,7 +6,7 @@
         <button class="btn-operation create-new-items"><i class="fas fa-plus"></i></button>
         <hr>
         <div class="table-responsive ">
-            <table class="table table-bordered table-striped table-hover text-center">
+            <table class="table table-bordered table-striped table-hover text-center order-representatives-table">
                 <thead class="table-primary text-capitalize h6">
                     <tr>
 

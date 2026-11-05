@@ -63,7 +63,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
 
             <h3 class="card-title">{{ trans('representatives') }}</h3>
             <div class="table-responsive ">
-                <table class="table table-bordered table-striped table-hover text-center">
+                <table class="table table-bordered table-striped table-hover text-center order-representatives-table">
                     <thead class="table-primary text-capitalize h6">
                         <tr>
                             <th scope="col" data-name="type" data-type="select">{{ trans('representative type') }}
@@ -619,7 +619,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             @endif
 
                             <div class="table-responsive p-2">
-                                <table class="table table-bordered table-striped table-hover text-start order-facts-table">
+                                <table class="table table-bordered table-striped table-hover text-start order-facts-table order-invoice-facts">
                                     <thead class="table-primary text-center">
                                         <tr>
                                             <th class="p-3" colspan="2" scope="col">
@@ -655,7 +655,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                     </tbody>
                                 </table>
                                 <hr class="my-4">
-                                <table class="table table-bordered table-striped table-hover text-start order-facts-table">
+                                <table class="table table-bordered table-striped table-hover text-start order-facts-table order-payment-facts">
                                     <thead class="table-primary text-center">
                                         <tr>
                                             <th class="p-3" colspan="2" scope="col">

@@ -44,7 +44,7 @@
     </div>
     <div class="col-md-6">
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
+            <table id="order-details-facts" class="table table-bordered table-striped table-hover text-start order-facts-table order-details-facts">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -52,15 +52,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('Order Number') }}</th>
                         <td class="p-2">{{ $order->reference_id }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('status') }}</th>
                         <td class="p-2">{{ trans($order->status) }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('auto approval') }}</th>
                         <td class="p-2">
                             @if ($order->is_admin_accepted)
@@ -76,16 +76,16 @@
                         <td class="p-2">{{ $order->admin_cancel_reason }}</td>
                     </tr>
                     @endif
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('added date') }}</th>
                         <td class="p-2">{{ Carbon\Carbon::parse($order->created_at)->format('y-m-d') }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('category') }}</th>
                         <td class="p-2">{{ trans($order->type) }}</td>
                     </tr>
                     @if($order->order_for)
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2 text-info">{{ trans('Order For') }}</th>
                         <td class="p-2">{{ trans($order->order_for) }}</td>
                     </tr>
@@ -114,15 +114,15 @@
                         <td class="p-2">{{ $order->hide_identity ? trans('yes') : trans('no') }}</td>
                     </tr>
                     @endif
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('Perfume') }}</th>
                         <td class="p-2">{{ $order->perfume ? trans('yes') : trans('no') }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('Starch Level') }}</th>
                         <td class="p-2">{{ trans($order->starch_level ?? 'none') }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('total price') }}</th>
                         <td class="p-2">{{ number_format($order->total_price, 2) }}</td>
                     </tr>
@@ -138,11 +138,11 @@
                         <td class="p-2 text-info">{{ number_format($order->lab_cost, 2) }}</td>
                     </tr>
                     @endif
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2 text-danger">{{ trans('total cost') }}</th>
                         <td class="p-2 text-danger fw-bold">{{ number_format($order->total_cost, 2) }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('Payment Method') }}</th>
                         <td class="p-2">{{ trans($order->pay_type) }}</td>
                     </tr>
@@ -151,7 +151,7 @@
                         <td class="p-2">{{ $order->coupon_string }}</td>
                     </tr>
                     @if (isset($order->online_payment_method))
-                    <tr>
+                    <tr class="mobile-order-primary">
                         <th scope="row" class="p-2">{{ trans('online Payment Method') }}</th>
                         <td class="p-2">{{ trans($order->online_payment_method) }}</td>
                     </tr>
@@ -192,6 +192,7 @@
 
                 </tbody>
             </table>
+            <button type="button" class="mobile-order-facts-more" aria-controls="order-details-facts" aria-expanded="false" data-show-label="{{ app()->getLocale() === 'ar' ? 'عرض باقي التفاصيل' : 'Show more details' }}" data-hide-label="{{ app()->getLocale() === 'ar' ? 'إخفاء التفاصيل الإضافية' : 'Hide extra details' }}">{{ app()->getLocale() === 'ar' ? 'عرض باقي التفاصيل' : 'Show more details' }}</button>
         </div>
 
     </div>
@@ -200,7 +201,7 @@
 
         @if($order->client)
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-start order-facts-table">
+            <table class="table table-bordered table-striped table-hover text-start order-facts-table client-details-facts">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -225,7 +226,7 @@
                             @endcan
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-secondary">
                         <th scope="row" class="p-2">{{ trans('email') }}</th>
                         <td class="p-2">{{ $order->client?->email }}</td>
                     </tr>
@@ -247,7 +248,7 @@
                     </tr>
                     <tr>
                         <th scope="row" class="p-3">{{ trans('class') }}</th>
-                        <td class="p-2"><span class="p-2    rounded"
+                        <td class="p-2"><span class="customer-tier-badge rounded"
                                 style="background-color:{{ $customerTire['color'] }}; color:#fff  ">{{
                                 trans($customerTire['type']) }}</span></td>
                     </tr>
@@ -259,7 +260,7 @@
                         <th scope="row" class="p-2">{{ trans('points balance') }}</th>
                         <td class="p-2">{{ $order->client?->points_balance }}</td>
                     </tr>
-                    <tr>
+                    <tr class="mobile-order-secondary">
                         <th scope="row" class="p-2">{{ trans('order report') }}</th>
                         <td class="p-2">{{ $order->report?->reportReason?->name ?? "---------------------" }}</td>
                     </tr>
