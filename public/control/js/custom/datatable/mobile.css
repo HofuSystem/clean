@@ -1,3 +1,5 @@
+.admin-mobile-order-subline { display: none; }
+
 @media (max-width: 767.98px) {
     html, body, .layout-wrapper, .layout-container, .layout-page, .content-wrapper {
         min-width: 0;
@@ -103,6 +105,142 @@
         background: #4b79b6;
         color: #fff;
     }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-inline-source {
+        display: none !important;
+    }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-subline {
+        display: block;
+        margin-top: 2px;
+        color: #758198;
+        font-size: 9px;
+        font-weight: 500;
+        line-height: 1.15;
+        direction: ltr;
+        unicode-bidi: isolate;
+    }
+    .content-wrapper table.admin-mobile-order-table tbody tr {
+        height: 43px;
+    }
+    .content-wrapper table.admin-mobile-order-table th,
+    .content-wrapper table.admin-mobile-order-table td {
+        min-width: 0;
+        padding: 3px 5px !important;
+        font-size: 10px !important;
+        line-height: 1.18;
+        height: 32px;
+    }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-reference_id { min-width: 88px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-status { min-width: 57px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-client_id { min-width: 85px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-type { min-width: 68px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-total_price { min-width: 59px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-pay_type { min-width: 38px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-actions { min-width: 115px; }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-select_switch { min-width: 25px; width: 25px !important; }
+    .content-wrapper .admin-orders-list table.admin-mobile-order-table .admin-mobile-order-select_switch {
+        position: sticky;
+        inset-inline-start: 0;
+        z-index: 2;
+        background: #fff;
+    }
+    .content-wrapper .admin-orders-list table.admin-mobile-order-table thead .admin-mobile-order-select_switch {
+        z-index: 3;
+        background: #4b79b6;
+    }
+    .content-wrapper .admin-orders-list table.admin-mobile-order-table .admin-mobile-sticky-reference {
+        inset-inline-start: 25px;
+    }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-reference_id a { font-size: 10px !important; }
+    .content-wrapper table.admin-mobile-order-table .badge,
+    .content-wrapper table.admin-mobile-order-table .btn-label,
+    .content-wrapper table.admin-mobile-order-table .btn-operation {
+        font-size: 9px !important;
+        line-height: 1.1;
+        padding: 2px 4px !important;
+        min-height: 0;
+        min-width: 0;
+    }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-actions .btn-operation,
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-actions .btn {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+        padding: 2px !important;
+        margin: 1px !important;
+    }
+    .content-wrapper table.admin-mobile-order-table .admin-mobile-order-actions i { font-size: 10px !important; }
+    .content-wrapper .admin-dashboard-orders,
+    .content-wrapper .admin-orders-list { padding: 6px !important; }
+    .content-wrapper .admin-dashboard-orders .card,
+    .content-wrapper .admin-orders-list .card { margin-bottom: 6px; }
+    .content-wrapper .admin-dashboard-orders .card-body,
+    .content-wrapper .admin-orders-list .card-body { padding: 6px !important; }
+    .content-wrapper .admin-orders-list .card-header {
+        padding: 6px;
+        margin-bottom: 4px;
+        gap: 5px;
+    }
+    .content-wrapper .admin-orders-list .card-header .card-title,
+    .content-wrapper .admin-orders-list .card-header .card-toolbar { margin: 0; }
+    .content-wrapper .admin-dashboard-orders .nav.nav-pills[role="tablist"] {
+        gap: 2px;
+        padding: 2px 3px;
+        margin-bottom: 4px !important;
+    }
+    .content-wrapper .admin-dashboard-orders .nav.nav-pills[role="tablist"] .nav-link {
+        min-height: 29px;
+        padding: 4px 6px;
+        font-size: 10px !important;
+    }
+    .content-wrapper .admin-dashboard-orders .tab-pane h3 {
+        font-size: 12px !important;
+        line-height: 1.2;
+        margin: 2px 0 4px;
+    }
+    .content-wrapper .admin-dashboard-orders .table-responsive,
+    .content-wrapper .admin-orders-list .table-responsive {
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_wrapper > .d-flex,
+    .content-wrapper .admin-orders-list .dataTables_wrapper > .d-flex {
+        flex-wrap: nowrap !important;
+        gap: 3px;
+        margin-bottom: 3px !important;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_wrapper .dt-buttons,
+    .content-wrapper .admin-orders-list .dataTables_wrapper .dt-buttons {
+        gap: 2px;
+        padding: 0;
+        overflow: visible;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_wrapper .dt-button,
+    .content-wrapper .admin-orders-list .dataTables_wrapper .dt-button {
+        min-height: 26px;
+        min-width: 0;
+        padding: 3px 4px !important;
+        font-size: 9px !important;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_length,
+    .content-wrapper .admin-orders-list .dataTables_length {
+        white-space: nowrap;
+        font-size: 10px;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_length select,
+    .content-wrapper .admin-orders-list .dataTables_length select {
+        min-height: 26px;
+        height: 26px;
+        width: 42px;
+        padding: 2px;
+        font-size: 10px !important;
+    }
+    .content-wrapper .admin-dashboard-orders .dataTables_info,
+    .content-wrapper .admin-orders-list .dataTables_info { font-size: 10px; padding-top: 3px; }
+    .content-wrapper .admin-dashboard-orders .dataTables_paginate,
+    .content-wrapper .admin-orders-list .dataTables_paginate { margin-top: 3px; font-size: 10px; }
 
     .content-wrapper .dataTables_wrapper,
     .content-wrapper .dataTables_wrapper > .d-flex {

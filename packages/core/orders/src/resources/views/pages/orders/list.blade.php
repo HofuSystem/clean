@@ -3,7 +3,7 @@
     <!--end::Header-->
 
     <!--begin::Content-->
-    <div class="container-fluid flex-grow-1 container-p-y ">
+    <div class="container-fluid flex-grow-1 container-p-y admin-orders-list">
 
         <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
             <!--begin::Page title-->

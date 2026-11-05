@@ -2,6 +2,23 @@
 
 var datatable;
 var cols;
+function arrangeMobileOrderColumns(table) {
+    if (!window.matchMedia('(max-width: 767.98px)').matches ||
+        !table.closest('.admin-dashboard-orders, .admin-orders-list')) return;
+    var row = table.querySelector('thead tr');
+    if (!row || row.dataset.mobileColumnsArranged) return;
+    var priority = ['select_switch', 'reference_id', 'status', 'client_id', 'type',
+        'total_price', 'pay_type', 'delivery_date', 'delivery_time', 'city_id',
+        'district_id', 'actions'];
+    var headers = Array.from(row.children);
+    headers.sort(function (a, b) {
+        var ai = priority.indexOf(a.dataset.name);
+        var bi = priority.indexOf(b.dataset.name);
+        return (ai < 0 ? priority.length : ai) - (bi < 0 ? priority.length : bi);
+    });
+    headers.forEach(function (header) { row.appendChild(header); });
+    row.dataset.mobileColumnsArranged = 'true';
+}
 var select2ArLanguage = {
   noResults: function () { return "لا توجد نتائج"; },
   searching: function () { return "جاري البحث..."; },
@@ -19,6 +36,7 @@ var KTUsersList = function () {
 
     // Private functions
     var initTable = function () {
+        arrangeMobileOrderColumns(table);
         cols = [];
         $('table#view-datatable thead th').each(function (index, element) {
             let data        = $(this).data('name');
@@ -46,8 +64,10 @@ var KTUsersList = function () {
             datatable = $('table#view-datatable').DataTable({
                 dom:   "<'d-flex justify-content-between align-items-center mb-2'<'dt-buttons'B><'dt-length'l>>" +
                 "frtip",
-                lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500, trans('all')] ],
-                pageLength: 25, // default selected value
+                lengthMenu: table.closest('.admin-orders-list') && window.matchMedia('(max-width: 767.98px)').matches
+                    ? [[8, 25, 50, 100, -1], [8, 25, 50, 100, trans('all')]]
+                    : [[25, 50, 100, 300, 500, -1], [25, 50, 100, 300, 500, trans('all')]],
+                pageLength: table.closest('.admin-orders-list') && window.matchMedia('(max-width: 767.98px)').matches ? 8 : 25,
                 buttons: [
                     { extend: 'copy', text: trans('copy') || 'نسخ' },
                     { extend: 'csv', text: trans('csv') || 'CSV' },
@@ -78,7 +98,7 @@ var KTUsersList = function () {
                 searching: false,
                 processing: true,
                 serverSide: true,
-                order: [[1, 'desc']],
+                order: [[table.closest('.admin-orders-list') ? cols.findIndex(function (column) { return column.data === 'created_at'; }) : 1, 'desc']],
                 ajax: {
                     url: url,
                     type: 'POST',
@@ -97,8 +117,10 @@ var KTUsersList = function () {
 
                 },
                 columnDefs: [
-                    { orderable: false, targets: 0 }, // Disable ordering on column 0 (checkbox)
-                    { orderable: false, targets: (cols.length - 1) }, // Disable ordering on column 6 (actions)                
+                    { orderable: false, targets: table.closest('.admin-orders-list')
+                        ? cols.findIndex(function (column) { return column.data === 'select_switch'; }) : 0 },
+                    { orderable: false, targets: table.closest('.admin-orders-list')
+                        ? cols.findIndex(function (column) { return column.data === 'actions'; }) : cols.length - 1 }
                 ],
     
                 columns: cols
@@ -586,6 +608,9 @@ $(document).ready(function () {
     });
     $('.view-dataTable').each(function () {
         let table   = $(this);
+        arrangeMobileOrderColumns(this);
+        let mobileDashboard = table.closest('.admin-dashboard-orders').length && window.matchMedia('(max-width: 767.98px)').matches;
+        let mobilePageLength = table.closest('#pills-all').length ? 3 : (table.closest('#pills-clothes-received').length ? 5 : 8);
         let url     = $(this).data('load');
         let columns = [];
         let filtersValues = {};
@@ -642,8 +667,10 @@ $(document).ready(function () {
             serverSide: true,
             dom:   "<'d-flex justify-content-between align-items-center mb-2'<'dt-buttons'B><'dt-length'l>>" +
             "frtip",
-            lengthMenu: [ [25, 50, 100, 300, 500,-1], [25, 50, 100, 300, 500, trans('all')] ],
-            pageLength: 25, // default selected value
+            lengthMenu: mobileDashboard
+                ? [[3, 5, 8, 25, 50, -1], [3, 5, 8, 25, 50, trans('all')]]
+                : [[25, 50, 100, 300, 500, -1], [25, 50, 100, 300, 500, trans('all')]],
+            pageLength: mobileDashboard ? mobilePageLength : 25,
             buttons: [
                 { extend: 'copy', text: trans('copy') || 'نسخ' },
                 { extend: 'csv', text: trans('csv') || 'CSV' },
@@ -679,7 +706,7 @@ $(document).ready(function () {
                 },
             },
             columns: columns, // Use the dynamically generated columns
-            order: [[0, 'desc']], // Default sorting by the first column
+            order: [[table.closest('.admin-dashboard-orders').length ? columns.findIndex(function (column) { return column.data === 'created_at'; }) : 0, 'desc']],
           
         });
         dataTable.on('draw', function () {

@@ -2,7 +2,7 @@
     'use strict';
 
     var tables = 'table#transactions-table, .items-container[data-items-name="representatives"] table';
-    var orderTables = 'table.view-dataTable, table#view-datatable';
+    var orderTables = '.admin-dashboard-orders table.view-dataTable, .admin-orders-list table#view-datatable';
     var arabic = document.documentElement.lang === 'ar';
 
     function labelRows(table) {
@@ -55,14 +55,62 @@
     function labelAllRows() { document.querySelectorAll(tables).forEach(labelRows); }
 
     function prepareOrderTable(table) {
-        if (!table || !table.tHead) return;
+        if (!table || !table.tHead || !table.tBodies.length) return;
         table.classList.remove('admin-mobile-cards');
         table.classList.add('admin-mobile-order-table');
-        var header = table.tHead.querySelector('th[data-name="reference_id"]');
-        if (!header) return;
-        var index = Array.from(header.parentElement.children).indexOf(header) + 1;
-        table.querySelectorAll('tr > :nth-child(' + index + ')').forEach(function (cell) {
-            cell.classList.add('admin-mobile-sticky-reference');
+        var headers = Array.from(table.tHead.querySelectorAll('tr:last-child th'));
+        var indexOf = function (name) { return headers.findIndex(function (header) { return header.dataset.name === name; }); };
+        var referenceIndex = indexOf('reference_id');
+        var dateIndex = indexOf('created_at');
+        var clientIndex = indexOf('client_id');
+        var phoneIndex = indexOf('phone');
+        if (referenceIndex < 0) return;
+        headers.forEach(function (header) {
+            var name = header.dataset.name;
+            if (/^(select_switch|reference_id|status|client_id|type|total_price|pay_type|delivery_date|delivery_time|actions)$/.test(name || '')) {
+                header.classList.add('admin-mobile-order-' + name);
+            }
+        });
+        headers[referenceIndex].classList.add('admin-mobile-sticky-reference');
+        if (dateIndex >= 0) headers[dateIndex].classList.add('admin-mobile-inline-source');
+        if (phoneIndex >= 0 && clientIndex >= 0) headers[phoneIndex].classList.add('admin-mobile-inline-source');
+        Array.from(table.tBodies[0].rows).forEach(function (row) {
+            if (row.cells.length !== headers.length) return;
+            headers.forEach(function (header, index) {
+                var name = header.dataset.name;
+                if (/^(select_switch|reference_id|status|client_id|type|total_price|pay_type|delivery_date|delivery_time|actions)$/.test(name || '')) {
+                    row.cells[index].classList.add('admin-mobile-order-' + name);
+                }
+            });
+            var reference = row.cells[referenceIndex];
+            reference.classList.add('admin-mobile-sticky-reference');
+            var previousDate = reference.querySelector('.admin-mobile-order-subline');
+            if (previousDate) previousDate.remove();
+            if (dateIndex >= 0) {
+                var dateCell = row.cells[dateIndex];
+                dateCell.classList.add('admin-mobile-inline-source');
+                var date = dateCell.textContent.trim().replace(/\s+/g, ' ');
+                if (date) {
+                    var dateLine = document.createElement('span');
+                    dateLine.className = 'admin-mobile-order-subline';
+                    dateLine.textContent = date;
+                    reference.appendChild(dateLine);
+                }
+            }
+            if (clientIndex >= 0 && phoneIndex >= 0) {
+                var client = row.cells[clientIndex];
+                var previousPhone = client.querySelector('.admin-mobile-order-subline');
+                if (previousPhone) previousPhone.remove();
+                var phoneCell = row.cells[phoneIndex];
+                phoneCell.classList.add('admin-mobile-inline-source');
+                var phone = phoneCell.textContent.trim().replace(/\s+/g, ' ');
+                if (phone) {
+                    var phoneLine = document.createElement('span');
+                    phoneLine.className = 'admin-mobile-order-subline';
+                    phoneLine.textContent = phone;
+                    client.appendChild(phoneLine);
+                }
+            }
         });
     }
 

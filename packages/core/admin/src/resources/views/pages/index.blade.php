@@ -1,6 +1,6 @@
 @extends('admin::layouts.dashboard')
 @section('content')
-<div class="container-fluid flex-grow-1 container-p-y mx-auto">
+<div class="container-fluid flex-grow-1 container-p-y mx-auto admin-dashboard-orders">
     <div class="row">
         <div class="card border border-dark">
             <div class="card-body py-1 px-0">
