@@ -148,6 +148,7 @@
 #addItem #saveCart { width: 100%; min-height: 42px; margin: 12px 0 0; }
 #addItem .picker-empty { grid-column: 1 / -1; padding: 34px 18px; border: 1px dashed #cdd9e9; border-radius: 15px; color: #68758a; text-align: center; background: #f9fbfe; }
 #addItem .picker-results-count { margin-top: 12px; color: #68758a; }
+#addItem .admin-mobile-cart-bar { display: none; }
 
 @media (max-width: 900px) {
     #addItem #search-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -161,13 +162,65 @@
     .modal .modal-content { max-height: calc(100dvh - 16px); border-radius: 18px; }
     .modal .modal-header { min-height: 56px; padding: 12px 16px; }
     .modal .modal-body { padding: 16px; }
-    #addItem .modal-dialog { width: calc(100% - 16px); }
-    #addItem .modal-content { height: min(760px, 88dvh); }
-    #addItem #filter-products { display: flex !important; flex-direction: column; gap: 14px; }
-    #addItem #filter-products > div:first-child { position: static; order: 1; }
-    #addItem #filter-products > div:nth-child(2) { order: 2; }
-    #addItem #search-results { grid-template-columns: 1fr; gap: 8px; }
-    #addItem #search-results > .card { padding: 9px !important; }
-    #addItem #search-results > .card .card-img-top { width: 54px; height: 54px; }
-    #addItem #cart-items { max-height: 160px; }
+    #addItem .modal-dialog { width: 100%; max-width: none; margin: 0; }
+    #addItem .modal-content { width: 100%; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; }
+    #addItem .modal-header { flex: 0 0 auto; }
+    #addItem .modal-body { padding: 12px 14px 20px; overflow-x: hidden; }
+    #addItem #filter-products { display: block !important; }
+    #addItem #filter-products > div:nth-child(2) { width: 100%; }
+    #addItem #filter-products .select-parent { width: 50%; padding-inline: 4px; }
+    #addItem #filter-products .select-parent:first-of-type { padding-inline-start: 0; }
+    #addItem #filter-products #search { min-height: 48px; }
+    #addItem #search-results { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 12px; }
+    #addItem #search-results > .card {
+        display: grid;
+        grid-template-columns: 68px minmax(0, 1fr);
+        align-items: start;
+        gap: 10px;
+        padding: 12px !important;
+        border-radius: 16px;
+    }
+    #addItem #search-results > .card .card-img-top { width: 64px; height: 64px; margin: 0 !important; }
+    #addItem #search-results > .card .card-body { margin: 0; padding: 0 !important; }
+    #addItem #search-results > .card .card-title { min-height: 0; margin-bottom: 4px; font-size: 14px !important; }
+    #addItem #search-results .add-to-cart-form {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    #addItem #search-results .add-to-cart-form > .calculator { grid-column: 1 / -1; }
+    #addItem #search-results .add-to-cart-form > button { width: auto; min-width: 68px; min-height: 44px; }
+    #addItem #search-results .input-group button,
+    #addItem #cart-items .input-group button { min-width: 44px; min-height: 44px; }
+    #addItem #search-results .input-group > input,
+    #addItem #cart-items .input-group > input { height: 44px; }
+    #addItem #filter-products > div:first-child {
+        display: none;
+        position: absolute;
+        inset-inline: 10px;
+        bottom: calc(72px + env(safe-area-inset-bottom));
+        top: auto;
+        z-index: 3;
+        max-height: 55dvh;
+        overflow-y: auto;
+        box-shadow: 0 16px 50px rgba(20, 38, 70, .22);
+        background: #fff;
+    }
+    #addItem.admin-mobile-cart-open #filter-products > div:first-child { display: block; }
+    #addItem #cart-items { max-height: 38dvh; }
+    #addItem #saveCart { display: none; }
+    #addItem .admin-mobile-cart-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 0 0 auto;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        border-top: 1px solid #e7edf5;
+        background: #fff;
+        box-shadow: 0 -8px 24px rgba(20, 38, 70, .06);
+    }
+    #addItem .admin-mobile-cart-bar button { min-height: 48px; border-radius: 12px; font-size: 14px !important; }
+    #addItem .admin-mobile-cart-toggle { flex: 1 1 auto; border: 1px solid #d9e5f5; color: #254d82; background: #f5f8fc; }
+    #addItem .admin-mobile-cart-save { flex: 0 0 auto; padding-inline: 18px; }
 }

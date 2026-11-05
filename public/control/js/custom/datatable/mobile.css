@@ -37,22 +37,28 @@
     #layout-navbar .dropdown-user .avatar { width: 36px; height: 36px; }
 
     .content-wrapper .nav.nav-pills[role="tablist"] {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
-        padding-inline: 10px;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        padding: 6px 10px;
     }
 
     .content-wrapper .nav.nav-pills[role="tablist"] > .nav-item,
     .content-wrapper .nav.nav-pills[role="tablist"] > .nav-link {
         min-width: 0;
-        width: 100%;
+        width: auto;
         margin: 0;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
     }
 
     .content-wrapper .nav.nav-pills[role="tablist"] .nav-link {
         min-height: 44px;
-        white-space: normal;
+        white-space: nowrap;
         line-height: 1.4;
     }
 
@@ -70,9 +76,17 @@
 
     .content-wrapper .dataTables_wrapper > .d-flex,
     .content-wrapper .dataTables_wrapper .dt-buttons {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 6px;
     }
+
+    .content-wrapper .dataTables_wrapper .dt-buttons {
+        max-width: 100%;
+        overflow-x: auto;
+        padding-block: 4px;
+    }
+
+    .content-wrapper .dataTables_wrapper .dt-buttons > * { flex: 0 0 auto; }
 
     .content-wrapper .dataTables_wrapper .dataTables_length,
     .content-wrapper .dataTables_wrapper .dataTables_filter,
@@ -108,7 +122,7 @@
         border-radius: 14px;
         box-shadow: 0 3px 12px rgb(27 45 83 / 5%);
         margin-bottom: 12px;
-        padding: 4px 12px;
+        padding: 4px 14px;
     }
 
     .content-wrapper table.admin-mobile-cards tbody td:not([colspan]) {
@@ -118,7 +132,7 @@
         gap: 12px;
         width: 100% !important;
         min-width: 0;
-        padding: 9px 0 !important;
+        padding: 10px 0 !important;
         border: 0;
         border-bottom: 1px solid #f0f2f7;
         text-align: end !important;
@@ -137,6 +151,30 @@
     }
 
     .content-wrapper table.admin-mobile-cards tbody td:last-child { border-bottom: 0; }
+    .content-wrapper table.admin-mobile-cards tbody td.admin-mobile-secondary { display: none; }
+    .content-wrapper table.admin-mobile-cards tbody tr.admin-mobile-expanded td.admin-mobile-secondary { display: flex; }
+    .content-wrapper table.admin-mobile-cards tbody td.admin-mobile-actions {
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .content-wrapper table.admin-mobile-cards tbody td.admin-mobile-toggle-host { flex-wrap: wrap; }
+    .content-wrapper table.admin-mobile-cards tbody td.admin-mobile-actions::before { display: none; }
+    .content-wrapper table.admin-mobile-cards .admin-mobile-details-toggle {
+        flex: 1 0 100%;
+        min-height: 44px;
+        margin-top: 6px;
+        border: 1px solid #d9e5f5;
+        border-radius: 10px;
+        background: #f5f8fc;
+        color: #2c5d9d;
+        font-size: 13px !important;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .content-wrapper table.admin-mobile-cards .admin-mobile-details-toggle:focus-visible {
+        outline: 3px solid #86aef0;
+        outline-offset: 2px;
+    }
     .content-wrapper table.admin-mobile-cards tbody td[colspan] { display: block; text-align: center; }
 
     .content-wrapper table.admin-mobile-cards .btn-operation,
@@ -150,25 +188,51 @@
     .content-wrapper table.admin-mobile-cards tbody td > * { max-width: 100%; }
     .content-wrapper table.admin-mobile-cards tbody td img { max-width: 58px; height: auto; }
 
+    #pills-summary .table-responsive { overflow-x: hidden; }
+    #pills-summary .table-responsive > table { width: 100%; min-width: 0; table-layout: fixed; }
+    #pills-summary .table-responsive > table tbody tr { border-bottom: 1px solid #e9edf4; }
+    #pills-summary .table-responsive > table tbody th,
+    #pills-summary .table-responsive > table tbody td {
+        width: 50%;
+        padding: 10px 8px !important;
+        border-inline: 0 !important;
+        overflow-wrap: anywhere;
+        vertical-align: top;
+        font-size: 13px !important;
+    }
+    #pills-summary .table-responsive > table tbody th { color: #66728a; font-weight: 600; }
+    #pills-summary .table-responsive > table tbody td { color: #1b2b48; }
+
     .content-wrapper .order-action-btns {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: flex !important;
+        flex-wrap: nowrap !important;
         width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        padding: 4px 0 8px;
+        scrollbar-width: thin;
         margin-inline-start: 0 !important;
     }
 
     .content-wrapper .order-action-btns .order-btn {
-        min-width: 0;
+        flex: 0 0 44px;
+        min-width: 44px;
         min-height: 44px;
-        width: 100%;
-        white-space: normal;
+        width: 44px;
+        padding: 0 !important;
+        white-space: nowrap;
     }
 
     .content-wrapper .order-action-btns .order-btn .btn-text {
-        max-width: none;
-        opacity: 1;
-        white-space: normal;
-        margin-inline-start: 7px;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 
     .content-wrapper input, .content-wrapper select, .content-wrapper textarea,

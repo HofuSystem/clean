@@ -110,7 +110,7 @@ Route::group(
                     Route::post('import', [UsersController::class,'import'])->name('import');
                     Route::get('export-chunks', [UsersController::class,'exportChunks'])->name('export-chunks');
                     Route::get('export', [UsersController::class,'export'])->name('export');
-                    Route::get('{id}', [UsersController::class,'show'])->name('show');
+                    Route::get('{id}', [UsersController::class,'show'])->whereNumber('id')->name('show');
                     Route::match(['post', 'put', 'patch'], '{id}/update-password', [UsersController::class,'updatePassword'])->name('update-password');
                     Route::get('{id}/edit', [UsersController::class,'createOrEdit'])->name('edit');
                     Route::put('{id}/edit', [UsersController::class,'storeOrUpdate'])->name('edit');
