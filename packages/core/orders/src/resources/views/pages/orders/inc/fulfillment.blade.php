@@ -1,8 +1,8 @@
 
-<div class="row">
+<div class="row order-fulfillment-history">
     <div class="col-12">
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-center">
+            <table class="table table-bordered table-striped table-hover text-center fulfillment-items-table">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="2" scope="col">
@@ -30,7 +30,7 @@
             
     <div class="card-body p-0">
         <div class="table-responsive p-2">
-            <table class="table table-bordered table-striped table-hover text-center">
+            <table class="table table-bordered table-striped table-hover text-center fulfillment-status-table">
                 <thead class="table-primary text-center">
                     <tr>
                         <th class="p-3" colspan="6" scope="col">
@@ -62,15 +62,15 @@
             </table>
         </div>
         @if(isset($orderHistories) && $orderHistories->count() > 0)
-            <div class="table-responsive p-4">
-                <table class="table table-bordered table-striped table-hover align-middle">
+            <div class="table-responsive p-4 fulfillment-audit-scroll">
+                <table class="table table-bordered table-striped table-hover align-middle fulfillment-audit-table">
                     <thead class="table-primary">
                         <tr>
                             <th class="text-center">{{ trans('#') }}</th>
                             <th class="text-center">{{ trans('Type/Notes') }}</th>
                             <th class="text-center">{{ trans('Before') }}</th>
                             <th class="text-center">{{ trans('After') }}</th>
-                            <th class="text-center" style="width: 200px;">{{ trans('Changed By') }}</th>
+                            <th class="text-center">{{ trans('Changed By') }}</th>
                             <th class="text-center">{{ trans('Changed At') }}</th>
                         </tr>
                     </thead>
@@ -83,8 +83,10 @@
                                 {{-- Type/Notes Column --}}
                                 <td>
                                     <div class="fw-bold text-dark">
-                                        <h1>{{ trans($history->action_type ?? 'Unknown Action') }}</h1>
-                                        <p> <p class="fw-bold text-dark" style="direction: rtl; width: fit-content;"> {{ $history->notes }}</p></p>
+                                        <strong class="fulfillment-action-title">{{ trans($history->action_type ?? 'Unknown Action') }}</strong>
+                                        @if ($history->notes)
+                                            <p class="fulfillment-action-notes mb-0">{{ $history->notes }}</p>
+                                        @endif
                                     </div>
                                 </td>
                                 

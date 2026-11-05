@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var tables = 'table#transactions-table';
+    var tables = 'table.admin-mobile-card-opt-in';
     var orderTables = '.admin-dashboard-orders table.view-dataTable, .admin-orders-list table#view-datatable';
     var arabic = document.documentElement.lang === 'ar';
 

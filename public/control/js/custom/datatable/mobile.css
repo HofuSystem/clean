@@ -565,6 +565,56 @@
     #pills-summary #basic-table .card-header { padding-inline: 4px; }
     #pills-summary #basic-table .table-responsive { width: 100%; padding: 0 !important; }
     #pills-summary table.order-facts-table tbody { width: 100%; }
+    #pills-fulfillment-history > .row,
+    #pills-payments > .row { --bs-gutter-x: 0; width: 100%; margin-inline: 0; }
+    #pills-fulfillment-history > .row > *,
+    #pills-payments > .row > * { min-width: 0; padding-inline: 0; }
+    #pills-fulfillment-history .table-responsive,
+    #pills-payments .table-responsive { width: 100%; max-width: 100%; padding: 0 !important; margin-block: 4px 10px; border: 1px solid #e2e8f1; border-radius: 8px; }
+    #pills-fulfillment-history table,
+    #pills-payments #transactions-table { margin-bottom: 0; border: 0; }
+    #pills-fulfillment-history table th,
+    #pills-fulfillment-history table td,
+    #pills-payments #transactions-table th,
+    #pills-payments #transactions-table td { vertical-align: middle; padding: 8px 10px !important; font-size: 11px !important; line-height: 1.35; border-color: #e2e8f1; }
+    #pills-fulfillment-history table thead th,
+    #pills-payments #transactions-table thead th { background: #4b79b6 !important; color: #fff !important; font-weight: 600; }
+    #pills-fulfillment-history .fulfillment-items-table { width: 100%; table-layout: fixed; }
+    #pills-fulfillment-history .fulfillment-status-table { width: max-content; min-width: 600px; }
+    #pills-fulfillment-history .fulfillment-status-table th,
+    #pills-fulfillment-history .fulfillment-status-table td { min-width: 86px; white-space: normal; overflow-wrap: anywhere; }
+    #pills-fulfillment-history .fulfillment-status-table th:first-child,
+    #pills-fulfillment-history .fulfillment-status-table td:first-child { min-width: 120px; }
+    #pills-fulfillment-history .fulfillment-audit-table { width: max-content; min-width: 760px; }
+    #pills-fulfillment-history .fulfillment-audit-table th,
+    #pills-fulfillment-history .fulfillment-audit-table td { min-width: 98px; white-space: normal; overflow-wrap: anywhere; }
+    #pills-fulfillment-history .fulfillment-audit-table th:first-child,
+    #pills-fulfillment-history .fulfillment-audit-table td:first-child { min-width: 42px; width: 42px; text-align: center; }
+    #pills-fulfillment-history .fulfillment-audit-table th:nth-child(2),
+    #pills-fulfillment-history .fulfillment-audit-table td:nth-child(2) { min-width: 145px; max-width: 190px; }
+    #pills-fulfillment-history .fulfillment-audit-table th:nth-child(5),
+    #pills-fulfillment-history .fulfillment-audit-table td:nth-child(5) { min-width: 155px; max-width: 190px; }
+    #pills-fulfillment-history .fulfillment-action-title { display: block; font-size: 11px; line-height: 1.35; }
+    #pills-fulfillment-history .fulfillment-action-notes { margin-top: 4px; font-size: 10px; font-weight: 400; line-height: 1.4; }
+    #pills-fulfillment-history .fulfillment-audit-table .symbol { width: 24px; height: 24px; min-width: 24px; }
+    #pills-fulfillment-history .fulfillment-audit-table .symbol-label { font-size: 11px !important; }
+    #pills-payments #transactions-table { display: table !important; width: max-content !important; min-width: 680px !important; table-layout: auto; }
+    #pills-payments #transactions-table thead { display: table-header-group !important; }
+    #pills-payments #transactions-table tbody { display: table-row-group !important; }
+    #pills-payments #transactions-table tr { display: table-row !important; }
+    #pills-payments #transactions-table th,
+    #pills-payments #transactions-table td { display: table-cell !important; min-width: 72px; white-space: normal; overflow-wrap: anywhere; }
+    #pills-payments #transactions-table th:first-child,
+    #pills-payments #transactions-table td:first-child { min-width: 48px; }
+    #pills-payments #transactions-table th:nth-child(3),
+    #pills-payments #transactions-table td:nth-child(3) { min-width: 130px; }
+    #pills-payments #transactions-table th:nth-child(5),
+    #pills-payments #transactions-table td:nth-child(5) { min-width: 155px; max-width: 220px; }
+    #pills-payments #transactions-table .d-flex { flex-wrap: nowrap; gap: 5px !important; }
+    #pills-payments #transactions-table .btn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; min-width: 26px; min-height: 26px; padding: 0 !important; border-radius: 6px; }
+    #pills-payments #transactions-table .btn i { font-size: 11px !important; }
+    #pills-payments > .row > .col-12 > .d-flex { gap: 8px; margin-bottom: 8px !important; }
+    #pills-payments > .row h5 { font-size: 12px !important; }
     .content-wrapper .admin-orders-list table.admin-mobile-order-table .admin-mobile-order-select_switch .form-check { display: flex; align-items: center; justify-content: center; width: 18px; height: 22px; min-height: 0; padding: 0; margin: 0 auto !important; }
     .content-wrapper .admin-orders-list table.admin-mobile-order-table .admin-mobile-order-select_switch .form-check-input { display: block; flex: 0 0 16px; width: 16px !important; height: 16px !important; min-width: 16px !important; min-height: 16px !important; padding: 0 !important; margin: 0 !important; border: 1px solid #8da8cd; border-radius: 4px; box-shadow: none; }
 

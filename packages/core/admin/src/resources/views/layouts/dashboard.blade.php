@@ -87,7 +87,7 @@
             font-size: 12px !important
         }
     </style>
-    <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=6">
+    <link rel="stylesheet" href="{{ asset('control') }}/js/custom/datatable/mobile.css?v=7">
     <link rel="stylesheet" href="{{ asset('control') }}/assets/css/admin-modals.css?v=3">
 
 </head>
@@ -173,7 +173,7 @@
     <script src="{{ asset('control') }}/assets/js/main.js"></script>
     <script src="{{ asset('custom') }}/dist/js/custom.js"></script>
     <script src="{{ asset('control') }}/js/custom/datatable/table.js?v={{ time() }}"></script>
-    <script src="{{ asset('control') }}/js/custom/datatable/mobile.js?v=5"></script>
+    <script src="{{ asset('control') }}/js/custom/datatable/mobile.js?v=6"></script>
 
     <script>
         var translations = {!! json_encode(\Core\Admin\Helpers\TransHelper::getDataOfKey(config('app.locale'))) !!}
