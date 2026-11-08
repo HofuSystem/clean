@@ -40,15 +40,22 @@
     <!-- Hero Section -->
     <section class="bg-gradient-to-b from-sky-50 to-white py-10 md:py-14 text-center">
         <div class="max-w-5xl mx-auto px-4">
+            @php $cmsHero = isset($page) && in_array($page->slug, ['coverage', 'riyadh'], true) ? ($section ?? null)?->translate(app()->getLocale()) : null; @endphp
             <nav class="text-xs text-gray-500 mb-3 flex items-center justify-center gap-2 font-medium">
                 <a href="{{ url('/') }}" class="hover:text-sky-600">{{ $isRtl ? 'الرئيسية' : 'Home' }}</a> <span class="text-gray-300">/</span>
                 <span class="text-gray-800 font-bold">{{ $isRtl ? 'تغطية الأحياء والمدن' : 'Coverage' }}</span>
             </nav>
+            @if($cmsHero?->title)
+                <h1 class="text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-3">{{ $cmsHero->title }}</h1>
+            @else
             <h1 class="text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-3">
                 {{ $isRtl ? 'تغطية الأحياء والمدن' : 'Districts & Cities Coverage' }}
             </h1>
+            @endif
             <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-6">
-                @if($isRtl)
+                @if($cmsHero?->description)
+                    {{ str_replace(':count', (string) $totalDistrictsCount, $cmsHero->description) }}
+                @elseif($isRtl)
                     نخدمك في أكثر من <strong>{{ $totalDistrictsCount }} حياً نشطاً بالرياض والمبرز (الأحساء)</strong> مع استلام وتوصيل لباب بيتك، وقريباً في جدة والدمام.
                 @else
                     Serving you in over <strong>{{ $totalDistrictsCount }} active districts across Riyadh & Al-Mubarraz (Al-Ahsa)</strong> with door-to-door delivery, and coming soon to Jeddah & Dammam.

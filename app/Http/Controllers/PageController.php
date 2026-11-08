@@ -582,6 +582,10 @@ class PageController extends Controller
             ->where('slug', 'pricing')->where('is_active', true)
             ->first();
 
+        $pageTranslation = $pageData?->translate($lang);
+        $title = $pageTranslation?->meta_title ?: ($pageTranslation?->title ?: $title);
+        $metaDescription = $pageTranslation?->meta_description ?: ($pageTranslation?->description ?: $metaDescription);
+
         return view('pages.pricing', [
             'page' => $pageData,
             'categories' => $categories,
@@ -612,6 +616,10 @@ class PageController extends Controller
         $metaDescription = $lang === 'ar'
             ? 'اكتشف المدن والأحياء المغطاة بخدمات كلين ستيشن لاستلام وتوصيل الغسيل في السعودية.'
             : 'Discover the cities and districts covered by Clean Station laundry pickup and delivery services in Saudi Arabia.';
+
+        $pageTranslation = $pageData?->translate($lang);
+        $title = $pageTranslation?->meta_title ?: ($pageTranslation?->title ?: $title);
+        $metaDescription = $pageTranslation?->meta_description ?: ($pageTranslation?->description ?: $metaDescription);
 
         return view('pages.riyadh', [
             'page' => $pageData,

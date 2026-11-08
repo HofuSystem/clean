@@ -17,6 +17,16 @@ class WebsitePageCmsSeeder extends Seeder
         $home = $this->page('home', 'Home', 'الرئيسية', 'Clean Station | Laundry & Cleaning Services', 'كلين ستيشن | خدمات الغسيل والعناية');
         $gifts = $this->page('gifts', 'Flowers & Gifts', 'الورود والهدايا', 'Flower & Gift Delivery in Riyadh | Clean Station', 'توصيل الورود والهدايا في الرياض | كلين ستيشن');
 
+        $pricing = $this->page('pricing', 'Pricing', 'الأسعار', 'Laundry & Dry Cleaning Prices | Clean Station', 'أسعار الغسيل والتنظيف الجاف | كلين ستيشن');
+        $coverage = $this->page('coverage', 'Coverage', 'التغطية', 'Coverage & Active Districts | Clean Station', 'تغطية الأحياء والمدن | كلين ستيشن');
+
+        $this->sections($pricing, [
+            'pricing' => ['Pricing List', 'قائمة الأسعار', 'Browse current laundry, ironing, dry cleaning and carpet care prices.', 'تعرّف على أسعار الغسيل والكي والتنظيف الجاف والعناية بالسجاد.'],
+        ]);
+        $this->sections($coverage, [
+            'coverage' => ['Districts & Cities Coverage', 'تغطية الأحياء والمدن', 'Serving :count active districts across Riyadh and Al-Mubarraz with door-to-door delivery.', 'نخدمك في :count حياً نشطاً في الرياض والمبرز مع خدمة الاستلام والتوصيل.'],
+        ]);
+
         $this->sections($home, [
             'hero' => ['Your laundry, smarter and cleaner', 'غسيلك أذكى وأنظف', 'Order laundry care with pickup and delivery at a time that suits you.', 'اطلب خدمات العناية بملابسك مع الاستلام والتوصيل في الوقت الذي يناسبك.'],
             'order-modes' => ['Two ways to order in the app', 'طريقتان للطلب من التطبيق', '', ''],

@@ -30,15 +30,22 @@
     <!-- Hero Section -->
     <section class="bg-gradient-to-b from-sky-50 to-white py-10 md:py-14 text-center">
         <div class="max-w-5xl mx-auto px-4">
+            @php $cmsHero = isset($page) && $page->slug === 'pricing' ? ($section ?? null)?->translate(app()->getLocale()) : null; @endphp
             <nav class="text-xs text-gray-500 mb-3 flex items-center justify-center gap-2 font-medium">
                 <a href="{{ url('/') }}" class="hover:text-sky-600">{{ $isRtl ? 'الرئيسية' : 'Home' }}</a> <span class="text-gray-300">/</span>
                 <span class="text-gray-800 font-bold">{{ $isRtl ? 'الأسعار' : 'Pricing' }}</span>
             </nav>
+            @if($cmsHero?->title)
+                <h1 class="text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-3">{{ $cmsHero->title }}</h1>
+            @else
             <h1 class="text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-3">
                 {{ $isRtl ? 'قائمة الأسعار' : 'Pricing List' }}
             </h1>
+            @endif
             <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-6">
-                @if($isRtl)
+                @if($cmsHero?->description)
+                    {{ $cmsHero->description }}
+                @elseif($isRtl)
                     غسيل ملابسك يرجع لك جاهز ومرتب من <strong>21 إلى 24 ساعة فقط</strong>. استلام وتوصيل مجاني لباب بيتك للطلبات بـ <strong>100 ريال وفوق</strong> مع عروض مستمرة أسبوعياً.
                 @else
                     Your laundry is delivered back clean and organized within <strong>21 to 24 hours only</strong>. Free pickup and delivery for orders of <strong>100 SAR and above</strong> with weekly offers.

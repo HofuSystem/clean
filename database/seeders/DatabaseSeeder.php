@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             // LangSeeder::class,
             PermissionSeeder::class,
             AdminSeeder::class,
+            WebsitePageCmsSeeder::class,
             // LatestAppearSeeder::class,
             // PagesAndSectionsSeeder::class,
 
