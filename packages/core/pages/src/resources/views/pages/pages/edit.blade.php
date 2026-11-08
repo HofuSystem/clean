@@ -157,16 +157,16 @@
                                                             <h4 class="mb-3">معاينة الرابط عند المشاركة</h4>
                                                             <div class="mb-3">
                                                                 <label class="form-label">عنوان المشاركة</label>
-                                                                <input type="text" name="translations[{{ $locale }}][social_share_title]" class="form-control" maxlength="500" value="{{ old("translations.$locale.social_share_title", $pageTranslation?->social_share_title) }}">
+                                                                <input type="text" name="translations[{{ $locale }}][social_share_title]" class="form-control" maxlength="500" value="{{ old("translations.$locale.social_share_title", $pageTranslation?->social_share_title ?: ($pageTranslation?->meta_title ?: $pageTranslation?->title)) }}">
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label class="form-label">وصف المشاركة</label>
-                                                                <textarea name="translations[{{ $locale }}][social_share_description]" class="form-control" rows="3" maxlength="1000">{{ old("translations.$locale.social_share_description", $pageTranslation?->social_share_description) }}</textarea>
+                                                                <textarea name="translations[{{ $locale }}][social_share_description]" class="form-control" rows="3" maxlength="1000">{{ old("translations.$locale.social_share_description", $pageTranslation?->social_share_description ?: ($pageTranslation?->meta_description ?: $pageTranslation?->description)) }}</textarea>
                                                             </div>
                                                             <div>
                                                                 <label class="form-label">صورة المشاركة</label>
                                                                 <div class="media-center-group form-control" data-max="1" data-type="image">
-                                                                    <input type="text" hidden name="translations[{{ $locale }}][social_share_image]" value="{{ old("translations.$locale.social_share_image", $pageTranslation?->social_share_image) }}">
+                                                                    <input type="text" hidden name="translations[{{ $locale }}][social_share_image]" value="{{ old("translations.$locale.social_share_image", $pageTranslation?->social_share_image ?: ($pageTranslation?->seo_image ?: ($item?->image))) }}">
                                                                     <button type="button" class="btn btn-secondary media-center-load mt-2"><i class="fa fa-file-upload"></i></button>
                                                                     <div class="input-gallery"></div>
                                                                 </div>
