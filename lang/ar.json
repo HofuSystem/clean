@@ -1735,6 +1735,7 @@
     "CmsPageDetail saved": "تم حفظ تفاصيل صفحة CMS",
     "CmsPage index": "فهرس صفحات CMS",
     "CmsPage saved": "تم حفظ صفحة CMS",
+    "pages saved": "تم حفظ الصفحة بنجاح",
     "CmsPage deleted": "تم حذف صفحة CMS",
     "CmsPage import": "استيراد صفحة CMS",
     "video should be a string": "يجب أن يكون الفيديو نصًا",
