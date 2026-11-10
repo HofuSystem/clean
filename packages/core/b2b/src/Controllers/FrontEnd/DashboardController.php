@@ -389,7 +389,8 @@ class DashboardController extends Controller
                 $desc,
                 $notes !== '' ? 'ملاحظة: ' . $notes : null,
             ], fn ($part) => $part !== null && trim($part) !== '');
-            $data['note'] = implode(' - ', $orderNoteParts) ?: null;
+            $combinedOrderNote = implode(' - ', $orderNoteParts);
+            $data['note'] = $combinedOrderNote !== '' ? $combinedOrderNote : null;
             if ($request->b2b_type === 'client') {
                 $user = User::withTrashed()->where('phone', $request->customer_phone)->first();
                 if (isset($user) and $user->deleted_at) {
@@ -417,7 +418,9 @@ class DashboardController extends Controller
                 }
                 $orderUser = $user;
             }
-            $data['desc'] = $desc;
+            // The app reads `nots` (mapped from the order's `desc`) while the
+            // dashboard reads `note`. Keep both fields aligned for fast orders.
+            $data['desc'] = $combinedOrderNote !== '' ? $combinedOrderNote : $desc;
             $order = $this->ordersService->createOrder($data, [], $orderUser);
             if ($request->b2b_type === 'client') {
                 return $this->returnData(trans('order_created_success'), [
