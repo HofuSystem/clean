@@ -67,7 +67,7 @@ class CreateOrderRequest extends FormRequest
     }
 
     if ($this->input('type') === 'fastorder') {
-      if ($this->has('service_type') && empty($this->input('desc'))) {
+      if ($this->filled('service_type')) {
         $serviceType = $this->input('service_type');
         $serviceTypeMap = [
           'iron_only'     => 'كوي فقط',
@@ -76,7 +76,11 @@ class CreateOrderRequest extends FormRequest
           'wash_and_iron' => 'غسيل وكوي',
           'dry_clean'     => 'تنظيف جاف',
         ];
-        $merge['desc'] = $serviceTypeMap[$serviceType] ?? $serviceType;
+        $serviceTypeLabel = trim((string) ($serviceTypeMap[$serviceType] ?? $serviceType));
+        $customerNote = trim((string) $this->input('desc', ''));
+        $merge['desc'] = $customerNote !== '' && $customerNote !== $serviceTypeLabel && $customerNote !== $serviceType
+          ? $serviceTypeLabel . ' - ' . $customerNote
+          : $serviceTypeLabel;
       }
     } elseif ($this->input('type') === 'clothes') {
       $serviceTypeValues = ['iron_only', 'wash_only', 'wash_iron', 'wash_and_iron', 'dry_clean', 'كوي فقط', 'غسيل فقط', 'غسيل وكوي', 'تنظيف جاف'];
