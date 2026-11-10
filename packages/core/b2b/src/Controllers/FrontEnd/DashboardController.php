@@ -379,11 +379,17 @@ class DashboardController extends Controller
             if(!$orderUser){
                 $orderUser = Auth::user();
             }
-            $notes = $request->notes ?? '';
-            if ($request->room_number) {
-                $notes = 'Room: ' . $request->room_number . ' | ' . $notes;
+            $notes = trim((string) ($request->notes ?? ''));
+            $roomNumber = trim((string) ($request->room_number ?? ''));
+            if ($roomNumber !== '') {
+                $notes = 'Room: ' . $roomNumber . ($notes !== '' ? ' | ' . $notes : '');
             }
-            $desc = $request->service_type;
+            $desc = trim((string) $request->service_type);
+            $orderNoteParts = array_filter([
+                $desc,
+                $notes !== '' ? 'ملاحظة: ' . $notes : null,
+            ], fn ($part) => $part !== null && trim($part) !== '');
+            $data['note'] = implode(' - ', $orderNoteParts) ?: null;
             if ($request->b2b_type === 'client') {
                 $user = User::withTrashed()->where('phone', $request->customer_phone)->first();
                 if (isset($user) and $user->deleted_at) {
@@ -393,14 +399,12 @@ class DashboardController extends Controller
                     $user->update([
                         'fullname' => !empty($user->email) ? $user->email : $request->customer_name,
                         'company_id' => $b2bContext['company_id'],
-                        'contract_note' => 'ملاحظة: ' . $notes
                     ]);
                 } else {
                     $user = User::create([
                         'phone' => $request->customer_phone,
                         'fullname' => $request->customer_name,
                         'company_id' => $b2bContext['company_id'],
-                        'contract_note' => 'ملاحظة: ' . $notes
                     ]);
                 }
                 if (isset($request->customer_email)) {
@@ -412,8 +416,6 @@ class DashboardController extends Controller
                     }
                 }
                 $orderUser = $user;
-            } else {
-                $desc .= " | " . $notes;
             }
             $data['desc'] = $desc;
             $order = $this->ordersService->createOrder($data, [], $orderUser);

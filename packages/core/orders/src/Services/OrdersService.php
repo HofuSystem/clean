@@ -1046,10 +1046,14 @@ class OrdersService
             }
         }
 
-        $noteParts = array_filter([$createOrderData['desc'] ?? null, $user->contract_note ?? null], function ($part) {
-            return !is_null($part) && trim((string)$part) !== '';
-        });
-        $createOrderData['note'] = !empty($noteParts) ? implode(' - ', array_map('trim', $noteParts)) : null;
+        $explicitOrderNote = trim((string) ($createOrderData['note'] ?? ''));
+        if ($explicitOrderNote === '') {
+            $noteParts = array_filter([$createOrderData['desc'] ?? null, $user->contract_note ?? null], function ($part) {
+                return !is_null($part) && trim((string)$part) !== '';
+            });
+            $explicitOrderNote = !empty($noteParts) ? implode(' - ', array_map('trim', $noteParts)) : '';
+        }
+        $createOrderData['note'] = $explicitOrderNote !== '' ? $explicitOrderNote : null;
         $order = Order::create($createOrderData);
 
         if (is_array($analyticsContext)) {
