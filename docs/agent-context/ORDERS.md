@@ -34,6 +34,12 @@ The B2B portal has separate note composition in `DashboardController::orderStore
 
 ## Related sensitive flows
 
+### Dashboard mobile column order (2026-11-11)
+
+- Dashboard tables are defined in `packages/core/admin/src/resources/views/pages/index.blade.php`. `arrangeMobileOrderColumns` in `public/control/js/custom/datatable/table.js` reorders headers before DataTables derives its data columns.
+- Below 768px, dashboard pickup date/time follow `type`, immediately followed by delivery date; `actions` sorts after all other columns, including unlisted fields. The orders-list and desktop ordering are unchanged by this dashboard-specific adjustment.
+- Local verification: JavaScript syntax and execution against all eight dashboard header definitions, including repeated initialization and desktop no-op. No live mobile-browser verification.
+
 ### Points conversion (2026-11-11, baseline `30a9fc6` plus working changes)
 
 - The legacy setting `riyal_per_point_redeem` holds points per SAR: production output supplied by the user showed `100` in both database and cache, with minimum `1000`. Thus 1000 points redeem for SAR 10. Do not invert the setting or change its API key.

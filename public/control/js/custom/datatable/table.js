@@ -10,11 +10,19 @@ function arrangeMobileOrderColumns(table) {
     var priority = ['select_switch', 'reference_id', 'status', 'client_id', 'type',
         'total_price', 'pay_type', 'delivery_date', 'delivery_time', 'city_id',
         'district_id', 'actions'];
+    var dashboard = table.closest('.admin-dashboard-orders');
+    if (dashboard) {
+        priority.splice(priority.indexOf('delivery_date'), 1);
+        priority.splice(priority.indexOf('type') + 1, 0, 'receiver_date', 'receiver_time', 'delivery_date');
+    }
     var headers = Array.from(row.children);
+    function rank(header) {
+        if (dashboard && header.dataset.name === 'actions') return priority.length + 1;
+        var index = priority.indexOf(header.dataset.name);
+        return index < 0 ? priority.length : index;
+    }
     headers.sort(function (a, b) {
-        var ai = priority.indexOf(a.dataset.name);
-        var bi = priority.indexOf(b.dataset.name);
-        return (ai < 0 ? priority.length : ai) - (bi < 0 ? priority.length : bi);
+        return rank(a) - rank(b);
     });
     headers.forEach(function (header) { row.appendChild(header); });
     row.dataset.mobileColumnsArranged = 'true';
