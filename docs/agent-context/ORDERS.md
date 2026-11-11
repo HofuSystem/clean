@@ -34,6 +34,11 @@ The B2B portal has separate note composition in `DashboardController::orderStore
 
 ## Related sensitive flows
 
+### Wallet transaction route validation (2026-11-11)
+
+- `packages/core/wallet/src/routes/dashboard.php` constrains wallet transaction group `{id}` parameters to digits. Previously arbitrary text reached `WalletTransactionsController::show` and `WalletTransactionsService::get(int $id)`, producing TypeError instead of rejecting the URL.
+- `tests/Feature/Audit/WalletTransactionRoutesTest.php` verifies numeric IDs, rejection of nonnumeric IDs and preservation of static routes such as stats/search/export in the isolated application. The reported production alert identifies the typed method but omits the actual ID and exception message; its exact triggering URL remains unknown.
+
 ### Dashboard mobile column order (2026-11-11)
 
 - Dashboard tables are defined in `packages/core/admin/src/resources/views/pages/index.blade.php`. `arrangeMobileOrderColumns` in `public/control/js/custom/datatable/table.js` reorders headers before DataTables derives its data columns.

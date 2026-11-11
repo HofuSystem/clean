@@ -42,7 +42,7 @@ Route::group(
                     Route::put('{id}/restore', [WalletPackagesController::class,'restore'])->name('restore');
                 });
 
-                Route::group(['prefix' => 'wallet-transactions', 'as' => 'wallet-transactions.' ], function () {
+                Route::group(['prefix' => 'wallet-transactions', 'as' => 'wallet-transactions.', 'where' => ['id' => '[0-9]+']], function () {
                     Route::get('', [WalletTransactionsController::class,'index'])->name('index');
                     Route::get('stats', [WalletTransactionsController::class,'stats'])->name('stats');
                     Route::get('search-users', [WalletTransactionsController::class,'searchUsers'])->name('search-users');
