@@ -1468,9 +1468,8 @@ class OrdersService
             $points           = (int) ($data['points_amount'] ?? 0);
             $balance          = (float) ($user?->points_balance ?? 0);
             $minAllowedPoints = (float) (SettingsService::getDataBaseSetting('minium_points_to_use') ?? 0);
-            $rate = max(0, (float) (SettingsService::getDataBaseSetting('riyal_per_point_redeem') ?? 0));
             if ($points > 0 && $points >= $minAllowedPoints && $balance >= $points) {
-                $serverValue = round($points * $rate, 2);
+                $serverValue = PointsRedemptionService::valueInRiyals($points);
                 $dueAfterWallet = OrderPaymentMath::remainingToCollect(
                     $order->total_price,
                     (float) $order->paid + $walletAmount

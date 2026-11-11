@@ -7343,5 +7343,6 @@
     "system": "نظام",
     "legacy_unknown": "غير مصنف / قديم",
     "processing_status": "حالة المعالجة",
-    "select processing_status": "اختر الحالة"
+    "select processing_status": "اختر الحالة",
+    "The redeemed points value exceeds the remaining order amount": "قيمة النقاط المستبدلة تتجاوز المبلغ المتبقي للطلب"
 }

@@ -38,7 +38,7 @@ class TrackingV2FinancialRulesTest extends TestCase
     {
         $client = $this->client();
         Point::create(['title' => 'seed', 'amount' => 1000, 'operation' => 'deposit', 'user_id' => $client->id]);
-        (new SettingsService())->saveSettings(['minium_points_to_use' => 100, 'riyal_per_point_redeem' => 0.02]);
+        (new SettingsService())->saveSettings(['minium_points_to_use' => 100, 'riyal_per_point_redeem' => 50]);
         $order = $this->order($client, 'pending', 100, 0);
 
         $result = app(PointsRedemptionService::class)->calculate($client->fresh(), $order, 250);

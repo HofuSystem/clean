@@ -34,6 +34,12 @@ The B2B portal has separate note composition in `DashboardController::orderStore
 
 ## Related sensitive flows
 
+### Points conversion (2026-11-11, baseline `30a9fc6` plus working changes)
+
+- The legacy setting `riyal_per_point_redeem` holds points per SAR: production output supplied by the user showed `100` in both database and cache, with minimum `1000`. Thus 1000 points redeem for SAR 10. Do not invert the setting or change its API key.
+- `PointsRedemptionService::valueInRiyals` divides points by this setting, rounds to halalas and guards nonpositive rates. Both redemption validation and `OrdersService::fastPaymentCardAmount` use it. The previous multiplication rejected valid redemptions and omitted their value from card quotes.
+- Local verification: `tests/Feature/Audit/PointsRedemptionTest.php` uses isolated in-memory SQLite and unsaved order/user models. Seven cases cover conversion, card quote with wallet, exact settlement, over-redemption, zero rate, insufficient balance and minimum points. Multiplication reproduced failures; division passed. This does not establish deployment or a successful customer checkout.
+
 - Payments: `packages/core/payment-gateways/src` and `packages/core/wallet/src`; order payment math is in `packages/core/orders/src/Support/OrderPaymentMath.php`.
 - Status transitions: inspect order service, observers and driver/technical controllers together.
 - Event payloads: `Services/AnalyticsOutboxService.php` and `Services/PurchasePayloadBuilder.php` in the orders package.
