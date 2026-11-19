@@ -116,21 +116,24 @@ class SettingsController extends Controller
     }
     public function appConfigNew()
     {
+        $defaultMessage = trans('A new version is available. Please update your app.');
+        $message = SettingsService::getDataBaseSetting('app_update_message');
+
         $data = [
-            "maintenance_mode"              => false,
-            "message"                       => trans('A new version is available. Please update your app.'),
-            "force_update"                  => true,
-            "clear_local_data"              => false,
-            "min_clear_local_data_version"  => "0.0.0",
-            "force_clean_local_data"        => false,
-            "force_clean_local_data_id"     => "",
+            "maintenance_mode"              => (SettingsService::getDataBaseSetting('app_maintenance_mode') ?? '0') == '1',
+            "message"                       => (is_string($message) && $message !== '') ? $message : $defaultMessage,
+            "force_update"                  => (SettingsService::getDataBaseSetting('app_force_update') ?? '1') == '1',
+            "clear_local_data"              => (SettingsService::getDataBaseSetting('app_clear_local_data') ?? '0') == '1',
+            "min_clear_local_data_version"  => SettingsService::getDataBaseSetting('app_min_clear_local_data_version') ?? "0.0.0",
+            "force_clean_local_data"        => (SettingsService::getDataBaseSetting('app_force_clean_local_data') ?? '0') == '1',
+            "force_clean_local_data_id"     => SettingsService::getDataBaseSetting('app_force_clean_local_data_id') ?? "",
             "android"   => [
-                "latest_version"            => "3.0.4",
-                "min_supported_version"     => "3.0.2"
+                "latest_version"            => SettingsService::getDataBaseSetting('android_latest_version') ?? "3.0.4",
+                "min_supported_version"     => SettingsService::getDataBaseSetting('android_min_supported_version') ?? "3.0.2"
             ],
             "ios"       => [
-                "latest_version"            => "3.0.4",
-                "min_supported_version"     => "3.0.4"
+                "latest_version"            => SettingsService::getDataBaseSetting('ios_latest_version') ?? "3.0.4",
+                "min_supported_version"     => SettingsService::getDataBaseSetting('ios_min_supported_version') ?? "3.0.4"
             ]
         ];
         return $this->returnData(trans('appConfig'), $data);

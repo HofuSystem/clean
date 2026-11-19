@@ -142,6 +142,17 @@ class SettingsRequest extends FormRequest
 			"service_tab" => ['nullable', 'in:0,1'],
 			"sales_tab" => ['nullable', 'in:0,1'],
 			"follow_up_hours_diff" => ['nullable', 'integer', 'min:1'],
+			"app_force_update" => ['nullable', 'in:0,1'],
+			"app_maintenance_mode" => ['nullable', 'in:0,1'],
+			"app_clear_local_data" => ['nullable', 'in:0,1'],
+			"app_force_clean_local_data" => ['nullable', 'in:0,1'],
+			"app_update_message" => ['nullable', 'string'],
+			"app_min_clear_local_data_version" => ['nullable', 'string', 'max:50'],
+			"app_force_clean_local_data_id" => ['nullable', 'string', 'max:100'],
+			"android_latest_version" => ['nullable', 'string', 'max:50'],
+			"android_min_supported_version" => ['nullable', 'string', 'max:50'],
+			"ios_latest_version" => ['nullable', 'string', 'max:50'],
+			"ios_min_supported_version" => ['nullable', 'string', 'max:50'],
 		];
 
 	}

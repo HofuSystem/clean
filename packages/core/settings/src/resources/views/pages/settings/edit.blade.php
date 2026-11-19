@@ -153,6 +153,12 @@
                                         aria-controls="pills-coverage"
                                         aria-selected="false">{{ app()->getLocale() == 'ar' ? 'رسائل التغطية' : 'Coverage Messages' }}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-app-update-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-app-update" type="button" role="tab"
+                                        aria-controls="pills-app-update"
+                                        aria-selected="false">{{ trans('app update') }}</button>
+                                </li>
 
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
@@ -1420,6 +1426,91 @@
                                                 placeholder="{{ trans('Enter hours between follow-up and order') }}"
                                                 value="{{ $settings['follow_up_hours_diff'] ?? 24 }}">
                                             <small class="text-muted">{{ trans('If user orders within this many hours after a follow-up, the follow-up will be marked as sale') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-app-update" role="tabpanel"
+                                    aria-labelledby="pills-app-update-tab" tabindex="0">
+                                    <div class="alert alert-warning mb-4">
+                                        {{ trans('app update warning') }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="app_force_update">{{ trans('force update') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="app_force_update" value="0">
+                                                <input class="form-check-input" type="checkbox" name="app_force_update" id="app_force_update" value="1"
+                                                    @checked(($settings['app_force_update'] ?? '1') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="app_maintenance_mode">{{ trans('maintenance mode') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="app_maintenance_mode" value="0">
+                                                <input class="form-check-input" type="checkbox" name="app_maintenance_mode" id="app_maintenance_mode" value="1"
+                                                    @checked(($settings['app_maintenance_mode'] ?? '0') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="app_clear_local_data">{{ trans('clear local data') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="app_clear_local_data" value="0">
+                                                <input class="form-check-input" type="checkbox" name="app_clear_local_data" id="app_clear_local_data" value="1"
+                                                    @checked(($settings['app_clear_local_data'] ?? '0') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label class="form-check-label d-block mb-2" for="app_force_clean_local_data">{{ trans('force clean local data') }}</label>
+                                            <div class="form-check form-switch">
+                                                <input type="hidden" name="app_force_clean_local_data" value="0">
+                                                <input class="form-check-input" type="checkbox" name="app_force_clean_local_data" id="app_force_clean_local_data" value="1"
+                                                    @checked(($settings['app_force_clean_local_data'] ?? '0') == '1') />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3 col-md-8">
+                                            <label for="app_update_message">{{ trans('update message') }}</label>
+                                            <input type="text" name="app_update_message" id="app_update_message" class="form-control"
+                                                value="{{ $settings['app_update_message'] ?? '' }}"
+                                                placeholder="{{ trans('A new version is available. Please update your app.') }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label for="app_min_clear_local_data_version">{{ trans('min clear local data version') }}</label>
+                                            <input type="text" name="app_min_clear_local_data_version" id="app_min_clear_local_data_version" class="form-control"
+                                                value="{{ $settings['app_min_clear_local_data_version'] ?? '0.0.0' }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label for="app_force_clean_local_data_id">{{ trans('force clean local data id') }}</label>
+                                            <input type="text" name="app_force_clean_local_data_id" id="app_force_clean_local_data_id" class="form-control"
+                                                value="{{ $settings['app_force_clean_local_data_id'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                    <hr class="my-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5 class="mb-3">Android</h5>
+                                            <div class="form-group mb-3">
+                                                <label for="android_latest_version">{{ trans('latest version') }}</label>
+                                                <input type="text" name="android_latest_version" id="android_latest_version" class="form-control"
+                                                    value="{{ $settings['android_latest_version'] ?? '3.0.4' }}">
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="android_min_supported_version">{{ trans('min supported version') }}</label>
+                                                <input type="text" name="android_min_supported_version" id="android_min_supported_version" class="form-control"
+                                                    value="{{ $settings['android_min_supported_version'] ?? '3.0.2' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 class="mb-3">iOS</h5>
+                                            <div class="form-group mb-3">
+                                                <label for="ios_latest_version">{{ trans('latest version') }}</label>
+                                                <input type="text" name="ios_latest_version" id="ios_latest_version" class="form-control"
+                                                    value="{{ $settings['ios_latest_version'] ?? '3.0.4' }}">
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="ios_min_supported_version">{{ trans('min supported version') }}</label>
+                                                <input type="text" name="ios_min_supported_version" id="ios_min_supported_version" class="form-control"
+                                                    value="{{ $settings['ios_min_supported_version'] ?? '3.0.4' }}">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
