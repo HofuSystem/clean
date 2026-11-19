@@ -20,7 +20,10 @@ class SendTelegramMessageJob implements ShouldQueue
     public function __construct(
         protected string $chatId,
         protected string $message
-    ) {}
+    ) {
+        // Avoid running while the caller still holds an open DB transaction.
+        $this->afterCommit();
+    }
 
     public function handle(): void
     {

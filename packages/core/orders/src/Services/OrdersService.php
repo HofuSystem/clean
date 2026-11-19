@@ -33,6 +33,7 @@ use RuntimeException;
 use Core\Notification\Services\TelegramNotificationService;
 use Core\Orders\Models\Cart;
 use Core\Orders\Models\OrderTransaction;
+use Core\Orders\Jobs\NotifyNewOrderTelegramJob;
 use Core\Orders\Support\OrderPaymentMath;
 use Core\Products\Services\ProductsService;
 use Core\B2B\Models\Contract;
@@ -98,9 +99,8 @@ class OrdersService
                 $this->orderTypesOfDatasService->storeOrUpdate($itemValues, $itemValues['id'] ?? null);
             }
         }
-        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        if ($record->wasRecentlyCreated && !in_array($record->client_id, $testAccounts)) {
-            $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($record));
+        if ($record->wasRecentlyCreated) {
+            $this->queueNewOrderTelegramNotification($record);
         }
         return $record;
     }
@@ -194,10 +194,7 @@ class OrdersService
             }
             $order = $this->reCalcOrder($order->id);
         }
-        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        if (!in_array($clientId, $testAccounts)) {
-            $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
-        }
+        $this->queueNewOrderTelegramNotification($order);
         if ($order->status !== 'pending_payment') {
             app(AnalyticsOutboxService::class)->record('order_created', $order);
         }
@@ -1204,10 +1201,9 @@ class OrdersService
             $this->storeOrderItems($order->id, $products);
         }
         $this->calcOriginalProductsTotal($order->id);
-        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
-        if (!in_array($order->client_id, $testAccounts)) {
-            $this->telegramNotificationService->sendMessage("@cleanstationneworders", $this->telegramNotificationService->formatNewOrderMessage($order));
-        }
+        // Telegram formatting (client order count, relations) must not block the
+        // mobile create-order response. Notify after the DB transaction commits.
+        $this->queueNewOrderTelegramNotification($order);
         if ($order->status !== 'pending_payment') {
             app(AnalyticsOutboxService::class)->record('order_created', $order);
         }
@@ -1219,6 +1215,20 @@ class OrdersService
         }
         return $order;
     }
+
+    /**
+     * Queue the new-order Telegram alert so create-order can return immediately.
+     */
+    public function queueNewOrderTelegramNotification(Order $order): void
+    {
+        $testAccounts = SettingsService::getDataBaseSetting('testing_accounts') ?? [];
+        if (in_array($order->client_id, $testAccounts, false)) {
+            return;
+        }
+
+        NotifyNewOrderTelegramJob::dispatch((int) $order->id);
+    }
+
     public function storeOrderItems($orderId, $products)
     {
         $order = Order::findOrFail($orderId);
