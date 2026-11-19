@@ -62,7 +62,7 @@
                             action="{{ route("dashboard.routes-records.edit",$item->id) }}"
                             data-mode="edit"
                         @else
-                            action="{{ route("dashboard.routes-records.store") }}"
+                            action="{{ route("dashboard.routes-records.create") }}"
                             data-mode="new"
                         @endisset
                         >
