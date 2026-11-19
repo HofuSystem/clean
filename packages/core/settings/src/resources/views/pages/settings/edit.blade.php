@@ -1443,48 +1443,13 @@
                                                     @checked(($settings['app_force_update'] ?? '1') == '1') />
                                             </div>
                                         </div>
-                                        <div class="form-group mb-3 col-md-4">
-                                            <label class="form-check-label d-block mb-2" for="app_maintenance_mode">{{ trans('maintenance mode') }}</label>
-                                            <div class="form-check form-switch">
-                                                <input type="hidden" name="app_maintenance_mode" value="0">
-                                                <input class="form-check-input" type="checkbox" name="app_maintenance_mode" id="app_maintenance_mode" value="1"
-                                                    @checked(($settings['app_maintenance_mode'] ?? '0') == '1') />
-                                            </div>
-                                        </div>
-                                        <div class="form-group mb-3 col-md-4">
-                                            <label class="form-check-label d-block mb-2" for="app_clear_local_data">{{ trans('clear local data') }}</label>
-                                            <div class="form-check form-switch">
-                                                <input type="hidden" name="app_clear_local_data" value="0">
-                                                <input class="form-check-input" type="checkbox" name="app_clear_local_data" id="app_clear_local_data" value="1"
-                                                    @checked(($settings['app_clear_local_data'] ?? '0') == '1') />
-                                            </div>
-                                        </div>
-                                        <div class="form-group mb-3 col-md-4">
-                                            <label class="form-check-label d-block mb-2" for="app_force_clean_local_data">{{ trans('force clean local data') }}</label>
-                                            <div class="form-check form-switch">
-                                                <input type="hidden" name="app_force_clean_local_data" value="0">
-                                                <input class="form-check-input" type="checkbox" name="app_force_clean_local_data" id="app_force_clean_local_data" value="1"
-                                                    @checked(($settings['app_force_clean_local_data'] ?? '0') == '1') />
-                                            </div>
-                                        </div>
                                         <div class="form-group mb-3 col-md-8">
                                             <label for="app_update_message">{{ trans('update message') }}</label>
                                             <input type="text" name="app_update_message" id="app_update_message" class="form-control"
                                                 value="{{ $settings['app_update_message'] ?? '' }}"
                                                 placeholder="{{ trans('A new version is available. Please update your app.') }}">
                                         </div>
-                                        <div class="form-group mb-3 col-md-4">
-                                            <label for="app_min_clear_local_data_version">{{ trans('min clear local data version') }}</label>
-                                            <input type="text" name="app_min_clear_local_data_version" id="app_min_clear_local_data_version" class="form-control"
-                                                value="{{ $settings['app_min_clear_local_data_version'] ?? '0.0.0' }}">
-                                        </div>
-                                        <div class="form-group mb-3 col-md-4">
-                                            <label for="app_force_clean_local_data_id">{{ trans('force clean local data id') }}</label>
-                                            <input type="text" name="app_force_clean_local_data_id" id="app_force_clean_local_data_id" class="form-control"
-                                                value="{{ $settings['app_force_clean_local_data_id'] ?? '' }}">
-                                        </div>
                                     </div>
-                                    <hr class="my-4">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <h5 class="mb-3">Android</h5>
