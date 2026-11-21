@@ -131,6 +131,8 @@ class UsersService
                 'users.created_at',
                 DB::raw('(SELECT MAX(o.created_at) FROM orders o WHERE o.client_id = users.id) as latest_order_at'),
                 DB::raw('(SELECT COUNT(*) FROM orders o WHERE o.client_id = users.id AND o.status IN ("finished","delivered")) as orders_count'),
+                DB::raw('(' . User::latestDeviceFieldSql('app_version') . ') as latest_app_version'),
+                DB::raw('(' . User::latestDeviceFieldSql('last_seen_at') . ') as last_app_seen_at'),
             ])
             ->search()
             ->dataTable()

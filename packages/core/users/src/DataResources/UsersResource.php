@@ -33,6 +33,12 @@ class UsersResource extends JsonResource
             "district"        => $this?->profile?->district?->name,
             "created_at"      => $this->created_at?->format('Y-m-d H:i:a'),
             "latest_order_at"   => $this->latest_order_at,
+            "latest_app_version" => DashboardDataTableFormatter::text($this->latest_app_version ?? ''),
+            "last_app_seen_at"   => $this->last_app_seen_at
+                ? (is_string($this->last_app_seen_at)
+                    ? \Carbon\Carbon::parse($this->last_app_seen_at)->format('Y-m-d H:i')
+                    : $this->last_app_seen_at->format('Y-m-d H:i'))
+                : '--',
             "actions"         => $this->actions,
             "select_switch"   => $this->select_switch,
             "showActions"     => $this->show_actions,

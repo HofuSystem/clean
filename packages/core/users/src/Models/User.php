@@ -193,6 +193,29 @@ class User extends Authenticatable
             });
         }
 
+        // Filter by latest client/unknown device app version
+        if (request()->has('filters.app_version') && !empty(request('filters.app_version'))) {
+            $query->whereRaw(
+                '(' . self::latestDeviceFieldSql('app_version') . ') = ?',
+                [request('filters.app_version')]
+            );
+        }
+
+        // Filter by latest device last_seen_at range
+        if (request()->has('filters.from_last_app_seen_at') && !empty(request('filters.from_last_app_seen_at'))) {
+            $query->whereRaw(
+                '(' . self::latestDeviceFieldSql('last_seen_at') . ') >= ?',
+                [Carbon::parse(request('filters.from_last_app_seen_at'))->toDateTimeString()]
+            );
+        }
+
+        if (request()->has('filters.to_last_app_seen_at') && !empty(request('filters.to_last_app_seen_at'))) {
+            $query->whereRaw(
+                '(' . self::latestDeviceFieldSql('last_seen_at') . ') <= ?',
+                [Carbon::parse(request('filters.to_last_app_seen_at'))->toDateTimeString()]
+            );
+        }
+
         if (request()->has("forCompany") and request("forCompany") == true) {
             $query->whereHas("roles", function ($roleQuery) {
                 $roleQuery->where("name", "company");
@@ -201,6 +224,29 @@ class User extends Authenticatable
         if (request()->has('trash') and request()->trash == 1) {
             $query->onlyTrashed();
         }
+    }
+
+    /**
+     * SQL for a field on the user's latest relevant device:
+     * prefer client over unknown, active over other statuses, then newest last_seen_at.
+     */
+    public static function latestDeviceFieldSql(string $field, string $userIdColumn = 'users.id'): string
+    {
+        $allowed = ['app_version', 'last_seen_at', 'id', 'type', 'os_version'];
+        if (!in_array($field, $allowed, true)) {
+            $field = 'app_version';
+        }
+
+        return "SELECT d.{$field}
+            FROM devices d
+            WHERE d.user_id = {$userIdColumn}
+              AND d.deleted_at IS NULL
+              AND d.app_context IN ('client', 'unknown')
+            ORDER BY
+              CASE WHEN d.app_context = 'client' THEN 0 ELSE 1 END,
+              CASE WHEN d.token_status = 'active' THEN 0 ELSE 1 END,
+              d.last_seen_at DESC
+            LIMIT 1";
     }
     public function scopeActive($query)
     {

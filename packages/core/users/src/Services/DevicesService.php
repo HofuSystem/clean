@@ -65,7 +65,18 @@ class DevicesService
 
         $recordsTotal       = Device::count();
         $recordsFiltered    = Device::search()->count();
-        $records            = Device::select(['id','device_token','type','user_id','installation_id','app_context','token_status'])
+        $records            = Device::select([
+            'id',
+            'device_token',
+            'type',
+            'user_id',
+            'installation_id',
+            'app_context',
+            'token_status',
+            'app_version',
+            'os_version',
+            'last_seen_at',
+        ])
         ->with(['user'])
         ->search()->dataTable()->get();
         

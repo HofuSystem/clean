@@ -285,6 +285,21 @@
         
                                         </select>
                                     </div>
+                                    <div class="col-md-6 mb-1">
+                                        <label for="app_version">@lang("app version")</label>
+                                        <input type="text" name="app_version" class="form-control filter-input"
+                                            placeholder="@lang("search for app version")" value="{{ request('app_version') }}">
+                                    </div>
+                                    <div class="col-md-6 mb-1">
+                                        <label for="from_last_app_seen_at">@lang("last app open from")</label>
+                                        <input type="datetime-local" name="from_last_app_seen_at" class="form-control filter-input"
+                                            value="{{ request('from_last_app_seen_at') }}">
+                                    </div>
+                                    <div class="col-md-6 mb-1">
+                                        <label for="to_last_app_seen_at">@lang("last app open to")</label>
+                                        <input type="datetime-local" name="to_last_app_seen_at" class="form-control filter-input"
+                                            value="{{ request('to_last_app_seen_at') }}">
+                                    </div>
                                     <!--begin::Actions-->
                                     <div class=" d-flex justify-content-end">
                                         <button type="reset"
@@ -334,6 +349,8 @@
                                 <th class="text-center p-0" data-name="district">@lang('district')</th>
                                 <th class="text-center p-0" data-name="created_at">@lang('register date')</th>
                                 <th class="text-center p-0" data-name="latest_order_at">@lang('last order date')</th>
+                                <th class="text-center p-0" data-name="latest_app_version">@lang('app version')</th>
+                                <th class="text-center p-0" data-name="last_app_seen_at">@lang('last app open')</th>
                                 <th class="text-center p-0" data-name="class">@lang('class')</th>
                                 <th class="text-center p-0" data-name="actions">@lang('Actions')</th>
 

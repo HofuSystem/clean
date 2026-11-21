@@ -75,6 +75,20 @@ class Device extends CoreModel {
         if((request()->has("filters.app_context")) and !empty(request("filters.app_context"))){
             $query->where("app_context",request("filters.app_context"));
         }
+
+        //filter text on app_version
+        if((request()->has("filters.app_version")) and !empty(request("filters.app_version"))){
+            $query->where("app_version", request("filters.app_version"));
+        }
+
+        //filter date on last_seen_at
+        if((request()->has("filters.from_last_seen_at")) and !empty(request("filters.from_last_seen_at"))){
+            $query->whereDate("last_seen_at", ">=", Carbon::parse(request("filters.from_last_seen_at")));
+        }
+
+        if((request()->has("filters.to_last_seen_at")) and !empty(request("filters.to_last_seen_at"))){
+            $query->whereDate("last_seen_at", "<=", Carbon::parse(request("filters.to_last_seen_at")));
+        }
         
         //filter date on  created_at
         if((request()->has("filters.from_created_at")) and !empty(request("filters.from_created_at"))){

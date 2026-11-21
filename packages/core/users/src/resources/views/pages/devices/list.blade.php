@@ -175,7 +175,41 @@
             
                                             </select>
                                         </div>
-                                    
+                                        <div class="col-md-6 mb-1">
+                                            <label for="app_version">@lang("app version")</label>
+                                            <input type="text" name="app_version" class="form-control filter-input"
+                                                placeholder="@lang("search for app version")" value="{{ request("app_version") }}">
+                                        </div>
+                                        <div class="col-md-6 mb-1">
+                                            <label for="app_context">@lang("app context")</label>
+                                            <select class="custom-select filter-input form-select advance-select" name="app_context" id="app_context">
+                                                <option value="">@lang("select app context")</option>
+                                                <option value="client" @selected(request("app_context") === "client")>{{ trans("client") }}</option>
+                                                <option value="driver" @selected(request("app_context") === "driver")>{{ trans("driver") }}</option>
+                                                <option value="technical" @selected(request("app_context") === "technical")>{{ trans("technical") }}</option>
+                                                <option value="unknown" @selected(request("app_context") === "unknown")>{{ trans("unknown") }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-1">
+                                            <label for="token_status">@lang("token status")</label>
+                                            <select class="custom-select filter-input form-select advance-select" name="token_status" id="token_status">
+                                                <option value="">@lang("select token status")</option>
+                                                <option value="active" @selected(request("token_status") === "active")>{{ trans("active") }}</option>
+                                                <option value="inactive" @selected(request("token_status") === "inactive")>{{ trans("inactive") }}</option>
+                                                <option value="invalid" @selected(request("token_status") === "invalid")>{{ trans("invalid") }}</option>
+                                                <option value="unknown" @selected(request("token_status") === "unknown")>{{ trans("unknown") }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-1">
+                                            <label for="from_last_seen_at">@lang("last seen from")</label>
+                                            <input type="datetime-local" name="from_last_seen_at" class="form-control filter-input"
+                                                value="{{ request("from_last_seen_at") }}">
+                                        </div>
+                                        <div class="col-md-6 mb-1">
+                                            <label for="to_last_seen_at">@lang("last seen to")</label>
+                                            <input type="datetime-local" name="to_last_seen_at" class="form-control filter-input"
+                                                value="{{ request("to_last_seen_at") }}">
+                                        </div>
                                         <div class="col-md-6 mb-1">
                                         <label for="created_at"> @lang("Create Date from") </label>
                                         <input type="datetime-local" name="from_created_at" class="form-control filter-input"
@@ -228,6 +262,11 @@
                                     <th class="text-center p-0" data-name="device_token">@lang("device token")</th>
                                     <th class="text-center p-0" data-name="type">@lang("type")</th>
                                     <th class="text-center p-0" data-name="user_id">@lang("user")</th>
+                                    <th class="text-center p-0" data-name="app_version">@lang("app version")</th>
+                                    <th class="text-center p-0" data-name="os_version">@lang("os version")</th>
+                                    <th class="text-center p-0" data-name="app_context">@lang("app context")</th>
+                                    <th class="text-center p-0" data-name="token_status">@lang("token status")</th>
+                                    <th class="text-center p-0" data-name="last_seen_at">@lang("last seen at")</th>
                                     <th class="text-center p-0" data-name="actions">@lang("Actions")</th>
 
                             </tr>
