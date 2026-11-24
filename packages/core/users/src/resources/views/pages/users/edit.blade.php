@@ -149,9 +149,9 @@
 
 
                                             <div class="form-group mb-3 col-md-12">
-                                                <label class="" for="roles">{{ trans('roles') }}</label>
+                                                <label class="required" for="roles">{{ trans('roles') }}</label>
                                                 <select class="custom-select  form-select advance-select" name="roles"
-                                                    id="roles" multiple>
+                                                    id="roles" multiple required>
                                                     @foreach ($roles ?? [] as $sItem)
                                                         <option data-name="{{ $sItem->name }}"
                                                             data-id="{{ $sItem->id }}" @selected(isset($item) and $item->roles->where('id', $sItem->id)->first())

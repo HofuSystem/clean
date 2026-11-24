@@ -39,7 +39,7 @@ class UsersService
     public function storeOrUpdate(array $data = [],$id = null){
         $recordData = array_filter($data,fn($key) => in_array($key, ['image','fullname','email','email_verified_at','phone','phone_verified_at','is_active','is_allow_notify','date_of_birth','identity_number','wallet','points_balance','gender','rate_avg','referral_code','verified_code','last_login_at','translations']),ARRAY_FILTER_USE_KEY);
         $record     = User::updateOrCreate(['id' => $id],$recordData);
-        $roles      = Role::whereIn('id',$data['roles'])->get(); 
+        $roles      = Role::whereIn('id', $data['roles'] ?? [])->get();
         $record->syncRoles($roles);
         $technicals = $data['technicals'] ?? [];
         User::where('operator_id',$record->id)->update(['operator_id' => null]);
