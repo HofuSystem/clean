@@ -4002,6 +4002,8 @@
     "clear local data": "مسح البيانات المحلية",
     "force clean local data": "إجبار مسح البيانات المحلية",
     "update message": "رسالة التحديث",
+    "update message ar": "رسالة التحديث (عربي)",
+    "update message en": "رسالة التحديث (إنجليزي)",
     "min clear local data version": "أقل نسخة لمسح البيانات المحلية",
     "force clean local data id": "معرف مسح البيانات المحلية",
     "latest version": "أحدث نسخة",

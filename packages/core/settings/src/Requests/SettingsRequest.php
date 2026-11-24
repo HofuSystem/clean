@@ -144,6 +144,8 @@ class SettingsRequest extends FormRequest
 			"follow_up_hours_diff" => ['nullable', 'integer', 'min:1'],
 			"app_force_update" => ['nullable', 'in:0,1'],
 			"app_update_message" => ['nullable', 'string'],
+			"app_update_message_ar" => ['nullable', 'string'],
+			"app_update_message_en" => ['nullable', 'string'],
 			"android_latest_version" => ['nullable', 'string', 'max:50'],
 			"android_min_supported_version" => ['nullable', 'string', 'max:50'],
 			"ios_latest_version" => ['nullable', 'string', 'max:50'],

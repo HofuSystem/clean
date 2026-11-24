@@ -59,6 +59,7 @@ return await dioHelper.getFromServer(
 الحقول المهمة للتحديث:
 
 - `force_update` (bool)
+- `message` (string) — حسب لغة التطبيق من `Accept-Language` (`app_update_message_ar` / `app_update_message_en` في الإعدادات)
 - `android.latest_version` (string مثل `3.0.5`)
 - `android.min_supported_version`
 - `ios.latest_version`

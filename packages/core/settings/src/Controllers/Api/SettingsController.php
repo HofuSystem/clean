@@ -117,11 +117,16 @@ class SettingsController extends Controller
     public function appConfigNew()
     {
         $defaultMessage = trans('A new version is available. Please update your app.');
-        $message = SettingsService::getDataBaseSetting('app_update_message');
+        $lang = app()->getLocale() === 'en' ? 'en' : 'ar';
+        $localizedMessage = SettingsService::getDataBaseSetting('app_update_message_' . $lang);
+        $legacyMessage = SettingsService::getDataBaseSetting('app_update_message');
+        $message = (is_string($localizedMessage) && $localizedMessage !== '')
+            ? $localizedMessage
+            : ((is_string($legacyMessage) && $legacyMessage !== '') ? $legacyMessage : $defaultMessage);
 
         $data = [
             "maintenance_mode"              => (SettingsService::getDataBaseSetting('app_maintenance_mode') ?? '0') == '1',
-            "message"                       => (is_string($message) && $message !== '') ? $message : $defaultMessage,
+            "message"                       => $message,
             "force_update"                  => (SettingsService::getDataBaseSetting('app_force_update') ?? '1') == '1',
             "clear_local_data"              => (SettingsService::getDataBaseSetting('app_clear_local_data') ?? '0') == '1',
             "min_clear_local_data_version"  => SettingsService::getDataBaseSetting('app_min_clear_local_data_version') ?? "0.0.0",

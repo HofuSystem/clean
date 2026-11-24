@@ -1443,11 +1443,17 @@
                                                     @checked(($settings['app_force_update'] ?? '1') == '1') />
                                             </div>
                                         </div>
-                                        <div class="form-group mb-3 col-md-8">
-                                            <label for="app_update_message">{{ trans('update message') }}</label>
-                                            <input type="text" name="app_update_message" id="app_update_message" class="form-control"
-                                                value="{{ $settings['app_update_message'] ?? '' }}"
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label for="app_update_message_ar">{{ trans('update message ar') }}</label>
+                                            <input type="text" name="app_update_message_ar" id="app_update_message_ar" class="form-control"
+                                                value="{{ $settings['app_update_message_ar'] ?? $settings['app_update_message'] ?? '' }}"
                                                 placeholder="{{ trans('A new version is available. Please update your app.') }}">
+                                        </div>
+                                        <div class="form-group mb-3 col-md-4">
+                                            <label for="app_update_message_en">{{ trans('update message en') }}</label>
+                                            <input type="text" name="app_update_message_en" id="app_update_message_en" class="form-control"
+                                                value="{{ $settings['app_update_message_en'] ?? '' }}"
+                                                placeholder="A new version is available. Please update your app.">
                                         </div>
                                     </div>
                                     <div class="row">

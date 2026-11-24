@@ -2608,6 +2608,8 @@
     "clear local data": "Clear Local Data",
     "force clean local data": "Force Clean Local Data",
     "update message": "Update Message",
+    "update message ar": "Update Message (Arabic)",
+    "update message en": "Update Message (English)",
     "min clear local data version": "Min Clear Local Data Version",
     "force clean local data id": "Force Clean Local Data ID",
     "latest version": "Latest Version",
