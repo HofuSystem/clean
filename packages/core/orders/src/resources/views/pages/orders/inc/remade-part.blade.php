@@ -6,56 +6,6 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
 
 @endphp
 
-<style>
-    .bag-pieces-compact {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        min-width: 150px;
-        font-size: 12px;
-        line-height: 1.25;
-    }
-    .bag-pieces-counts,
-    .bag-price-line {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        white-space: nowrap;
-    }
-    .bag-piece-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 28px;
-        height: 24px;
-        padding: 0 7px;
-        border-radius: 8px;
-        background: #eef4fb;
-        color: #315d91;
-        font-weight: 700;
-    }
-    .bag-piece-chip.is-extra {
-        background: #fff4e8;
-        color: #a65712;
-    }
-    .bag-piece-total {
-        color: #177245;
-        font-weight: 700;
-    }
-    .bag-price-line {
-        color: #667085;
-    }
-    .bag-price-line strong {
-        color: #b54708;
-        font-weight: 700;
-    }
-    .bag-price-dot {
-        color: #c5cbd4;
-    }
-</style>
-
 <div id="remade">
     <div class="form-group mb-3 col-md-12">
         <div class="mt-3 items-container" data-items-on="order_id" data-items-name="representatives"
@@ -153,7 +103,6 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                             <th>{{ trans('sub category') }}</th>
                             <th>{{ trans('price') }}</th>
                             <th>{{ trans('quantity') }}</th>
-                            <th>{{ app()->getLocale() === 'ar' ? 'قطع الحقيبة' : 'Bag pieces' }}</th>
                             <th>{{ trans('size') }}</th>
                             <th>{{ trans('picked up') }}</th>
                             <th>{{ trans('arrived') }}</th>
@@ -325,46 +274,6 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                 </span>
                             </td>
                             <td>
-                                @if($item->package_base_pieces_count > 0)
-                                    @php
-                                        $bagDetailsTitle = app()->getLocale() === 'ar'
-                                            ? 'الأساسية: ' . $item->package_base_pieces_count
-                                                . '، الإضافية: ' . (int) $item->extra_pieces_count
-                                                . '، الإجمالي: ' . $item->package_total_pieces
-                                            : 'Base: ' . $item->package_base_pieces_count
-                                                . ', extra: ' . (int) $item->extra_pieces_count
-                                                . ', total: ' . $item->package_total_pieces;
-
-                                        if ($item->package_base_price !== null && $item->package_extra_piece_price !== null) {
-                                            $bagDetailsTitle .= ' — ' . number_format($item->package_base_price, 2)
-                                                . ' + ' . number_format($item->package_extra_pieces_total, 2)
-                                                . ' = ' . number_format($item->product_price, 2) . ' ' . trans('SAR');
-                                        }
-                                    @endphp
-                                    <div class="bag-pieces-compact" title="{{ $bagDetailsTitle }}">
-                                        <div class="bag-pieces-counts">
-                                            <span class="bag-piece-chip" title="{{ app()->getLocale() === 'ar' ? 'القطع الأساسية' : 'Base pieces' }}">{{ $item->package_base_pieces_count }}</span>
-                                            <span>+</span>
-                                            <span class="bag-piece-chip is-extra" title="{{ app()->getLocale() === 'ar' ? 'القطع الإضافية' : 'Extra pieces' }}">{{ (int) $item->extra_pieces_count }}</span>
-                                            <span>=</span>
-                                            <span class="bag-piece-total">{{ $item->package_total_pieces }} {{ app()->getLocale() === 'ar' ? 'قطعة' : 'pcs' }}</span>
-                                        </div>
-                                        @if($item->package_extra_piece_price !== null)
-                                            <div class="bag-price-line">
-                                                <strong>{{ number_format($item->package_extra_piece_price, 2) }} {{ trans('SAR') }}</strong>
-                                                <span>{{ app()->getLocale() === 'ar' ? '/ قطعة إضافية' : '/ extra piece' }}</span>
-                                                @if((int) $item->extra_pieces_count > 0)
-                                                    <span class="bag-price-dot">•</span>
-                                                    <span>{{ app()->getLocale() === 'ar' ? 'الإضافات' : 'Extras' }} {{ number_format($item->package_extra_pieces_total, 2) }} {{ trans('SAR') }}</span>
-                                                @endif
-                                            </div>
-                                        @endif
-                                    </div>
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td>
                                 @if (isset($hasSize) and
                                 in_array($item->product?->category_id, $hasSize) ||
                                 in_array($item->product?->sub_category_id, $hasSize))
@@ -428,7 +337,7 @@ $couponMinmum = json_decode($order->coupon_data)?->order_minimum ?? ($order->cou
                                 @endisset
                             </td>
                             <td colspan="6">{{ trans('total quantity') }}: <strong>{{ $order->items->sum('quantity') }}</strong></td>
-                            <td colspan="{{ isset($editMode) ? 7 : 6 }}">{{ trans('total price') }}: <strong>{{ trans('SAR') }} {{ $order->order_price }}</strong></td>
+                            <td colspan="{{ isset($editMode) ? 6 : 5 }}">{{ trans('total price') }}: <strong>{{ trans('SAR') }} {{ $order->order_price }}</strong></td>
                         </tr>
                     </tfoot>
                 </table>

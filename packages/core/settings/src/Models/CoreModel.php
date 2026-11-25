@@ -35,12 +35,13 @@ class CoreModel extends Model
                 $orderColumn = request()->columns[$colIdx]['data'];
             }
         }
-        if (isset($orderColumn) ) {
-            $orderBy    = $orderColumn;
-            $orderDir   = request()->order[0]['dir'] ?? 'asc';
-            if (isset($this->translatedAttributes) and in_array($orderBy, $this->translatedAttributes)) {
+        if (isset($orderColumn)) {
+            $orderBy = $orderColumn;
+            $orderDir = strtolower((string) (request()->order[0]['dir'] ?? 'asc')) === 'desc' ? 'desc' : 'asc';
+            if (isset($this->translatedAttributes) && in_array($orderBy, $this->translatedAttributes, true)) {
                 $query->orderByTranslation($orderBy, $orderDir);
-            } else {
+            } elseif (Schema::hasColumn($this->getTable(), $orderBy)) {
+                // Ignore UI-only columns such as select_switch / actions.
                 $query->orderBy($orderBy, $orderDir);
             }
         }
